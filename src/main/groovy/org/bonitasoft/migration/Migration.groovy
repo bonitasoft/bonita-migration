@@ -39,7 +39,7 @@ package org.bonitasoft.migration;
  *
  *  example: groovy Migration.groovy --bonita.home /home/user/bonita.home --source.version 6.0.3
  *  --target.version 6.1.0 --db.vendor postgres --db.url jdbc:postgresql://localhost:5432/bonita
- *  -- db.driverclass org.postgresql.Driver --db.user bonita --db.password bonita
+ *  --db.driverclass org.postgresql.Driver --db.user bonita --db.password bonita
  *
  * @author Baptiste Mesta
  *

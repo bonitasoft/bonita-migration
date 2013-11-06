@@ -30,6 +30,8 @@ public class Version_6_0_3_to_6_1_0 {
         def Map props = MigrationUtil.parseOrAskArgs(args);
         println "props="+props
         def sql = Sql.newInstance(props.get("db.url"), props.get("db.user"), props.get("db.password"), props.get("db.driverclass"))
-        sql.eachRow("select * from test",{println "$it.id -- ${it.name} --"})
+        println new File("bb").getAbsolutePath()
+        //        MigrationUtil.executeAllScripts(props.get("db.vendor"),sql)
+        sql.close()
     }
 }

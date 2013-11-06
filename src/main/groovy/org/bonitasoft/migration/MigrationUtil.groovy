@@ -18,4 +18,13 @@ public class MigrationUtil {
         }
         return map;
     }
+
+    static boolean executeAllScripts( String[] list){
+        def map = [:];
+        def iterator = list.iterator()
+        while (iterator.hasNext()) {
+            map.put(iterator.next().substring(2),iterator.next());
+        }
+        return map;
+    }
 }
