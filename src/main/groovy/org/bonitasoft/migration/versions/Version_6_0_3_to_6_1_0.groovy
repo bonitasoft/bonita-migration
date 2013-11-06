@@ -13,6 +13,8 @@
  **/
 package org.bonitasoft.migration.versions;
 
+import groovy.sql.Sql
+
 import org.bonitasoft.migration.MigrationUtil
 
 /**
@@ -26,6 +28,8 @@ public class Version_6_0_3_to_6_1_0 {
 
     public static void main(String[] args) {
         def Map props = MigrationUtil.parseOrAskArgs(args);
-        println "Version_6_0_3_to_6_1_0:"+props.get("username");
+        println "props="+props
+        def sql = Sql.newInstance(props.get("db.url"), props.get("db.user"), props.get("db.password"), props.get("db.driverclass"))
+        sql.eachRow("select * from test",{println "$it.id -- ${it.name} --"})
     }
 }

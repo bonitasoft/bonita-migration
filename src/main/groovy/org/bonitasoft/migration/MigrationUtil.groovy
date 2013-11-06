@@ -5,12 +5,17 @@ public class MigrationUtil {
 
 
     public static Map parseOrAskArgs(String[] args){
-        //        def username
-        //        System.in.withReader {
-        //            print  'input: '
-        //            username = it.readLine()
-        //            println username
-        //        }
-        ["username":args[1]]
+        //will ask for missing parameter
+        return listToMap(args);
+    }
+
+
+    static Map listToMap( String[] list){
+        def map = [:];
+        def iterator = list.iterator()
+        while (iterator.hasNext()) {
+            map.put(iterator.next().substring(2),iterator.next());
+        }
+        return map;
     }
 }

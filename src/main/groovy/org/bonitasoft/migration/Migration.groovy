@@ -19,6 +19,28 @@ package org.bonitasoft.migration;
  *
  * Main script to execute the migration
  *
+ * This is the master script for the migration
+ * it must be launched with parameters listed below
+ *
+ * Required parameters:
+ *  --bonita.home <path to bonita home>
+ *  --source.version <the current version of your installation>     -> not used yet
+ *  --target.version <the version your installation will be in>     -> not used yet
+ *  --db.vendor <the kind on you database, can be [mysql,postgres,sqlserver,oracle]
+ *  --db.url <the url of the database>
+ *  --db.driverclass <the class of the jdbc driver>
+ *  --db.user <the username to connect to the database>
+ *  --db.password <the password to connect to the database>
+ *
+ *  also not that the jdbc driver must be put in the lib folder
+ *
+ * it launches all scripts inside the versions folder
+ *
+ *
+ *  example: groovy Migration.groovy --bonita.home /home/user/bonita.home --source.version 6.0.3
+ *  --target.version 6.1.0 --db.vendor postgres --db.url jdbc:postgresql://localhost:5432/bonita
+ *  -- db.driverclass org.postgresql.Driver --db.user bonita --db.password bonita
+ *
  * @author Baptiste Mesta
  *
  */
@@ -27,7 +49,7 @@ public class Migration {
 
     public static void main(String[] args){
         println "Starting migration"
-        def childWithExt = {file,ext->
+        def childWithExt = { file,ext->
             file.listFiles(new FileFilter(){
                         public boolean accept(File pathname) {
                             return pathname.getName().endsWith(ext);
@@ -45,7 +67,20 @@ public class Migration {
             loader.addURL(url);
         }
         def grClass = new File("MigrationUtil.groovy")
-        Class groovyClass = loader.parseClass(grClass);
+        Class migrationUtil = loader.parseClass(grClass);
+        Thread.currentThread().setContextClassLoader(loader);
+        println "properties:"
+        def listToMap = {list->
+            def map = [:];
+            def iterator = list.iterator()
+            while (iterator.hasNext()) {
+                map.put(iterator.next(),iterator.next());
+            }
+            return map;
+        }
+        listToMap(args).each {
+            println it.key.substring(2) + "="+it.value
+        }
         def shell = new GroovyShell(loader);
         def versions = new File("versions");
         def scripts = childWithExt(versions,".groovy");
