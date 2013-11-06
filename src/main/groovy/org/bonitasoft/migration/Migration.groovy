@@ -14,6 +14,7 @@
 package org.bonitasoft.migration;
 
 
+
 /**
  *
  * Main script to execute the migration
@@ -23,23 +24,34 @@ package org.bonitasoft.migration;
  */
 public class Migration {
 
+
     public static void main(String[] args){
+        println "Starting migration"
+        def childWithExt = {file,ext->
+            file.listFiles(new FileFilter(){
+                        public boolean accept(File pathname) {
+                            return pathname.getName().endsWith(ext);
+                        }
+                    })
+        };
+
         //load lib folder and MigrationUtil
         println new File("aa").getAbsolutePath();
         ClassLoader parent = getClass().getClassLoader();
         GroovyClassLoader loader = new GroovyClassLoader(parent);
-        def url = new File("lib/groovy-all-1.8.6.jar").toURI().toURL();
-        println url;
-        loader.addURL(url);
+        childWithExt(new File("lib/"),".jar").each {
+            def url = it.toURI().toURL();
+            println "adding to classpath: "+url;
+            loader.addURL(url);
+        }
         def grClass = new File("MigrationUtil.groovy")
         Class groovyClass = loader.parseClass(grClass);
         def shell = new GroovyShell(loader);
         def versions = new File("versions");
-        versions.listFiles().eachWithIndex {it,i->
-            if(it.getName().endsWith(".groovy")){
-                println "Running script "+ i+" "+it.getName();
-                def result = shell.run(it, args);
-            }
+        def scripts = childWithExt(versions,".groovy");
+        scripts.eachWithIndex {it,i->
+            println "Running script "+ (i+1)+"/"+scripts.size()+": "+it.getName();
+            def result = shell.run(it, args);
         }
     }
 }
