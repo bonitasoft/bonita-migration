@@ -1,0 +1,1 @@
+ALTER TABLE document_content MODIFY COLUMN content LONGBLOB NOT NULL;
