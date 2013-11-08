@@ -28,9 +28,22 @@ public class Version_6_0_3_to_6_1_0 {
 
     public static void main(String[] args) {
         def Map props = MigrationUtil.parseOrAskArgs(args);
-        println "props="+props
         def sql = Sql.newInstance(props.get("db.url"), props.get("db.user"), props.get("db.password"), props.get("db.driverclass"))
-        println new File("bb").getAbsolutePath()
+        def resources = new File("versions/Version_6_0_3_to_6_1_0")
+        def features = [];
+        resources.listFiles().each {
+            if(it.isDirectory())
+                features.add(it.getAbsoluteFile());
+        }
+        features.eachWithIndex { file,idx->
+            println "migrating <"+file.getName()+"> "+(idx+1)+"/"+features.size();
+            def sqlFile = new File(file,props.get("db.vendor")+".sql");
+            def content = sqlFile.text;
+            //            content.split("\n").each {
+            //            println "execute sql:"+content;
+            sql.execute(content);
+            //            }
+        }
         //        MigrationUtil.executeAllScripts(props.get("db.vendor"),sql)
         sql.close()
     }

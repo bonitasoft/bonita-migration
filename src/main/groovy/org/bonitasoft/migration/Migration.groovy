@@ -41,6 +41,8 @@ package org.bonitasoft.migration;
  *  --target.version 6.1.0 --db.vendor postgres --db.url jdbc:postgresql://localhost:5432/bonita
  *  --db.driverclass org.postgresql.Driver --db.user bonita --db.password bonita
  *
+ *
+ *
  * @author Baptiste Mesta
  *
  */
@@ -58,7 +60,6 @@ public class Migration {
         };
 
         //load lib folder and MigrationUtil
-        println new File("aa").getAbsolutePath();
         ClassLoader parent = getClass().getClassLoader();
         GroovyClassLoader loader = new GroovyClassLoader(parent);
         childWithExt(new File("lib/"),".jar").each {
@@ -78,6 +79,8 @@ public class Migration {
             }
             return map;
         }
+        println "Press ENTER to continue"
+        System.console().readLine();
         listToMap(args).each {
             println it.key.substring(2) + "="+it.value
         }
@@ -88,5 +91,6 @@ public class Migration {
             println "Running script "+ (i+1)+"/"+scripts.size()+": "+it.getName();
             def result = shell.run(it, args);
         }
+        println "migration successful"
     }
 }
