@@ -8,13 +8,13 @@ CREATE TABLE job_log (tenantid        BIGINT(20) NOT NULL,
                       retryNumber     BIGINT(20) NULL,
                       lastUpdateDate  BIGINT(20) NULL,
                       lastMessage     TEXT NULL)
-    ENGINE = InnoDB;
+					  ENGINE = InnoDB;
 CREATE INDEX fk_job_log_jobId_idx ON job_log (jobDescriptorId ASC, tenantid ASC);
 ALTER TABLE job_log ADD PRIMARY KEY (tenantid,id);
 ALTER TABLE job_log ADD CONSTRAINT tenantid UNIQUE (tenantid,jobDescriptorId);
 INSERT INTO sequence (tenantid, id, nextid)
-SELECT ID, 72, 1 FROM tenant
-ORDER BY id ASC;
+	SELECT ID, 72, 1 FROM tenant
+	ORDER BY id ASC;
 
 
 --

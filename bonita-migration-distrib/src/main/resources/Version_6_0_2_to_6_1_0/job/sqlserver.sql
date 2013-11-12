@@ -17,13 +17,12 @@ CREATE TABLE job_log (tenantid        NUMERIC(19,0) NOT NULL,
                       lastUpdateDate  NUMERIC(19,0) NULL,
                       lastMessage     NVARCHAR(MAX) NULL),
 					  UNIQUE (tenantId, jobDescriptorId),
-					  PRIMARY KEY (tenantid, id)
-					 )
+					  PRIMARY KEY (tenantid, id))
 GO
 
 INSERT INTO sequence (tenantid, id, nextid)
-SELECT ID, 72, 1 FROM tenant
-ORDER BY id ASC
+	SELECT ID, 72, 1 FROM tenant
+	ORDER BY id ASC
 GO
 
 
