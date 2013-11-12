@@ -13,6 +13,8 @@
  **/
 package org.bonitasoft.migration;
 
+import groovy.time.TimeDuration
+
 
 
 /**
@@ -50,26 +52,32 @@ public class Migration {
 
 
     public static void main(String[] args){
-        println "Starting migration"
-        def childWithExt = { file,ext->
-            file.listFiles(new FileFilter(){
-                        public boolean accept(File pathname) {
-                            return pathname.getName().endsWith(ext);
-                        }
-                    })
-        };
+        new Migration().execute(args);
+    }
 
+    public void execute(String[] args){
+        println "Starting migration"
+        def start = new Date()
         //load lib folder and MigrationUtil
-        ClassLoader parent = getClass().getClassLoader();
-        GroovyClassLoader loader = new GroovyClassLoader(parent);
-        childWithExt(new File("lib/"),".jar").each {
-            def url = it.toURI().toURL();
-            println "adding to classpath: "+url;
-            loader.addURL(url);
+        GroovyClassLoader classLoader = loadLibs();
+        confirmProperties(args);
+        def scriptsFolder = new File("versions");
+        executeScriptsOfFolder(classLoader, scriptsFolder, args)
+        def end = new Date()
+        TimeDuration duration = TimeCategory.minus(end, start)
+        println "migration successful, took "+duration
+    }
+
+    private executeScriptsOfFolder(GroovyClassLoader loader, File versions, String[] args) {
+        def shell = new GroovyShell(loader);
+        def scripts = filterChildrenHavingExtension(versions,".groovy");
+        scripts.eachWithIndex {it,i->
+            println "Running script "+ (i+1)+"/"+scripts.size()+": "+it.getName();
+            def result = shell.run(it, args);
         }
-        def grClass = new File("MigrationUtil.groovy")
-        Class migrationUtil = loader.parseClass(grClass);
-        Thread.currentThread().setContextClassLoader(loader);
+    }
+
+    void confirmProperties(String[] args) {
         println "properties:"
         def listToMap = {list->
             def map = [:];
@@ -83,14 +91,30 @@ public class Migration {
             println it.key.substring(2) + "="+it.value
         }
         println "Press ENTER to continue"
-        System.console().readLine();
-        def shell = new GroovyShell(loader);
-        def versions = new File("versions");
-        def scripts = childWithExt(versions,".groovy");
-        scripts.eachWithIndex {it,i->
-            println "Running script "+ (i+1)+"/"+scripts.size()+": "+it.getName();
-            def result = shell.run(it, args);
+        System.console().readLine()
+    }
+
+    GroovyClassLoader loadLibs() {
+        ClassLoader parent = getClass().getClassLoader();
+        GroovyClassLoader loader = new GroovyClassLoader(parent);
+        filterChildrenHavingExtension(new File("lib/"),".jar").each {
+            def url = it.toURI().toURL();
+            println "adding to classpath: "+url;
+            loader.addURL(url);
         }
-        println "migration successful"
+        def grClass = new File("MigrationUtil.groovy")
+        Class migrationUtil = loader.parseClass(grClass);
+        Thread.currentThread().setContextClassLoader(loader)
+        return loader
+    }
+
+    List filterChildrenHavingExtension(File file, String ext){
+        def child =  file.listFiles(new FileFilter(){
+                    public boolean accept(File pathname) {
+                        return pathname.getName().endsWith(ext);
+                    }
+                })
+        Arrays.sort(child);
+        return child;
     }
 }
