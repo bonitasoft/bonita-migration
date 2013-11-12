@@ -14,6 +14,13 @@
 
 	<dependencyManagement>
 		<dependencies>
+			<!-- bonita web -->
+			<dependency>
+				<groupId>org.bonitasoft.console</groupId>
+				<artifactId>bonita-home</artifactId>
+				<version>6.1.0</version>
+				<type>zip</type>
+			</dependency>
 			<dependency>
 				<groupId>org.codehaus.groovy</groupId>
 				<artifactId>groovy-all</artifactId>

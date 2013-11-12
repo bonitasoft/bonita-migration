@@ -20,6 +20,10 @@
 			<outputDirectory></outputDirectory>
 			<directory>src/main/groovy/org/bonitasoft/migration</directory>
 		</fileSet>
+		<fileSet>
+			<outputDirectory>versions/bonita-home</outputDirectory>
+			<directory>target/bonita-home</directory>
+		</fileSet>
 	</fileSets>
 	<dependencySets>
 		<dependencySet>
