@@ -25,12 +25,12 @@ import org.bonitasoft.migration.MigrationUtil
  * @author Baptiste Mesta
  *
  */
-public class Version_6_0_3_to_6_1_0 {
+public class Version_6_0_2_to_6_1_0 {
 
     public static void main(String[] args) {
         def Map props = MigrationUtil.parseOrAskArgs(args);
         def sql = Sql.newInstance(props.get("db.url"), props.get("db.user"), props.get("db.password"), props.get("db.driverclass"))
-        def resources = new File("versions/Version_6_0_3_to_6_1_0")
+        def resources = new File("versions/Version_6_0_4_to_6_1_0")
         def features = [];
         resources.listFiles().each {
             if(it.isDirectory())
