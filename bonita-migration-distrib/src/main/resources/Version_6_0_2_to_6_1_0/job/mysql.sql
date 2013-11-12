@@ -29,4 +29,4 @@ ALTER TABLE job_param ADD CONSTRAINT fk_job_param_jobid FOREIGN KEY (tenantid,jo
 --
 -- qrtz_fired_triggers
 -- 
-ALTER TABLE qrtz_fired_triggers ADD SCHED_TIME BIGINT(13) NOT NULL;
+ALTER TABLE QRTZ_FIRED_TRIGGERS ADD SCHED_TIME BIGINT(13) NOT NULL;
