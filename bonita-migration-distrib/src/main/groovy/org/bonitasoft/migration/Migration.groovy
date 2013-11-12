@@ -79,11 +79,11 @@ public class Migration {
             }
             return map;
         }
-        println "Press ENTER to continue"
-        System.console().readLine();
         listToMap(args).each {
             println it.key.substring(2) + "="+it.value
         }
+        println "Press ENTER to continue"
+        System.console().readLine();
         def shell = new GroovyShell(loader);
         def versions = new File("versions");
         def scripts = childWithExt(versions,".groovy");

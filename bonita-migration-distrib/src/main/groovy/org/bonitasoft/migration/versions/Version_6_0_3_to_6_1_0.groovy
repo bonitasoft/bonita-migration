@@ -17,6 +17,7 @@ import groovy.sql.Sql
 
 import org.bonitasoft.migration.MigrationUtil
 
+
 /**
  *
  * Main script to execute the migration
@@ -39,12 +40,8 @@ public class Version_6_0_3_to_6_1_0 {
             println "migrating <"+file.getName()+"> "+(idx+1)+"/"+features.size();
             def sqlFile = new File(file,props.get("db.vendor")+".sql");
             def content = sqlFile.text;
-            //            content.split("\n").each {
-            //            println "execute sql:"+content;
             sql.execute(content);
-            //            }
         }
-        //        MigrationUtil.executeAllScripts(props.get("db.vendor"),sql)
         sql.close()
     }
 }

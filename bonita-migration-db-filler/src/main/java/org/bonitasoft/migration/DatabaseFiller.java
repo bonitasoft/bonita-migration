@@ -93,7 +93,6 @@ public class DatabaseFiller {
     static ConfigurableApplicationContext springContext;
 
     public void setup() throws BonitaException, IOException {
-        setSystemPropertyIfNotSet("sysprop.bonita.db.vendor", "h2");
         // Force these system properties
         System.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.bonitasoft.engine.local.SimpleMemoryContextFactory");
         System.setProperty(Context.URL_PKG_PREFIXES, "org.bonitasoft.engine.local");
