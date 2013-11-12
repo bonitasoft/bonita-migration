@@ -13,8 +13,6 @@
  **/
 package org.bonitasoft.migration.versions;
 
-import groovy.sql.Sql
-
 import org.bonitasoft.migration.MigrationUtil
 
 
@@ -28,21 +26,30 @@ import org.bonitasoft.migration.MigrationUtil
 public class Version_6_0_2_to_6_1_0 {
 
     public static void main(String[] args) {
-        def migrationUtils = new MigrationUtil()
-        def Map props = migrationUtils.parseOrAskArgs(args);
-        def sql = Sql.newInstance(props.get("db.url"), props.get("db.user"), props.get("db.password"), props.get("db.driverclass"))
-        def resources = new File("versions/Version_6_0_2_to_6_1_0")
+        new Version_6_0_2_to_6_1_0().execute(args);
+    }
+
+    public execute(String[] args){
+        def migrationUtil = new MigrationUtil()
+        def Map props = migrationUtil.parseOrAskArgs(args);
+        def dbVendor = props.get(MigrationUtil.DB_VENDOR);
+        def sql = migrationUtil.getSqlConnection();
+        def resources = new File("versions/"+this.getClass().getName())
+        executeSqlFiles(resources, dbVendor, sql)
+        sql.close()
+    }
+
+    public executeSqlFiles(File resources, String dbVendor, groovy.sql.Sql sql) {
         def features = [];
         resources.listFiles().each {
             if(it.isDirectory())
                 features.add(it.getAbsoluteFile());
         }
         features.eachWithIndex { file,idx->
-            println "migrating <"+file.getName()+"> "+(idx+1)+"/"+features.size();
-            def sqlFile = new File(file,props.get("db.vendor")+".sql");
+            println "Migrating <"+file.getName()+"> "+(idx+1)+"/"+features.size();
+            def sqlFile = new File(file,dbVendor+".sql");
             def content = sqlFile.text;
             sql.execute(content);
         }
-        sql.close()
     }
 }
