@@ -26,8 +26,6 @@
 			<outputDirectory>lib</outputDirectory>
 			<includes>
 				<include>org.codehaus.groovy:groovy-all</include>
-				<include>mysql:mysql-connector-java</include>
-				<include>org.postgresql:postgresql</include>
 			</includes>
 			<useProjectArtifact>false</useProjectArtifact>
 			<useTransitiveFiltering>true</useTransitiveFiltering>
