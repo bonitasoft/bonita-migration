@@ -35,6 +35,14 @@ public class MigrationUtil {
 
 
     public Sql getSqlConnection(Map props){
-        return Sql.newInstance(props.get(MigrationUtil.DB_URL), props.get(MigrationUtil.DB_USER), props.get(MigrationUtil.DB_PASSWORD), props.get(MigrationUtil.DB_DRIVERCLASS));
+        def dburl = props.get(MigrationUtil.DB_URL);
+        def user = props.get(MigrationUtil.DB_USER);
+        def pass = props.get(MigrationUtil.DB_PASSWORD);
+        def driver = props.get(MigrationUtil.DB_DRIVERCLASS);
+        println "url="+dburl;
+        println "user="+user;
+        println "pass="+pass;
+        println "driver="+driver;
+        return Sql.newInstance(dburl, user, pass, driver);
     }
 }
