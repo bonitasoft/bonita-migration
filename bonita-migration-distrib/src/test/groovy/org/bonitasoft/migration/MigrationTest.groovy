@@ -2,6 +2,7 @@ package org.bonitasoft.migration;
 
 import static org.junit.Assert.*
 
+import org.junit.Ignore
 import org.junit.Test
 
 
@@ -22,6 +23,7 @@ class MigrationTest {
     //        new Migration().loadLibs();
     //    }
 
+    @Ignore
     @Test
     public void testFilterChildrenHavingExtension() throws Exception {
         def folder = new File("folder")

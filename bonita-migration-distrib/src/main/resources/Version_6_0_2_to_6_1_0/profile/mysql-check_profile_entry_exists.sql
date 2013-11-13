@@ -1,0 +1,1 @@
+SELECT id FROM profileentry WHERE (name = 'Configuration' OR name = 'Directory') AND tenantId = :tenantId;

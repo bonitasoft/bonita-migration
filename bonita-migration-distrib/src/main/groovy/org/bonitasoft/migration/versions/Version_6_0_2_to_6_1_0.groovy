@@ -55,15 +55,22 @@ public class Version_6_0_2_to_6_1_0 {
             println "Migrating <"+feature+"> "+(idx+1)+"/"+features.size();
             if(feature in specificMigrations){
                 "$feature"(file, dbVendor, sql);
+            }else{
+                def sqlFile = new File(file,dbVendor+".sql")
+                if(sqlFile.exists()){
+                    def content = sqlFile.text;
+                    println sql.executeUpdate(content) + " row(s) updated";
+                }else{
+                    println "nothing to execute"
+                }
             }
-            def content = new File(file,dbVendor+".sql").text;
-            println sql.executeUpdate(content) + " row(s) updated";
         }
     }
 
     public platform(File feature, String dbVendor, groovy.sql.Sql sql){
         def content = new File(feature,dbVendor+".sql").text;
-        println sql.executeUpdate(content,"6.1.0") + " row(s) updated";
+        content = content.replaceAll(":version", "6.1.0");
+        println sql.executeUpdate(content) + " row(s) updated";
     }
 
     public profile(File feature, String dbVendor, groovy.sql.Sql sql){
@@ -78,7 +85,18 @@ public class Version_6_0_2_to_6_1_0 {
         println "executing update for each tenants: "+tenants
         tenants.each {
             println "for tenant id="+it;
-            sql.execute(new File(feature,dbVendor+"-update.sql").text.replaceAll(":tenantId", String.valueOf(it)));
+            //there is profile and profile entries needed
+            def adminExists = false;
+            def entryExists = false;
+            sql.eachRow(new File(feature,dbVendor+"-check_profile_admin_exists.sql").text.replaceAll(":tenantId", String.valueOf(it))) { row ->
+                adminExists = row[0] >=1
+            }
+            sql.eachRow(new File(feature,dbVendor+"-check_profile_entry_exists.sql").text.replaceAll(":tenantId", String.valueOf(it))) { row ->
+                entryExists = row[0] >=2
+            }
+            if(adminExists && entryExists){
+                sql.execute(new File(feature,dbVendor+"-update.sql").text.replaceAll(":tenantId", String.valueOf(it)));
+            }
             println "done";
         }
     }
