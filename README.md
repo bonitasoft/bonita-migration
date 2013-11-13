@@ -16,6 +16,8 @@ Required parameters:
 >     --db.user <the username to connect to the database>
 >     --db.password <the password to connect to the database>
 
+for mysql use: allowMultiQueries=true in db url
+
 also not that the jdbc driver must be put in the lib folder
 
 it launches all scripts inside the versions folder
@@ -23,6 +25,3 @@ it launches all scripts inside the versions folder
 
 example:
 >     groovy Migration.groovy --bonita.home /home/user/bonita.home --source.version 6.0.3 --target.version 6.1.0 --db.vendor postgres --db.url jdbc:postgresql://localhost:5432/bonita --db.driverclass org.postgresql.Driver --db.user bonita --db.password bonita
-
-
->     cd ~/git/bonita-migration && mvn clean install && cd target && unzip -d out bonita-migration-1.0.0-SNAPSHOT.zip && cd out && groovy Migration.groovy --bonita.home /home/user/bonita.home --source.version 6.0.3 --target.version 6.1.0 --db.vendor postgres --db.url jdbc:postgresql://localhost:5432/bonita --db.driverclass org.postgresql.Driver --db.user bonita --db.password bonita && ...
