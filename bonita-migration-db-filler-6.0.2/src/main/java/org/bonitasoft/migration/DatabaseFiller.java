@@ -15,22 +15,33 @@ package org.bonitasoft.migration;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.naming.Context;
 
+import org.apache.commons.io.IOUtils;
+import org.bonitasoft.engine.api.CommandAPI;
 import org.bonitasoft.engine.api.IdentityAPI;
+import org.bonitasoft.engine.api.PlatformAPI;
+import org.bonitasoft.engine.api.PlatformAPIAccessor;
 import org.bonitasoft.engine.api.ProcessAPI;
+import org.bonitasoft.engine.api.ProfileAPI;
 import org.bonitasoft.engine.api.TenantAPIAccessor;
 import org.bonitasoft.engine.bpm.bar.BusinessArchiveBuilder;
 import org.bonitasoft.engine.bpm.process.ProcessDefinition;
 import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder;
 import org.bonitasoft.engine.exception.BonitaException;
+import org.bonitasoft.engine.identity.ImportPolicy;
 import org.bonitasoft.engine.io.IOUtil;
+import org.bonitasoft.engine.search.SearchOptions;
+import org.bonitasoft.engine.search.SearchOptionsBuilder;
 import org.bonitasoft.engine.session.APISession;
+import org.bonitasoft.engine.session.PlatformSession;
 import org.bonitasoft.engine.test.APITestUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,14 +65,32 @@ public class DatabaseFiller {
         APISession session = APITestUtil.loginDefaultTenant();
         ArrayList<String> stats = new ArrayList<String>();
         stats.addAll(fillOrganization(session));
+        stats.addAll(fillProfiles(session));
         stats.addAll(fillProcesses(session));
         APITestUtil.logoutTenant(session);
         logger.info("Finished to fill the database");
         for (String string : stats) {
             logger.info(string);
         }
+        final PlatformSession pSession = APITestUtil.loginPlatform();
+        final PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(pSession);
+        APITestUtil.stopPlatformAndTenant(platformAPI, false);
+        APITestUtil.logoutPlatform(pSession);
+        // stop node do not stop correctly all threads
         System.exit(0);
+    }
 
+    private Collection<? extends String> fillProfiles(final APISession session) throws Exception {
+        final InputStream xmlStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("InitProfiles.xml");
+        final byte[] xmlContent = IOUtils.toByteArray(xmlStream);
+        HashMap<String, Serializable> parameters = new HashMap<String, Serializable>(2);
+        parameters.put("xmlContent", xmlContent);
+        parameters.put("importPolicy", ImportPolicy.MERGE_DUPLICATES);
+        final CommandAPI commandAPI = TenantAPIAccessor.getCommandAPI(session);
+        ProfileAPI profileAPI = TenantAPIAccessor.getProfileAPI(session);
+        commandAPI.execute("importProfilesCommand", parameters);
+        SearchOptions searchOptions = new SearchOptionsBuilder(0, 1).done();
+        return Arrays.asList("profiles: " + profileAPI.searchProfiles(searchOptions).getCount());
     }
 
     private Collection<? extends String> fillProcesses(final APISession session) throws Exception {
@@ -98,10 +127,6 @@ public class DatabaseFiller {
         System.setProperty(Context.URL_PKG_PREFIXES, "org.bonitasoft.engine.local");
         springContext = new ClassPathXmlApplicationContext("datasource.xml", "jndi-setup.xml");
         APITestUtil.createInitializeAndStartPlatformWithDefaultTenant(false);
-    }
-
-    private static void setSystemPropertyIfNotSet(final String property, final String value) {
-        System.setProperty(property, System.getProperty(property, value));
     }
 
 }

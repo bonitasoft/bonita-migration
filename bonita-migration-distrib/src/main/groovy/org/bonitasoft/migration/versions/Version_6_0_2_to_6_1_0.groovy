@@ -92,7 +92,7 @@ public class Version_6_0_2_to_6_1_0 {
                 adminExists = row[0] >=1
             }
             sql.eachRow(new File(feature,dbVendor+"-check_profile_entry_exists.sql").text.replaceAll(":tenantId", String.valueOf(it))) { row ->
-                entryExists = row[0] >=2
+                entryExists = row[0] >=1
             }
             if(adminExists && entryExists){
                 sql.execute(new File(feature,dbVendor+"-update.sql").text.replaceAll(":tenantId", String.valueOf(it)));
