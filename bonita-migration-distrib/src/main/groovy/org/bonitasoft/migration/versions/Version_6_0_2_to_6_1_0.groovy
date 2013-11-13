@@ -86,16 +86,19 @@ public class Version_6_0_2_to_6_1_0 {
         tenants.each {
             println "for tenant id="+it;
             //there is profile and profile entries needed
-            def adminExists = false;
-            def entryExists = false;
-            sql.eachRow(new File(feature,dbVendor+"-check_profile_admin_exists.sql").text.replaceAll(":tenantId", String.valueOf(it))) { row ->
-                adminExists = row[0] >=1
+            def adminId = null;
+            def directoryId = null;
+            sql.eachRow(new File(feature,dbVendor+"-get_admin_profile_id.sql").text.replaceAll(":tenantId", String.valueOf(it))) { row ->
+                adminId = row[0]
             }
-            sql.eachRow(new File(feature,dbVendor+"-check_profile_entry_exists.sql").text.replaceAll(":tenantId", String.valueOf(it))) { row ->
-                entryExists = row[0] >=1
+            sql.eachRow(new File(feature,dbVendor+"-get_dir_profile_entry_id.sql").text.replaceAll(":tenantId", String.valueOf(it))) { row ->
+                directoryId = row[0]
             }
-            if(adminExists && entryExists){
-                sql.execute(new File(feature,dbVendor+"-update.sql").text.replaceAll(":tenantId", String.valueOf(it)));
+            if(adminId != null && directoryId != null){
+                println sql.executeUpdate(new File(feature,dbVendor+"-update.sql").text
+					.replaceAll(":tenantId", String.valueOf(it))
+					.replaceAll(":admin_profile_id", String.valueOf(adminId))
+					.replaceAll(":dir_profile_entry_id", String.valueOf(directoryId))) + " row(s) updated";
             }
             println "done";
         }

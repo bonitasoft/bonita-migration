@@ -2,7 +2,7 @@ INSERT INTO profileentry (tenantId, id, profileId, name, description, parentId, 
 VALUES  (
 	:tenantId, 
 	(SELECT MAX(id) + 1 FROM profileentry), 
-	(SELECT id FROM profile WHERE name = 'Administrator' AND tenantId = :tenantId), 
+	:admin_profile_id, 
 	'Import / Export', 'Import / Export an final organization', 
-	(SELECT id FROM profileentry WHERE name = 'Directory' AND tenantId = :tenantId), 
+	:dir_profile_entry_id, 
 	6, 'link', 'importexportorganization');
