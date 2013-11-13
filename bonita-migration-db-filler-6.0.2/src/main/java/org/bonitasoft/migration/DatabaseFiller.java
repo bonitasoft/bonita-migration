@@ -56,12 +56,21 @@ public class DatabaseFiller {
 
     private final Logger logger = LoggerFactory.getLogger(DatabaseFiller.class);
 
+    private final int nbProcessesDefinitions;
+
+    private final int nbProcessInstances;
+
     public static void main(final String[] args) throws Exception {
-        DatabaseFiller databaseFiller = new DatabaseFiller();
+        DatabaseFiller databaseFiller = new DatabaseFiller(3, 100);
         databaseFiller.execute();
     }
 
-    private void execute() throws Exception {
+    public DatabaseFiller(final int nbProcessesDefinitions, final int nbProcessInstances) {
+        this.nbProcessesDefinitions = nbProcessesDefinitions;
+        this.nbProcessInstances = nbProcessInstances;
+    }
+
+    public void execute() throws Exception {
         logger.info("Using bonita.home: " + System.getProperty("bonita.home"));
         // TestsInitializer.beforeAll();
         setup();
@@ -100,28 +109,30 @@ public class DatabaseFiller {
     private Collection<? extends String> fillProcesses(final APISession session) throws Exception {
         ProcessAPI processAPI = TenantAPIAccessor.getProcessAPI(session);
         IdentityAPI identityAPI = TenantAPIAccessor.getIdentityAPI(session);
+        for (int i = 0; i < nbProcessesDefinitions; i++) {
 
-        ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("ProcessToBeMigrated", "1.0");
-        builder.addActor("delivery");
-        builder.addBlobData("blobData", new ExpressionBuilder().createGroovyScriptExpression("script", "return [0,1,2,3,4];", Object.class.getName()));
-        builder.addShortTextData("shortTextData", new ExpressionBuilder().createConstantStringExpression("the default value"));
-        builder.addLongData("longData", new ExpressionBuilder().createConstantLongExpression(123456789));
-        builder.addLongTextData("longTextData", new ExpressionBuilder().createConstantStringExpression("the default value"));
-        builder.addDateData("dateData", new ExpressionBuilder().createConstantLongExpression(System.currentTimeMillis()));
-        UserTaskDefinitionBuilder userTask = builder.addUserTask("ask for adress", "delivery");
-        userTask.addConnector("phoneConnector", "org.bonitasoft.phoneconnector", "1.0", ConnectorEvent.ON_ENTER);
+            ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("ProcessToBeMigrated", "1.0." + i);
+            builder.addActor("delivery");
+            builder.addBlobData("blobData", new ExpressionBuilder().createGroovyScriptExpression("script", "return [0,1,2,3,4];", Object.class.getName()));
+            builder.addShortTextData("shortTextData", new ExpressionBuilder().createConstantStringExpression("the default value"));
+            builder.addLongData("longData", new ExpressionBuilder().createConstantLongExpression(123456789));
+            builder.addLongTextData("longTextData", new ExpressionBuilder().createConstantStringExpression("the default value"));
+            builder.addDateData("dateData", new ExpressionBuilder().createConstantLongExpression(System.currentTimeMillis()));
+            UserTaskDefinitionBuilder userTask = builder.addUserTask("ask for adress", "delivery");
+            userTask.addConnector("phoneConnector", "org.bonitasoft.phoneconnector", "1.0", ConnectorEvent.ON_ENTER);
 
-        BusinessArchiveBuilder archiveBuilder = new BusinessArchiveBuilder().createNewBusinessArchive();
-        final InputStream contentAsStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("PhoneConnector.impl");
-        final byte[] content = IOUtils.toByteArray(contentAsStream);
-        archiveBuilder.addConnectorImplementation(new BarResource("PhoneConnector.impl", content));
-        archiveBuilder.setProcessDefinition(builder.done());
-        ProcessDefinition processDefinition = processAPI.deploy(archiveBuilder.done());
-        processAPI.addUserToActor("delivery", processDefinition, identityAPI.getUserByUserName("william.jobs").getId());
-        processAPI.enableProcess(processDefinition.getId());
-        processAPI.startProcess(processDefinition.getId());
-        processAPI.startProcess(processDefinition.getId());
-        processAPI.startProcess(processDefinition.getId());
+            BusinessArchiveBuilder archiveBuilder = new BusinessArchiveBuilder().createNewBusinessArchive();
+            final InputStream contentAsStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("PhoneConnector.impl");
+            final byte[] content = IOUtils.toByteArray(contentAsStream);
+            archiveBuilder.addConnectorImplementation(new BarResource("PhoneConnector.impl", content));
+            archiveBuilder.setProcessDefinition(builder.done());
+            ProcessDefinition processDefinition = processAPI.deploy(archiveBuilder.done());
+            processAPI.addUserToActor("delivery", processDefinition, identityAPI.getUserByUserName("william.jobs").getId());
+            processAPI.enableProcess(processDefinition.getId());
+            for (int j = 0; j < nbProcessInstances; j++) {
+                processAPI.startProcess(processDefinition.getId());
+            }
+        }
         return Arrays.asList("definitions: " + 1, "instances: " + 3);
     }
 
