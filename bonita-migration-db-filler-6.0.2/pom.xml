@@ -46,10 +46,17 @@
 			<groupId>org.bonitasoft.engine.jndi</groupId>
 			<artifactId>bonita-jndi-memory</artifactId>
 			<version>${bonita.version}</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
 		</dependency>
 
 
@@ -57,16 +64,19 @@
 		<dependency>
 			<groupId>org.codehaus.btm</groupId>
 			<artifactId>btm</artifactId>
+			<scope>test</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>javax.transaction</groupId>
 			<artifactId>jta</artifactId>
+			<scope>test</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>com.jolbox</groupId>
 			<artifactId>bonecp</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
@@ -109,9 +119,6 @@
 						<sysprop.bonita.db.vendor>h2</sysprop.bonita.db.vendor>
 						<bonita.home>${bonita.home}</bonita.home>
 					</systemPropertyVariables>
-					<includes>
-						<include>org/bonitasoft/migration/DatabaseFillerTest.java</include>
-					</includes>
 				</configuration>
 			</plugin>
 		</plugins>

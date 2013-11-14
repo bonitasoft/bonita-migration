@@ -16,11 +16,9 @@ package org.bonitasoft.migration;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.naming.Context;
 
@@ -39,9 +37,13 @@ import org.bonitasoft.engine.bpm.process.ProcessDefinition;
 import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder;
 import org.bonitasoft.engine.bpm.process.impl.UserTaskDefinitionBuilder;
 import org.bonitasoft.engine.exception.BonitaException;
+import org.bonitasoft.engine.exception.BonitaHomeNotSetException;
+import org.bonitasoft.engine.exception.ServerAPIException;
+import org.bonitasoft.engine.exception.UnknownAPITypeException;
 import org.bonitasoft.engine.expression.ExpressionBuilder;
 import org.bonitasoft.engine.identity.ImportPolicy;
 import org.bonitasoft.engine.io.IOUtil;
+import org.bonitasoft.engine.operation.OperationBuilder;
 import org.bonitasoft.engine.search.SearchOptions;
 import org.bonitasoft.engine.search.SearchOptionsBuilder;
 import org.bonitasoft.engine.session.APISession;
@@ -56,44 +58,42 @@ public class DatabaseFiller {
 
     private final Logger logger = LoggerFactory.getLogger(DatabaseFiller.class);
 
-    private final int nbProcessesDefinitions;
-
-    private final int nbProcessInstances;
-
     public static void main(final String[] args) throws Exception {
-        DatabaseFiller databaseFiller = new DatabaseFiller(3, 100);
-        databaseFiller.execute();
+        DatabaseFiller databaseFiller = new DatabaseFiller();
+        databaseFiller.execute(5, 500, 50);
     }
 
-    public DatabaseFiller(final int nbProcessesDefinitions, final int nbProcessInstances) {
-        this.nbProcessesDefinitions = nbProcessesDefinitions;
-        this.nbProcessInstances = nbProcessInstances;
-    }
-
-    public void execute() throws Exception {
-        logger.info("Using bonita.home: " + System.getProperty("bonita.home"));
-        // TestsInitializer.beforeAll();
+    public void execute(final int nbProcessesDefinitions, final int nbProcessInstances, final int nbWaitingEvents) throws Exception {
         setup();
+        Map<String, String> stats = fillDatabase(nbProcessesDefinitions, nbProcessInstances, nbWaitingEvents);
+        for (Entry<String, String> entry : stats.entrySet()) {
+            logger.info(entry.getKey() + ": " + entry.getValue());
+        }
+        shutdown();
+    }
+
+    public Map<String, String> fillDatabase(final int nbProcessesDefinitions, final int nbProcessInstances, final int nbWaitingEvents) throws BonitaException,
+            Exception {
         logger.info("Starting to fill the database");
         APISession session = APITestUtil.loginDefaultTenant();
-        ArrayList<String> stats = new ArrayList<String>();
-        stats.addAll(fillOrganization(session));
-        stats.addAll(fillProfiles(session));
-        stats.addAll(fillProcesses(session));
+        Map<String, String> stats = new HashMap<String, String>();
+        stats.putAll(fillOrganization(session));
+        stats.putAll(fillProfiles(session));
+        stats.putAll(fillProcesses(session, nbProcessesDefinitions, nbProcessInstances));
+        stats.putAll(fillProcessesWithEvents(session, nbWaitingEvents));
         APITestUtil.logoutTenant(session);
         logger.info("Finished to fill the database");
-        for (String string : stats) {
-            logger.info(string);
-        }
+        return stats;
+    }
+
+    public void shutdown() throws BonitaException, BonitaHomeNotSetException, ServerAPIException, UnknownAPITypeException {
         final PlatformSession pSession = APITestUtil.loginPlatform();
         final PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(pSession);
         APITestUtil.stopPlatformAndTenant(platformAPI, false);
         APITestUtil.logoutPlatform(pSession);
-        // stop node do not stop correctly all threads
-        System.exit(0);
     }
 
-    private Collection<? extends String> fillProfiles(final APISession session) throws Exception {
+    private Map<String, String> fillProfiles(final APISession session) throws Exception {
         final InputStream xmlStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("InitProfiles.xml");
         final byte[] xmlContent = IOUtils.toByteArray(xmlStream);
         HashMap<String, Serializable> parameters = new HashMap<String, Serializable>(2);
@@ -103,10 +103,33 @@ public class DatabaseFiller {
         ProfileAPI profileAPI = TenantAPIAccessor.getProfileAPI(session);
         commandAPI.execute("importProfilesCommand", parameters);
         SearchOptions searchOptions = new SearchOptionsBuilder(0, 1).done();
-        return Arrays.asList("profiles: " + profileAPI.searchProfiles(searchOptions).getCount());
+        Map<String, String> map = new HashMap<String, String>(1);
+        map.put("Profiles", String.valueOf(profileAPI.searchProfiles(searchOptions).getCount()));
+        return map;
     }
 
-    private Collection<? extends String> fillProcesses(final APISession session) throws Exception {
+    private Map<String, String> fillProcessesWithEvents(final APISession session, final int nbWaitingEvents) throws Exception {
+        ProcessAPI processAPI = TenantAPIAccessor.getProcessAPI(session);
+        for (int i = 0; i < nbWaitingEvents; i++) {
+            ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("ProcessWithSignalStart", "1.0." + i);
+            builder.addShortTextData("alertType", new ExpressionBuilder().createConstantStringExpression("no_alert"));
+            builder.addStartEvent("start").addSignalEventTrigger("startProcesses");
+            builder.addAutomaticTask("processAlert").addOperation(
+                    new OperationBuilder().createSetDataOperation("alertType", new ExpressionBuilder().createConstantStringExpression("signal")));
+
+            BusinessArchiveBuilder archiveBuilder = new BusinessArchiveBuilder().createNewBusinessArchive();
+            archiveBuilder.setProcessDefinition(builder.done());
+            ProcessDefinition processDefinition = processAPI.deploy(archiveBuilder.done());
+            processAPI.enableProcess(processDefinition.getId());
+        }
+        processAPI.sendSignal("startProcesses");
+        Map<String, String> map = new HashMap<String, String>(1);
+        map.put("Waiting events", String.valueOf(nbWaitingEvents));
+        return map;
+    }
+
+    private Map<String, String> fillProcesses(final APISession session, final int nbProcessesDefinitions, final int nbProcessInstances)
+            throws Exception {
         ProcessAPI processAPI = TenantAPIAccessor.getProcessAPI(session);
         IdentityAPI identityAPI = TenantAPIAccessor.getIdentityAPI(session);
         for (int i = 0; i < nbProcessesDefinitions; i++) {
@@ -133,20 +156,27 @@ public class DatabaseFiller {
                 processAPI.startProcess(processDefinition.getId());
             }
         }
-        return Arrays.asList("definitions: " + 1, "instances: " + 3);
+        Map<String, String> map = new HashMap<String, String>(2);
+        map.put("Process definitions", String.valueOf(nbProcessesDefinitions));
+        map.put("Process instances", String.valueOf(nbProcessInstances));
+        return map;
     }
 
-    private List<String> fillOrganization(final APISession session) throws Exception {
+    private Map<String, String> fillOrganization(final APISession session) throws Exception {
         IdentityAPI identityAPI = TenantAPIAccessor.getIdentityAPI(session);
         InputStream acme = this.getClass().getResourceAsStream("/org/bonitasoft/engine/identity/ACME.xml");
         identityAPI.importOrganization(IOUtil.read(acme));
-        return Arrays.asList("Users: " + identityAPI.getNumberOfUsers(), "Groups: " + identityAPI.getNumberOfGroups(),
-                "Roles: " + identityAPI.getNumberOfRoles());
+        Map<String, String> map = new HashMap<String, String>(3);
+        map.put("Users", String.valueOf(identityAPI.getNumberOfUsers()));
+        map.put("Groups", String.valueOf(identityAPI.getNumberOfGroups()));
+        map.put("Roles", String.valueOf(identityAPI.getNumberOfRoles()));
+        return map;
     }
 
     static ConfigurableApplicationContext springContext;
 
     public void setup() throws BonitaException, IOException {
+        logger.info("Using bonita.home: " + System.getProperty("bonita.home"));
         // Force these system properties
         System.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.bonitasoft.engine.local.SimpleMemoryContextFactory");
         System.setProperty(Context.URL_PKG_PREFIXES, "org.bonitasoft.engine.local");
