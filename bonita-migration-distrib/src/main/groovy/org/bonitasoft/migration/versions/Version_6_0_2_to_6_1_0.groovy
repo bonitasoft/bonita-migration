@@ -136,7 +136,6 @@ public class Version_6_0_2_to_6_1_0 {
                 if(row[6]){//document has content
                     def contentId = row[contentIndex];
                     def tenantId = row[0];
-                    println "found document tid="+tenantId+" contentId="+contentId;
                     def File content = new File(contentRoot,contentId);
                     if(!content.exists()){
                         throw new IllegalStateException("content not found "+content.getAbsolutePath());
@@ -153,6 +152,7 @@ public class Version_6_0_2_to_6_1_0 {
         migrateContentFor("arch_document_mapping",10);
         //deleting files
         contents.each { it.delete(); }
+        println "migrated "+contents.size()+" documents from file system to database"
     }
 
 }
