@@ -51,7 +51,7 @@ public class Version_6_0_2_to_6_1_0 {
         }
         def specificMigrations = ["platform", "profile"]
         features.eachWithIndex { file,idx->
-            def feature = file.getName();
+            def feature = file.getName().substring(4);
             println "Migrating <"+feature+"> "+(idx+1)+"/"+features.size();
             if(feature in specificMigrations){
                 "$feature"(file, dbVendor, sql);
