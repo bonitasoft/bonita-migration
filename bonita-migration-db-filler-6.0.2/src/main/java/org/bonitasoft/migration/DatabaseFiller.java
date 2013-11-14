@@ -13,6 +13,7 @@
  **/
 package org.bonitasoft.migration;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -23,6 +24,7 @@ import java.util.Map.Entry;
 
 import javax.naming.Context;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.bonitasoft.engine.api.CommandAPI;
 import org.bonitasoft.engine.api.IdentityAPI;
@@ -59,6 +61,8 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class DatabaseFiller {
 
+    private static final String BONITA_HOME = "bonita.home";
+
     private final Logger logger = LoggerFactory.getLogger(DatabaseFiller.class);
 
     public static void main(final String[] args) throws Exception {
@@ -67,12 +71,25 @@ public class DatabaseFiller {
     }
 
     public void execute(final int nbProcessesDefinitions, final int nbProcessInstances, final int nbWaitingEvents, final int nbDocuments) throws Exception {
+        copyBonitaHome();
         setup();
         Map<String, String> stats = fillDatabase(nbProcessesDefinitions, nbProcessInstances, nbWaitingEvents, nbDocuments);
         for (Entry<String, String> entry : stats.entrySet()) {
             logger.info(entry.getKey() + ": " + entry.getValue());
         }
         shutdown();
+        logger.info("resulting bonita home is " + System.getProperty("bonita.home"));
+    }
+
+    public void copyBonitaHome() throws Exception {
+        final String bonitaHome = System.getProperty(BONITA_HOME);
+        String tmpdir = System.getProperty("java.io.tmpdir");
+        final File destDir = new File(tmpdir + File.separatorChar + "home");
+        logger.info("copy original bonita home to " + destDir.getAbsolutePath());
+        destDir.mkdir();
+        FileUtils.deleteDirectory(destDir);
+        FileUtils.copyDirectory(new File(bonitaHome), destDir);
+        System.setProperty(BONITA_HOME, destDir.getAbsolutePath());
     }
 
     public Map<String, String> fillDatabase(final int nbProcessesDefinitions, final int nbProcessInstances, final int nbWaitingEvents, final int nbDocuments)
@@ -194,7 +211,7 @@ public class DatabaseFiller {
     static ConfigurableApplicationContext springContext;
 
     public void setup() throws BonitaException, IOException {
-        logger.info("Using bonita.home: " + System.getProperty("bonita.home"));
+        logger.info("Using bonita.home: " + System.getProperty(BONITA_HOME));
         // Force these system properties
         System.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.bonitasoft.engine.local.SimpleMemoryContextFactory");
         System.setProperty(Context.URL_PKG_PREFIXES, "org.bonitasoft.engine.local");
