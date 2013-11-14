@@ -16,6 +16,7 @@ package org.bonitasoft.migration;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -34,6 +35,8 @@ import org.bonitasoft.engine.bpm.bar.BarResource;
 import org.bonitasoft.engine.bpm.bar.BusinessArchiveBuilder;
 import org.bonitasoft.engine.bpm.connector.ConnectorEvent;
 import org.bonitasoft.engine.bpm.process.ProcessDefinition;
+import org.bonitasoft.engine.bpm.process.ProcessInstance;
+import org.bonitasoft.engine.bpm.process.ProcessInstanceCriterion;
 import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder;
 import org.bonitasoft.engine.bpm.process.impl.UserTaskDefinitionBuilder;
 import org.bonitasoft.engine.exception.BonitaException;
@@ -60,19 +63,20 @@ public class DatabaseFiller {
 
     public static void main(final String[] args) throws Exception {
         DatabaseFiller databaseFiller = new DatabaseFiller();
-        databaseFiller.execute(5, 500, 50);
+        databaseFiller.execute(1, 1, 1, 50);
     }
 
-    public void execute(final int nbProcessesDefinitions, final int nbProcessInstances, final int nbWaitingEvents) throws Exception {
+    public void execute(final int nbProcessesDefinitions, final int nbProcessInstances, final int nbWaitingEvents, final int nbDocuments) throws Exception {
         setup();
-        Map<String, String> stats = fillDatabase(nbProcessesDefinitions, nbProcessInstances, nbWaitingEvents);
+        Map<String, String> stats = fillDatabase(nbProcessesDefinitions, nbProcessInstances, nbWaitingEvents, nbDocuments);
         for (Entry<String, String> entry : stats.entrySet()) {
             logger.info(entry.getKey() + ": " + entry.getValue());
         }
         shutdown();
     }
 
-    public Map<String, String> fillDatabase(final int nbProcessesDefinitions, final int nbProcessInstances, final int nbWaitingEvents) throws BonitaException,
+    public Map<String, String> fillDatabase(final int nbProcessesDefinitions, final int nbProcessInstances, final int nbWaitingEvents, final int nbDocuments)
+            throws BonitaException,
             Exception {
         logger.info("Starting to fill the database");
         APISession session = APITestUtil.loginDefaultTenant();
@@ -80,10 +84,24 @@ public class DatabaseFiller {
         stats.putAll(fillOrganization(session));
         stats.putAll(fillProfiles(session));
         stats.putAll(fillProcesses(session, nbProcessesDefinitions, nbProcessInstances));
+        stats.putAll(fillDocuments(session, nbDocuments));
         stats.putAll(fillProcessesWithEvents(session, nbWaitingEvents));
         APITestUtil.logoutTenant(session);
         logger.info("Finished to fill the database");
         return stats;
+    }
+
+    private Map<String, String> fillDocuments(final APISession session, final int nbDocuments) throws Exception {
+        ProcessAPI processAPI = TenantAPIAccessor.getProcessAPI(session);
+        ProcessInstance processInstance = processAPI.getProcessInstances(0, 1, ProcessInstanceCriterion.LAST_UPDATE_ASC).get(0);
+        String text = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore"
+                + " et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip"
+                + " ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat"
+                + " nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+        for (int i = 0; i < nbDocuments; i++) {
+            processAPI.attachDocument(processInstance.getId(), "file" + i, "file" + i + ".txt", "plain/text", text.getBytes());
+        }
+        return Collections.singletonMap("Documents", String.valueOf(nbDocuments));
     }
 
     public void shutdown() throws BonitaException, BonitaHomeNotSetException, ServerAPIException, UnknownAPITypeException {

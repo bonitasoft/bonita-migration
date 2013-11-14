@@ -26,9 +26,10 @@ public class DatabaseFillerTest {
 
     @Test
     public void testExecuteWithOneElement() throws Exception {
-        Map<String, String> stats = databaseFiller.fillDatabase(1, 1, 1);
+        Map<String, String> stats = databaseFiller.fillDatabase(1, 1, 1, 1);
         assertEquals("1", stats.get("Process definitions"));
         assertEquals("1", stats.get("Process instances"));
         assertEquals("1", stats.get("Waiting events"));
+        assertEquals("1", stats.get("Documents"));
     }
 }
