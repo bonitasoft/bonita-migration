@@ -85,6 +85,7 @@ public class DatabaseFiller {
         final String bonitaHome = System.getProperty(BONITA_HOME);
         String tmpdir = System.getProperty("java.io.tmpdir");
         final File destDir = new File(tmpdir + File.separatorChar + "home");
+        FileUtils.deleteDirectory(destDir);
         logger.info("copy original bonita home to " + destDir.getAbsolutePath());
         destDir.mkdir();
         FileUtils.deleteDirectory(destDir);
@@ -111,12 +112,13 @@ public class DatabaseFiller {
     private Map<String, String> fillDocuments(final APISession session, final int nbDocuments) throws Exception {
         ProcessAPI processAPI = TenantAPIAccessor.getProcessAPI(session);
         ProcessInstance processInstance = processAPI.getProcessInstances(0, 1, ProcessInstanceCriterion.LAST_UPDATE_ASC).get(0);
-        String text = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore"
-                + " et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip"
-                + " ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat"
+        String text1 = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore"
+                + " et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip";
+        String text2 = " ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat"
                 + " nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
         for (int i = 0; i < nbDocuments; i++) {
-            processAPI.attachDocument(processInstance.getId(), "file" + i, "file" + i + ".txt", "plain/text", text.getBytes());
+            processAPI.attachDocument(processInstance.getId(), "file" + i, "file" + i + ".txt", "plain/text", text1.getBytes());
+            processAPI.attachNewDocumentVersion(processInstance.getId(), "file" + i, "file" + i + ".txt", "plain/text", text2.getBytes());
         }
         return Collections.singletonMap("Documents", String.valueOf(nbDocuments));
     }

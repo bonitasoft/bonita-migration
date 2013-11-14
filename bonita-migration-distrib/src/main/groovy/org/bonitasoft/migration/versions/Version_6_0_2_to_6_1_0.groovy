@@ -18,6 +18,7 @@ import java.sql.ResultSet
 import org.bonitasoft.migration.MigrationUtil
 
 
+
 /**
  *
  * Main script to execute the migration
@@ -26,6 +27,17 @@ import org.bonitasoft.migration.MigrationUtil
  *
  */
 public class Version_6_0_2_to_6_1_0 {
+    private def File bonitaHome
+    private def dbVendor
+
+    /**
+     * migration with specific behaviors. Instead of executing the sql, the script will call the methods having the same name
+     */
+    private def specificMigrations =  [
+        "platform",
+        "profile",
+        "document"
+    ]
 
     public static void main(String[] args) {
         new Version_6_0_2_to_6_1_0().execute(args);
@@ -34,14 +46,18 @@ public class Version_6_0_2_to_6_1_0 {
     public execute(String[] args){
         def migrationUtil = new MigrationUtil()
         def Map props = migrationUtil.parseOrAskArgs(args);
-        def dbVendor = props.get(MigrationUtil.DB_VENDOR);
+        dbVendor = props.get(MigrationUtil.DB_VENDOR);
+        bonitaHome = new File(props.get(MigrationUtil.BONITA_HOME));
+        if(!bonitaHome.exists()){
+            throw new IllegalStateException("bonita home does not exists");
+        }
         def sql = migrationUtil.getSqlConnection(props);
         def resources = new File("versions/"+this.getClass().getSimpleName())
-        executeSqlFiles(resources, dbVendor, sql)
+        migrateFeatures(resources, dbVendor, sql)
         sql.close()
     }
 
-    public executeSqlFiles(File resources, String dbVendor, groovy.sql.Sql sql) {
+    public migrateFeatures(File resources, String dbVendor, groovy.sql.Sql sql) {
         def features = [];
         def files = resources.listFiles();
         Arrays.sort(files);
@@ -49,21 +65,24 @@ public class Version_6_0_2_to_6_1_0 {
             if(it.isDirectory())
                 features.add(it.getAbsoluteFile());
         }
-        def specificMigrations = ["platform", "profile"]
         features.eachWithIndex { file,idx->
             def feature = file.getName().substring(4);
             println "Migrating <"+feature+"> "+(idx+1)+"/"+features.size();
             if(feature in specificMigrations){
                 "$feature"(file, dbVendor, sql);
             }else{
-                def sqlFile = new File(file,dbVendor+".sql")
-                if(sqlFile.exists()){
-                    def content = sqlFile.text;
-                    println sql.executeUpdate(content) + " row(s) updated";
-                }else{
-                    println "nothing to execute"
-                }
+                executeDefaultSqlFile(file, dbVendor, sql);
             }
+        }
+    }
+
+    public executeDefaultSqlFile(File file, String dbVendor, groovy.sql.Sql sql){
+        def sqlFile = new File(file,dbVendor+".sql")
+        if(sqlFile.exists()){
+            def content = sqlFile.text;
+            println sql.executeUpdate(content) + " row(s) updated";
+        }else{
+            println "nothing to execute"
         }
     }
 
@@ -102,6 +121,38 @@ public class Version_6_0_2_to_6_1_0 {
             }
             println "done";
         }
+    }
+
+    public document(File feature, String dbVendor, groovy.sql.Sql sql){
+        executeDefaultSqlFile(feature, dbVendor, sql);
+        //get the path from bonita home (default = bonita.home/platform/work
+        //use the default one for now
+        //for each row in document_mapping get the corresponding file content
+        def contentRoot = new File(new File(new File(bonitaHome,"server"),"platform"),"work")
+        int id = 1;
+        def contents = [];
+        def migrateContentFor = { table, contentIndex ->
+            sql.eachRow("SELECT * FROM "+table) { row ->
+                if(row[6]){//document has content
+                    def contentId = row[contentIndex];
+                    def tenantId = row[0];
+                    println "found document tid="+tenantId+" contentId="+contentId;
+                    def File content = new File(contentRoot,contentId);
+                    if(!content.exists()){
+                        throw new IllegalStateException("content not found "+content.getAbsolutePath());
+                    }
+                    sql.executeInsert("INSERT INTO document_content (tenantid, id, documentId, content ) VALUES (?,?,?,?)",tenantId,id,contentId,content.getBytes())
+                    id++;
+                    contents.add(content)
+                }
+            }
+        }
+        //execute for live document mappings
+        migrateContentFor("document_mapping",9);
+        //execute for archived document mappings
+        migrateContentFor("arch_document_mapping",10);
+        //deleting files
+        contents.each { it.delete(); }
     }
 
 }

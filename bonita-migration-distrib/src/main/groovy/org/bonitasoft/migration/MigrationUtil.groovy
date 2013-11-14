@@ -16,6 +16,8 @@ public class MigrationUtil {
 
     public static String DB_VENDOR = "db.vendor";
 
+    public static String BONITA_HOME = "bonita.home";
+
 
 
     public Map parseOrAskArgs(String[] args){
