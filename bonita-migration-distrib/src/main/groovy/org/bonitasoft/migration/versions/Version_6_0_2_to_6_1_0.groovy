@@ -77,9 +77,8 @@ public class Version_6_0_2_to_6_1_0 {
     }
 
 	public platform(File feature, groovy.sql.Sql sql){
-		def sqlFile = MigrationUtil.getSqlFile(feature, dbVendor, "");
 		def parameters = Collections.singletonMap(":version", "6.1.0");
-		MigrationUtil.executeContentFile(sqlFile, sql, parameters);
+		MigrationUtil.executeSqlFile(feature, dbVendor, null, parameters, sql);
 	}
 
     public profile(File feature, groovy.sql.Sql sql){
@@ -135,7 +134,7 @@ public class Version_6_0_2_to_6_1_0 {
             def tenantId= it.key;
             def nbElements = it.value;
             println "update sequence for tenantId "+tenantId+" with nextId="+(nbElements+1);
-            println sql.executeUpdate(MigrationUtil.getSqlContent(feature, dbVendor,"updateSequence"),nbElements+1, tenantId) + " row(s) updated";
+            println sql.executeUpdate(MigrationUtil.getSqlContent(feature, dbVendor, "updateSequence"), nbElements + 1, tenantId) + " row(s) updated";
         }
         //deleting files
         contents.each { it.delete(); }

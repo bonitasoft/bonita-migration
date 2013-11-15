@@ -46,10 +46,10 @@ public class MigrationUtil {
 		def user = props.get(MigrationUtil.DB_USER);
 		def pass = props.get(MigrationUtil.DB_PASSWORD);
 		def driver = props.get(MigrationUtil.DB_DRIVERCLASS);
-		println "url="+dburl;
-		println "user="+user;
-		println "pass="+pass;
-		println "driver="+driver;
+		println "url=" + dburl;
+		println "user=" + user;
+		println "pass=" + pass;
+		println "driver=" + driver;
 		return Sql.newInstance(dburl, user, pass, driver);
 	}
 
@@ -57,8 +57,13 @@ public class MigrationUtil {
 		def sqlFile = getSqlFile(file, dbVendor, null);
 		executeContentFile(sqlFile, sql, null);
 	}
+	
+	public static executeSqlFile(File file, String dbVendor, String suffix, Map<String, String> parameters, groovy.sql.Sql sql){
+		def sqlFile = getSqlFile(file, dbVendor, suffix);
+		executeContentFile(sqlFile, sql, parameters);
+	}
 
-	public static executeContentFile(File sqlFile, groovy.sql.Sql sql, Map<String, String> parameters){
+	private static executeContentFile(File sqlFile, groovy.sql.Sql sql, Map<String, String> parameters){
 		sql.withTransaction {
 			if(sqlFile.exists()){
 				def sqlFileContent = replaceParameters(sqlFile, parameters).replaceAll("\r\n", "\n");
@@ -103,11 +108,11 @@ public class MigrationUtil {
 		return tenants;
 	}
 
-	public static String getSqlContent(File feature, String dbVendor, String fileName){
-		return getSqlFile(feature, dbVendor, fileName).text.replaceAll(REQUEST_SEPARATOR, "").replaceAll("\r\n", "\n");
+	public static String getSqlContent(File feature, String dbVendor, String suffix){
+		return getSqlFile(feature, dbVendor, suffix).text.replaceAll(REQUEST_SEPARATOR, "").replaceAll("\r\n", "\n");
 	}
 	
-	public static File getSqlFile(File folder, String dbVendor, String suffix){
+	private static File getSqlFile(File folder, String dbVendor, String suffix){
 		return new File(folder, dbVendor + (suffix == null || suffix.isEmpty() ? "" : "-" + suffix) + ".sql");
 	}
 }
