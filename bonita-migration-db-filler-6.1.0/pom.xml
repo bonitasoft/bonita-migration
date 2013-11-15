@@ -16,6 +16,11 @@
 
 	<dependencies>
 		<dependency>
+			<artifactId>bonita-migration-db-filler-6.0.2</artifactId>
+			<groupId>org.bonitasoft.migration</groupId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
 			<artifactId>bonita-server</artifactId>
 			<groupId>org.bonitasoft.engine</groupId>
 			<version>${bonita.version}</version>

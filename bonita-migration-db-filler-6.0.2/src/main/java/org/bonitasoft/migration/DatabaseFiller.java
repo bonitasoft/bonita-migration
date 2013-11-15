@@ -130,7 +130,7 @@ public class DatabaseFiller {
         APITestUtil.logoutPlatform(pSession);
     }
 
-    private Map<String, String> fillProfiles(final APISession session) throws Exception {
+    protected Map<String, String> fillProfiles(final APISession session) throws Exception {
         final InputStream xmlStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("InitProfiles.xml");
         final byte[] xmlContent = IOUtils.toByteArray(xmlStream);
         HashMap<String, Serializable> parameters = new HashMap<String, Serializable>(2);
@@ -145,7 +145,7 @@ public class DatabaseFiller {
         return map;
     }
 
-    private Map<String, String> fillProcessesWithEvents(final APISession session, final int nbWaitingEvents) throws Exception {
+    protected Map<String, String> fillProcessesWithEvents(final APISession session, final int nbWaitingEvents) throws Exception {
         ProcessAPI processAPI = TenantAPIAccessor.getProcessAPI(session);
         for (int i = 0; i < nbWaitingEvents; i++) {
             ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("ProcessWithSignalStart", "1.0." + i);
@@ -165,7 +165,7 @@ public class DatabaseFiller {
         return map;
     }
 
-    private Map<String, String> fillProcesses(final APISession session, final int nbProcessesDefinitions, final int nbProcessInstances)
+    protected Map<String, String> fillProcesses(final APISession session, final int nbProcessesDefinitions, final int nbProcessInstances)
             throws Exception {
         ProcessAPI processAPI = TenantAPIAccessor.getProcessAPI(session);
         IdentityAPI identityAPI = TenantAPIAccessor.getIdentityAPI(session);
@@ -199,7 +199,7 @@ public class DatabaseFiller {
         return map;
     }
 
-    private Map<String, String> fillOrganization(final APISession session) throws Exception {
+    protected Map<String, String> fillOrganization(final APISession session) throws Exception {
         IdentityAPI identityAPI = TenantAPIAccessor.getIdentityAPI(session);
         InputStream acme = this.getClass().getResourceAsStream("/org/bonitasoft/engine/identity/ACME.xml");
         identityAPI.importOrganization(IOUtil.read(acme));
@@ -212,7 +212,7 @@ public class DatabaseFiller {
 
     static ConfigurableApplicationContext springContext;
 
-    public void setup() throws BonitaException, IOException {
+    public void setup() throws BonitaException, IOException, Exception {
         logger.info("Using bonita.home: " + System.getProperty(BONITA_HOME));
         // Force these system properties
         System.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.bonitasoft.engine.local.SimpleMemoryContextFactory");
