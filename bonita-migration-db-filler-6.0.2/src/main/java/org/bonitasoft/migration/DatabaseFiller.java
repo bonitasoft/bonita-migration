@@ -34,13 +34,21 @@ import org.bonitasoft.engine.api.ProcessAPI;
 import org.bonitasoft.engine.api.ProfileAPI;
 import org.bonitasoft.engine.api.TenantAPIAccessor;
 import org.bonitasoft.engine.bpm.bar.BarResource;
+import org.bonitasoft.engine.bpm.bar.BusinessArchive;
 import org.bonitasoft.engine.bpm.bar.BusinessArchiveBuilder;
 import org.bonitasoft.engine.bpm.connector.ConnectorEvent;
+import org.bonitasoft.engine.bpm.flownode.GatewayType;
 import org.bonitasoft.engine.bpm.process.ProcessDefinition;
 import org.bonitasoft.engine.bpm.process.ProcessInstance;
 import org.bonitasoft.engine.bpm.process.ProcessInstanceCriterion;
 import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder;
 import org.bonitasoft.engine.bpm.process.impl.UserTaskDefinitionBuilder;
+import org.bonitasoft.engine.commons.exceptions.SBonitaException;
+import org.bonitasoft.engine.commons.transaction.TransactionContentWithResult;
+import org.bonitasoft.engine.core.process.instance.model.STransitionInstance;
+import org.bonitasoft.engine.events.model.SEvent;
+import org.bonitasoft.engine.events.model.SHandler;
+import org.bonitasoft.engine.events.model.SHandlerExecutionException;
 import org.bonitasoft.engine.exception.BonitaException;
 import org.bonitasoft.engine.exception.BonitaHomeNotSetException;
 import org.bonitasoft.engine.exception.ServerAPIException;
@@ -49,11 +57,15 @@ import org.bonitasoft.engine.expression.ExpressionBuilder;
 import org.bonitasoft.engine.identity.ImportPolicy;
 import org.bonitasoft.engine.io.IOUtil;
 import org.bonitasoft.engine.operation.OperationBuilder;
+import org.bonitasoft.engine.persistence.QueryOptions;
 import org.bonitasoft.engine.search.SearchOptions;
 import org.bonitasoft.engine.search.SearchOptionsBuilder;
+import org.bonitasoft.engine.service.TenantServiceAccessor;
+import org.bonitasoft.engine.service.TenantServiceSingleton;
 import org.bonitasoft.engine.session.APISession;
 import org.bonitasoft.engine.session.PlatformSession;
 import org.bonitasoft.engine.test.APITestUtil;
+import org.bonitasoft.engine.transaction.STransactionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -104,9 +116,73 @@ public class DatabaseFiller {
         stats.putAll(fillProcesses(session, nbProcessesDefinitions, nbProcessInstances));
         stats.putAll(fillDocuments(session, nbDocuments));
         stats.putAll(fillProcessesWithEvents(session, nbWaitingEvents));
+        stats.putAll(fillProcessWithTransitions(session));
         APITestUtil.logoutTenant(session);
         logger.info("Finished to fill the database");
         return stats;
+    }
+
+    private Map<String, String> fillProcessWithTransitions(final APISession session) throws Exception {
+
+        final TenantServiceAccessor instance = TenantServiceSingleton.getInstance(session.getTenantId());
+        instance.getEventService().addHandler("TRANSITIONINSTANCE_DELETED", new SHandler<SEvent>() {
+
+            @Override
+            public boolean isInterested(final SEvent event) {
+                return true;
+            }
+
+            @Override
+            public void execute(final SEvent event) throws SHandlerExecutionException {
+                STransitionInstance transition = (STransitionInstance) event.getObject();
+                if (transition.getName().endsWith("gate2")) {
+                    try {
+                        // rollback the transaction so the transition is not deleted
+                        instance.getTransactionService().setRollbackOnly();
+                    } catch (STransactionException e) {
+                        throw new SHandlerExecutionException(e);
+                    }
+                    throw new RuntimeException();
+                }
+            }
+        });
+        ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("ProcessWithTransitions", "1.0");
+        builder.addStartEvent("start");
+        builder.addGateway("gate1", GatewayType.PARALLEL);
+        builder.addAutomaticTask("step1");
+        builder.addAutomaticTask("step2");
+        builder.addGateway("gate2", GatewayType.PARALLEL);
+        builder.addEndEvent("end");
+        builder.addTransition("start", "gate1");
+        builder.addTransition("gate1", "step1");
+        builder.addTransition("gate1", "step2");
+        builder.addTransition("step1", "gate2");
+        builder.addTransition("step2", "gate2");
+        builder.addTransition("gate2", "end");
+        BusinessArchive businessArchive = new BusinessArchiveBuilder().createNewBusinessArchive().setProcessDefinition(builder.done()).done();
+        ProcessAPI processAPI = TenantAPIAccessor.getProcessAPI(session);
+        ProcessDefinition processDefinition = processAPI.deploy(businessArchive);
+        processAPI.enableProcess(processDefinition.getId());
+        processAPI.startProcess(processDefinition.getId());
+        Thread.sleep(1000);
+        TransactionContentWithResult<String> transactionContent = new TransactionContentWithResult<String>() {
+
+            private String nbTransactions;
+
+            @Override
+            public void execute() throws SBonitaException {
+                nbTransactions = String.valueOf(instance.getTransitionInstanceService().getNumberOfTransitionInstances(new QueryOptions(0, 100)));
+
+            }
+
+            @Override
+            public String getResult() {
+                return nbTransactions;
+            }
+        };
+        // instance.getTransactionExecutor().execute(transactionContent);
+        return Collections.singletonMap("Transitions",
+                "2");
     }
 
     private Map<String, String> fillDocuments(final APISession session, final int nbDocuments) throws Exception {
