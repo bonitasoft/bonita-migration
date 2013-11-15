@@ -3,7 +3,7 @@
 -- 
 
 ALTER TABLE arch_flownode_instance ADD executedByDelegate NUMERIC(19,0)
-GO
+@@
 
 
 --
@@ -11,4 +11,4 @@ GO
 -- 
 
 ALTER TABLE flownode_instance ADD executedByDelegate NUMERIC(19,0)
-GO
+@@

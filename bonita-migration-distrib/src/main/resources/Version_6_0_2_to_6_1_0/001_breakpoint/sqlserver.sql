@@ -8,12 +8,12 @@ CREATE TABLE breakpoint (tenantid     NUMERIC(19,0) NOT NULL,
                          def_id       NUMERIC(19,0) NOT NULL,
 						 PRIMARY KEY (tenantid, id)
 						)
-GO
+@@
 
 INSERT INTO sequence (tenantid, id, nextid)
-SELECT ID, 10019, 1 FROM tenant
-ORDER BY id ASC
-GO
+	SELECT id, 10019, 1 FROM tenant
+	ORDER BY id ASC
+@@
 
 
 --
@@ -23,6 +23,6 @@ GO
 ALTER TABLE breakpoint WITH CHECK ADD CONSTRAINT fk_breakpoint_tenantId FOREIGN KEY (tenantid) REFERENCES tenant (id)
                                                                         ON DELETE NO ACTION
                                                                         ON UPDATE NO ACTION
-GO
+@@
 ALTER TABLE breakpoint CHECK CONSTRAINT fk_breakpoint_tenantId
-GO
+@@

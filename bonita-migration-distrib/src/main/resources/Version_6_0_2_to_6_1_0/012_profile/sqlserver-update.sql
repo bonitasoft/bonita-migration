@@ -6,4 +6,4 @@ VALUES  (
 	'Import / Export', 'Import / Export an final organization', 
 	:dir_profile_entry_id, 
 	6, 'link', 'importexportorganization')
-GO
+@@

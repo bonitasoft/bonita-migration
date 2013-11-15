@@ -3,15 +3,15 @@
 -- 
 
 ALTER TABLE profile ADD isDefault BIT NOT NULL
-GO
+@@
 ALTER TABLE profile ADD creationDate NUMERIC(19,0) NOT NULL
-GO
+@@
 ALTER TABLE profile ADD createdBy NUMERIC(19,0) NOT NULL
-GO
+@@
 ALTER TABLE profile ADD lastUpdateDate NUMERIC(19,0) NOT NULL
-GO
+@@
 ALTER TABLE profile ADD lastUpdatedBy NUMERIC(19,0) NOT NULL
-GO
+@@
 
 --
 -- profileentry
@@ -31,9 +31,9 @@ BEGIN
 END
 
 ALTER TABLE profileentry ALTER COLUMN name NVARCHAR(50) NULL
-GO
+@@
 CREATE INDEX indexProfileEntry ON profileentry (tenantId ASC, parentId ASC, profileId ASC)
-GO
+@@
    
                                                                     
 --
@@ -47,4 +47,4 @@ SET creationDate = :creationDate,
 	lastUpdatedBy = -1,
 	isDefault = TRUE
 WHERE name in ('User', 'Administrator')
-GO
+@@

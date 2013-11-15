@@ -3,9 +3,9 @@
 -- 
 
 DROP INDEX idx_p_metadata_def_name ON p_metadata_def
-GO
+@@
 CREATE INDEX idx_p_metadata_def_name ON p_metadata_def (name ASC, id ASC)
-GO
+@@
 
 
 --
@@ -13,9 +13,9 @@ GO
 -- 
 
 DROP INDEX idx_role_name ON role
-GO
+@@
 CREATE INDEX idx_role_name ON role (tenantid ASC, name ASC, id ASC)
-GO
+@@
 
 
 --
@@ -23,6 +23,6 @@ GO
 -- 
 
 DROP INDEX idx_user_name ON user_
-GO
+@@
 CREATE INDEX idx_user_name ON user_ (tenantid ASC, userName ASC, id ASC)
-GO
+@@
