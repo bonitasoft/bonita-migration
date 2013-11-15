@@ -16,7 +16,8 @@ Required parameters:
 >     --db.user <the username to connect to the database>
 >     --db.password <the password to connect to the database>
 
-for mysql use: allowMultiQueries=true in db url
+For MySql : use allowMultiQueries=true in db url
+For Oracle :  In sql scripts, don't use ";" after each request, but "@@"
 
 also not that the jdbc driver must be put in the lib folder
 

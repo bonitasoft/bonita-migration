@@ -1,5 +1,4 @@
-DECLARE
-	profile_entry_id_max INT;
+DECLARE profile_entry_id_max INT;
 
 BEGIN
 	SELECT MAX(id) + 1 INTO profile_entry_id_max FROM profileentry;
@@ -12,4 +11,3 @@ BEGIN
 		:dir_profile_entry_id, 
 		6, 'link', 'importexportorganization');
 END;
-/

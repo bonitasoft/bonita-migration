@@ -1,1 +1,1 @@
-SELECT id FROM profile WHERE name = 'Administrator' AND tenantId = :tenantId; 
+SELECT id FROM profile WHERE name = 'Administrator' AND tenantId = :tenantId @@ 
