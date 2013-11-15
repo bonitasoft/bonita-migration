@@ -13,10 +13,8 @@
  **/
 package org.bonitasoft.migration.versions;
 
-import java.io.File;
-import java.sql.ResultSet
-
 import org.bonitasoft.migration.MigrationUtil
+import org.bonitasoft.migration.versions.v6_0_2to_6_1_0.TransitionInstance
 
 
 
@@ -28,34 +26,35 @@ import org.bonitasoft.migration.MigrationUtil
  *
  */
 public class Version_6_0_2_to_6_1_0 {
-	private def File bonitaHome
-	private def dbVendor
+    private def File bonitaHome
+    private def dbVendor
 
-	/**
-	 * migration with specific behaviors. Instead of executing the sql, the script will call the methods having the same name
-	 */
-	private def specificMigrations =  [
-		"platform",
-		"profile",
-		"document"
-	]
+    /**
+     * migration with specific behaviors. Instead of executing the sql, the script will call the methods having the same name
+     */
+    private def specificMigrations =  [
+        "platform",
+        "profile",
+        "document",
+        "transition"
+    ]
 
-	public static void main(String[] args) {
-		new Version_6_0_2_to_6_1_0().execute(args);
-	}
+    public static void main(String[] args) {
+        new Version_6_0_2_to_6_1_0().execute(args);
+    }
 
     public execute(String[] args){
-		def Map props = MigrationUtil.parseOrAskArgs(args);
-		dbVendor = props.get(MigrationUtil.DB_VENDOR);
-		bonitaHome = new File(props.get(MigrationUtil.BONITA_HOME));
-		if(!bonitaHome.exists()){
-			throw new IllegalStateException("bonita home does not exists");
-		}
-		def sql = MigrationUtil.getSqlConnection(props);
-		def resources = new File("versions/"+this.getClass().getSimpleName())
-		migrateFeatures(resources, sql)
-		sql.close()
-	}
+        def Map props = MigrationUtil.parseOrAskArgs(args);
+        dbVendor = props.get(MigrationUtil.DB_VENDOR);
+        bonitaHome = new File(props.get(MigrationUtil.BONITA_HOME));
+        if(!bonitaHome.exists()){
+            throw new IllegalStateException("bonita home does not exists");
+        }
+        def sql = MigrationUtil.getSqlConnection(props);
+        def resources = new File("versions/"+this.getClass().getSimpleName())
+        migrateFeatures(resources, sql)
+        sql.close()
+    }
 
     public migrateFeatures(File resources, groovy.sql.Sql sql) {
         def features = [];
@@ -76,30 +75,30 @@ public class Version_6_0_2_to_6_1_0 {
         }
     }
 
-	public platform(File feature, groovy.sql.Sql sql){
-		def parameters = Collections.singletonMap(":version", "6.1.0");
-		MigrationUtil.executeSqlFile(feature, dbVendor, null, parameters, sql);
-	}
+    public platform(File feature, groovy.sql.Sql sql){
+        def parameters = Collections.singletonMap(":version", "6.1.0");
+        MigrationUtil.executeSqlFile(feature, dbVendor, null, parameters, sql);
+    }
 
     public profile(File feature, groovy.sql.Sql sql){
-		def currentTime = System.currentTimeMillis();
-		def tenants = MigrationUtil.getTenantsId(feature, dbVendor, sql);
-		
-		println "executing update for each tenants: "+tenants
-		tenants.each {
-			println "for tenant id=" + it;
-			//there is profile and profile entries needed
-			def adminId = MigrationUtil.getId(feature, dbVendor, "get_admin_profile_id", it, sql);
-			def directoryId = MigrationUtil.getId(feature, dbVendor, "get_dir_profile_entry_id", it, sql);
-			if(adminId != null && directoryId != null){
-				sql.execute(MigrationUtil.getSqlContent(feature, dbVendor, "update")
-						.replaceAll(":tenantId", String.valueOf(it))
-						.replaceAll(":admin_profile_id", String.valueOf(adminId))
-						.replaceAll(":dir_profile_entry_id", String.valueOf(directoryId)));
-			}
-			println "done";
-		}
-	}
+        def currentTime = System.currentTimeMillis();
+        def tenants = MigrationUtil.getTenantsId(feature, dbVendor, sql);
+
+        println "executing update for each tenants: "+tenants
+        tenants.each {
+            println "for tenant id=" + it;
+            //there is profile and profile entries needed
+            def adminId = MigrationUtil.getId(feature, dbVendor, "get_admin_profile_id", it, sql);
+            def directoryId = MigrationUtil.getId(feature, dbVendor, "get_dir_profile_entry_id", it, sql);
+            if(adminId != null && directoryId != null){
+                sql.execute(MigrationUtil.getSqlContent(feature, dbVendor, "update")
+                        .replaceAll(":tenantId", String.valueOf(it))
+                        .replaceAll(":admin_profile_id", String.valueOf(adminId))
+                        .replaceAll(":dir_profile_entry_id", String.valueOf(directoryId)));
+            }
+            println "done";
+        }
+    }
 
     public document(File feature, groovy.sql.Sql sql){
         MigrationUtil.executeDefaultSqlFile(feature, dbVendor, sql);
@@ -119,7 +118,6 @@ public class Version_6_0_2_to_6_1_0 {
                         throw new IllegalStateException("content not found " + content.getAbsolutePath());
                     }
                     sql.executeInsert(MigrationUtil.getSqlContent(feature, dbVendor, "insertcontent"), tenantId, idByTenant.get(tenantId), contentId, content.getBytes())
-                    id++;
                     contents.add(content)
                 }
             }
@@ -139,6 +137,45 @@ public class Version_6_0_2_to_6_1_0 {
         //deleting files
         contents.each { it.delete(); }
         println "migrated "+contents.size()+" documents from file system to database"
+    }
+
+    public transition(File feature, groovy.sql.Sql sql){
+        return;
+        //get all transitions
+        sql.query("SELECT * transition_instance", { row ->
+            def transition = new TransitionInstance(row[0], row[1], row[2], row[3], row[4],row[5], row[8], row[14]);
+            migrateTransition(transition);
+
+        })
+        //update sequence for the elements
+        //delete the table
+        executeDefaultSqlFile(feature, sql);
+    }
+
+    public migrateTransition(TransitionInstance transition, File feature, groovy.sql.Sql sql){
+        //get the definition
+        def s = File.separatorChar;
+        def processDefXml = new File(bonitaHome.getAbsolutePath()+"${s}server${s}tenants${s}${transition.tenantid}${s}work${s}processes${s}${transition.processDefId}${s}server-process-definition.xml");
+        println "target for $transition =" +parseProcessDef(processDefXml.text, transition);
+
+        //parse the xml
+        //if target = gateway, create or hit the gateway
+        // check merging condition: if merge set as finished
+        //if target is not a gateway create the element
+    }
+
+    public Object parseProcessDef(String processDefXml, TransitionInstance transition) {
+        def processDefinition = new XmlParser().parseText(processDefXml);
+        def targetDefId = processDefinition.flowElements.transitions.transition.find{it.@id==transition.id}.@target
+        println  targetDefId
+        def flownode = processDefinition.depthFirst().grep{ it.@id == targetDefId }[0]
+        def flownodetype = flownode.name();
+
+        if(flownodetype == "gateway"){
+            return "gateway type="+ flownode.@gatewayType+" name="+flownode.@name
+        }else{
+            return "flownode type="+ flownode.name()+" name="+flownode.@name
+        }
     }
 
 }

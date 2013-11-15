@@ -18,21 +18,11 @@
 		</fileSet>
 		<fileSet>
 			<outputDirectory></outputDirectory>
-			<directory>src/main/groovy/org/bonitasoft/migration</directory>
+			<directory>src/main/groovy</directory>
 		</fileSet>
 		<fileSet>
 			<outputDirectory>versions/Version_6_0_2_to_6_1_0/018_bonita-home</outputDirectory>
 			<directory>target/bonita-home</directory>
 		</fileSet>
 	</fileSets>
-	<dependencySets>
-		<dependencySet>
-			<outputDirectory>lib</outputDirectory>
-			<includes>
-				<include>org.codehaus.groovy:groovy-all</include>
-			</includes>
-			<useProjectArtifact>false</useProjectArtifact>
-			<useTransitiveFiltering>true</useTransitiveFiltering>
-		</dependencySet>
-	</dependencySets>
 </assembly>
