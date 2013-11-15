@@ -135,7 +135,7 @@ public class Version_6_0_2_to_6_1_0 {
         int id = 1;
         def contents = [];
         def migrateContentFor = { table, contentIndex ->
-            sql.eachRow(getSqlFile(feature,"selectmappings").text+" "+table) { row ->
+            sql.eachRow("SELECT * from "+table) { row ->
                 if(row[6]){//document has content
                     def contentId = row[contentIndex];
                     def tenantId = row[0];
