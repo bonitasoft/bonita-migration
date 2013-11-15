@@ -53,11 +53,11 @@ public class Version_6_0_2_to_6_1_0 {
         }
         def sql = migrationUtil.getSqlConnection(props);
         def resources = new File("versions/"+this.getClass().getSimpleName())
-        migrateFeatures(resources, dbVendor, sql)
+        migrateFeatures(resources, sql)
         sql.close()
     }
 
-    public migrateFeatures(File resources, String dbVendor, groovy.sql.Sql sql) {
+    public migrateFeatures(File resources, groovy.sql.Sql sql) {
         def features = [];
         def files = resources.listFiles();
         Arrays.sort(files);
@@ -69,15 +69,19 @@ public class Version_6_0_2_to_6_1_0 {
             def feature = file.getName().substring(4);
             println "Migrating <"+feature+"> "+(idx+1)+"/"+features.size();
             if(feature in specificMigrations){
-                "$feature"(file, dbVendor, sql);
+                "$feature"(file, sql);
             }else{
-                executeDefaultSqlFile(file, dbVendor, sql);
+                executeDefaultSqlFile(file, sql);
             }
         }
     }
 
-    public executeDefaultSqlFile(File file, String dbVendor, groovy.sql.Sql sql){
-        def sqlFile = new File(file,dbVendor+".sql")
+    public File getSqlFile(File folder,String suffix){
+        return new File(folder,dbVendor+(suffix == null || suffix.isEmpty()?"":"-"+suffix)+".sql");
+    }
+
+    public executeDefaultSqlFile(File file, groovy.sql.Sql sql){
+        def sqlFile = getSqlFile(file, "")
         if(sqlFile.exists()){
             def content = sqlFile.text;
             println sql.executeUpdate(content) + " row(s) updated";
@@ -86,19 +90,19 @@ public class Version_6_0_2_to_6_1_0 {
         }
     }
 
-    public platform(File feature, String dbVendor, groovy.sql.Sql sql){
-        def content = new File(feature,dbVendor+".sql").text;
+    public platform(File feature, groovy.sql.Sql sql){
+        def content = getSqlFile(feature,"").text;
         content = content.replaceAll(":version", "6.1.0");
         println sql.executeUpdate(content) + " row(s) updated";
     }
 
-    public profile(File feature, String dbVendor, groovy.sql.Sql sql){
-        def content = new File(feature,dbVendor+".sql").text;
+    public profile(File feature, groovy.sql.Sql sql){
+        def content = getSqlFile(feature, "").text;
         def currentTime = System.currentTimeMillis();
         //        println sql.executeUpdate(content,currentTime,currentTime) + " row(s) updated";
         def tenants = []
 
-        sql.query(new File(feature,dbVendor+"-tenants.sql").text){ ResultSet rs ->
+        sql.query(getSqlFile(feature,"tenants").text){ ResultSet rs ->
             while (rs.next()) tenants.add(rs.getLong(1));
         }
         println "executing update for each tenants: "+tenants
@@ -107,14 +111,14 @@ public class Version_6_0_2_to_6_1_0 {
             //there is profile and profile entries needed
             def adminId = null;
             def directoryId = null;
-            sql.eachRow(new File(feature,dbVendor+"-get_admin_profile_id.sql").text.replaceAll(":tenantId", String.valueOf(it))) { row ->
+            sql.eachRow(getSqlFile(feature,"get_admin_profile_id").text.replaceAll(":tenantId", String.valueOf(it))) { row ->
                 adminId = row[0]
             }
-            sql.eachRow(new File(feature,dbVendor+"-get_dir_profile_entry_id.sql").text.replaceAll(":tenantId", String.valueOf(it))) { row ->
+            sql.eachRow(getSqlFile(feature,"get_dir_profile_entry_id").text.replaceAll(":tenantId", String.valueOf(it))) { row ->
                 directoryId = row[0]
             }
             if(adminId != null && directoryId != null){
-                sql.execute(new File(feature,dbVendor+"-update.sql").text
+                sql.execute(getSqlFile(feature,"update").text
                         .replaceAll(":tenantId", String.valueOf(it))
                         .replaceAll(":admin_profile_id", String.valueOf(adminId))
                         .replaceAll(":dir_profile_entry_id", String.valueOf(directoryId)));
@@ -123,16 +127,15 @@ public class Version_6_0_2_to_6_1_0 {
         }
     }
 
-    public document(File feature, String dbVendor, groovy.sql.Sql sql){
-        executeDefaultSqlFile(feature, dbVendor, sql);
-        //get the path from bonita home (default = bonita.home/platform/work
-        //use the default one for now
+    public document(File feature, groovy.sql.Sql sql){
+        executeDefaultSqlFile(feature, sql);
+        //get the path from bonita home (default = bonita.home/platform/work)
         //for each row in document_mapping get the corresponding file content
         def contentRoot = new File(new File(new File(bonitaHome,"server"),"platform"),"work")
         int id = 1;
         def contents = [];
         def migrateContentFor = { table, contentIndex ->
-            sql.eachRow("SELECT * FROM "+table) { row ->
+            sql.eachRow(getSqlFile(feature,"selectmappings").text+" "+table) { row ->
                 if(row[6]){//document has content
                     def contentId = row[contentIndex];
                     def tenantId = row[0];
@@ -140,7 +143,7 @@ public class Version_6_0_2_to_6_1_0 {
                     if(!content.exists()){
                         throw new IllegalStateException("content not found "+content.getAbsolutePath());
                     }
-                    sql.executeInsert("INSERT INTO document_content (tenantid, id, documentId, content ) VALUES (?,?,?,?)",tenantId,id,contentId,content.getBytes())
+                    sql.executeInsert(getSqlFile(feature,"insertcontent").text,tenantId,id,contentId,content.getBytes())
                     id++;
                     contents.add(content)
                 }

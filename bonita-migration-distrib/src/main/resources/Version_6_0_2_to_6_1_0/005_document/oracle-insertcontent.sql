@@ -1,0 +1,1 @@
+INSERT INTO document_content (tenantid, id, documentId, content ) VALUES (?,?,?,?)
