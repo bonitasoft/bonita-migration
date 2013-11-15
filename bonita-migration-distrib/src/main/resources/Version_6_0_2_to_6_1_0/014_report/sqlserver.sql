@@ -13,7 +13,7 @@ END
 @@
 ALTER TABLE report ALTER COLUMN name NVARCHAR(50)
 @@
-ALTER TABLE report ADD CONSTRAINT UQ_Report UNIQUE (tenantId, name); 
+ALTER TABLE report ADD CONSTRAINT UQ_Report UNIQUE (tenantId, name)
 @@
 ALTER TABLE report ALTER COLUMN description NVARCHAR(MAX)
 @@
