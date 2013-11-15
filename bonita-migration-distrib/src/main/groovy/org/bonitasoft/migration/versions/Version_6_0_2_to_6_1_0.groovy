@@ -132,19 +132,19 @@ public class Version_6_0_2_to_6_1_0 {
         //get the path from bonita home (default = bonita.home/platform/work)
         //for each row in document_mapping get the corresponding file content
         def contentRoot = new File(new File(new File(bonitaHome,"server"),"platform"),"work")
-        int id = 1;
         def contents = [];
+        def Map idByTenant = [:];
         def migrateContentFor = { table, contentIndex ->
             sql.eachRow("SELECT * from "+table) { row ->
                 if(row[6]){//document has content
                     def contentId = row[contentIndex];
                     def tenantId = row[0];
+                    idByTenant.put(tenantId,idByTenant.get(tenantId)==null?1:idByTenant.get(tenantId)+1)
                     def File content = new File(contentRoot,contentId);
                     if(!content.exists()){
                         throw new IllegalStateException("content not found "+content.getAbsolutePath());
                     }
-                    sql.executeInsert(getSqlFile(feature,"insertcontent").text,tenantId,id,contentId,content.getBytes())
-                    id++;
+                    sql.executeInsert(getSqlFile(feature,"insertcontent").text,tenantId,idByTenant.get(tenantId),contentId,content.getBytes())
                     contents.add(content)
                 }
             }
@@ -153,6 +153,14 @@ public class Version_6_0_2_to_6_1_0 {
         migrateContentFor("document_mapping",9);
         //execute for archived document mappings
         migrateContentFor("arch_document_mapping",10);
+        println "updating sequence"
+        //ids are same for archived mapping of live mapping, all is in document content
+        idByTenant.each {
+            def tenantId= it.key;
+            def nbElements = it.value;
+            println "update sequence for tenantId "+tenantId+" with nextId="+(nbElements+1);
+            println sql.executeUpdate(getSqlFile(feature, "updateSequence").text,nbElements+1, tenantId) + " row(s) updated";
+        }
         //deleting files
         contents.each { it.delete(); }
         println "migrated "+contents.size()+" documents from file system to database"
