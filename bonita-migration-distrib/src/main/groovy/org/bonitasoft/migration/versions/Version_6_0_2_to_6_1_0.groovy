@@ -14,6 +14,7 @@
 package org.bonitasoft.migration.versions;
 
 import org.bonitasoft.migration.MigrationUtil
+import org.bonitasoft.migration.versions.v6_0_2to_6_1_0.FlowNodeDefinition
 import org.bonitasoft.migration.versions.v6_0_2to_6_1_0.TransitionInstance
 
 
@@ -120,7 +121,7 @@ public class Version_6_0_2_to_6_1_0 {
                         throw new IllegalStateException("content not found " + content.getAbsolutePath());
                     }
                     sql.executeInsert(MigrationUtil.getSqlContent(feature, dbVendor, "insertcontent"), tenantId, idByTenant.get(tenantId), contentId, content.getBytes())
-                    contents.add(content) 
+                    contents.add(content)
                 }
             }
         }
@@ -145,7 +146,7 @@ public class Version_6_0_2_to_6_1_0 {
         return;
         //get all transitions
         sql.query("SELECT * transition_instance", { row ->
-            def transition = new TransitionInstance(row[0], row[1], row[2], row[3], row[4],row[5], row[8], row[14]);
+            def transition = new TransitionInstance(tenantid:row[0], id:row[1], rootContainerId:row[2], parentContainerId:row[3], name:row[4],source:row[5], processDefId:row[8], tokenRefId:row[14]);
             migrateTransition(transition);
 
         })
@@ -157,8 +158,8 @@ public class Version_6_0_2_to_6_1_0 {
     public migrateTransition(TransitionInstance transition, File feature){
         //get the definition
         def s = File.separatorChar;
-        def processDefXml = new File(bonitaHome.getAbsolutePath() + "${s}server${s}tenants${s}${transition.tenantid}${s}work${s}processes${s}${transition.processDefId}${s}server-process-definition.xml");
-        println "target for $transition =" + parseProcessDef(processDefXml.text, transition);
+        def processDefXml = new File(bonitaHome.getAbsolutePath()+"${s}server${s}tenants${s}${transition.tenantid}${s}work${s}processes${s}${transition.processDefId}${s}server-process-definition.xml");
+        def FlowNodeDefinition target = getTargetOfTransition(processDefXml.text, transition);
 
         //parse the xml
         //if target = gateway, create or hit the gateway
@@ -166,18 +167,13 @@ public class Version_6_0_2_to_6_1_0 {
         //if target is not a gateway create the element
     }
 
-    public Object parseProcessDef(String processDefXml, TransitionInstance transition) {
+    public Object getTargetOfTransition(String processDefXml, TransitionInstance transition) {
         def processDefinition = new XmlParser().parseText(processDefXml);
         def targetDefId = processDefinition.flowElements.transitions.transition.find{it.@id==transition.id}.@target
         println  targetDefId
         def flownode = processDefinition.depthFirst().grep{ it.@id == targetDefId }[0]
-        def flownodetype = flownode.name();
-
-        if(flownodetype == "gateway"){
-            return "gateway type="+ flownode.@gatewayType + " name=" + flownode.@name
-        }else{
-            return "flownode type="+ flownode.name() + " name=" + flownode.@name
-        }
+        def type = (flownode.name() == "gateway"?flownode.@gatewayType:"flownode");
+        return new FlowNodeDefinition(id:flownode.@id,name:flownode.@name, type:type)
     }
 
 }

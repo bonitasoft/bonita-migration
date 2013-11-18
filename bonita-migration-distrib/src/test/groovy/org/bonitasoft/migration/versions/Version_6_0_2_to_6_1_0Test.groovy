@@ -5,6 +5,7 @@ import static org.mockito.Matchers.*
 import static org.mockito.Mockito.*
 import groovy.sql.Sql
 
+import org.bonitasoft.migration.versions.v6_0_2to_6_1_0.FlowNodeDefinition
 import org.bonitasoft.migration.versions.v6_0_2to_6_1_0.TransitionInstance
 import org.junit.Ignore
 import org.junit.Test
@@ -26,7 +27,7 @@ class Version_6_0_2_to_6_1_0Test {
     }
 
     @Test
-    public void parseProcessDef() throws Exception {
+    public void getTargetOfTransition() throws Exception {
         def process ='''<?xml version="1.0" encoding="UTF-8"?>
 <processDefinition bos_version="6.0-SNAPSHOT" id="7219115537128996651" name="ProcessWithTransitions" version="1.0">
   <stringIndexes>
@@ -85,6 +86,8 @@ class Version_6_0_2_to_6_1_0Test {
         ''';
         def version = new Version_6_0_2_to_6_1_0();
 
-        version.parseProcessDef(process, new TransitionInstance("1", "1503154818783097379" , "1","1","step2_-&gt;_gate2","2","7219115537128996651","4"))
+        assertEquals(new FlowNodeDefinition(id:"-5109139435573341779",name:"gate2",type:"PARALLEL"),version.getTargetOfTransition(process, new TransitionInstance(id:"1503154818783097379")));
+        assertEquals(new FlowNodeDefinition(id:"-8387720319258068830",name:"step1",type:"flownode"),version.getTargetOfTransition(process, new TransitionInstance(id:"6962317490942068176")));
+        assertEquals(new FlowNodeDefinition(id:"-8558673934546753353",name:"end",type:"flownode"),version.getTargetOfTransition(process, new TransitionInstance(id:"1683913898656940302")));
     }
 }
