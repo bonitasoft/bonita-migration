@@ -53,7 +53,7 @@ public class Version_6_0_2_to_6_1_0 {
         if(!bonitaHome.exists()){
             throw new IllegalStateException("bonita home does not exists");
         }
-         sql = MigrationUtil.getSqlConnection(props);
+        sql = MigrationUtil.getSqlConnection(props);
         def resources = new File("versions/" + this.getClass().getSimpleName())
         migrateFeatures(resources)
         sql.close()
@@ -123,7 +123,7 @@ public class Version_6_0_2_to_6_1_0 {
                         throw new IllegalStateException("content not found " + content.getAbsolutePath());
                     }
                     def sqlFile = MigrationUtil.getSqlFile(feature, dbVendor, "insertcontent")
-                    sql.executeInsert(MigrationUtil.getSqlContent(sqlFile.text[0], null), tenantId, idByTenant.get(tenantId), contentId, content.getBytes())
+                    sql.executeInsert(MigrationUtil.getSqlContent(sqlFile.text, null)[0], tenantId, idByTenant.get(tenantId), contentId, content.getBytes())
                     contents.add(content) 
                 }
             }

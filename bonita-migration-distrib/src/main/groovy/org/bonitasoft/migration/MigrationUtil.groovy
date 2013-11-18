@@ -95,18 +95,20 @@ public class MigrationUtil {
     }
 
     public static Object getId(File feature, String dbVendor, String fileExtension, Object it, groovy.sql.Sql sql){
+        def sqlFile = getSqlFile(feature, dbVendor, fileExtension)
+        def parameters = Collections.singletonMap(":tenantId", String.valueOf(it));
         def id = null
-        sql.eachRow(getSqlContent(feature, dbVendor, fileExtension)
-                .replaceAll(":tenantId", String.valueOf(it))) { row ->
+        sql.eachRow(getSqlContent(sqlFile.text, parameters)[0]) { row ->
                     id = row[0]
                 }
         return id
     }
 
     public static List<Object> getTenantsId(File feature, String dbVendor, groovy.sql.Sql sql){
+        def sqlFile = getSqlFile(feature, dbVendor, "tenants")
         def tenants = []
 
-        sql.query(getSqlContent(feature, dbVendor, "tenants")) { ResultSet rs ->
+        sql.query(getSqlContent(sqlFile.text, null)[0]) { ResultSet rs ->
             while (rs.next()) tenants.add(rs.getLong(1))
         }
         return tenants
