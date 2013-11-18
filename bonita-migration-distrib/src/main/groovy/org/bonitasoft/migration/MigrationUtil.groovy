@@ -24,14 +24,12 @@ public class MigrationUtil {
 	public static String REQUEST_SEPARATOR = "@@";
 
 
-
 	public static Map parseOrAskArgs(String[] args){
 		//will ask for missing parameter
 		return listToMap(args);
 	}
 
-
-	public static Map listToMap( String[] list){
+	public static Map listToMap(String[] list){
 		def map = [:];
 		def iterator = list.iterator()
 		while (iterator.hasNext()) {
@@ -39,7 +37,6 @@ public class MigrationUtil {
 		}
 		return map;
 	}
-
 
 	public static Sql getSqlConnection(Map props){
 		def dburl = props.get(MigrationUtil.DB_URL);
