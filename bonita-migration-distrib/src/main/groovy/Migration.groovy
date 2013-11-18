@@ -57,7 +57,14 @@ public class Migration {
     }
     public void run(String[] args){
         //add libraries to the classpath
-        def classLoader = this.class.classLoader.rootLoader;
+        def getRootParent = { it->
+            def root = it;
+            while(root.getParent() != null){
+                root = root.getParent();
+            }
+            return root;
+        };
+        def classLoader = getRootParent(this.class.classLoader);
         new File("lib").eachFile(FileType.FILES, {
             println "adding ${it.getPath()} to classpath"
             classLoader.addURL(it.toURI().toURL())
