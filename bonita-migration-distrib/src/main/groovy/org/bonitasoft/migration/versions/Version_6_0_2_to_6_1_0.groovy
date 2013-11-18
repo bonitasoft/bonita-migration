@@ -80,7 +80,7 @@ public class Version_6_0_2_to_6_1_0 {
 
     public platform(File feature){
         def parameters = Collections.singletonMap(":version", "6.1.0");
-        MigrationUtil.executeSqlFile(feature, dbVendor, null, parameters, sql);
+        MigrationUtil.executeSqlFile(feature, dbVendor, null, parameters, sql, true);
     }
 
     public profile(File feature){
@@ -93,11 +93,13 @@ public class Version_6_0_2_to_6_1_0 {
             //there is profile and profile entries needed
             def adminId = MigrationUtil.getId(feature, dbVendor, "get_admin_profile_id", it, sql);
             def directoryId = MigrationUtil.getId(feature, dbVendor, "get_dir_profile_entry_id", it, sql);
+
             if(adminId != null && directoryId != null){
-                sql.execute(MigrationUtil.getSqlContent(feature, dbVendor, "update")
-                        .replaceAll(":tenantId", String.valueOf(it))
-                        .replaceAll(":admin_profile_id", String.valueOf(adminId))
-                        .replaceAll(":dir_profile_entry_id", String.valueOf(directoryId)));
+                def parameters = new HashMap();
+                parameters.put(":tenantId", String.valueOf(it));
+                parameters.put(":admin_profile_id", String.valueOf(adminId));
+                parameters.put(":dir_profile_entry_id", String.valueOf(directoryId));
+                MigrationUtil.executeSqlFile(feature, dbVendor, "update", parameters, sql, false);
             }
             println "done";
         }
@@ -120,8 +122,9 @@ public class Version_6_0_2_to_6_1_0 {
                     if(!content.exists()){
                         throw new IllegalStateException("content not found " + content.getAbsolutePath());
                     }
-                    sql.executeInsert(MigrationUtil.getSqlContent(feature, dbVendor, "insertcontent"), tenantId, idByTenant.get(tenantId), contentId, content.getBytes())
-                    contents.add(content)
+                    def sqlFile = MigrationUtil.getSqlFile(feature, dbVendor, "insertcontent")
+                    sql.executeInsert(MigrationUtil.getSqlContent(sqlFile.text[0], null), tenantId, idByTenant.get(tenantId), contentId, content.getBytes())
+                    contents.add(content) 
                 }
             }
         }
@@ -135,7 +138,10 @@ public class Version_6_0_2_to_6_1_0 {
             def tenantId= it.key;
             def nbElements = it.value;
             println "update sequence for tenantId " + tenantId + " with nextId=" + (nbElements + 1);
-            println sql.executeUpdate(MigrationUtil.getSqlContent(feature, dbVendor, "updateSequence"), nbElements + 1, tenantId) + " row(s) updated";
+            def parameters = new HashMap();
+            parameters.put(":tenantId", tenantId);
+            parameters.put(":nextId", nbElements + 1);
+            MigrationUtil.executeSqlFile(feature, dbVendor, "updateSequence", parameters, sql, true);
         }
         //deleting files
         contents.each { it.delete(); }

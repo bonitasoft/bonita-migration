@@ -1,1 +1,1 @@
-UPDATE sequence SET nextid = ? WHERE tenantid=? and id = 10090;
+UPDATE sequence SET nextId = ? WHERE tenantId=? and id = 10090;
