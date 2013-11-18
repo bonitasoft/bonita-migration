@@ -23,11 +23,13 @@ import org.bonitasoft.migration.versions.v6_0_2to_6_1_0.TransitionInstance
  * Main script to execute the migration
  *
  * @author Baptiste Mesta
+ * @author Celine Souchet
  *
  */
 public class Version_6_0_2_to_6_1_0 {
     private def File bonitaHome
     private def dbVendor
+	private def groovy.sql.Sql sql
 
     /**
      * migration with specific behaviors. Instead of executing the sql, the script will call the methods having the same name
@@ -50,13 +52,13 @@ public class Version_6_0_2_to_6_1_0 {
         if(!bonitaHome.exists()){
             throw new IllegalStateException("bonita home does not exists");
         }
-        def sql = MigrationUtil.getSqlConnection(props);
-        def resources = new File("versions/"+this.getClass().getSimpleName())
-        migrateFeatures(resources, sql)
+         sql = MigrationUtil.getSqlConnection(props);
+        def resources = new File("versions/" + this.getClass().getSimpleName())
+        migrateFeatures(resources)
         sql.close()
     }
 
-    public migrateFeatures(File resources, groovy.sql.Sql sql) {
+    public migrateFeatures(File resources) {
         def features = [];
         def files = resources.listFiles();
         Arrays.sort(files);
@@ -68,19 +70,19 @@ public class Version_6_0_2_to_6_1_0 {
             def feature = file.getName().substring(4);
             println "Migrating <"+feature+"> " + (idx+1) + "/" + features.size();
             if(feature in specificMigrations){
-                "$feature"(file, sql);
+                "$feature"(file);
             }else{
                 MigrationUtil.executeDefaultSqlFile(file, dbVendor, sql);
             }
         }
     }
 
-    public platform(File feature, groovy.sql.Sql sql){
+    public platform(File feature){
         def parameters = Collections.singletonMap(":version", "6.1.0");
         MigrationUtil.executeSqlFile(feature, dbVendor, null, parameters, sql);
     }
 
-    public profile(File feature, groovy.sql.Sql sql){
+    public profile(File feature){
         def currentTime = System.currentTimeMillis();
         def tenants = MigrationUtil.getTenantsId(feature, dbVendor, sql);
 
@@ -100,46 +102,46 @@ public class Version_6_0_2_to_6_1_0 {
         }
     }
 
-    public document(File feature, groovy.sql.Sql sql){
+    public document(File feature){
         MigrationUtil.executeDefaultSqlFile(feature, dbVendor, sql);
         //get the path from bonita home (default = bonita.home/platform/work)
         //for each row in document_mapping get the corresponding file content
-        def contentRoot = new File(new File(new File(bonitaHome,"server"),"platform"),"work")
+        def contentRoot = new File(new File(new File(bonitaHome, "server"), "platform"), "work")
         def contents = [];
         def Map idByTenant = [:];
         def migrateContentFor = { table, contentIndex ->
-            sql.eachRow("SELECT * FROM "+table) { row ->
+            sql.eachRow("SELECT * FROM " + table) { row ->
                 if(row[6]){//document has content
                     def contentId = row[contentIndex];
                     def tenantId = row[0];
-                    idByTenant.put(tenantId,idByTenant.get(tenantId)==null?1:idByTenant.get(tenantId)+1)
-                    def File content = new File(contentRoot,contentId);
+                    idByTenant.put(tenantId, idByTenant.get(tenantId) == null ? 1 : idByTenant.get(tenantId) + 1)
+                    def File content = new File(contentRoot, contentId);
                     if(!content.exists()){
                         throw new IllegalStateException("content not found " + content.getAbsolutePath());
                     }
                     sql.executeInsert(MigrationUtil.getSqlContent(feature, dbVendor, "insertcontent"), tenantId, idByTenant.get(tenantId), contentId, content.getBytes())
-                    contents.add(content)
+                    contents.add(content) 
                 }
             }
         }
         //execute for live document mappings
-        migrateContentFor("document_mapping",9);
+        migrateContentFor("document_mapping", 9);
         //execute for archived document mappings
-        migrateContentFor("arch_document_mapping",10);
+        migrateContentFor("arch_document_mapping", 10);
         println "updating sequence"
         //ids are same for archived mapping of live mapping, all is in document content
         idByTenant.each {
             def tenantId= it.key;
             def nbElements = it.value;
-            println "update sequence for tenantId "+tenantId+" with nextId="+(nbElements+1);
+            println "update sequence for tenantId " + tenantId + " with nextId=" + (nbElements + 1);
             println sql.executeUpdate(MigrationUtil.getSqlContent(feature, dbVendor, "updateSequence"), nbElements + 1, tenantId) + " row(s) updated";
         }
         //deleting files
         contents.each { it.delete(); }
-        println "migrated "+contents.size()+" documents from file system to database"
+        println "migrated " + contents.size() + " documents from file system to database"
     }
 
-    public transition(File feature, groovy.sql.Sql sql){
+    public transition(File feature){
         return;
         //get all transitions
         sql.query("SELECT * transition_instance", { row ->
@@ -149,14 +151,14 @@ public class Version_6_0_2_to_6_1_0 {
         })
         //update sequence for the elements
         //delete the table
-        executeDefaultSqlFile(feature, sql);
+       MigrationUtil.executeDefaultSqlFile(feature, dbVendor, sql);
     }
 
-    public migrateTransition(TransitionInstance transition, File feature, groovy.sql.Sql sql){
+    public migrateTransition(TransitionInstance transition, File feature){
         //get the definition
         def s = File.separatorChar;
-        def processDefXml = new File(bonitaHome.getAbsolutePath()+"${s}server${s}tenants${s}${transition.tenantid}${s}work${s}processes${s}${transition.processDefId}${s}server-process-definition.xml");
-        println "target for $transition =" +parseProcessDef(processDefXml.text, transition);
+        def processDefXml = new File(bonitaHome.getAbsolutePath() + "${s}server${s}tenants${s}${transition.tenantid}${s}work${s}processes${s}${transition.processDefId}${s}server-process-definition.xml");
+        println "target for $transition =" + parseProcessDef(processDefXml.text, transition);
 
         //parse the xml
         //if target = gateway, create or hit the gateway
@@ -172,9 +174,9 @@ public class Version_6_0_2_to_6_1_0 {
         def flownodetype = flownode.name();
 
         if(flownodetype == "gateway"){
-            return "gateway type="+ flownode.@gatewayType+" name="+flownode.@name
+            return "gateway type="+ flownode.@gatewayType + " name=" + flownode.@name
         }else{
-            return "flownode type="+ flownode.name()+" name="+flownode.@name
+            return "flownode type="+ flownode.name() + " name=" + flownode.@name
         }
     }
 
