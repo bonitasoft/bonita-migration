@@ -57,6 +57,8 @@ public class Version_6_0_2_to_6_1_0 {
         def resources = new File("versions/" + this.getClass().getSimpleName())
         migrateFeatures(resources)
         sql.close()
+        migrateBonitaHomeClient(new File(resources,"/018_bonita-home/bonita/client/"), new File(bonitaHome, "/client/"))
+        migrateBonitaHomeServer(new File(resources,"/018_bonita-home/bonita/server/"), new File(bonitaHome, "/server/"))
     }
 
     public migrateFeatures(File resources) {
@@ -182,4 +184,68 @@ public class Version_6_0_2_to_6_1_0 {
         return new FlowNodeDefinition(id:flownode.@id,name:flownode.@name, type:type)
     }
 
+    public migrateBonitaHomeClient(File newBonitaHomeClient, File oldBonitaHomeClient) {
+        def deleted = false
+        def currentDir = ""
+
+        println "Starting the bonita home client migration"
+
+        currentDir = "/platform/conf"
+        MigrationUtil.migrateDirectory(newBonitaHomeClient.path + currentDir, oldBonitaHomeClient.path + currentDir)
+
+        currentDir = "/platform/tenant-template"
+        MigrationUtil.migrateDirectory(newBonitaHomeClient.path + currentDir, oldBonitaHomeClient.path + currentDir)
+
+        currentDir = "/platform/work"
+        MigrationUtil.migrateDirectory(newBonitaHomeClient.path + currentDir, oldBonitaHomeClient.path + currentDir)
+
+        println "Detecting tenants"
+
+        def tenantsDir = new File(oldBonitaHomeClient, "/tenants")
+        if (tenantsDir.exists()) {
+            tenantsDir.eachFile { tenant ->
+                println "Found tenant: " + tenant.name
+
+                currentDir = "/conf"
+                MigrationUtil.migrateDirectory(newBonitaHomeClient.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir)
+
+                currentDir = "/work/icons/default"
+                MigrationUtil.migrateDirectory(newBonitaHomeClient.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir)
+
+                currentDir = "/work/icons/priority"
+                MigrationUtil.migrateDirectory(newBonitaHomeClient.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir)
+
+                currentDir = "/work/icons/profiles"
+                MigrationUtil.migrateDirectory(newBonitaHomeClient.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir)
+
+                currentDir = "/work/looknfeel"
+                MigrationUtil.migrateDirectory(newBonitaHomeClient.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir)
+            }
+        }
+        
+        println "Bonita home client succesfully migrated"
+    }
+
+    public migrateBonitaHomeServer(File newBonitaHomeServer, File oldBonitaHomeServer) {
+        def deleted = false
+        def currentDir = ""
+
+        println "Starting the bonita home server migration"
+
+        currentDir = "/platform/conf"
+        MigrationUtil.migrateDirectory(newBonitaHomeServer.path + currentDir, oldBonitaHomeServer.path + currentDir)
+
+        currentDir = "/platform/tenant-template"
+        MigrationUtil.migrateDirectory(newBonitaHomeServer.path + currentDir, oldBonitaHomeServer.path + currentDir)
+
+        println "Detecting tenants"
+
+        def tenantsDir = new File(oldBonitaHomeServer, "/tenants")
+        if (tenantsDir.exists()) {
+            tenantsDir.eachFile { tenant ->
+                MigrationUtil.migrateDirectory(newBonitaHomeServer.path + "/platform/tenant-template/conf", tenant.path + "/conf")
+            }
+        }
+        println "Bonita home server succesfully migrated"
+    }
 }

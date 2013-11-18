@@ -2,7 +2,6 @@ package org.bonitasoft.migration
 
 import groovy.sql.Sql
 
-import java.io.File
 import java.sql.ResultSet
 
 
@@ -112,5 +111,18 @@ public class MigrationUtil {
             while (rs.next()) tenants.add(rs.getLong(1))
         }
         return tenants
+    }
+    
+    public static migrateDirectory(String fromDir, String toDir){
+        def ant = new AntBuilder()
+        def deleted = false
+        if (!(deleted = new File(toDir).deleteDir())) {
+            throw IllegalStateException("Unable to delete: " + toDir)
+        } else {
+            ant.copy(todir: toDir) {
+                fileset(dir: fromDir)
+            }
+            println toDir + " succesfully migrated"
+        }
     }
 }
