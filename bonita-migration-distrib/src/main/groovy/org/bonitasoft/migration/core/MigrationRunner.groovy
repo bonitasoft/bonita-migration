@@ -66,7 +66,7 @@ public class MigrationRunner {
         dbVendor = props.get(MigrationUtil.DB_VENDOR)
         bonitaHome = new File(props.get(MigrationUtil.BONITA_HOME))
         if(!bonitaHome.exists()){
-            throw new IllegalStateException("bonita home does not exists")
+            throw new IllegalStateException("Bonita home does not exist.")
         }
 
         sql = MigrationUtil.getSqlConnection(props)
@@ -92,6 +92,9 @@ public class MigrationRunner {
 
     public migrateFeatures(GroovyScriptEngine gse) {
         def resources = new File("versions/" + sourceVersion + "-" + targetVersion)
+        if(!resources.exists()){
+            throw new IllegalStateException(resources.absolutePath + " doesn't exist.")
+        }
 
         def features = []
         def files = resources.listFiles()
