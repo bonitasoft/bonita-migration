@@ -91,7 +91,7 @@ public class MigrationUtil {
         String newSqlFileContent = sqlFileContent
         if (parameters != null) {
             for (parameter in parameters) {
-                newSqlFileContent = newSqlFileContent.replaceAll(parameter.key, parameter.value)
+                newSqlFileContent = newSqlFileContent.replaceAll(parameter.key, String.valueOf(parameter.value))
             }
         }
         return newSqlFileContent
@@ -116,16 +116,14 @@ public class MigrationUtil {
         }
         return tenants
     }
-    
+
     public static migrateDirectory(String fromDir, String toDir){
         def ant = new AntBuilder();
         def deleted = false
         if (!(deleted = new File(toDir).deleteDir())) {
             throw IllegalStateException("Unable to delete: " + toDir)
         } else {
-            ant.copy(todir: toDir) {
-                fileset(dir: fromDir)
-            }
+            ant.copy(todir: toDir) { fileset(dir: fromDir) }
             println toDir + " succesfully migrated"
         }
     }

@@ -43,8 +43,6 @@ import org.bonitasoft.engine.bpm.process.ProcessInstance;
 import org.bonitasoft.engine.bpm.process.ProcessInstanceCriterion;
 import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder;
 import org.bonitasoft.engine.bpm.process.impl.UserTaskDefinitionBuilder;
-import org.bonitasoft.engine.commons.exceptions.SBonitaException;
-import org.bonitasoft.engine.commons.transaction.TransactionContentWithResult;
 import org.bonitasoft.engine.core.process.instance.model.STransitionInstance;
 import org.bonitasoft.engine.events.model.SEvent;
 import org.bonitasoft.engine.events.model.SHandler;
@@ -57,7 +55,6 @@ import org.bonitasoft.engine.expression.ExpressionBuilder;
 import org.bonitasoft.engine.identity.ImportPolicy;
 import org.bonitasoft.engine.io.IOUtil;
 import org.bonitasoft.engine.operation.OperationBuilder;
-import org.bonitasoft.engine.persistence.QueryOptions;
 import org.bonitasoft.engine.search.SearchOptions;
 import org.bonitasoft.engine.search.SearchOptionsBuilder;
 import org.bonitasoft.engine.service.TenantServiceAccessor;
@@ -79,7 +76,7 @@ public class DatabaseFiller {
 
     public static void main(final String[] args) throws Exception {
         DatabaseFiller databaseFiller = new DatabaseFiller();
-        databaseFiller.execute(1, 1, 1, 50);
+        databaseFiller.execute(1, 1, 1, 1);
     }
 
     public void execute(final int nbProcessesDefinitions, final int nbProcessInstances, final int nbWaitingEvents, final int nbDocuments) throws Exception {
@@ -135,7 +132,7 @@ public class DatabaseFiller {
             @Override
             public void execute(final SEvent event) throws SHandlerExecutionException {
                 STransitionInstance transition = (STransitionInstance) event.getObject();
-                if (transition.getName().endsWith("gate2")) {
+                if (transition.getName().endsWith("gate2") || transition.getName().endsWith("event")) {
                     try {
                         // rollback the transaction so the transition is not deleted
                         instance.getTransactionService().setRollbackOnly();
@@ -148,12 +145,14 @@ public class DatabaseFiller {
         });
         ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("ProcessWithTransitions", "1.0");
         builder.addStartEvent("start");
+        builder.addIntermediateCatchEvent("event").addSignalEventTrigger("signal");
         builder.addGateway("gate1", GatewayType.PARALLEL);
         builder.addAutomaticTask("step1");
         builder.addAutomaticTask("step2");
         builder.addGateway("gate2", GatewayType.PARALLEL);
         builder.addEndEvent("end");
         builder.addTransition("start", "gate1");
+        builder.addTransition("start", "event");
         builder.addTransition("gate1", "step1");
         builder.addTransition("gate1", "step2");
         builder.addTransition("step1", "gate2");
@@ -165,22 +164,6 @@ public class DatabaseFiller {
         processAPI.enableProcess(processDefinition.getId());
         processAPI.startProcess(processDefinition.getId());
         Thread.sleep(1000);
-        TransactionContentWithResult<String> transactionContent = new TransactionContentWithResult<String>() {
-
-            private String nbTransactions;
-
-            @Override
-            public void execute() throws SBonitaException {
-                nbTransactions = String.valueOf(instance.getTransitionInstanceService().getNumberOfTransitionInstances(new QueryOptions(0, 100)));
-
-            }
-
-            @Override
-            public String getResult() {
-                return nbTransactions;
-            }
-        };
-        // instance.getTransactionExecutor().execute(transactionContent);
         return Collections.singletonMap("Transitions",
                 "2");
     }
