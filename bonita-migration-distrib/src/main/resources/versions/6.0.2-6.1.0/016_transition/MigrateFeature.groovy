@@ -12,11 +12,11 @@ import org.bonitasoft.migration.versions.v6_0_2to_6_1_0.FlowNodeDefinition;
  */
 public migrateTransition(TransitionInstance transition, File feature, Map flownodeIdsByTenants){
     //get the definition
-    println "migration of transition $transition"
+    println "migration of transition <$transition.name> with id <$transition.id> of process definition <$transition.processDefId>"
     def s = File.separatorChar;
     def processDefXml = new File(bonitaHome.getAbsolutePath()+"${s}server${s}tenants${s}${transition.tenantid}${s}work${s}processes${s}${transition.processDefId}${s}server-process-definition.xml");
     def FlowNodeDefinition target = getTargetOfTransition(processDefXml.text, transition)
-    println "target is $target"
+    println "target is $target.name"
     //if target = gateway, create or hit the gateway
     if(target.isGateway()){
         // check merging condition: if merge set as finished
@@ -34,10 +34,9 @@ public migrateTransition(TransitionInstance transition, File feature, Map flowno
                 break;
         }
     }else{
-        println "Detected flownode"
         //if target is not a gateway create the element
         def nextId = flownodeIdsByTenants.get(transition.tenantid);
-        println "will insert flownode with id $nextId"
+        println "the target of kind  $target.type will be inserted with id $nextId"
         def Map parameters = [":tenantid":transition.tenantid,":id":nextId,":flownodeDefinitionId":target.getId(),":kind":target.type,":rootContainerId":transition.rootContainerId,":parentContainerId":transition.parentContainerId,
             ":name":target.name,":stateId":target.getStateId(),":stateName":target.getStateName(),":stateCategory":"NORMAL", ":logicalGroup1":transition.processDefId,":logicalGroup2":transition.rootContainerId,":logicalGroup3":"0",
             ":logicalGroup4":transition.parentContainerId,":token_ref_id":transition.tokenRefId]
@@ -79,4 +78,5 @@ flownodeIdsByTenants.each {
     println  sql.executeUpdate("UPDATE sequence SET nextId = $it.value WHERE tenantId = $it.key and id = 10011")+" row(s) updated";
 }
 //delete the table
+println "deleting transition instance table..."
 MigrationUtil.executeDefaultSqlFile(feature, dbVendor, sql);

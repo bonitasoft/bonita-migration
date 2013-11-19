@@ -3,7 +3,6 @@ package org.bonitasoft.migration.core
 import groovy.sql.Sql
 
 import java.sql.ResultSet
-import groovy.util.AntBuilder;
 
 
 public class MigrationUtil {
