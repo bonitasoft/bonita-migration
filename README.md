@@ -20,9 +20,11 @@ For MySql : use allowMultiQueries=true in db url
 For Oracle :  In sql scripts, don't use ";" after each request, but "@@"
 For SQLServer :  In sql scripts, don't use "GO" after each request, but "@@"
 
-also not that the jdbc driver must be put in the lib folder
 
-it launches all scripts inside the versions folder
+Also not that the jdbc driver must be put in the lib folder. Create "lib" folder in root of project.
+
+It launches all scripts inside the versions folder.
+Always, migrate bonita home in last by version.
 
 
 example:
