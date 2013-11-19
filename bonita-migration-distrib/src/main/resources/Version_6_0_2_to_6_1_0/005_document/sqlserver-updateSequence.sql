@@ -1,2 +1,2 @@
-UPDATE sequence SET nextId = ? WHERE tenantId=? and id = 10090
+UPDATE sequence SET nextId = :nextId WHERE tenantId = :tenantId and id = 10090
 @@

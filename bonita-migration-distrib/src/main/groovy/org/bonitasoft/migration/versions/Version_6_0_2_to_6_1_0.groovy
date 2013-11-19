@@ -141,8 +141,8 @@ public class Version_6_0_2_to_6_1_0 {
             def nbElements = it.value;
             println "update sequence for tenantId " + tenantId + " with nextId=" + (nbElements + 1);
             def parameters = new HashMap();
-            parameters.put(":tenantId", tenantId);
-            parameters.put(":nextId", nbElements + 1);
+            parameters.put(":tenantId", String.valueOf(tenantId));
+            parameters.put(":nextId", String.valueOf(nbElements + 1));
             MigrationUtil.executeSqlFile(feature, dbVendor, "updateSequence", parameters, sql, true);
         }
         //deleting files
@@ -152,8 +152,11 @@ public class Version_6_0_2_to_6_1_0 {
 
     public transition(File feature){
         return;
+        //get next flow node id by tenant
+        def flownodeIdsByTenants = [:];
+
         //get all transitions
-        sql.query("SELECT * transition_instance", { row ->
+        sql.query("SELECT * from transition_instance", { row ->
             def transition = new TransitionInstance(tenantid:row[0], id:row[1], rootContainerId:row[2], parentContainerId:row[3], name:row[4],source:row[5], processDefId:row[8], tokenRefId:row[14]);
             migrateTransition(transition);
 
@@ -168,17 +171,32 @@ public class Version_6_0_2_to_6_1_0 {
         def s = File.separatorChar;
         def processDefXml = new File(bonitaHome.getAbsolutePath()+"${s}server${s}tenants${s}${transition.tenantid}${s}work${s}processes${s}${transition.processDefId}${s}server-process-definition.xml");
         def FlowNodeDefinition target = getTargetOfTransition(processDefXml.text, transition);
-
-        //parse the xml
+        println "target of $transition is $target"
         //if target = gateway, create or hit the gateway
-        // check merging condition: if merge set as finished
-        //if target is not a gateway create the element
+        if(target.isGateway()){
+            // check merging condition: if merge set as finished
+            switch(target.type){
+                case "PARALLEL":
+                //get the gateway or create it
+                    println "Detected parallel gateway"
+                    break;
+                case "EXCLUSIVE":
+                //create the gateway in finished
+                    println "Detected exclusive gateway"
+                    break;
+                case "INCLUSIVE":
+                    println "Detected inclusive gateway"
+                    break;
+            }
+        }else{
+            //if target is not a gateway create the element
+            println "Detected flownode"
+        }
     }
 
     public Object getTargetOfTransition(String processDefXml, TransitionInstance transition) {
         def processDefinition = new XmlParser().parseText(processDefXml);
         def targetDefId = processDefinition.flowElements.transitions.transition.find{it.@id==transition.id}.@target
-        println  targetDefId
         def flownode = processDefinition.depthFirst().grep{ it.@id == targetDefId }[0]
         def type = (flownode.name() == "gateway"?flownode.@gatewayType:"flownode");
         return new FlowNodeDefinition(id:flownode.@id,name:flownode.@name, type:type)
