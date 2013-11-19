@@ -36,9 +36,14 @@ import org.bonitasoft.engine.api.TenantAPIAccessor;
 import org.bonitasoft.engine.bpm.bar.BarResource;
 import org.bonitasoft.engine.bpm.bar.BusinessArchive;
 import org.bonitasoft.engine.bpm.bar.BusinessArchiveBuilder;
+import org.bonitasoft.engine.bpm.bar.InvalidBusinessArchiveFormatException;
 import org.bonitasoft.engine.bpm.connector.ConnectorEvent;
 import org.bonitasoft.engine.bpm.flownode.GatewayType;
+import org.bonitasoft.engine.bpm.process.InvalidProcessDefinitionException;
 import org.bonitasoft.engine.bpm.process.ProcessDefinition;
+import org.bonitasoft.engine.bpm.process.ProcessDefinitionNotFoundException;
+import org.bonitasoft.engine.bpm.process.ProcessDeployException;
+import org.bonitasoft.engine.bpm.process.ProcessEnablementException;
 import org.bonitasoft.engine.bpm.process.ProcessInstance;
 import org.bonitasoft.engine.bpm.process.ProcessInstanceCriterion;
 import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder;
@@ -47,11 +52,13 @@ import org.bonitasoft.engine.core.process.instance.model.STransitionInstance;
 import org.bonitasoft.engine.events.model.SEvent;
 import org.bonitasoft.engine.events.model.SHandler;
 import org.bonitasoft.engine.events.model.SHandlerExecutionException;
+import org.bonitasoft.engine.exception.AlreadyExistsException;
 import org.bonitasoft.engine.exception.BonitaException;
 import org.bonitasoft.engine.exception.BonitaHomeNotSetException;
 import org.bonitasoft.engine.exception.ServerAPIException;
 import org.bonitasoft.engine.exception.UnknownAPITypeException;
 import org.bonitasoft.engine.expression.ExpressionBuilder;
+import org.bonitasoft.engine.expression.InvalidExpressionException;
 import org.bonitasoft.engine.identity.ImportPolicy;
 import org.bonitasoft.engine.io.IOUtil;
 import org.bonitasoft.engine.operation.OperationBuilder;
@@ -62,6 +69,7 @@ import org.bonitasoft.engine.service.TenantServiceSingleton;
 import org.bonitasoft.engine.session.APISession;
 import org.bonitasoft.engine.session.PlatformSession;
 import org.bonitasoft.engine.test.APITestUtil;
+import org.bonitasoft.engine.test.WaitUntil;
 import org.bonitasoft.engine.transaction.STransactionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,6 +77,56 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class DatabaseFiller {
+
+    private final class SpotTransitionHandler implements SHandler<SEvent> {
+
+        private final ProcessDefinition processDefinition1;
+
+        private final ProcessDefinition processDefinition3;
+
+        private final TenantServiceAccessor instance;
+
+        private final ProcessDefinition processDefinition2;
+
+        private int hitnb = 0;
+
+        private SpotTransitionHandler(final ProcessDefinition processDefinition1, final ProcessDefinition processDefinition3,
+                final TenantServiceAccessor instance,
+                final ProcessDefinition processDefinition2) {
+            this.processDefinition1 = processDefinition1;
+            this.processDefinition3 = processDefinition3;
+            this.instance = instance;
+            this.processDefinition2 = processDefinition2;
+        }
+
+        @Override
+        public boolean isInterested(final SEvent event) {
+            return true;
+        }
+
+        @Override
+        public void execute(final SEvent event) throws SHandlerExecutionException {
+            STransitionInstance transition = (STransitionInstance) event.getObject();
+            if (transition.getProcessDefinitionId() == processDefinition1.getId() && (transition.getName().endsWith("gate2") || transition.getName()
+                    .endsWith("event"))
+                    || transition.getProcessDefinitionId() == processDefinition2.getId() && transition.getName().endsWith("gate2")
+                    || transition.getProcessDefinitionId() == processDefinition3.getId() && transition.getName().endsWith("gate2")) {
+                hitnb++;
+                System.out.println("stopped transition " + transition);
+                try {
+                    // rollback the transaction so the transition is not deleted
+                    instance.getTransactionService().setRollbackOnly();
+                } catch (STransactionException e) {
+                    throw new SHandlerExecutionException(e);
+                }
+                throw new RuntimeException();
+            }
+        }
+
+        public int getHitnb() {
+            return hitnb;
+        }
+    }
 
     private static final String BONITA_HOME = "bonita.home";
 
@@ -121,29 +179,37 @@ public class DatabaseFiller {
 
     private Map<String, String> fillProcessWithTransitions(final APISession session) throws Exception {
 
+        ProcessAPI processAPI = TenantAPIAccessor.getProcessAPI(session);
+
+        final ProcessDefinition processDefinition1 = deployProcessWithParallelGateways(processAPI);
+        final ProcessDefinition processDefinition2 = deployProcessWithInclusiveGateways(processAPI);
+        final ProcessDefinition processDefinition3 = deployProcessWithExclusiveGateways(processAPI);
+
         final TenantServiceAccessor instance = TenantServiceSingleton.getInstance(session.getTenantId());
-        instance.getEventService().addHandler("TRANSITIONINSTANCE_DELETED", new SHandler<SEvent>() {
+        final SpotTransitionHandler userHandler = new SpotTransitionHandler(processDefinition1, processDefinition3, instance, processDefinition2);
+        instance.getEventService().addHandler("TRANSITIONINSTANCE_DELETED", userHandler);
+
+        processAPI.startProcess(processDefinition1.getId());
+        processAPI.startProcess(processDefinition2.getId());
+        processAPI.startProcess(processDefinition3.getId());
+        boolean wait = new WaitUntil(100, 5000) {
 
             @Override
-            public boolean isInterested(final SEvent event) {
-                return true;
+            protected boolean check() throws Exception {
+                return userHandler.getHitnb() == 5;
             }
+        }.waitUntil();
+        if (!wait) {
+            throw new IllegalStateException("unable to fill db: transitions not reached");
+        }
+        return Collections.singletonMap("Transitions",
+                "2");
+    }
 
-            @Override
-            public void execute(final SEvent event) throws SHandlerExecutionException {
-                STransitionInstance transition = (STransitionInstance) event.getObject();
-                if (transition.getName().endsWith("gate2") || transition.getName().endsWith("event")) {
-                    try {
-                        // rollback the transaction so the transition is not deleted
-                        instance.getTransactionService().setRollbackOnly();
-                    } catch (STransactionException e) {
-                        throw new SHandlerExecutionException(e);
-                    }
-                    throw new RuntimeException();
-                }
-            }
-        });
-        ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("ProcessWithTransitions", "1.0");
+    private ProcessDefinition deployProcessWithParallelGateways(final ProcessAPI processAPI) throws InvalidBusinessArchiveFormatException,
+            InvalidProcessDefinitionException,
+            AlreadyExistsException, ProcessDeployException, ProcessDefinitionNotFoundException, ProcessEnablementException {
+        ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("ProcessWithTransitionsParallele", "1.0");
         builder.addStartEvent("start");
         builder.addIntermediateCatchEvent("event").addSignalEventTrigger("signal");
         builder.addGateway("gate1", GatewayType.PARALLEL);
@@ -159,13 +225,53 @@ public class DatabaseFiller {
         builder.addTransition("step2", "gate2");
         builder.addTransition("gate2", "end");
         BusinessArchive businessArchive = new BusinessArchiveBuilder().createNewBusinessArchive().setProcessDefinition(builder.done()).done();
-        ProcessAPI processAPI = TenantAPIAccessor.getProcessAPI(session);
-        ProcessDefinition processDefinition = processAPI.deploy(businessArchive);
+        final ProcessDefinition processDefinition = processAPI.deploy(businessArchive);
         processAPI.enableProcess(processDefinition.getId());
-        processAPI.startProcess(processDefinition.getId());
-        Thread.sleep(1000);
-        return Collections.singletonMap("Transitions",
-                "2");
+        return processDefinition;
+    }
+
+    private ProcessDefinition deployProcessWithInclusiveGateways(final ProcessAPI processAPI) throws InvalidBusinessArchiveFormatException,
+            InvalidProcessDefinitionException,
+            AlreadyExistsException, ProcessDeployException, ProcessDefinitionNotFoundException, ProcessEnablementException, InvalidExpressionException {
+        ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("ProcessWithTransitionsInclusive", "1.0");
+        builder.addStartEvent("start");
+        builder.addGateway("gate1", GatewayType.INCLUSIVE);
+        builder.addAutomaticTask("step1");
+        builder.addAutomaticTask("step2");
+        builder.addGateway("gate2", GatewayType.INCLUSIVE);
+        builder.addEndEvent("end");
+        builder.addTransition("start", "gate1");
+        builder.addTransition("gate1", "step1", new ExpressionBuilder().createConstantBooleanExpression(false));
+        builder.addTransition("gate1", "step2", new ExpressionBuilder().createConstantBooleanExpression(true));
+        builder.addTransition("step1", "gate2");
+        builder.addTransition("step2", "gate2");
+        builder.addTransition("gate2", "end");
+        BusinessArchive businessArchive = new BusinessArchiveBuilder().createNewBusinessArchive().setProcessDefinition(builder.done()).done();
+        final ProcessDefinition processDefinition = processAPI.deploy(businessArchive);
+        processAPI.enableProcess(processDefinition.getId());
+        return processDefinition;
+    }
+
+    private ProcessDefinition deployProcessWithExclusiveGateways(final ProcessAPI processAPI) throws InvalidBusinessArchiveFormatException,
+            InvalidProcessDefinitionException,
+            AlreadyExistsException, ProcessDeployException, ProcessDefinitionNotFoundException, ProcessEnablementException {
+        ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("ProcessWithTransitionsExclusive", "1.0");
+        builder.addStartEvent("start");
+        builder.addGateway("gate1", GatewayType.EXCLUSIVE);
+        builder.addAutomaticTask("step1");
+        builder.addAutomaticTask("step2");
+        builder.addGateway("gate2", GatewayType.EXCLUSIVE);
+        builder.addEndEvent("end");
+        builder.addTransition("start", "gate1");
+        builder.addTransition("gate1", "step1");
+        builder.addTransition("gate1", "step2");
+        builder.addTransition("step1", "gate2");
+        builder.addTransition("step2", "gate2");
+        builder.addTransition("gate2", "end");
+        BusinessArchive businessArchive = new BusinessArchiveBuilder().createNewBusinessArchive().setProcessDefinition(builder.done()).done();
+        final ProcessDefinition processDefinition = processAPI.deploy(businessArchive);
+        processAPI.enableProcess(processDefinition.getId());
+        return processDefinition;
     }
 
     private Map<String, String> fillDocuments(final APISession session, final int nbDocuments) throws Exception {

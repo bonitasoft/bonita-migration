@@ -7,7 +7,9 @@ import org.bonitasoft.migration.versions.v6_0_2to_6_1_0.FlowNodeDefinition;
 
 
 
-
+/*
+ * Migrate a single transition instance
+ */
 public migrateTransition(TransitionInstance transition, File feature, Map flownodeIdsByTenants){
     //get the definition
     println "migration of transition $transition"
