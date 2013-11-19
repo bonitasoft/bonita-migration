@@ -9,8 +9,8 @@
 	<modules>
 		<module>bonita-migration-distrib</module>
 		<module>bonita-migration-db-filler-6.0.2</module>
-<!-- 		Not up to date -->
-<!-- 		<module>bonita-migration-db-filler-6.1.0</module> -->
+		<!-- Not up to date -->
+		<!-- <module>bonita-migration-db-filler-6.1.0</module> -->
 	</modules>
 
 	<dependencyManagement>
@@ -26,6 +26,11 @@
 				<groupId>org.codehaus.groovy</groupId>
 				<artifactId>groovy-all</artifactId>
 				<version>1.8.6</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.ant</groupId>
+				<artifactId>ant</artifactId>
+				<version>1.9.2</version>
 			</dependency>
 			<dependency>
 				<groupId>junit</groupId>

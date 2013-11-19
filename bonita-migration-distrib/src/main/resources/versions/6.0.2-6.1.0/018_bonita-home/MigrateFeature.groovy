@@ -2,7 +2,7 @@ import java.io.File;
 import org.bonitasoft.migration.core.MigrationUtil;
 
 def currentDir = ""
-return;
+
 // Migration of client bonita home
 println "Starting the client bonita home migration"
 
