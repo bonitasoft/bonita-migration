@@ -102,12 +102,16 @@ public class MigrationUtil {
 
     public static File getSqlFile(File folder, String dbVendor, String suffix){
         if (folder == null || dbVendor == null || "".equals(dbVendor)){
-            throw new IllegalArgumentException("Can't execute displayProperty method with arguments : folder = " + folder + ", dbVendor = " + dbVendor);
+            throw new IllegalArgumentException("Can't execute getSqlFile method with arguments : folder = " + folder + ", dbVendor = " + dbVendor);
         }
         return new File(folder, dbVendor + (suffix == null || suffix.isEmpty() ? "" : "-" + suffix) + ".sql")
     }
 
     static String replaceParameters(String sqlFileContent, Map<String, String> parameters){
+        if (sqlFileContent == null){
+            throw new IllegalArgumentException("Can't execute replaceParameters method with arguments : sqlFileContent = " + sqlFileContent);
+        }
+        
         String newSqlFileContent = sqlFileContent
         if (parameters != null) {
             for (parameter in parameters) {
@@ -118,6 +122,10 @@ public class MigrationUtil {
     }
 
     public static Object getId(File feature, String dbVendor, String fileExtension, Object it, groovy.sql.Sql sql){
+        if (it == null || sql == null){
+            throw new IllegalArgumentException("Can't execute getId method with arguments : it = " + it + ", sql = " + sql);
+        }
+        
         def sqlFile = getSqlFile(feature, dbVendor, fileExtension)
         def parameters = Collections.singletonMap(":tenantId", String.valueOf(it))
         def id = null
@@ -129,6 +137,10 @@ public class MigrationUtil {
     }
 
     public static List<Object> getTenantsId(File feature, String dbVendor, groovy.sql.Sql sql){
+        if (sql == null){
+            throw new IllegalArgumentException("Can't execute getTenantsId method with arguments : sql = " + sql);
+        }
+        
         def sqlFile = getSqlFile(feature, dbVendor, "tenants")
         def tenants = []
 
@@ -140,6 +152,10 @@ public class MigrationUtil {
     }
 
     public static migrateDirectory(String fromDir, String toDir){
+        if (fromDir == null || toDir == null){
+            throw new IllegalArgumentException("Can't execute migrateDirectory method with arguments : fromDir = " + fromDir + ", toDir = " + toDir);
+        }
+        
         def ant = new AntBuilder();
         def deleted = false
         if (!(deleted = new File(toDir).deleteDir())) {
