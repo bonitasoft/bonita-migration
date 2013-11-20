@@ -25,24 +25,22 @@ import groovy.io.FileType
  * This is the master script for the migration
  * it must be launched with parameters listed below
  *
- * Required parameters:
- *  --bonita.home <path to bonita home>
- *  --source.version <the current version of your installation>     -> not used yet
- *  --target.version <the version your installation will be in>     -> not used yet
- *  --db.vendor <the kind on you database, can be [mysql,postgres,sqlserver,oracle]
- *  --db.url <the url of the database>
- *  --db.driverclass <the class of the jdbc driver>
- *  --db.user <the username to connect to the database>
- *  --db.password <the password to connect to the database>
+ * Required parameters in Config.properties:
+ *  bonita.home=<path to bonita home>
+ *  source.version=<the current version of your installation>     -> not used yet
+ *  target.version=<the version your installation will be in>     -> not used yet
+ *  db.vendor=<the kind on you database, can be [mysql,postgres,sqlserver,oracle]
+ *  db.url=<the url of the database>
+ *  db.driverclass=<the class of the jdbc driver>
+ *  db.user=<the username to connect to the database>
+ *  db.password=<the password to connect to the database>
  *
- *  also not that the jdbc driver must be put in the lib folder
+ *  Also not that the jdbc driver must be put in the lib folder.
  *
- * it launches all scripts inside the versions folder
+ *  It launches all scripts inside the versions folder.
  *
  *
- *  example: groovy Migration.groovy --bonita.home /home/user/bonita.home --source.version 6.0.3
- *  --target.version 6.1.0 --db.vendor postgres --db.url jdbc:postgresql://localhost:5432/bonita
- *  --db.driverclass org.postgresql.Driver --db.user bonita --db.password bonita
+ *  example: groovy Migration.groovy 
  *
  *
  *
@@ -54,9 +52,10 @@ public class Migration {
 
 
     public static void main(String[] args){
-        new Migration().run(args)
+        new Migration().run()
     }
-    public void run(String[] args){
+
+    public void run(){
         //add libraries to the classpath
         def getRootParent = { it->
             def root = it;
@@ -73,7 +72,7 @@ public class Migration {
         def gse = new GroovyScriptEngine("");
         Class runner = gse.loadScriptByName("org/bonitasoft/migration/core/MigrationRunner.groovy");
         def instance = runner.newInstance();
-        def method = runner.getMethod("execute", String[].class, GroovyScriptEngine.class)
-        method.invoke(instance, args, gse);
+        def method = runner.getMethod("execute", GroovyScriptEngine.class)
+        method.invoke(instance, gse);
     }
 }

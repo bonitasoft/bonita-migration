@@ -3,6 +3,11 @@ package org.bonitasoft.migration.core
 import groovy.sql.Sql
 
 import java.sql.ResultSet
+import java.util.Properties;
+import groovy.util.AntBuilder;
+import org.bonitasoft.migration.core.exception.NotFoundException;
+import org.bonitasoft.migration.core.exception.MigrationException;
+
 
 
 public class MigrationUtil {
@@ -11,45 +16,56 @@ public class MigrationUtil {
 
     public static String TARGET_VERSION = "target.version"
 
+    public static String BONITA_HOME = "bonita.home"
+
     public static String DB_URL = "db.url"
 
     public static String DB_USER = "db.user"
 
     public static String DB_PASSWORD = "db.password"
 
-    public static String DB_DRIVERCLASS = "db.driverclass"
+    public static String DB_DRIVERCLASS = "db.driverClass"
 
     public static String DB_VENDOR = "db.vendor"
 
-    public static String BONITA_HOME = "bonita.home"
-
     public static String REQUEST_SEPARATOR = "@@"
 
+    public static Properties getProperties(){
+        def Properties properties = new Properties();
+        def FileInputStream fileInputStream = null;
 
-    public static Map parseOrAskArgs(String[] args){
-        //will ask for missing parameter
-        return listToMap(args)
-    }
-
-    public static Map listToMap(String[] list){
-        def map = [:]
-        def iterator = list.iterator()
-        while (iterator.hasNext()) {
-            map.put(iterator.next().substring(2),iterator.next())
+        try {
+            // Load a properties file
+            fileInputStream = new FileInputStream("Config.properties");
+            properties.load(fileInputStream);
+        } catch (java.io.FileNotFoundException e) {
+            throw new NotFoundException("File Config.properties not found : " + e);
+        } catch (IOException e) {
+            throw new MigrationException("Can't get all properties to migrate : " + e);
+        } finally {
+            if (fileInputStream != null) {
+                fileInputStream.close();
+            }
         }
-        return map
+        return properties;
     }
 
-    public static Sql getSqlConnection(Map props){
-        def dburl = props.get(MigrationUtil.DB_URL)
-        def user = props.get(MigrationUtil.DB_USER)
-        def pass = props.get(MigrationUtil.DB_PASSWORD)
-        def driver = props.get(MigrationUtil.DB_DRIVERCLASS)
-        println "url=" + dburl
-        println "user=" + user
-        println "pass=" + pass
-        println "driver=" + driver
-        return Sql.newInstance(dburl, user, pass, driver)
+    public static String displayProperty(Properties properties, String propertyName) {
+        if (properties == null || propertyName == null || "".equals(propertyName)){
+            throw new IllegalArgumentException("Can't execute displayProperty method with arguments : propeties = " + properties + ", propertyName = " + propertyName);
+        }
+        
+        def String property = properties.getProperty(propertyName);
+        if (property != null) {
+            println propertyName + " = " + property
+        } else {
+            throw new NotFoundException("The property " + propertyName + " doesn't exist !!");
+        }
+        return property;
+    }
+
+    public static Sql getSqlConnection(String dburl, String user, String pwd, String driverClass){
+        return Sql.newInstance(dburl, user, pwd, driverClass);
     }
 
     public static executeDefaultSqlFile(File file, String dbVendor, groovy.sql.Sql sql){
@@ -100,7 +116,8 @@ public class MigrationUtil {
         def sqlFile = getSqlFile(feature, dbVendor, fileExtension)
         def parameters = Collections.singletonMap(":tenantId", String.valueOf(it))
         def id = null
-        sql.eachRow(getSqlContent(sqlFile.text, parameters)[0]) { row ->
+        sql.eachRow(getSqlContent(sqlFile.text, parameters)[0]) {
+            row ->
             id = row[0]
         }
         return id
@@ -110,7 +127,8 @@ public class MigrationUtil {
         def sqlFile = getSqlFile(feature, dbVendor, "tenants")
         def tenants = []
 
-        sql.query(getSqlContent(sqlFile.text, null)[0]) { ResultSet rs ->
+        sql.query(getSqlContent(sqlFile.text, null)[0]) {
+            ResultSet rs ->
             while (rs.next()) tenants.add(rs.getLong(1))
         }
         return tenants
