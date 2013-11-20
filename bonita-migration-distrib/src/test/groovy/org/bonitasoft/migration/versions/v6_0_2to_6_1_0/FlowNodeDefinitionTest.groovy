@@ -13,6 +13,6 @@ class FlowNodeDefinitionTest {
     }
     @Test
     public void isGateway(){
-        assertTrue(new FlowNodeDefinition(type:"PARALLEL").isGateway());
+        assertTrue(new FlowNodeDefinition(type:"gateway").isGateway());
     }
 }
