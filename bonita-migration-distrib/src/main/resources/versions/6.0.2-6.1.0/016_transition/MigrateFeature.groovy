@@ -19,27 +19,18 @@ public migrateTransition(TransitionInstance transition, File feature, Map flowno
     def s = File.separatorChar;
     def processDefXml = new File(bonitaHome.getAbsolutePath()+"${s}server${s}tenants${s}${transition.tenantid}${s}work${s}processes${s}${transition.processDefId}${s}server-process-definition.xml");
     def FlowNodeDefinition target = getTargetOfTransition(processDefXml.text, transition)
-    println "target is <$target>"
+    println "target of the transition is <$target>"
     //if target = gateway, create or hit the gateway
     if(target.isGateway()){
         // check merging condition: if merge set as finished
         switch(target.gateType){
             case "PARALLEL":
             //get the gateway or create it
-                println "detected parallel gateway"
             //select the correponding gateway:
-                def GatewayInstance gateway = null;
-                sql.eachRow("SELECT * FROM flownode_instance WHERE tenantid = $transition.tenantid AND parentContainerId = $transition.parentContainerId AND flownodeDefinitionId = $target.id",{row ->
-                    if(gateway == null){//if not found
-                        if(!row.hitBys.contains("$transition.name") && !row.hitBys.contains("FINISH:")){//if the transition already hit this gateway, create a new one
-                            gateway = toGateway(row)
-                        }
-                    }
-                });
+                def GatewayInstance gateway = getGateway(transition,target);
                 def hitBys = "FINISH:1";
                 def nbIncommingTransition = target.incommingTransitions.size()
                 def transitionIndex = target.incommingTransitions.indexOf(transition.name) +1 // index of transition start at 1
-                println "index of transition $transition.name in $target.incommingTransitions is $transitionIndex"
                 if(gateway == null){//create new gateway
                     if( nbIncommingTransition > 1 ){//only 1 incomming: the gateway is finished, more than one: put in hitBys the transition index in definition
                         hitBys = transitionIndex;
@@ -54,29 +45,19 @@ public migrateTransition(TransitionInstance transition, File feature, Map flowno
                         hitBys = "$hitBys,$transitionIndex"
                     }
                     println "Update gateway <$gateway.id> with hitBys = '"+hitBys+"'"
-                    println sql.executeUpdate("UPDATE flownode_instance SET hitBys = '"+hitBys+"' WHERE tenantId = $gateway.tenantid and id = $gateway.id")+" gateway updated"
+                    sql.executeUpdate("UPDATE flownode_instance SET hitBys = '"+hitBys+"' WHERE tenantId = $gateway.tenantid and id = $gateway.id")
                 }
                 break;
             case "EXCLUSIVE":
             //create the gateway in finished
-                println "detected exclusive gateway"
                 insertFlowNode(transition, target,feature,flownodeIdsByTenants, [":gatewayType":"'EXCLUSIVE'",":hitBys":"'FINISH:1'"]);
                 break;
             case "INCLUSIVE":
-                println "detected inclusive gateway"
             //select the correponding gateway:
-                def GatewayInstance gateway = null;
-                sql.eachRow("SELECT * FROM flownode_instance WHERE tenantid = $transition.tenantid AND parentContainerId = $transition.parentContainerId AND flownodeDefinitionId = $target.id",{row ->
-                    if(gateway == null){//if not found
-                        if(!row.hitBys.contains("$transition.name") && !row.hitBys.contains("FINISH:")){//if the transition already hit this gateway, create a new one
-                            gateway = toGateway(row)
-                        }
-                    }
-                });
+                def GatewayInstance gateway = getGateway(transition,target);
                 def hitBys = "FINISH:1";
                 def nbIncommingTransition = target.incommingTransitions.size()
                 def transitionIndex = target.incommingTransitions.indexOf(transition.name) +1 // index of transition start at 1
-                println "index of transition $transition.name in $target.incommingTransitions is $transitionIndex"
                 if(gateway == null){//create new gateway for this transition
                     if( nbIncommingTransition > 1 && getNumberOfTokens(transition.tenantid,transition.parentContainerId,transition.tokenRefId) > 1){
                         //more than one incomming AND this branch is not the only one active (nb token >1): the gateway is not finished
@@ -94,17 +75,30 @@ public migrateTransition(TransitionInstance transition, File feature, Map flowno
                         hitBys = "$hitBys,$transitionIndex"
                     }
                     println "Update gateway <$gateway.id> with hitBys = '"+hitBys+"'"
-                    println sql.executeUpdate("UPDATE flownode_instance SET hitBys = '"+hitBys+"' WHERE tenantId = $gateway.tenantid and id = $gateway.id")+" gateway updated"
+                    sql.executeUpdate("UPDATE flownode_instance SET hitBys = '"+hitBys+"' WHERE tenantId = $gateway.tenantid and id = $gateway.id")
                 }
                 break;
         }
     }else{
         //if target is not a gateway create the element
+        println "Insert a flow node";
         insertFlowNode(transition, target,feature,flownodeIdsByTenants, [:]);
     }
-    println "deleting transition <$transition.id>"
+    println "delete transition <$transition.id>"
     sql.execute("DELETE FROM transition_instance WHERE id = $transition.id AND tenantid = $transition.tenantid")
+    println ""
     //archive transition
+}
+public GatewayInstance getGateway(TransitionInstance transition, FlowNodeDefinition target){
+    def GatewayInstance gateway = null;
+    sql.eachRow("SELECT * FROM flownode_instance WHERE tenantid = $transition.tenantid AND parentContainerId = $transition.parentContainerId AND flownodeDefinitionId = $target.id",{row ->
+        if(gateway == null){//if not found
+            if(!row.hitBys.contains("$transition.name") && !row.hitBys.contains("FINISH:")){//if the transition already hit this gateway, create a new one
+                gateway = toGateway(row)
+            }
+        }
+    });
+    return gateway;
 }
 private int getNumberOfTokens(tenantid, processInstanceId,ref_id){
     def result = 0
@@ -139,7 +133,6 @@ private GatewayInstance toGateway(row){
 }
 public void insertFlowNode(TransitionInstance transition, FlowNodeDefinition target, File feature, Map flownodeIdsByTenants, Map overrideParameters){
     def nextId = flownodeIdsByTenants.get(transition.tenantid);
-    println "the target of kind  $target.type will be inserted with id <$nextId>"
     def Map parameters = [":tenantid":transition.tenantid,":id":nextId,":flownodeDefinitionId":target.getId(),":kind":target.type,":rootContainerId":transition.rootContainerId,":parentContainerId":transition.parentContainerId,
         ":name":target.name,":stateId":target.getStateId(),":stateName":target.getStateName(),":stateCategory":"NORMAL", ":logicalGroup1":transition.processDefId,":logicalGroup2":transition.rootContainerId,":logicalGroup3":"0",
         ":logicalGroup4":transition.parentContainerId,":token_ref_id":transition.tokenRefId,":gatewayType":null,":hitBys":null]
