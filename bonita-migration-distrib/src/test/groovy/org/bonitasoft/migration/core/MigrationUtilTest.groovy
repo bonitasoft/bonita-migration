@@ -60,7 +60,7 @@ class MigrationUtilTest {
         // Get output
         baos.flush();
         def String standardOutput = baos.toString().replaceAll(System.getProperty("line.separator"), "");
-        assertEquals("\tos.name = Linux", standardOutput);
+        assertEquals("\t-os.name = Linux", standardOutput);
     }
     
     @Test
@@ -77,7 +77,7 @@ class MigrationUtilTest {
         // Get output
         baos.flush();
         def String standardOutput = baos.toString().replaceAll(System.getProperty("line.separator"), "");
-        assertEquals("\tos.name = Linux", standardOutput);
+        assertEquals("\t-os.name = Linux", standardOutput);
     }
 
 

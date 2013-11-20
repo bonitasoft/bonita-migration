@@ -60,7 +60,7 @@ public class MigrationUtil {
         def String property = properties.getProperty(propertyName);
         if (property != null) {
             property = property.replaceAll("\t", "").replaceAll(" ", "");
-            println "\t" + propertyName + " = " + property
+            println "\t-" + propertyName + " = " + property
         } else {
             throw new NotFoundException("The property " + propertyName + " doesn't exist !!");
         }
