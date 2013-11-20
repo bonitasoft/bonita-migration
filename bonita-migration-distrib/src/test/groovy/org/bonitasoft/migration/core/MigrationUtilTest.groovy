@@ -110,12 +110,12 @@ class MigrationUtilTest {
 
     @Test()
     public void getSqlContentWithParameter(){
-        def String sqlFileContent = "UPDATE platform SET version = ':version'"
+        def String sqlFileContent = "UPDATE platform SET version = ':version';"
         def Map<String, String> parameters = Collections.singletonMap(":version", "6.1.0")
         
         def List<String> result = MigrationUtil.getSqlContent(sqlFileContent, parameters);
         assertEquals(1, result.size());
-        assertEquals("UPDATE platform SET version = '6.1.0'", result.get(0));
+        assertEquals("UPDATE platform SET version = '6.1.0';", result.get(0));
     }
     
     @Test()
@@ -148,6 +148,15 @@ class MigrationUtilTest {
         assertEquals("toto", result.get(1));
         assertEquals("plip", result.get(2));
         assertEquals(" ", result.get(3));
+    }
+    
+    @Test()
+    public void getSqlContentWithCarriage(){
+        def String sqlFileContent = "plop\rtoto\r\n"
+        
+        def List<String> result = MigrationUtil.getSqlContent(sqlFileContent, null);
+        assertEquals(1, result.size());
+        assertEquals("ploptoto\n", result.get(0));
     }
 
 

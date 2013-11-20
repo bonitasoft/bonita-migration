@@ -94,7 +94,7 @@ public class MigrationUtil {
     }
 
     public static List<String> getSqlContent(String sqlFileContent, Map<String, String> parameters){
-        def sqlFileContentWithParameters = replaceParameters(sqlFileContent, parameters).replaceAll("\r\n", "\n")
+        def sqlFileContentWithParameters = replaceParameters(sqlFileContent, parameters).replaceAll("\r", "")
         return Arrays.asList(sqlFileContentWithParameters.split(REQUEST_SEPARATOR))
     }
 
