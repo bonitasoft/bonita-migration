@@ -1,14 +1,12 @@
 package org.bonitasoft.migration.versions.v6_0_2to_6_1_0;
 
 import groovy.transform.EqualsAndHashCode
-import groovy.transform.ToString
 
 
 @EqualsAndHashCode
-@ToString
 public class FlowNodeDefinition {
 
-    def Map types = ["userTask":"user",
+    def static Map types = ["userTask":"user",
         "manualTask":"manual",
         "automaticTask":"auto",
         "receiveTask":"receive",
@@ -20,7 +18,7 @@ public class FlowNodeDefinition {
         "intermediateCatchEvent":"intermediateCatchEvent",
         "intermediateThrowEvent":"intermediateThrowEvent",
         "endEvent":"endEvent"]
-    def Map stateIds = ["userTask":"32",
+    def static Map stateIds = ["userTask":"32",
         "manualTask":"0",
         "automaticTask":"37",
         "receiveTask":"32",
@@ -32,7 +30,7 @@ public class FlowNodeDefinition {
         "intermediateCatchEvent":"0",
         "intermediateThrowEvent":"26",
         "endEvent":"26"]
-    def Map stateNames = ["userTask":"initializing",
+    def static Map stateNames = ["userTask":"initializing",
         "manualTask":"initializing",
         "automaticTask":"executing",
         "receiveTask":"initializing",
@@ -74,5 +72,10 @@ public class FlowNodeDefinition {
      */
     String getStateId(){
         return stateIds.get(type)
+    }
+
+    @Override
+    public String toString() {
+        return "$type [id=$id, name=$name, type=$type, gateType=$gateType]";
     }
 }

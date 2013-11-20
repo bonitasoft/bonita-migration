@@ -1,3 +1,5 @@
+import groovy.sql.Sql;
+
 import java.io.File;
 import java.util.Map;
 
@@ -16,34 +18,42 @@ public migrateTransition(TransitionInstance transition, File feature, Map flowno
     def s = File.separatorChar;
     def processDefXml = new File(bonitaHome.getAbsolutePath()+"${s}server${s}tenants${s}${transition.tenantid}${s}work${s}processes${s}${transition.processDefId}${s}server-process-definition.xml");
     def FlowNodeDefinition target = getTargetOfTransition(processDefXml.text, transition)
-    println "target is $target.name"
+    println "target is $target"
     //if target = gateway, create or hit the gateway
     if(target.isGateway()){
         // check merging condition: if merge set as finished
-        switch(target.type){
+        switch(target.gateType){
             case "PARALLEL":
             //get the gateway or create it
-                println "Detected parallel gateway"
+                println "detected parallel gateway"
+                
                 break;
             case "EXCLUSIVE":
-            //create the gateway in finished
-                println "Detected exclusive gateway"
+                //create the gateway in finished
+                println "detected exclusive gateway"
+                insertFlowNode(transition, target,feature,flownodeIdsByTenants, [":gatewayType":"'EXCLUSIVE'",":hitBys":"'FINISH:1'"]);
                 break;
             case "INCLUSIVE":
-                println "Detected inclusive gateway"
+                println "detected inclusive gateway"
                 break;
         }
     }else{
         //if target is not a gateway create the element
-        def nextId = flownodeIdsByTenants.get(transition.tenantid);
-        println "the target of kind  $target.type will be inserted with id $nextId"
-        def Map parameters = [":tenantid":transition.tenantid,":id":nextId,":flownodeDefinitionId":target.getId(),":kind":target.type,":rootContainerId":transition.rootContainerId,":parentContainerId":transition.parentContainerId,
-            ":name":target.name,":stateId":target.getStateId(),":stateName":target.getStateName(),":stateCategory":"NORMAL", ":logicalGroup1":transition.processDefId,":logicalGroup2":transition.rootContainerId,":logicalGroup3":"0",
-            ":logicalGroup4":transition.parentContainerId,":token_ref_id":transition.tokenRefId]
-        MigrationUtil.executeSqlFile(feature, dbVendor, "insertFlowNode", parameters, sql, false)
-        flownodeIdsByTenants.put(transition.tenantid, nextId+1)
+        insertFlowNode(transition, target,feature,flownodeIdsByTenants, [:]);
     }
+    println "deleting transition <$transition.id>"
+    sql.execute("DELETE FROM transition_instance WHERE id = $transition.id AND tenantid = $transition.tenantid")
     //archive transition
+}
+public void insertFlowNode(TransitionInstance transition, FlowNodeDefinition target, File feature, Map flownodeIdsByTenants, Map overrideParameters){
+    def nextId = flownodeIdsByTenants.get(transition.tenantid);
+    println "the target of kind  $target.type will be inserted with id $nextId"
+    def Map parameters = [":tenantid":transition.tenantid,":id":nextId,":flownodeDefinitionId":target.getId(),":kind":target.type,":rootContainerId":transition.rootContainerId,":parentContainerId":transition.parentContainerId,
+        ":name":target.name,":stateId":target.getStateId(),":stateName":target.getStateName(),":stateCategory":"NORMAL", ":logicalGroup1":transition.processDefId,":logicalGroup2":transition.rootContainerId,":logicalGroup3":"0",
+        ":logicalGroup4":transition.parentContainerId,":token_ref_id":transition.tokenRefId,":gatewayType":null,":hitBys":null]
+    parameters.putAll(overrideParameters)
+    MigrationUtil.executeSqlFile(feature, dbVendor, "insertFlowNode", parameters, sql, false)
+    flownodeIdsByTenants.put(transition.tenantid, nextId+1)
 }
 
 public Object getTargetOfTransition(String processDefXml, TransitionInstance transition) {
