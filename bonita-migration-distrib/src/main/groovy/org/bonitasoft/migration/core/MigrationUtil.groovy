@@ -52,14 +52,15 @@ public class MigrationUtil {
         return properties;
     }
 
-    public static String displayProperty(Properties properties, String propertyName) {
+    public static String getAndDisplayProperty(Properties properties, String propertyName) {
         if (properties == null || propertyName == null || "".equals(propertyName)){
-            throw new IllegalArgumentException("Can't execute displayProperty method with arguments : propeties = " + properties + ", propertyName = " + propertyName);
+            throw new IllegalArgumentException("Can't execute getAndDisplayProperty method with arguments : propeties = " + properties + ", propertyName = " + propertyName);
         }
         
         def String property = properties.getProperty(propertyName);
         if (property != null) {
-            println propertyName + " = " + property
+            property = property.replaceAll("\t", "").replaceAll(" ", "");
+            println "\t" + propertyName + " = " + property
         } else {
             throw new NotFoundException("The property " + propertyName + " doesn't exist !!");
         }

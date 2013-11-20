@@ -48,19 +48,36 @@ class MigrationUtilTest {
     }
 
     @Test
-    public void displayProperty(){
+    public void getAndDisplayProperty(){
         // To capture output
         def ByteArrayOutputStream baos = new ByteArrayOutputStream();
         System.setOut(new PrintStream(baos));
         // Build properties
         def Properties properties = buildProperties();
 
-        def String result = MigrationUtil.displayProperty(properties, "os.name");
+        def String result = MigrationUtil.getAndDisplayProperty(properties, "os.name");
         assertEquals("Linux", result);
         // Get output
         baos.flush();
         def String standardOutput = baos.toString().replaceAll(System.getProperty("line.separator"), "");
-        assertEquals("os.name = Linux", standardOutput);
+        assertEquals("\tos.name = Linux", standardOutput);
+    }
+    
+    @Test
+    public void getAndDisplayPropertyWithWhitespaces(){
+        // To capture output
+        def ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(baos));
+        // Build properties
+        def Properties properties = new Properties();
+        properties.setProperty("os.name", "L\tinu x");
+
+        def String result = MigrationUtil.getAndDisplayProperty(properties, "os.name");
+        assertEquals("Linux", result);
+        // Get output
+        baos.flush();
+        def String standardOutput = baos.toString().replaceAll(System.getProperty("line.separator"), "");
+        assertEquals("\tos.name = Linux", standardOutput);
     }
 
 
@@ -69,37 +86,37 @@ class MigrationUtilTest {
         // Build properties
         def Properties properties = buildProperties();
 
-        noDisplayProperty(properties, "plop");
+        nogetAndDisplayProperty(properties, "plop");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void displayPropertyWithNullProperties(){
-        noDisplayProperty(null, "plop");
+    public void getAndDisplayPropertyWithNullProperties(){
+        nogetAndDisplayProperty(null, "plop");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void displayPropertyWithNullProperty(){
+    public void getAndDisplayPropertyWithNullProperty(){
         // Build properties
         def Properties properties = buildProperties();
 
-        noDisplayProperty(properties, null);
+        nogetAndDisplayProperty(properties, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void displayPropertyWithEmptyProperty(){
+    public void getAndDisplayPropertyWithEmptyProperty(){
         // Build properties
         def Properties properties = buildProperties();
 
-        noDisplayProperty(properties, "");
+        nogetAndDisplayProperty(properties, "");
     }
 
-    private void noDisplayProperty(Properties properties, String propertyName){
+    private void nogetAndDisplayProperty(Properties properties, String propertyName){
         // To capture output
         def ByteArrayOutputStream baos = new ByteArrayOutputStream();
         System.setOut(new PrintStream(baos));
 
         try {
-            MigrationUtil.displayProperty(properties, propertyName);
+            MigrationUtil.getAndDisplayProperty(properties, propertyName);
         } finally {
             // Get output
             baos.flush();

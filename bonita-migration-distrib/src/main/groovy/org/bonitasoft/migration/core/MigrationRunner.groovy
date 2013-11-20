@@ -58,17 +58,17 @@ public class MigrationRunner {
         def Properties properties = MigrationUtil.getProperties();
         
         println "Properties : "
-        sourceVersion = MigrationUtil.displayProperty(properties, MigrationUtil.SOURCE_VERSION);
-        targetVersion = MigrationUtil.displayProperty(properties, MigrationUtil.TARGET_VERSION);
-        dbVendor = MigrationUtil.displayProperty(properties, MigrationUtil.DB_VENDOR);
-        bonitaHome = new File(MigrationUtil.displayProperty(properties, MigrationUtil.BONITA_HOME));
+        sourceVersion = MigrationUtil.getAndDisplayProperty(properties, MigrationUtil.SOURCE_VERSION);
+        targetVersion = MigrationUtil.getAndDisplayProperty(properties, MigrationUtil.TARGET_VERSION);
+        bonitaHome = new File(MigrationUtil.getAndDisplayProperty(properties, MigrationUtil.BONITA_HOME));
         if(!bonitaHome.exists()){
             throw new IllegalStateException("Bonita home does not exist.");
         }
-        def dburl = MigrationUtil.displayProperty(properties, MigrationUtil.DB_URL);
-        def user = MigrationUtil.displayProperty(properties, MigrationUtil.DB_USER);
-        def pwd = MigrationUtil.displayProperty(properties, MigrationUtil.DB_PASSWORD);
-        def driverClass = MigrationUtil.displayProperty(properties, MigrationUtil.DB_DRIVERCLASS);
+        dbVendor = MigrationUtil.getAndDisplayProperty(properties, MigrationUtil.DB_VENDOR);
+        def dburl = MigrationUtil.getAndDisplayProperty(properties, MigrationUtil.DB_URL);
+        def user = MigrationUtil.getAndDisplayProperty(properties, MigrationUtil.DB_USER);
+        def pwd = MigrationUtil.getAndDisplayProperty(properties, MigrationUtil.DB_PASSWORD);
+        def driverClass = MigrationUtil.getAndDisplayProperty(properties, MigrationUtil.DB_DRIVERCLASS);
         
         println "Press ENTER to continue"
         System.console().readLine()
