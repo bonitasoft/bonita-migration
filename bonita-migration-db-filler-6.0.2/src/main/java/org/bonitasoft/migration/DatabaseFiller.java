@@ -80,23 +80,15 @@ public class DatabaseFiller {
 
     private final class SpotTransitionHandler implements SHandler<SEvent> {
 
-        private final ProcessDefinition processDefinition1;
-
-        private final ProcessDefinition processDefinition3;
-
         private final TenantServiceAccessor instance;
-
-        private final ProcessDefinition processDefinition2;
 
         private int hitnb = 0;
 
-        private SpotTransitionHandler(final ProcessDefinition processDefinition1, final ProcessDefinition processDefinition3,
-                final TenantServiceAccessor instance,
-                final ProcessDefinition processDefinition2) {
-            this.processDefinition1 = processDefinition1;
-            this.processDefinition3 = processDefinition3;
+        private final Map<Long, String> transitionThatPointOnToStop;
+
+        private SpotTransitionHandler(final TenantServiceAccessor instance, final Map<Long, String> transitionThatPointOnToStop) {
             this.instance = instance;
-            this.processDefinition2 = processDefinition2;
+            this.transitionThatPointOnToStop = transitionThatPointOnToStop;
         }
 
         @Override
@@ -107,10 +99,8 @@ public class DatabaseFiller {
         @Override
         public void execute(final SEvent event) throws SHandlerExecutionException {
             STransitionInstance transition = (STransitionInstance) event.getObject();
-            if (transition.getProcessDefinitionId() == processDefinition1.getId() && (transition.getName().endsWith("gate2") || transition.getName()
-                    .endsWith("event"))
-                    || transition.getProcessDefinitionId() == processDefinition2.getId() && transition.getName().endsWith("gate2")
-                    || transition.getProcessDefinitionId() == processDefinition3.getId() && transition.getName().endsWith("gate2")) {
+            if (transitionThatPointOnToStop.containsKey(transition.getProcessDefinitionId())
+                    && transition.getName().endsWith(transitionThatPointOnToStop.get(transition.getProcessDefinitionId()))) {
                 hitnb++;
                 System.out.println("stopped transition " + transition);
                 try {
@@ -181,92 +171,81 @@ public class DatabaseFiller {
 
         ProcessAPI processAPI = TenantAPIAccessor.getProcessAPI(session);
 
-        final ProcessDefinition processDefinition1 = deployProcessWithParallelGateways(processAPI);
-        final ProcessDefinition processDefinition2 = deployProcessWithInclusiveGateways(processAPI);
-        final ProcessDefinition processDefinition3 = deployProcessWithExclusiveGateways(processAPI);
+        final ProcessDefinition processDefinitionEvent = deployProcessWithTransitionToEvent(processAPI);
+        final ProcessDefinition processDefinitionPara1 = deployProcessWithGateways(processAPI, GatewayType.PARALLEL, 2, "para1");
+        final ProcessDefinition processDefinitionPara2 = deployProcessWithGateways(processAPI, GatewayType.PARALLEL, 4, "para4");
+        final ProcessDefinition processDefinitionInclu1 = deployProcessWithGateways(processAPI, GatewayType.INCLUSIVE, 2, "inclu1");
+        final ProcessDefinition processDefinitionInclu2 = deployProcessWithGateways(processAPI, GatewayType.INCLUSIVE, 2, "inclu2");
+        final ProcessDefinition processDefinitionInclu3 = deployProcessWithGateways(processAPI, GatewayType.INCLUSIVE, 3, "inclu3");
+        final ProcessDefinition processDefinitionExclu2 = deployProcessWithGateways(processAPI, GatewayType.EXCLUSIVE, 2, "exclu2");
+        HashMap<Long, String> transitions = new HashMap<Long, String>();
+        transitions.put(processDefinitionEvent.getId(), "event");
+        transitions.put(processDefinitionPara1.getId(), "gate1");
+        transitions.put(processDefinitionPara2.getId(), "gate2");
+        transitions.put(processDefinitionInclu1.getId(), "gate1");
+        transitions.put(processDefinitionInclu2.getId(), "gate2");
+        transitions.put(processDefinitionInclu3.getId(), "gate2");
+        transitions.put(processDefinitionExclu2.getId(), "gate2");
 
         final TenantServiceAccessor instance = TenantServiceSingleton.getInstance(session.getTenantId());
-        final SpotTransitionHandler userHandler = new SpotTransitionHandler(processDefinition1, processDefinition3, instance, processDefinition2);
+        final SpotTransitionHandler userHandler = new SpotTransitionHandler(instance, transitions);
         instance.getEventService().addHandler("TRANSITIONINSTANCE_DELETED", userHandler);
 
-        processAPI.startProcess(processDefinition1.getId());
-        processAPI.startProcess(processDefinition2.getId());
-        processAPI.startProcess(processDefinition3.getId());
+        processAPI.startProcess(processDefinitionEvent.getId());
+        processAPI.startProcess(processDefinitionPara1.getId());
+        processAPI.startProcess(processDefinitionPara2.getId());
+        processAPI.startProcess(processDefinitionInclu1.getId());
+        processAPI.startProcess(processDefinitionInclu2.getId());
+        processAPI.startProcess(processDefinitionInclu3.getId());
+        processAPI.startProcess(processDefinitionExclu2.getId());
         boolean wait = new WaitUntil(100, 5000) {
 
             @Override
             protected boolean check() throws Exception {
-                return userHandler.getHitnb() == 5;
+                return userHandler.getHitnb() == 11;// 11 transition will be blocked
             }
         }.waitUntil();
         if (!wait) {
             throw new IllegalStateException("unable to fill db: transitions not reached");
         }
         return Collections.singletonMap("Transitions",
-                "2");
+                "11");
     }
 
-    private ProcessDefinition deployProcessWithParallelGateways(final ProcessAPI processAPI) throws InvalidBusinessArchiveFormatException,
+    private ProcessDefinition deployProcessWithTransitionToEvent(final ProcessAPI processAPI) throws InvalidBusinessArchiveFormatException,
             InvalidProcessDefinitionException,
             AlreadyExistsException, ProcessDeployException, ProcessDefinitionNotFoundException, ProcessEnablementException {
-        ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("ProcessWithTransitionsParallele", "1.0");
+        ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("ProcessWithTransitionsGoToEvent", "1.0");
         builder.addStartEvent("start");
         builder.addIntermediateCatchEvent("event").addSignalEventTrigger("signal");
-        builder.addGateway("gate1", GatewayType.PARALLEL);
-        builder.addAutomaticTask("step1");
-        builder.addAutomaticTask("step2");
-        builder.addGateway("gate2", GatewayType.PARALLEL);
-        builder.addEndEvent("end");
-        builder.addTransition("start", "gate1");
         builder.addTransition("start", "event");
-        builder.addTransition("gate1", "step1");
-        builder.addTransition("gate1", "step2");
-        builder.addTransition("step1", "gate2");
-        builder.addTransition("step2", "gate2");
-        builder.addTransition("gate2", "end");
         BusinessArchive businessArchive = new BusinessArchiveBuilder().createNewBusinessArchive().setProcessDefinition(builder.done()).done();
         final ProcessDefinition processDefinition = processAPI.deploy(businessArchive);
         processAPI.enableProcess(processDefinition.getId());
         return processDefinition;
     }
 
-    private ProcessDefinition deployProcessWithInclusiveGateways(final ProcessAPI processAPI) throws InvalidBusinessArchiveFormatException,
+    private ProcessDefinition deployProcessWithGateways(final ProcessAPI processAPI, final GatewayType gatewayType, final int nbBranches, final String name)
+            throws InvalidBusinessArchiveFormatException,
             InvalidProcessDefinitionException,
             AlreadyExistsException, ProcessDeployException, ProcessDefinitionNotFoundException, ProcessEnablementException, InvalidExpressionException {
-        ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("ProcessWithTransitionsInclusive", "1.0");
+        ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("ProcessWithTransitions" + name, "1.0");
+        boolean addCondition = gatewayType != GatewayType.PARALLEL;
         builder.addStartEvent("start");
-        builder.addGateway("gate1", GatewayType.INCLUSIVE);
-        builder.addAutomaticTask("step1");
-        builder.addAutomaticTask("step2");
-        builder.addGateway("gate2", GatewayType.INCLUSIVE);
-        builder.addEndEvent("end");
+        builder.addGateway("gate1", gatewayType);
+        builder.addGateway("gate2", gatewayType);
         builder.addTransition("start", "gate1");
-        builder.addTransition("gate1", "step1", new ExpressionBuilder().createConstantBooleanExpression(false));
-        builder.addTransition("gate1", "step2", new ExpressionBuilder().createConstantBooleanExpression(true));
-        builder.addTransition("step1", "gate2");
-        builder.addTransition("step2", "gate2");
-        builder.addTransition("gate2", "end");
-        BusinessArchive businessArchive = new BusinessArchiveBuilder().createNewBusinessArchive().setProcessDefinition(builder.done()).done();
-        final ProcessDefinition processDefinition = processAPI.deploy(businessArchive);
-        processAPI.enableProcess(processDefinition.getId());
-        return processDefinition;
-    }
-
-    private ProcessDefinition deployProcessWithExclusiveGateways(final ProcessAPI processAPI) throws InvalidBusinessArchiveFormatException,
-            InvalidProcessDefinitionException,
-            AlreadyExistsException, ProcessDeployException, ProcessDefinitionNotFoundException, ProcessEnablementException {
-        ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("ProcessWithTransitionsExclusive", "1.0");
-        builder.addStartEvent("start");
-        builder.addGateway("gate1", GatewayType.EXCLUSIVE);
-        builder.addAutomaticTask("step1");
-        builder.addAutomaticTask("step2");
-        builder.addGateway("gate2", GatewayType.EXCLUSIVE);
+        for (int i = 1; i <= nbBranches; i++) {
+            builder.addAutomaticTask("step" + i);
+            if (addCondition) {
+                builder.addTransition("gate1", "step" + i, new ExpressionBuilder().createConstantBooleanExpression(i != 1));
+                builder.addTransition("step" + i, "gate2", new ExpressionBuilder().createConstantBooleanExpression(i != 1));
+            } else {
+                builder.addTransition("gate1", "step" + i);
+                builder.addTransition("step" + i, "gate2");
+            }
+        }
         builder.addEndEvent("end");
-        builder.addTransition("start", "gate1");
-        builder.addTransition("gate1", "step1");
-        builder.addTransition("gate1", "step2");
-        builder.addTransition("step1", "gate2");
-        builder.addTransition("step2", "gate2");
         builder.addTransition("gate2", "end");
         BusinessArchive businessArchive = new BusinessArchiveBuilder().createNewBusinessArchive().setProcessDefinition(builder.done()).done();
         final ProcessDefinition processDefinition = processAPI.deploy(businessArchive);
