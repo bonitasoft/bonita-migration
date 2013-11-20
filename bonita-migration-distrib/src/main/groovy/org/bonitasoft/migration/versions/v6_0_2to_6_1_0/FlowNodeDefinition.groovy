@@ -49,6 +49,7 @@ public class FlowNodeDefinition {
     def String name;
     def String type;
     def String gateType;
+    def List<String> incommingTransitions = [];
 
 
     boolean isGateway(){
@@ -76,6 +77,10 @@ public class FlowNodeDefinition {
 
     @Override
     public String toString() {
-        return "$type [id=$id, name=$name, type=$type, gateType=$gateType]";
+        return "$type [id=$id, name=$name, type=$type, gateType=$gateType ]"+(incommingTransitions.size()>0?"transitions: $incommingTransitions":"");
+    }
+
+    public void addTransition(String idref){
+        incommingTransitions.add(idref);
     }
 }

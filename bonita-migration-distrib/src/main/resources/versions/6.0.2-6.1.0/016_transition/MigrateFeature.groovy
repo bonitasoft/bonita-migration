@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Map;
 
 import org.bonitasoft.migration.core.MigrationUtil;
+import org.bonitasoft.migration.versions.v6_0_2to_6_1_0.GatewayInstance;
 import org.bonitasoft.migration.versions.v6_0_2to_6_1_0.TransitionInstance;
 import org.bonitasoft.migration.versions.v6_0_2to_6_1_0.FlowNodeDefinition;
 
@@ -18,7 +19,7 @@ public migrateTransition(TransitionInstance transition, File feature, Map flowno
     def s = File.separatorChar;
     def processDefXml = new File(bonitaHome.getAbsolutePath()+"${s}server${s}tenants${s}${transition.tenantid}${s}work${s}processes${s}${transition.processDefId}${s}server-process-definition.xml");
     def FlowNodeDefinition target = getTargetOfTransition(processDefXml.text, transition)
-    println "target is $target"
+    println "target is <$target>"
     //if target = gateway, create or hit the gateway
     if(target.isGateway()){
         // check merging condition: if merge set as finished
@@ -26,10 +27,40 @@ public migrateTransition(TransitionInstance transition, File feature, Map flowno
             case "PARALLEL":
             //get the gateway or create it
                 println "detected parallel gateway"
-                
+            //select the correponding gateway:
+                def GatewayInstance gateway = null;
+                sql.eachRow("SELECT * FROM flownode_instance WHERE tenantid = $transition.tenantid AND parentContainerId = $transition.parentContainerId AND flownodeDefinitionId = $target.id",{row ->
+                    if(gateway == null){//if not found
+                        if(!row.hitBys.contains("$transition.name") && !row.hitBys.contains("FINISH:")){//if the transition already hit this gateway, create a new one
+                            gateway = toGateway(row)
+                        }
+                    }
+                });
+            def hitBys = "FINISH:1";
+            def nbIncommingTransition = target.incommingTransitions.size()
+            def transitionIndex = target.incommingTransitions.indexOf(transition.name) +1 // index of transition start at 1
+            println "index of transition $transition.name in $target.incommingTransitions is $transitionIndex"
+            if(gateway == null){//create new gateway
+                if( nbIncommingTransition > 1 ){//only 1 incomming: the gateway is finished, more than one: put in hitBys the transition index in definition
+                    hitBys = transitionIndex;
+                }
+                println "Insert new gateway with hitBys = '"+hitBys+"'";
+                insertFlowNode(transition, target,feature,flownodeIdsByTenants, [":gatewayType":"'PARALLEL'",":hitBys":hitBys]);
+            }else{//update the existing gateway
+                hitBys = gateway.hitBys;
+                if(hitBys.split(",").length +1 == nbIncommingTransition){//set the gateway as finish
+                    hitBys = "FINISH:$nbIncommingTransition"
+                }else{//add the transition the hit the gateway
+                    hitBys = "$hitBys,$transitionIndex"
+                }
+                println "Update gateway <$gateway.id> with hitBys = '"+hitBys+"'"
+                println sql.executeUpdate("UPDATE flownode_instance SET hitBys = '"+hitBys+"' WHERE tenantId = $gateway.tenantid and id = $gateway.id")+" gateway updated"
+            }
+            //if there is none insert one
+            //else
                 break;
             case "EXCLUSIVE":
-                //create the gateway in finished
+            //create the gateway in finished
                 println "detected exclusive gateway"
                 insertFlowNode(transition, target,feature,flownodeIdsByTenants, [":gatewayType":"'EXCLUSIVE'",":hitBys":"'FINISH:1'"]);
                 break;
@@ -45,9 +76,32 @@ public migrateTransition(TransitionInstance transition, File feature, Map flowno
     sql.execute("DELETE FROM transition_instance WHERE id = $transition.id AND tenantid = $transition.tenantid")
     //archive transition
 }
+private GatewayInstance toGateway(row){
+    return new GatewayInstance(tenantid:row.tenantid,
+        id:row.id,
+        flownodeDefinitionId:row.flownodeDefinitionId,
+        kind:row.kind,
+        rootContainerId:row.rootContainerId,
+        parentContainerId:row.parentContainerId,
+        name:row.name,
+        stateId:row.stateId,
+        prev_state_id:row.prev_state_id,
+        stateName:row.stateName,
+        terminal:row.terminal,
+        stable:row.stable,
+        stateCategory:row.stateCategory,
+        gatewayType:row.gatewayType,
+        hitBys:row.hitBys,
+        logicalGroup1:row.logicalGroup1,
+        logicalGroup2:row.logicalGroup2,
+        logicalGroup3:row.logicalGroup3,
+        logicalGroup4:row.logicalGroup4,
+        tokenCount:row.tokenCount,
+        token_ref_id:row.token_ref_id);
+}
 public void insertFlowNode(TransitionInstance transition, FlowNodeDefinition target, File feature, Map flownodeIdsByTenants, Map overrideParameters){
     def nextId = flownodeIdsByTenants.get(transition.tenantid);
-    println "the target of kind  $target.type will be inserted with id $nextId"
+    println "the target of kind  $target.type will be inserted with id <$nextId>"
     def Map parameters = [":tenantid":transition.tenantid,":id":nextId,":flownodeDefinitionId":target.getId(),":kind":target.type,":rootContainerId":transition.rootContainerId,":parentContainerId":transition.parentContainerId,
         ":name":target.name,":stateId":target.getStateId(),":stateName":target.getStateName(),":stateCategory":"NORMAL", ":logicalGroup1":transition.processDefId,":logicalGroup2":transition.rootContainerId,":logicalGroup3":"0",
         ":logicalGroup4":transition.parentContainerId,":token_ref_id":transition.tokenRefId,":gatewayType":null,":hitBys":null]
@@ -66,6 +120,10 @@ public Object getTargetOfTransition(String processDefXml, TransitionInstance tra
     def flownodeDef = new FlowNodeDefinition(id:flownode.@id,name:flownode.@name, type:type)
     if(flownodeDef.isGateway()){
         flownodeDef.gateType = flownode.@gatewayType
+        flownode.incomingTransition.each {
+            def idref = it.@idref
+            flownodeDef.addTransition(processDefinition.depthFirst().grep{ it.@id == idref }[0].@name)
+        }
     }
     return flownodeDef
 }
