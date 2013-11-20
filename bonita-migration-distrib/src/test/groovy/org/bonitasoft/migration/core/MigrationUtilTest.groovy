@@ -2,7 +2,6 @@ package org.bonitasoft.migration.core;
 
 import static org.junit.Assert.*
 
-import org.gmock.GMockTestCase
 import org.junit.Test
 
 import org.bonitasoft.migration.core.exception.NotFoundException;
