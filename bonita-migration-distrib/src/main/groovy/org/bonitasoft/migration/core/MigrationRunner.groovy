@@ -100,7 +100,7 @@ public class MigrationRunner {
             System.setOut(new PrintStream(stdout){
                         @Override
                         public void println(String x) {
-                            super.print(" | ");
+                            super.print("\t| ");
                             super.println(x);
                         }
                     });

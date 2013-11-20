@@ -160,7 +160,7 @@ public class MigrationUtil {
         def ant = new AntBuilder();
         def deleted = false
         if (!(deleted = new File(toDir).deleteDir())) {
-            throw IllegalStateException("Unable to delete: " + toDir)
+            throw IllegalStateException("Unable to delete : " + toDir)
         } else {
             ant.copy(todir: toDir) { fileset(dir: fromDir) }
             println toDir + " succesfully migrated"
