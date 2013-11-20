@@ -77,7 +77,7 @@ public class MigrationRunner {
     }
 
     public migrateFeatures(GroovyScriptEngine gse) {
-        def resources = new File("versions/" + sourceVersion + "-" + targetVersion)
+        def resources = new File("versions" + MigrationUtil.FILE_SEPARATOR + sourceVersion + "-" + targetVersion)
         if(!resources.exists()){
             throw new IllegalStateException(resources.absolutePath + " doesn't exist.")
         }

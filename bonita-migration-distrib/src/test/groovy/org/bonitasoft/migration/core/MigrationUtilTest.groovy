@@ -8,6 +8,8 @@ import org.junit.Test
 import org.bonitasoft.migration.core.exception.NotFoundException;
 
 class MigrationUtilTest {
+    
+    def final static String FILE_SEPARATOR = System.getProperty("file.separator");
 
     @Test
     public void getProperties(){
@@ -22,7 +24,7 @@ class MigrationUtilTest {
         def File file = new File("Config.properties");
         boolean success = file.delete();
         if (!success)
-        throw new IllegalArgumentException("Delete: deletion failed");
+            throw new IllegalArgumentException("Delete: deletion failed");
     }
 
     @Test(expected = NotFoundException.class)
@@ -97,9 +99,8 @@ class MigrationUtilTest {
         def ByteArrayOutputStream baos = new ByteArrayOutputStream();
         System.setOut(new PrintStream(baos));
 
-        def String result;
         try {
-            result = MigrationUtil.displayProperty(properties, propertyName);
+            MigrationUtil.displayProperty(properties, propertyName);
         } finally {
             // Get output
             baos.flush();
@@ -112,36 +113,36 @@ class MigrationUtilTest {
     public void getSqlContentWithParameter(){
         def String sqlFileContent = "UPDATE platform SET version = ':version';"
         def Map<String, String> parameters = Collections.singletonMap(":version", "6.1.0")
-        
+
         def List<String> result = MigrationUtil.getSqlContent(sqlFileContent, parameters);
         assertEquals(1, result.size());
         assertEquals("UPDATE platform SET version = '6.1.0';", result.get(0));
     }
-    
+
     @Test()
     public void getSqlContentWithoutParameter(){
         def String sqlFileContent = "plop"
         def Map<String, String> parameters = Collections.emptyMap();
-        
+
         def List<String> result = MigrationUtil.getSqlContent(sqlFileContent, parameters);
         assertEquals(1, result.size());
         assertEquals("plop", result.get(0));
     }
-    
+
     @Test()
     public void getSqlContentWithNullParameter(){
         def String sqlFileContent = "plop"
-        
+
         def List<String> result = MigrationUtil.getSqlContent(sqlFileContent, null);
         assertEquals(1, result.size());
         assertEquals("plop", result.get(0));
     }
-    
-    
+
+
     @Test()
     public void getSqlContentToSplit(){
         def String sqlFileContent = "plop@@toto@@plip@@ "
-        
+
         def List<String> result = MigrationUtil.getSqlContent(sqlFileContent, null);
         assertEquals(4, result.size());
         assertEquals("plop", result.get(0));
@@ -149,60 +150,61 @@ class MigrationUtilTest {
         assertEquals("plip", result.get(2));
         assertEquals(" ", result.get(3));
     }
-    
+
     @Test()
     public void getSqlContentWithCarriage(){
         def String sqlFileContent = "plop\rtoto\r\n"
-        
+
         def List<String> result = MigrationUtil.getSqlContent(sqlFileContent, null);
         assertEquals(1, result.size());
         assertEquals("ploptoto\n", result.get(0));
     }
 
-
-
-    //	@Test
-    //	public void testExecuteDefaultSqlFile(){
-    //		play {
-    //			mockSql.load("withTransaction").returns("apple")
-    //			MigrationUtil.executeDefaultSqlFile( file, dbVendor, sql)
-    //		}
-    //	}
-    //
-    //
-    //	@Test
-    //	public void testExecuteDefaultSqlNotExistingFile(){
-    //		play {
-    //			MigrationUtil.executeDefaultSqlFile( file, dbVendor,  sql)
-    //		}
-    //	}
-    //
-    //	@Test
-    //	public void testExecuteDefaultSqlNoFile(){
-    //		play {
-    //			MigrationUtil.executeDefaultSqlFile(null, dbVendor, sql)
-    //		}
-    //	}
-    //
-    //
-    //	@Test
-    //	public void testExecuteDefaultSqlFileNotExistingVendor(){
-    //		play {
-    //			MigrationUtil.executeDefaultSqlFile(file, "plop", sql)
-    //		}
-    //	}
-    //
-    //	@Test
-    //	public void testExecuteDefaultSqlFileNoVendor(){
-    //		play {
-    //			MigrationUtil.executeDefaultSqlFile(file, null, sql)
-    //		}
-    //	}
-    //
-    //	@Test
-    //	public void testExecuteDefaultSqlFileNoSql(){
-    //		play {
-    //			MigrationUtil.executeDefaultSqlFile(file, dbVendor, null)
-    //		}
-    //	}
+    @Test()
+    public void getSqlFileWithSuffix(){
+        def File folder = new File(FILE_SEPARATOR);
+        def String dbVendor = "vendor";
+        def String suffix = "plop";
+        
+        def File result = MigrationUtil.getSqlFile(folder, dbVendor, suffix);
+        assertEquals(folder.getPath() + dbVendor + "-" + suffix + ".sql", result.getPath());
+    }
+    
+    @Test()
+    public void getSqlFileWithoutSuffix(){
+        def File folder = new File(FILE_SEPARATOR);
+        def String dbVendor = "vendor";
+        def String suffix = "";
+        
+        def File result = MigrationUtil.getSqlFile(folder, dbVendor, suffix);
+        assertEquals(folder.getPath() + dbVendor + ".sql", result.getPath());
+    }
+    
+    @Test()
+    public void getSqlFileWithNullSuffix(){
+        def File folder = new File(FILE_SEPARATOR + "titi");
+        def String dbVendor = "vendor";
+        def String suffix = null;
+        
+        def File result = MigrationUtil.getSqlFile(folder, dbVendor, suffix);
+        assertEquals(folder.getPath() + FILE_SEPARATOR + dbVendor + ".sql", result.getPath());
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void getSqlFileWithNullFolder(){
+        def File folder = null;
+        def String dbVendor = "vendor";
+        def String suffix = "";
+        
+        MigrationUtil.getSqlFile(folder, dbVendor, suffix);
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void getSqlFileWithNullDBVendor(){
+        def File folder = new File(FILE_SEPARATOR + "titi");
+        def String dbVendor = null;
+        def String suffix = "";
+        
+        MigrationUtil.getSqlFile(folder, dbVendor, suffix);
+    }
 }

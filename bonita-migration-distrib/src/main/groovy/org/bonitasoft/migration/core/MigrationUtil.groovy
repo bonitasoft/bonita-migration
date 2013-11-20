@@ -11,24 +11,26 @@ import org.bonitasoft.migration.core.exception.MigrationException;
 
 
 public class MigrationUtil {
+    
+    public final static String FILE_SEPARATOR = System.getProperty("file.separator");
 
-    public static String SOURCE_VERSION = "source.version"
+    public final static String SOURCE_VERSION = "source.version"
 
-    public static String TARGET_VERSION = "target.version"
+    public final static String TARGET_VERSION = "target.version"
 
-    public static String BONITA_HOME = "bonita.home"
+    public final static String BONITA_HOME = "bonita.home"
 
-    public static String DB_URL = "db.url"
+    public final static String DB_URL = "db.url"
 
-    public static String DB_USER = "db.user"
+    public final static String DB_USER = "db.user"
 
-    public static String DB_PASSWORD = "db.password"
+    public final static String DB_PASSWORD = "db.password"
 
-    public static String DB_DRIVERCLASS = "db.driverClass"
+    public final static String DB_DRIVERCLASS = "db.driverClass"
 
-    public static String DB_VENDOR = "db.vendor"
+    public final static String DB_VENDOR = "db.vendor"
 
-    public static String REQUEST_SEPARATOR = "@@"
+    public final static String REQUEST_SEPARATOR = "@@"
 
     public static Properties getProperties(){
         def Properties properties = new Properties();
@@ -99,6 +101,9 @@ public class MigrationUtil {
     }
 
     public static File getSqlFile(File folder, String dbVendor, String suffix){
+        if (folder == null || dbVendor == null || "".equals(dbVendor)){
+            throw new IllegalArgumentException("Can't execute displayProperty method with arguments : folder = " + folder + ", dbVendor = " + dbVendor);
+        }
         return new File(folder, dbVendor + (suffix == null || suffix.isEmpty() ? "" : "-" + suffix) + ".sql")
     }
 
