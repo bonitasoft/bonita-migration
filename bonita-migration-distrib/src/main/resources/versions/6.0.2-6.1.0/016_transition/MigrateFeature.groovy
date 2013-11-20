@@ -19,7 +19,7 @@ public migrateTransition(TransitionInstance transition, File feature, Map flowno
     def s = File.separatorChar;
     def processDefXml = new File(bonitaHome.getAbsolutePath()+"${s}server${s}tenants${s}${transition.tenantid}${s}work${s}processes${s}${transition.processDefId}${s}server-process-definition.xml");
     def FlowNodeDefinition target = getTargetOfTransition(processDefXml.text, transition)
-    println "target of the transition is <$target>"
+    println "target of the transition in definition is <$target>"
     //if target = gateway, create or hit the gateway
     if(target.isGateway()){
         // check merging condition: if merge set as finished
@@ -39,13 +39,10 @@ public migrateTransition(TransitionInstance transition, File feature, Map flowno
                     insertFlowNode(transition, target,feature,flownodeIdsByTenants, [":gatewayType":"'PARALLEL'",":hitBys":"'"+hitBys+"'"]);
                 }else{//update the existing gateway
                     hitBys = gateway.hitBys;
-                    if(hitBys.split(",").length +1 == nbIncommingTransition){//set the gateway as finish
-                        hitBys = "FINISH:$nbIncommingTransition"
-                    }else{//add the transition the hit the gateway
-                        hitBys = "$hitBys,$transitionIndex"
-                    }
-                    println "Update gateway <$gateway.id> with hitBys = '"+hitBys+"'"
-                    sql.executeUpdate("UPDATE flownode_instance SET hitBys = '"+hitBys+"' WHERE tenantId = $gateway.tenantid and id = $gateway.id")
+                    def nbHit = hitBys.split(",").length +1
+                    def isFinished = nbHit == nbIncommingTransition
+                    //is finished if all tr are here
+                    updateGateway(isFinished, hitBys, nbHit, transitionIndex, gateway);
                 }
                 break;
             case "EXCLUSIVE":
@@ -68,14 +65,9 @@ public migrateTransition(TransitionInstance transition, File feature, Map flowno
                 }else{//update the existing gateway
                     hitBys = gateway.hitBys;
                     def nbHit = hitBys.split(",").length +1
-                    if(  nbHit == nbIncommingTransition || getNumberOfTokens(transition.tenantid,transition.parentContainerId,transition.tokenRefId)==nbHit){
-                        // all transition git the gateway or there is as much  token of that kind that hit the gateway
-                        hitBys = "FINISH:$nbHit"
-                    }else{//add the transition the hit the gateway
-                        hitBys = "$hitBys,$transitionIndex"
-                    }
-                    println "Update gateway <$gateway.id> with hitBys = '"+hitBys+"'"
-                    sql.executeUpdate("UPDATE flownode_instance SET hitBys = '"+hitBys+"' WHERE tenantId = $gateway.tenantid and id = $gateway.id")
+                    def isFinished = nbHit == nbIncommingTransition || getNumberOfTokens(transition.tenantid,transition.parentContainerId,transition.tokenRefId)==nbHit
+                    // isFinished if all transition hit the gateway or there is as much  token of that kind that hit the gateway
+                    updateGateway(isFinished, hitBys, nbHit, transitionIndex, gateway);
                 }
                 break;
         }
@@ -88,6 +80,15 @@ public migrateTransition(TransitionInstance transition, File feature, Map flowno
     sql.execute("DELETE FROM transition_instance WHERE id = $transition.id AND tenantid = $transition.tenantid")
     println ""
     //archive transition
+}
+public updateGateway(def isFinished, def hitBys, def nbHit, def transitionIndex, def GatewayInstance gateway){
+    if( isFinished ){
+        hitBys = "FINISH:$nbHit"
+    }else{//add the transition the hit the gateway
+        hitBys = "$hitBys,$transitionIndex"
+    }
+    println "Update gateway <$gateway.id> with hitBys = '"+hitBys+"'"
+    sql.executeUpdate("UPDATE flownode_instance SET hitBys = '"+hitBys+"' WHERE tenantId = $gateway.tenantid and id = $gateway.id")
 }
 public GatewayInstance getGateway(TransitionInstance transition, FlowNodeDefinition target){
     def GatewayInstance gateway = null;
