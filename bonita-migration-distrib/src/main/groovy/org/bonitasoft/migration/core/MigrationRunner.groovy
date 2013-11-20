@@ -92,10 +92,21 @@ public class MigrationRunner {
         features.eachWithIndex { file, idx->
             StringBuilder result = new StringBuilder(file.getName().substring(4))
             def feature = result.replace(0, 1, result.substring(0, 1).toUpperCase()).toString()
-            println "Migrating <" + feature + "> " + (idx + 1) + "/" + features.size()
+            println "[ Migrating <" + feature + "> " + (idx + 1) + "/" + features.size()+" ]"
 
             def binding = new Binding(["sql":sql, "dbVendor":dbVendor, "bonitaHome":bonitaHome, "feature":file]);
+
+            PrintStream stdout = System.out;
+            System.setOut(new PrintStream(stdout){
+                        @Override
+                        public void println(String x) {
+                            super.print(" | ");
+                            super.println(x);
+                        }
+                    });
             gse.run(new File(file, "MigrateFeature.groovy").getPath(), binding)
+            System.setOut(stdout);
+            println "[ Success ]"
         }
     }
 }
