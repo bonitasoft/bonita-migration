@@ -17,7 +17,7 @@ def migrateContentFor = { table, contentIndex ->
                 throw new IllegalStateException("content not found " + content.getAbsolutePath())
             }
             def sqlFile = MigrationUtil.getSqlFile(feature, dbVendor, "insertcontent")
-            sql.executeInsert(MigrationUtil.getSqlContent(sqlFile.text, null)[0], tenantId, idByTenant.get(tenantId), contentId, content.getBytes())
+            sql.executeInsert(MigrationUtil.getSqlContent(sqlFile.text, null).get(0), tenantId, idByTenant.get(tenantId), contentId, content.getBytes())
             contents.add(content)
         }
     }

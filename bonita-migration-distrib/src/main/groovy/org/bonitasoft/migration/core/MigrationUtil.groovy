@@ -76,7 +76,7 @@ public class MigrationUtil {
         def sqlFile = getSqlFile(feature, dbVendor, suffix)
         sql.withTransaction {
             if(sqlFile.exists()){
-                def contents = getSqlContent(sqlFile.text, parameters)
+                def List<String> contents = getSqlContent(sqlFile.text, parameters)
 
                 for (content in contents) {
                     if (!content.trim().empty) {
@@ -93,9 +93,9 @@ public class MigrationUtil {
         }
     }
 
-    public static String[] getSqlContent(String sqlFileContent, Map<String, String> parameters){
+    public static List<String> getSqlContent(String sqlFileContent, Map<String, String> parameters){
         def sqlFileContentWithParameters = replaceParameters(sqlFileContent, parameters).replaceAll("\r\n", "\n")
-        return sqlFileContentWithParameters.split(REQUEST_SEPARATOR)
+        return Arrays.asList(sqlFileContentWithParameters.split(REQUEST_SEPARATOR))
     }
 
     public static File getSqlFile(File folder, String dbVendor, String suffix){
@@ -116,7 +116,7 @@ public class MigrationUtil {
         def sqlFile = getSqlFile(feature, dbVendor, fileExtension)
         def parameters = Collections.singletonMap(":tenantId", String.valueOf(it))
         def id = null
-        sql.eachRow(getSqlContent(sqlFile.text, parameters)[0]) {
+        sql.eachRow(getSqlContent(sqlFile.text, parameters).get(0)) {
             row ->
             id = row[0]
         }
@@ -127,7 +127,7 @@ public class MigrationUtil {
         def sqlFile = getSqlFile(feature, dbVendor, "tenants")
         def tenants = []
 
-        sql.query(getSqlContent(sqlFile.text, null)[0]) {
+        sql.query(getSqlContent(sqlFile.text, null).get(0)) {
             ResultSet rs ->
             while (rs.next()) tenants.add(rs.getLong(1))
         }

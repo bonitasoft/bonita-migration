@@ -22,7 +22,7 @@ class MigrationUtilTest {
         def File file = new File("Config.properties");
         boolean success = file.delete();
         if (!success)
-            throw new IllegalArgumentException("Delete: deletion failed");
+        throw new IllegalArgumentException("Delete: deletion failed");
     }
 
     @Test(expected = NotFoundException.class)
@@ -67,7 +67,7 @@ class MigrationUtilTest {
     public void displayNotExistingProperty(){
         // Build properties
         def Properties properties = buildProperties();
-        
+
         noDisplayProperty(properties, "plop");
     }
 
@@ -80,7 +80,7 @@ class MigrationUtilTest {
     public void displayPropertyWithNullProperty(){
         // Build properties
         def Properties properties = buildProperties();
-        
+
         noDisplayProperty(properties, null);
     }
 
@@ -88,7 +88,7 @@ class MigrationUtilTest {
     public void displayPropertyWithEmptyProperty(){
         // Build properties
         def Properties properties = buildProperties();
-        
+
         noDisplayProperty(properties, "");
     }
 
@@ -108,6 +108,47 @@ class MigrationUtilTest {
         }
     }
 
+    @Test()
+    public void getSqlContentWithParameter(){
+        def String sqlFileContent = "UPDATE platform SET version = ':version'"
+        def Map<String, String> parameters = Collections.singletonMap(":version", "6.1.0")
+        
+        def List<String> result = MigrationUtil.getSqlContent(sqlFileContent, parameters);
+        assertEquals(1, result.size());
+        assertEquals("UPDATE platform SET version = '6.1.0'", result.get(0));
+    }
+    
+    @Test()
+    public void getSqlContentWithoutParameter(){
+        def String sqlFileContent = "plop"
+        def Map<String, String> parameters = Collections.emptyMap();
+        
+        def List<String> result = MigrationUtil.getSqlContent(sqlFileContent, parameters);
+        assertEquals(1, result.size());
+        assertEquals("plop", result.get(0));
+    }
+    
+    @Test()
+    public void getSqlContentWithNullParameter(){
+        def String sqlFileContent = "plop"
+        
+        def List<String> result = MigrationUtil.getSqlContent(sqlFileContent, null);
+        assertEquals(1, result.size());
+        assertEquals("plop", result.get(0));
+    }
+    
+    
+    @Test()
+    public void getSqlContentToSplit(){
+        def String sqlFileContent = "plop@@toto@@plip@@ "
+        
+        def List<String> result = MigrationUtil.getSqlContent(sqlFileContent, null);
+        assertEquals(4, result.size());
+        assertEquals("plop", result.get(0));
+        assertEquals("toto", result.get(1));
+        assertEquals("plip", result.get(2));
+        assertEquals(" ", result.get(3));
+    }
 
 
 
