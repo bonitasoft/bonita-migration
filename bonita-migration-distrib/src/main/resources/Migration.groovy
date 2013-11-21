@@ -66,8 +66,10 @@ public class Migration {
         };
         def classLoader = getRootParent(this.class.classLoader);
         new File("lib").eachFile(FileType.FILES, {
-            println "adding ${it.getPath()} to classpath"
-            classLoader.addURL(it.toURI().toURL())
+            if(it.getName().endsWith(".jar")){
+                println "adding ${it.getPath()} to classpath"
+                classLoader.addURL(it.toURI().toURL())
+            }
         })
         def gse = new GroovyScriptEngine("");
         Class runner = gse.loadScriptByName("org/bonitasoft/migration/core/MigrationRunner.groovy");
