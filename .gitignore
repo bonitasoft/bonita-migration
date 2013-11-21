@@ -2,3 +2,4 @@ target
 .project
 .classpath
 .settings
+bonita-migration-distrib/src/main/resources/Config.mine

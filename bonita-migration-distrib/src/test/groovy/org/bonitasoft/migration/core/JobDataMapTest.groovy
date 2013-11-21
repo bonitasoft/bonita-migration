@@ -6,7 +6,7 @@ import org.junit.Test
 
 import org.bonitasoft.migration.core.exception.NotFoundException;
 
-class MigrationUtilTest {
+class JobDataMapTest {
     
     def final static String FILE_SEPARATOR = System.getProperty("file.separator");
 
