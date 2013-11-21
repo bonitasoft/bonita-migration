@@ -39,6 +39,7 @@ import org.bonitasoft.engine.bpm.bar.BusinessArchiveBuilder;
 import org.bonitasoft.engine.bpm.bar.InvalidBusinessArchiveFormatException;
 import org.bonitasoft.engine.bpm.connector.ConnectorEvent;
 import org.bonitasoft.engine.bpm.flownode.GatewayType;
+import org.bonitasoft.engine.bpm.flownode.TimerType;
 import org.bonitasoft.engine.bpm.process.InvalidProcessDefinitionException;
 import org.bonitasoft.engine.bpm.process.ProcessDefinition;
 import org.bonitasoft.engine.bpm.process.ProcessDefinitionNotFoundException;
@@ -60,6 +61,7 @@ import org.bonitasoft.engine.exception.UnknownAPITypeException;
 import org.bonitasoft.engine.expression.ExpressionBuilder;
 import org.bonitasoft.engine.expression.InvalidExpressionException;
 import org.bonitasoft.engine.identity.ImportPolicy;
+import org.bonitasoft.engine.identity.User;
 import org.bonitasoft.engine.io.IOUtil;
 import org.bonitasoft.engine.operation.OperationBuilder;
 import org.bonitasoft.engine.search.SearchOptions;
@@ -70,6 +72,7 @@ import org.bonitasoft.engine.session.APISession;
 import org.bonitasoft.engine.session.PlatformSession;
 import org.bonitasoft.engine.test.APITestUtil;
 import org.bonitasoft.engine.test.WaitUntil;
+import org.bonitasoft.engine.test.wait.WaitForPendingTasks;
 import org.bonitasoft.engine.transaction.STransactionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -162,9 +165,34 @@ public class DatabaseFiller {
         stats.putAll(fillDocuments(session, nbDocuments));
         stats.putAll(fillProcessesWithEvents(session, nbWaitingEvents));
         stats.putAll(fillProcessWithTransitions(session));
+        stats.putAll(fillProcessWithStartTimer(session));
         APITestUtil.logoutTenant(session);
         logger.info("Finished to fill the database");
         return stats;
+    }
+
+    private Map<? extends String, ? extends String> fillProcessWithStartTimer(final APISession session) throws Exception {
+        ProcessAPI processAPI = TenantAPIAccessor.getProcessAPI(session);
+        ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("ProcessWithStartTimer", "1.0.");
+        builder.addActor("actor");
+        builder.addStartEvent("start").addTimerEventTriggerDefinition(TimerType.CYCLE, new ExpressionBuilder().createConstantStringExpression("*/4 * * * * ?"));// every
+                                                                                                                                                                // 3
+                                                                                                                                                                // secondes
+        builder.addUserTask("timerstep", "actor");
+        builder.addTransition("start", "timerstep");
+        BusinessArchiveBuilder archiveBuilder = new BusinessArchiveBuilder().createNewBusinessArchive();
+        archiveBuilder.setProcessDefinition(builder.done());
+        ProcessDefinition processDefinition = processAPI.deploy(archiveBuilder.done());
+        User hellen = TenantAPIAccessor.getIdentityAPI(session).getUserByUserName("helen.kelly");
+        processAPI.addUserToActor("actor", processDefinition, hellen.getId());
+        processAPI.enableProcess(processDefinition.getId());
+        WaitForPendingTasks waitForPendingTasks = new WaitForPendingTasks(100, 5000, 1, hellen.getId(), processAPI);
+        if (!waitForPendingTasks.waitUntil()) {
+            throw new IllegalStateException("timer process did not start once");
+        }
+        Map<String, String> map = new HashMap<String, String>(1);
+        map.put("Timer job", "1");
+        return map;
     }
 
     private Map<String, String> fillProcessWithTransitions(final APISession session) throws Exception {
