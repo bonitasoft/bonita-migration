@@ -9,10 +9,6 @@
 	<includeBaseDirectory>false</includeBaseDirectory>
 	<fileSets>
 		<fileSet>
-			<outputDirectory></outputDirectory>
-			<directory>src/main/resources</directory>
-		</fileSet>
-		<fileSet>
 			<outputDirectory>lib</outputDirectory>
 			<directory>lib</directory>
 		</fileSet>
@@ -24,5 +20,34 @@
 			<outputDirectory>versions/6.0.2-6.1.0/Bonita-home/</outputDirectory>
 			<directory>target/bonita-home</directory>
 		</fileSet>
+		<fileSet>
+			<outputDirectory></outputDirectory>
+			<directory>src/main/resources</directory>
+			<includes>
+				<include>**/*</include>
+			</includes>
+			<excludes>
+				<exclude>*.sh</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<outputDirectory></outputDirectory>
+			<directory>src/main/resources</directory>
+			<includes>
+				<include>*.sh</include>
+			</includes>
+			<fileMode>0755</fileMode>
+			<directoryMode>0644</directoryMode>
+		</fileSet>
 	</fileSets>
+	<dependencySets>
+		<dependencySet>
+			<outputDirectory></outputDirectory>
+			<includes>
+				<include>org.codehaus.groovy:groovy-all</include>
+			</includes>
+			<useProjectArtifact>false</useProjectArtifact>
+			<useTransitiveFiltering>true</useTransitiveFiltering>
+		</dependencySet>
+	</dependencySets>
 </assembly>
