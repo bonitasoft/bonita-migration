@@ -3,9 +3,9 @@ import org.bonitasoft.migration.core.MigrationUtil;
 def currentTime = System.currentTimeMillis()
 def tenants = MigrationUtil.getTenantsId(feature, dbVendor, sql)
 
-println "executing update for each tenants: " + tenants
+println "Executing update for each tenant : " + tenants
 tenants.each {
-    println "for tenant id=" + it
+    println "For tenant with id = " + it
     //there is profile and profile entries needed
     def adminId = MigrationUtil.getId(feature, dbVendor, "get_admin_profile_id", it, sql)
     def directoryId = MigrationUtil.getId(feature, dbVendor, "get_dir_profile_entry_id", it, sql)
@@ -17,5 +17,5 @@ tenants.each {
         parameters.put(":dir_profile_entry_id", String.valueOf(directoryId))
         MigrationUtil.executeSqlFile(feature, dbVendor, "update", parameters, sql, false)
     }
-    println "done"
+    println "Done"
 }

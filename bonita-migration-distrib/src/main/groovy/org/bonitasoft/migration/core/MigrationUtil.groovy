@@ -1,11 +1,19 @@
 package org.bonitasoft.migration.core
 
+import groovy.lang.Binding;
 import groovy.sql.Sql
 
+import java.io.File;
+import java.io.PrintStream;
 import java.sql.ResultSet
+import java.util.Properties;
 
-import org.bonitasoft.migration.core.exception.MigrationException
-import org.bonitasoft.migration.core.exception.NotFoundException
+import groovy.util.AntBuilder;
+import groovy.util.GroovyScriptEngine;
+import groovy.time.TimeCategory;
+
+import org.bonitasoft.migration.core.exception.NotFoundException;
+import org.bonitasoft.migration.core.exception.MigrationException;
 
 
 
@@ -65,6 +73,39 @@ public class MigrationUtil {
         }
         return property;
     }
+    
+    /**
+     * @param nbTabs
+     *      Number of tabulations to display
+     * @return Old System.out
+     * @since 6.1
+     */
+    public static PrintStream setSystemOutWithTab(int nbTabs){
+        PrintStream stdout = System.out;
+        System.setOut(new PrintStream(stdout){
+                    @Override
+                    public void println(String x) {
+                        if (nbTabs != 0){
+                            for (int i = 0; i < nbTabs; i++){
+                                super.print("   |");
+                            }
+                            super.print(" ");
+                        }
+                        super.println(x);
+                    }
+                });
+        return stdout;
+    }
+    
+    public static executeMigration(GroovyScriptEngine gse, File file, String scriptName, Binding binding, int nbTabs, Date startMigrationDate){
+        def startFeatureDate = new Date();
+        PrintStream stdout = setSystemOutWithTab(nbTabs);
+        gse.run(new File(file, scriptName).getPath(), binding)
+        System.setOut(stdout);
+        def endFeatureDate = new Date()
+        println "[ Success in "+ TimeCategory.minus(endFeatureDate, startFeatureDate) + ". The migration started, there is " + TimeCategory.minus(endFeatureDate, startMigrationDate) + " ]"
+        println ""
+    }
 
     public static Sql getSqlConnection(String dburl, String user, String pwd, String driverClass){
         return Sql.newInstance(dburl, user, pwd, driverClass);
@@ -120,6 +161,13 @@ public class MigrationUtil {
         }
         return newSqlFileContent
     }
+    
+    public static getAndDisplayPlatformVersion(groovy.sql.Sql sql){
+        sql.eachRow("SELECT version FROM platform") {
+            row ->
+            println "The platform version in database is : " + row[0] + "."
+        }
+    }
 
     public static Object getId(File feature, String dbVendor, String fileExtension, Object it, groovy.sql.Sql sql){
         if (it == null || sql == null){
@@ -157,10 +205,12 @@ public class MigrationUtil {
         def ant = new AntBuilder();
         def deleted = false
         if (!(deleted = new File(toDir).deleteDir())) {
-            throw IllegalStateException("Unable to delete : " + toDir)
+            throw IllegalStateException("Migration failed. Unable to delete : " + toDir)
         } else {
+            println "The directory " + toDir + " has been deleted."
             ant.copy(todir: toDir) { fileset(dir: fromDir) }
-            println toDir + " succesfully migrated"
+            println "The directory " + toDir + " has been succesfully migrated."
+            println ""
         }
     }
 

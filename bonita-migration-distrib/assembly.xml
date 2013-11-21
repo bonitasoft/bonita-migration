@@ -21,7 +21,7 @@
 			<directory>src/main/groovy</directory>
 		</fileSet>
 		<fileSet>
-			<outputDirectory>versions/6.0.2-6.1.0/018_bonita-home</outputDirectory>
+			<outputDirectory>versions/6.0.2-6.1.0/Bonita-home/</outputDirectory>
 			<directory>target/bonita-home</directory>
 		</fileSet>
 	</fileSets>

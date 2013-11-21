@@ -52,8 +52,8 @@ public class FlowNodeDefinition {
     def List<String> incommingTransitions = [];
 
 
-    boolean isGateway(){
-        return type == "gateway"
+    public boolean isGateway(){
+        return "gateway".equals(type)
     }
 
     String getDatabaseType(){

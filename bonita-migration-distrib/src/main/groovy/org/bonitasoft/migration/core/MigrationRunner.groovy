@@ -13,8 +13,13 @@
  **/
 package org.bonitasoft.migration.core
 
+import java.io.File;
+import java.io.PrintStream;
+
+import groovy.lang.Binding;
 import groovy.time.TimeCategory
 import groovy.time.TimeDuration
+import groovy.util.GroovyScriptEngine;
 
 
 
@@ -34,8 +39,10 @@ public class MigrationRunner {
     private def String sourceVersion
     private def String targetVersion
 
+    private def startMigrationDate
+
     public void execute(GroovyScriptEngine gse){
-        def start = new Date()
+        startMigrationDate = new Date()
         def childWithExt = { file,ext->
             file.listFiles(new FileFilter(){
                         public boolean accept(File pathname) {
@@ -44,19 +51,25 @@ public class MigrationRunner {
                     })
         }
         init();
+        println ""
+        println "MIGRATE " + sourceVersion + " TO " + targetVersion
 
-        println "Execute " + sourceVersion + " to " + targetVersion
-        migrateFeatures(gse)
-        sql.close()
+        PrintStream stdout = MigrationUtil.setSystemOutWithTab(1);
+        def String migrationVersionFolder = "versions" + MigrationUtil.FILE_SEPARATOR + sourceVersion + "-" + targetVersion + MigrationUtil.FILE_SEPARATOR
+        migrateDatabase(gse, migrationVersionFolder)
+        migrateBonitaHome(gse, migrationVersionFolder)
+        System.setOut(stdout);
 
         def end = new Date()
-        TimeDuration duration = TimeCategory.minus(end, start)
-        println "Migration successful, took "+duration
+        println "\nMigration successful, in " + TimeCategory.minus(end, startMigrationDate);
+        MigrationUtil.getAndDisplayPlatformVersion(sql);
+        sql.close()
     }
 
     void init(){
         def Properties properties = MigrationUtil.getProperties();
-        
+
+        println ""
         println "Properties : "
         sourceVersion = MigrationUtil.getAndDisplayProperty(properties, MigrationUtil.SOURCE_VERSION);
         targetVersion = MigrationUtil.getAndDisplayProperty(properties, MigrationUtil.TARGET_VERSION);
@@ -69,18 +82,27 @@ public class MigrationRunner {
         def user = MigrationUtil.getAndDisplayProperty(properties, MigrationUtil.DB_USER);
         def pwd = MigrationUtil.getAndDisplayProperty(properties, MigrationUtil.DB_PASSWORD);
         def driverClass = MigrationUtil.getAndDisplayProperty(properties, MigrationUtil.DB_DRIVERCLASS);
-        
-        println "Press ENTER to continue"
-        System.console().readLine()
 
         sql = MigrationUtil.getSqlConnection(dburl, user, pwd, driverClass);
+        println ""
+        MigrationUtil.getAndDisplayPlatformVersion(sql);
+
+        println "Press ENTER to start migration !"
+        System.console().readLine()
     }
 
-    public migrateFeatures(GroovyScriptEngine gse) {
-        def resources = new File("versions" + MigrationUtil.FILE_SEPARATOR + sourceVersion + "-" + targetVersion)
+    public migrateDatabase(GroovyScriptEngine gse, String migrationVersionFolder) {
+        def resources = new File(migrationVersionFolder + "Database")
         if(!resources.exists()){
             throw new IllegalStateException(resources.absolutePath + " doesn't exist.")
         }
+
+        println "Migration of database :"
+        PrintStream stdout = MigrationUtil.setSystemOutWithTab(2);
+        println "It would be better if you made a backup of your database."
+        println "Press ENTER to continue !"
+        System.console().readLine()
+        println ""
 
         def features = []
         def files = resources.listFiles()
@@ -92,21 +114,33 @@ public class MigrationRunner {
         features.eachWithIndex { file, idx->
             StringBuilder result = new StringBuilder(file.getName().substring(4))
             def feature = result.replace(0, 1, result.substring(0, 1).toUpperCase()).toString()
-            println "[ Migrating <" + feature + "> " + (idx + 1) + "/" + features.size()+" ]"
+            println "[ Migrating <" + feature + "> " + (idx + 1) + "/" + features.size() + " ]"
 
             def binding = new Binding(["sql":sql, "dbVendor":dbVendor, "bonitaHome":bonitaHome, "feature":file]);
-
-            PrintStream stdout = System.out;
-            System.setOut(new PrintStream(stdout){
-                        @Override
-                        public void println(String x) {
-                            super.print("\t| ");
-                            super.println(x);
-                        }
-                    });
-            gse.run(new File(file, "MigrateFeature.groovy").getPath(), binding)
-            System.setOut(stdout);
-            println "[ Success ]"
+            executeMigrationFeature(gse, file, binding);
         }
+        System.setOut(stdout);
     }
+
+    public migrateBonitaHome(GroovyScriptEngine gse, String migrationVersionFolder) {
+        def feature = new File(migrationVersionFolder + "Bonita-home")
+        if(!feature.exists()){
+            throw new IllegalStateException(feature.absolutePath + " doesn't exist.")
+        }
+
+        println "Migration of bonita home :"
+        PrintStream stdout = MigrationUtil.setSystemOutWithTab(2);
+        println "Please hit ENTER once you have backup your bonita home !"
+        System.console().readLine()
+        println ""
+
+        def binding = new Binding(["bonitaHome":bonitaHome, "feature":feature, "startMigrationDate":startMigrationDate, "gse":gse]);
+        executeMigrationFeature(gse, feature, binding);
+        System.setOut(stdout);
+    }
+
+    private executeMigrationFeature(GroovyScriptEngine gse, File file, Binding binding){
+        MigrationUtil.executeMigration(gse, file, "MigrateFeature.groovy", binding, 3, startMigrationDate);
+    }
+
 }

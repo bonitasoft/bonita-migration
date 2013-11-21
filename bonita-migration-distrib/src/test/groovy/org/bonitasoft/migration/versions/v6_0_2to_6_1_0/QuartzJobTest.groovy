@@ -447,8 +447,6 @@ public class QuartzJobTest {
 
     @Test
     public void deserialize() throws IOException, ClassNotFoundException {
-
-
         JobDataMap map = MigrationUtil.deserialize(jobDataMapBytes);
         println map
         JobIdentifier jobIdent = map.get("jobIdentifier");
