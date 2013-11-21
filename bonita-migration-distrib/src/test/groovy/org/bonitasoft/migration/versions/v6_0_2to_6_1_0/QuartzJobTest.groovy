@@ -447,7 +447,7 @@ public class QuartzJobTest {
 
     @Test
     public void deserialize() throws IOException, ClassNotFoundException {
-        JobDataMap map = MigrationUtil.deserialize(jobDataMapBytes);
+        JobDataMap map = MigrationUtil.deserialize(jobDataMapBytes, JobIdentifier.class.getClassLoader());
         println map
         JobIdentifier jobIdent = map.get("jobIdentifier");
         assertEquals(1,jobIdent.getId());
@@ -460,7 +460,7 @@ public class QuartzJobTest {
         newMap.put("jobName", "BPMEventHandling");
         byte[] out = MigrationUtil.serialize(newMap);
 
-        map = MigrationUtil.deserialize(out);
+        map = MigrationUtil.deserialize(out,JobIdentifier.class.getClassLoader());
         assertEquals(1,map.get("jobId"));
         assertEquals(1,map.get("tenantId"));
         assertEquals("BPMEventHandling",map.get("jobName"));
