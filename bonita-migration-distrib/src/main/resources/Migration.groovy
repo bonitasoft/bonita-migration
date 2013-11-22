@@ -66,7 +66,7 @@ public class Migration {
         };
         def classLoader = getRootParent(this.class.classLoader);
         new File("lib").eachFile(FileType.FILES, {
-            if(it.getName().endsWith(".jar")){
+            if(it.getName().endsWith(".jar") && ! it.getName().startsWith("groovy-all")){//groovy-all added by the .sh/.bat
                 println "adding ${it.getPath()} to classpath"
                 classLoader.addURL(it.toURI().toURL())
             }
