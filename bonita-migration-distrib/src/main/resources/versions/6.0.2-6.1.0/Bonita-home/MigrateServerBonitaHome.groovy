@@ -21,7 +21,7 @@ if (tenantsServerDir.exists()) {
         println "Executing update for each tenant : " + tenants;
         tenantsServerDir.eachFile { tenant ->
             println "For tenant : " + tenant.name
-            PrintStream stdout = setSystemOutWithTab(5);
+            PrintStream stdout = MigrationUtil.setSystemOutWithTab(5);
             
             MigrationUtil.migrateDirectory(newServerBonitaHome.path + "/platform/tenant-template/conf", tenant.path + "/conf")
             System.setOut(stdout);
