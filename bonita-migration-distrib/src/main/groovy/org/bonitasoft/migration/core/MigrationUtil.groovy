@@ -55,9 +55,9 @@ public class MigrationUtil {
         return properties;
     }
 
-    public static String getAndDisplayProperty(Properties properties, String propertyName) {
+    public static String getAndPrintProperty(Properties properties, String propertyName) {
         if (properties == null || propertyName == null || "".equals(propertyName)){
-            throw new IllegalArgumentException("Can't execute getAndDisplayProperty method with arguments : propeties = " + properties + ", propertyName = " + propertyName);
+            throw new IllegalArgumentException("Can't execute getAndPrintProperty method with arguments : propeties = " + properties + ", propertyName = " + propertyName);
         }
 
         def String property = properties.getProperty(propertyName);
@@ -102,6 +102,10 @@ public class MigrationUtil {
     }
     
     public static printSuccessMigration(Date startFeatureDate, Date startMigrationDate){
+        if (startFeatureDate == null || startMigrationDate == null){
+            throw new IllegalArgumentException("Can't execute printSuccessMigration method with arguments : startFeatureDate = " + startFeatureDate + ", startMigrationDate = " + startMigrationDate);
+        }
+        
         def endFeatureDate = new Date()
         println "[ Success in "+ TimeCategory.minus(endFeatureDate, startFeatureDate) + ". The migration started, there is " + TimeCategory.minus(endFeatureDate, startMigrationDate) + " ]"
         println ""

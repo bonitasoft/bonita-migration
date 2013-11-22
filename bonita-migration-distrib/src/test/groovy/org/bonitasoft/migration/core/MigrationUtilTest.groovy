@@ -2,12 +2,14 @@ package org.bonitasoft.migration.core;
 
 import static org.junit.Assert.*
 
-import org.junit.Test
+import java.io.PrintStream;
+import java.util.Date;
 
+import org.junit.Test
 import org.bonitasoft.migration.core.exception.NotFoundException;
 
 class JobDataMapTest {
-    
+
     def final static String FILE_SEPARATOR = System.getProperty("file.separator");
 
     @Test
@@ -48,23 +50,23 @@ class JobDataMapTest {
     }
 
     @Test
-    public void getAndDisplayProperty(){
+    public void getAndPrintProperty(){
         // To capture output
         def ByteArrayOutputStream baos = new ByteArrayOutputStream();
         System.setOut(new PrintStream(baos));
         // Build properties
         def Properties properties = buildProperties();
 
-        def String result = MigrationUtil.getAndDisplayProperty(properties, "os.name");
+        def String result = MigrationUtil.getAndPrintProperty(properties, "os.name");
         assertEquals("Linux", result);
         // Get output
         baos.flush();
         def String standardOutput = baos.toString().replaceAll(System.getProperty("line.separator"), "");
         assertEquals("\t-os.name = Linux", standardOutput);
     }
-    
+
     @Test
-    public void getAndDisplayPropertyWithWhitespaces(){
+    public void getAndPrintPropertyWithWhitespaces(){
         // To capture output
         def ByteArrayOutputStream baos = new ByteArrayOutputStream();
         System.setOut(new PrintStream(baos));
@@ -72,7 +74,7 @@ class JobDataMapTest {
         def Properties properties = new Properties();
         properties.setProperty("os.name", "L\tinu x");
 
-        def String result = MigrationUtil.getAndDisplayProperty(properties, "os.name");
+        def String result = MigrationUtil.getAndPrintProperty(properties, "os.name");
         assertEquals("Linux", result);
         // Get output
         baos.flush();
@@ -82,41 +84,41 @@ class JobDataMapTest {
 
 
     @Test(expected = NotFoundException.class)
-    public void displayNotExistingProperty(){
+    public void getAndPrintNotExistingProperty(){
         // Build properties
         def Properties properties = buildProperties();
 
-        nogetAndDisplayProperty(properties, "plop");
+        noGetAndPrintProperty(properties, "plop");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void getAndDisplayPropertyWithNullProperties(){
-        nogetAndDisplayProperty(null, "plop");
+    public void getAndPrintPropertyWithNullProperties(){
+        noGetAndPrintProperty(null, "plop");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void getAndDisplayPropertyWithNullProperty(){
+    public void getAndPrintPropertyWithNullProperty(){
         // Build properties
         def Properties properties = buildProperties();
 
-        nogetAndDisplayProperty(properties, null);
+        noGetAndPrintProperty(properties, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void getAndDisplayPropertyWithEmptyProperty(){
+    public void getAndPrintPropertyWithEmptyProperty(){
         // Build properties
         def Properties properties = buildProperties();
 
-        nogetAndDisplayProperty(properties, "");
+        noGetAndPrintProperty(properties, "");
     }
 
-    private void nogetAndDisplayProperty(Properties properties, String propertyName){
+    private void noGetAndPrintProperty(Properties properties, String propertyName){
         // To capture output
         def ByteArrayOutputStream baos = new ByteArrayOutputStream();
         System.setOut(new PrintStream(baos));
 
         try {
-            MigrationUtil.getAndDisplayProperty(properties, propertyName);
+            MigrationUtil.getAndPrintProperty(properties, propertyName);
         } finally {
             // Get output
             baos.flush();
@@ -133,6 +135,74 @@ class JobDataMapTest {
         def List<String> result = MigrationUtil.getSqlContent(sqlFileContent, parameters);
         assertEquals(1, result.size());
         assertEquals("UPDATE platform SET version = '6.1.0';", result.get(0));
+    }
+
+    @Test()
+    public void setSystemOutWithTab(){
+        // To capture output
+        def ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(baos));
+        def PrintStream stdout = System.out;
+
+        def PrintStream oldPrintStream = MigrationUtil.setSystemOutWithTab(3);
+        assertEquals(stdout, oldPrintStream);
+        println "plop"
+        // Get output
+        baos.flush();
+        def String standardOutput = baos.toString().replaceAll(System.getProperty("line.separator"), "");
+        assertEquals("   |   |   | plop", standardOutput);
+
+        // Clean up
+        System.setOut(stdout);
+    }
+
+    @Test()
+    public void setSystemOutWithoutTab(){
+        // To capture output
+        def ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(baos));
+        def PrintStream stdout = System.out;
+
+        def PrintStream oldPrintStream = MigrationUtil.setSystemOutWithTab(0);
+        
+        assertEquals(stdout, oldPrintStream);
+        println "plop"
+        // Get output
+        baos.flush();
+        def String standardOutput = baos.toString().replaceAll(System.getProperty("line.separator"), "");
+        assertEquals("plop", standardOutput);
+
+        // Clean up
+        System.setOut(stdout);
+    }
+
+    @Test()
+    public void printSuccessMigration(){
+        // To capture output
+        def ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(baos));
+        def Date startMigrationDate = new Date(0);
+        def Date startFeatureDate = new Date(1);
+        
+        MigrationUtil.printSuccessMigration(startFeatureDate, startMigrationDate);
+        
+        // Get output
+        baos.flush();
+        def String standardOutput = baos.toString().replaceAll(System.getProperty("line.separator"), "");
+        assertTrue(standardOutput.contains("[ Success in "));
+        assertTrue(standardOutput.contains(". The migration started, there is "));
+        assertTrue(standardOutput.contains(" ]"));
+        assertTrue(standardOutput.contains("seconds") || standardOutput.contains("days") || standardOutput.contains("hours"));
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void printSuccessMigrationWithNullStartFeatureDate(){
+        MigrationUtil.printSuccessMigration(null, new Date());
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void printSuccessMigrationWithNullStartMigrationDate(){
+        MigrationUtil.printSuccessMigration(new Date(), null);
     }
 
     @Test()
@@ -181,46 +251,46 @@ class JobDataMapTest {
         def File folder = new File(FILE_SEPARATOR);
         def String dbVendor = "vendor";
         def String suffix = "plop";
-        
+
         def File result = MigrationUtil.getSqlFile(folder, dbVendor, suffix);
         assertEquals(folder.getPath() + dbVendor + "-" + suffix + ".sql", result.getPath());
     }
-    
+
     @Test()
     public void getSqlFileWithoutSuffix(){
         def File folder = new File(FILE_SEPARATOR);
         def String dbVendor = "vendor";
         def String suffix = "";
-        
+
         def File result = MigrationUtil.getSqlFile(folder, dbVendor, suffix);
         assertEquals(folder.getPath() + dbVendor + ".sql", result.getPath());
     }
-    
+
     @Test()
     public void getSqlFileWithNullSuffix(){
         def File folder = new File(FILE_SEPARATOR + "titi");
         def String dbVendor = "vendor";
         def String suffix = null;
-        
+
         def File result = MigrationUtil.getSqlFile(folder, dbVendor, suffix);
         assertEquals(folder.getPath() + FILE_SEPARATOR + dbVendor + ".sql", result.getPath());
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void getSqlFileWithNullFolder(){
         def File folder = null;
         def String dbVendor = "vendor";
         def String suffix = "";
-        
+
         MigrationUtil.getSqlFile(folder, dbVendor, suffix);
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void getSqlFileWithNullDBVendor(){
         def File folder = new File(FILE_SEPARATOR + "titi");
         def String dbVendor = null;
         def String suffix = "";
-        
+
         MigrationUtil.getSqlFile(folder, dbVendor, suffix);
     }
 }
