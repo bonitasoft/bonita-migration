@@ -13,7 +13,13 @@
  **/
 package org.bonitasoft.migration.core
 
+import java.io.File;
+import java.io.PrintStream;
+
+import groovy.lang.Binding;
 import groovy.time.TimeCategory
+import groovy.time.TimeDuration
+import groovy.util.GroovyScriptEngine;
 
 
 
@@ -86,6 +92,7 @@ public class MigrationRunner {
     }
 
     public migrateDatabase(GroovyScriptEngine gse, String migrationVersionFolder) {
+        def startDate = new Date();
         def resources = new File(migrationVersionFolder + "Database")
         if(!resources.exists()){
             throw new IllegalStateException(resources.absolutePath + " doesn't exist.")
@@ -111,31 +118,22 @@ public class MigrationRunner {
             println "[ Migrating <" + feature + "> " + (idx + 1) + "/" + features.size() + " ]"
 
             def binding = new Binding(["sql":sql, "dbVendor":dbVendor, "bonitaHome":bonitaHome, "feature":file]);
-            executeMigrationFeature(gse, file, binding);
+            MigrationUtil.executeMigration(gse, file, "MigrateFeature.groovy", binding, 3, startMigrationDate);
         }
         System.setOut(stdout);
+        MigrationUtil.printSuccessMigration(startDate, startMigrationDate);
     }
 
     public migrateBonitaHome(GroovyScriptEngine gse, String migrationVersionFolder) {
+        def startDate = new Date();
         def feature = new File(migrationVersionFolder + "Bonita-home")
         if(!feature.exists()){
             throw new IllegalStateException(feature.absolutePath + " doesn't exist.")
         }
 
         println "Migration of bonita home :"
-        PrintStream stdout = MigrationUtil.setSystemOutWithTab(2);
-        println "Some folders will be deleted, you should make a backup of your bonita home."
-        println "If you have customized the configuration, reapply it after the migration is done."
-        println "Press ENTER to continue..."
-        System.console().readLine()
-        println ""
-
         def binding = new Binding(["bonitaHome":bonitaHome, "feature":feature, "startMigrationDate":startMigrationDate, "gse":gse]);
-        executeMigrationFeature(gse, feature, binding);
-        System.setOut(stdout);
+        MigrationUtil.executeMigration(gse, feature, "MigrateFeature.groovy", binding, 2, startMigrationDate);
     }
-
-    private executeMigrationFeature(GroovyScriptEngine gse, File file, Binding binding){
-        MigrationUtil.executeMigration(gse, file, "MigrateFeature.groovy", binding, 3, startMigrationDate);
-    }
+    
 }

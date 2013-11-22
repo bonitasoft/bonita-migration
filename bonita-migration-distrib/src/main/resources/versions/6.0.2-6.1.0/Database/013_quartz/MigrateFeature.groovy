@@ -32,7 +32,7 @@ map.each {
     newMap.put("tenantId", jobIdent.tenantId);
     newMap.put("jobName", jobIdent.jobName);
     byte[] out = MigrationUtil.serialize(newMap);
-    println "update job <$jobIdent.jobName> of tenant <$jobIdent.tenantId> in quartz table"
+    println "Update job <$jobIdent.jobName> of tenant <$jobIdent.tenantId> in quartz table"
     //change the job class name to be concurrent or not
     def jobClassName = jobIdent.jobName in nonConcurrentJobs ? nonConcurrentJobClassName: concurrentJobClassName
     def rowUpdated = sql.executeUpdate(MigrationUtil.getSqlContent(MigrationUtil.getSqlFile(feature, dbVendor, "updateJobData").text, [":JOB_NAME":it.key[0],":JOB_GROUP":it.key[1],":JOB_CLASS_NAME":jobClassName])[0], [out] as Object[])

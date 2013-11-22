@@ -98,6 +98,10 @@ public class MigrationUtil {
         PrintStream stdout = setSystemOutWithTab(nbTabs);
         gse.run(new File(file, scriptName).getPath(), binding)
         System.setOut(stdout);
+        printSuccessMigration(startFeatureDate, startMigrationDate);
+    }
+    
+    public static printSuccessMigration(Date startFeatureDate, Date startMigrationDate){
         def endFeatureDate = new Date()
         println "[ Success in "+ TimeCategory.minus(endFeatureDate, startFeatureDate) + ". The migration started, there is " + TimeCategory.minus(endFeatureDate, startMigrationDate) + " ]"
         println ""

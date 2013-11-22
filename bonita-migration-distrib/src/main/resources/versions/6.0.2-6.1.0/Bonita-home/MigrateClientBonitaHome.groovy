@@ -24,7 +24,7 @@ if (tenantsClientDir.exists()) {
         println "Executing update for each tenant : " + tenants;
         tenantsClientDir.eachFile { tenant ->
             println "For tenant : " + tenant.name
-            PrintStream stdout = MigrationUtil.setSystemOutWithTab(5);
+            PrintStream stdout = setSystemOutWithTab(4);
 
             currentDir = "/conf"
             MigrationUtil.migrateDirectory(newClientBonitaHome.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir)
