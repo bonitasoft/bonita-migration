@@ -19,7 +19,6 @@ public migrateTransition(TransitionInstance transition, File feature, Map flowno
     def s = File.separatorChar;
     def processDefXml = new File(bonitaHome.getAbsolutePath()+"${s}server${s}tenants${s}${transition.tenantid}${s}work${s}processes${s}${transition.processDefId}${s}server-process-definition.xml");
     def FlowNodeDefinition target = getTargetOfTransition(processDefXml.text, transition)
-    println "target of the transition in definition is <$target>"
     //if target = gateway, create or hit the gateway
     if(target.isGateway()){
         // check merging condition: if merge set as finished
@@ -76,9 +75,7 @@ public migrateTransition(TransitionInstance transition, File feature, Map flowno
         println "Insert a flow node";
         insertFlowNode(transition, target,feature,flownodeIdsByTenants, [:]);
     }
-    println "delete transition <$transition.id>"
     sql.execute("DELETE FROM transition_instance WHERE id = $transition.id AND tenantid = $transition.tenantid")
-    println ""
     //archive transition
 }
 public updateGateway(def isFinished, def hitBys, def nbHit, def transitionIndex, def GatewayInstance gateway){

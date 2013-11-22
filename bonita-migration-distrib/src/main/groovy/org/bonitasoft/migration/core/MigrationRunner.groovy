@@ -100,7 +100,7 @@ public class MigrationRunner {
 
         println "Migration of database :"
         PrintStream stdout = MigrationUtil.setSystemOutWithTab(2);
-        println "You should a backup of your database."
+        println "You should make a backup of your database."
         println "Press ENTER to continue..."
         System.console().readLine()
         println ""
