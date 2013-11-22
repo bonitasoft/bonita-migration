@@ -15,6 +15,7 @@ package org.bonitasoft.migration.core
 
 import java.io.File;
 import java.io.PrintStream;
+import java.util.Date;
 
 import groovy.lang.Binding;
 import groovy.time.TimeCategory
@@ -118,7 +119,7 @@ public class MigrationRunner {
             println "[ Migrating <" + feature + "> " + (idx + 1) + "/" + features.size() + " ]"
 
             def binding = new Binding(["sql":sql, "dbVendor":dbVendor, "bonitaHome":bonitaHome, "feature":file]);
-            MigrationUtil.executeMigration(gse, file, "MigrateFeature.groovy", binding, 3, startMigrationDate);
+            migrateFeature(gse, file, binding, 3);
         }
         System.setOut(stdout);
         MigrationUtil.printSuccessMigration(startDate, startMigrationDate);
@@ -133,7 +134,15 @@ public class MigrationRunner {
 
         println "Migration of bonita home :"
         def binding = new Binding(["bonitaHome":bonitaHome, "feature":feature, "startMigrationDate":startMigrationDate, "gse":gse]);
-        MigrationUtil.executeMigration(gse, feature, "MigrateFeature.groovy", binding, 2, startMigrationDate);
+        migrateFeature(gse, feature, binding, 2);
     }
     
+    private migrateFeature(GroovyScriptEngine gse, File file, Binding binding, int nbTabs){
+        // TODO : Lire le fichier de description et l'afficher
+        PrintStream stdout = MigrationUtil.setSystemOutWithTab(nbTabs);
+        new File(file, "Description.txt").eachLine{ line -> println line }
+        System.setOut(stdout);
+        
+        MigrationUtil.executeMigration(gse, file, "MigrateFeature.groovy", binding, nbTabs, startMigrationDate);
+    }
 }
