@@ -140,7 +140,7 @@ public class MigrationRunner {
     private migrateFeature(GroovyScriptEngine gse, File file, Binding binding, int nbTabs){
         // TODO : Lire le fichier de description et l'afficher
         PrintStream stdout = MigrationUtil.setSystemOutWithTab(nbTabs);
-        new File(file, "Description.txt").eachLine{ line -> println line }
+        new File(file, "Description.txt").eachLine{ line -> println "Description : " + line }
         System.setOut(stdout);
         
         MigrationUtil.executeMigration(gse, file, "MigrateFeature.groovy", binding, nbTabs, startMigrationDate);
