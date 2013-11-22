@@ -13,13 +13,7 @@
  **/
 package org.bonitasoft.migration.core
 
-import java.io.File;
-import java.io.PrintStream;
-
-import groovy.lang.Binding;
 import groovy.time.TimeCategory
-import groovy.time.TimeDuration
-import groovy.util.GroovyScriptEngine;
 
 
 
@@ -99,8 +93,8 @@ public class MigrationRunner {
 
         println "Migration of database :"
         PrintStream stdout = MigrationUtil.setSystemOutWithTab(2);
-        println "It would be better if you made a backup of your database."
-        println "Press ENTER to continue !"
+        println "You should a backup of your database."
+        println "Press ENTER to continue..."
         System.console().readLine()
         println ""
 
@@ -130,7 +124,9 @@ public class MigrationRunner {
 
         println "Migration of bonita home :"
         PrintStream stdout = MigrationUtil.setSystemOutWithTab(2);
-        println "Please hit ENTER once you have backup your bonita home !"
+        println "Some folders will be deleted, you should make a backup of your bonita home."
+        println "If you have customized the configuration, reapply it after the migration is done."
+        println "Press ENTER to continue..."
         System.console().readLine()
         println ""
 
@@ -142,5 +138,4 @@ public class MigrationRunner {
     private executeMigrationFeature(GroovyScriptEngine gse, File file, Binding binding){
         MigrationUtil.executeMigration(gse, file, "MigrateFeature.groovy", binding, 3, startMigrationDate);
     }
-
 }

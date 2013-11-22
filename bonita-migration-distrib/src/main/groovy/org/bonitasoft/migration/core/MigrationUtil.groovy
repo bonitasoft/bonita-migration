@@ -1,19 +1,12 @@
 package org.bonitasoft.migration.core
 
-import groovy.lang.Binding;
 import groovy.sql.Sql
+import groovy.time.TimeCategory
 
-import java.io.File;
-import java.io.PrintStream;
 import java.sql.ResultSet
-import java.util.Properties;
 
-import groovy.util.AntBuilder;
-import groovy.util.GroovyScriptEngine;
-import groovy.time.TimeCategory;
-
-import org.bonitasoft.migration.core.exception.NotFoundException;
-import org.bonitasoft.migration.core.exception.MigrationException;
+import org.bonitasoft.migration.core.exception.MigrationException
+import org.bonitasoft.migration.core.exception.NotFoundException
 
 
 
@@ -38,6 +31,9 @@ public class MigrationUtil {
     public final static String DB_VENDOR = "db.vendor"
 
     public final static String REQUEST_SEPARATOR = "@@"
+
+
+    private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
 
     public static Properties getProperties(){
         def Properties properties = new Properties();
@@ -73,7 +69,7 @@ public class MigrationUtil {
         }
         return property;
     }
-    
+
     /**
      * @param nbTabs
      *      Number of tabulations to display
@@ -96,7 +92,7 @@ public class MigrationUtil {
                 });
         return stdout;
     }
-    
+
     public static executeMigration(GroovyScriptEngine gse, File file, String scriptName, Binding binding, int nbTabs, Date startMigrationDate){
         def startFeatureDate = new Date();
         PrintStream stdout = setSystemOutWithTab(nbTabs);
@@ -161,10 +157,9 @@ public class MigrationUtil {
         }
         return newSqlFileContent
     }
-    
+
     public static getAndDisplayPlatformVersion(groovy.sql.Sql sql){
-        sql.eachRow("SELECT version FROM platform") {
-            row ->
+        sql.eachRow("SELECT version FROM platform") { row ->
             println "The platform version in database is : " + row[0] + "."
         }
     }
@@ -202,16 +197,77 @@ public class MigrationUtil {
             throw new IllegalArgumentException("Can't execute migrateDirectory method with arguments : fromDir = " + fromDir + ", toDir = " + toDir);
         }
 
-        def ant = new AntBuilder();
+        println "Migration of " + toDir + "..."
         def deleted = false
-        if (!(deleted = new File(toDir).deleteDir())) {
-            throw IllegalStateException("Migration failed. Unable to delete : " + toDir)
-        } else {
-            println "The directory " + toDir + " has been deleted."
-            ant.copy(todir: toDir) { fileset(dir: fromDir) }
-            println "The directory " + toDir + " has been succesfully migrated."
-            println ""
+        def fileFromDir = new File(fromDir);
+        def fileToDir = new File(toDir);
+        if (!(deleted = fileToDir.deleteDir())) {
+            throw new IllegalStateException("Migration failed. Unable to delete : " + toDir)
         }
+        if (!fileFromDir.exists() || !fileFromDir.isDirectory()) {
+            throw new IllegalStateException("Migration failed. source folder does not exists : " + fromDir)
+        }
+        copyDirectory(fileFromDir, fileToDir)
+        println "Done"
+    }
+
+    private static void copyDirectory(File srcDir, File destDir) throws IOException {
+        if (destDir.mkdirs() == false) {
+            throw new IOException("Destination '" + destDir + "' directory cannot be created");
+        }
+        destDir.setLastModified(srcDir.lastModified());
+        if (destDir.canWrite() == false) {
+            throw new IOException("Destination '" + destDir + "' cannot be written to");
+        }
+        // recurse
+        File[] files = srcDir.listFiles();
+        if (files == null) {  // null if security restricted
+            throw new IOException("Failed to list contents of " + srcDir);
+        }
+        for (int i = 0; i < files.length; i++) {
+            File copiedFile = new File(destDir, files[i].getName());
+            if (files[i].isDirectory()) {
+                copyDirectory(files[i], copiedFile);
+            } else {
+                copyFile(files[i], copiedFile);
+            }
+        }
+    }
+    private static void copyFile(File srcFile, File destFile) throws IOException {
+        FileInputStream input = new FileInputStream(srcFile);
+        try {
+            FileOutputStream output = new FileOutputStream(destFile);
+            try {
+                byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
+                long count = 0;
+                int n = 0;
+                while (-1 != (n = input.read(buffer))) {
+                    output.write(buffer, 0, n);
+                    count += n;
+                }
+            } finally {
+                try {
+                    if (output != null) {
+                        output.close();
+                    }
+                } catch (IOException ioe) {
+                    // ignore
+                }
+            }
+        } finally {
+            try {
+                if (input != null) {
+                    input.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
+        }
+        if (srcFile.length() != destFile.length()) {
+            throw new IOException("Failed to copy full contents from '" +
+            srcFile + "' to '" + destFile + "'");
+        }
+        destFile.setLastModified(srcFile.lastModified());
     }
 
     public static Object deserialize(byte[] bytes, ClassLoader theClassLoader){
