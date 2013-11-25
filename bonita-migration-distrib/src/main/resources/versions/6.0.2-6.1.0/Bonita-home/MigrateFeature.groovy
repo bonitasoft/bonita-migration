@@ -3,8 +3,10 @@ import org.bonitasoft.migration.core.MigrationUtil;
 
 println "Some folders will be deleted, you should make a backup of your bonita home."
 println "If you have customized the configuration, reapply it after the migration is done."
-println "Press ENTER to continue..."
-System.console().readLine()
+if(!MigrationUtil.isAutoAccept()){
+    println "Press ENTER to continue..."
+    System.console().readLine()
+}
 println ""
 
 def binding = new Binding(["bonitaHome":bonitaHome, "feature":feature, "startMigrationDate":startMigrationDate]);

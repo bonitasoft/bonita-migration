@@ -3,3 +3,4 @@ target
 .classpath
 .settings
 bonita-migration-distrib/src/main/resources/Config.mine
+dependency-reduced-pom.xml

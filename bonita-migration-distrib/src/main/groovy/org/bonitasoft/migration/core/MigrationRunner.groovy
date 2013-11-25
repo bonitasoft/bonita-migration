@@ -19,8 +19,6 @@ import java.util.Date;
 
 import groovy.lang.Binding;
 import groovy.time.TimeCategory
-import groovy.time.TimeDuration
-import groovy.util.GroovyScriptEngine;
 
 
 
@@ -88,8 +86,10 @@ public class MigrationRunner {
         println ""
         MigrationUtil.getAndDisplayPlatformVersion(sql);
 
+        if(!MigrationUtil.isAutoAccept()){
         println "Press ENTER to start migration !"
         System.console().readLine()
+    }
     }
 
     public migrateDatabase(GroovyScriptEngine gse, String migrationVersionFolder) {
@@ -102,8 +102,10 @@ public class MigrationRunner {
         println "Migration of database :"
         PrintStream stdout = MigrationUtil.setSystemOutWithTab(2);
         println "You should make a backup of your database."
+        if(!MigrationUtil.isAutoAccept()){
         println "Press ENTER to continue..."
         System.console().readLine()
+        }
         println ""
 
         def features = []
@@ -125,6 +127,7 @@ public class MigrationRunner {
         MigrationUtil.printSuccessMigration(startDate, startMigrationDate);
     }
 
+
     public migrateBonitaHome(GroovyScriptEngine gse, String migrationVersionFolder) {
         def startDate = new Date();
         def feature = new File(migrationVersionFolder + "Bonita-home")
@@ -136,7 +139,6 @@ public class MigrationRunner {
         def binding = new Binding(["bonitaHome":bonitaHome, "feature":feature, "startMigrationDate":startMigrationDate, "gse":gse]);
         migrateFeature(gse, feature, binding, 2);
     }
-    
     private migrateFeature(GroovyScriptEngine gse, File file, Binding binding, int nbTabs){
         // TODO : Lire le fichier de description et l'afficher
         PrintStream stdout = MigrationUtil.setSystemOutWithTab(nbTabs);

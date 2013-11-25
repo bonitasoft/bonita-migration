@@ -17,10 +17,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import javax.naming.Context;
 
@@ -55,6 +57,7 @@ import org.bonitasoft.engine.events.model.SHandler;
 import org.bonitasoft.engine.events.model.SHandlerExecutionException;
 import org.bonitasoft.engine.exception.AlreadyExistsException;
 import org.bonitasoft.engine.exception.BonitaException;
+import org.bonitasoft.engine.exception.BonitaHomeConfigurationException;
 import org.bonitasoft.engine.exception.BonitaHomeNotSetException;
 import org.bonitasoft.engine.exception.ServerAPIException;
 import org.bonitasoft.engine.exception.UnknownAPITypeException;
@@ -68,12 +71,14 @@ import org.bonitasoft.engine.search.SearchOptions;
 import org.bonitasoft.engine.search.SearchOptionsBuilder;
 import org.bonitasoft.engine.service.TenantServiceAccessor;
 import org.bonitasoft.engine.service.TenantServiceSingleton;
+import org.bonitasoft.engine.service.impl.ServiceAccessorFactory;
 import org.bonitasoft.engine.session.APISession;
 import org.bonitasoft.engine.session.PlatformSession;
 import org.bonitasoft.engine.test.APITestUtil;
 import org.bonitasoft.engine.test.WaitUntil;
 import org.bonitasoft.engine.test.wait.WaitForPendingTasks;
 import org.bonitasoft.engine.transaction.STransactionException;
+import org.bonitasoft.engine.work.WorkService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -131,7 +136,7 @@ public class DatabaseFiller {
     }
 
     public void execute(final int nbProcessesDefinitions, final int nbProcessInstances, final int nbWaitingEvents, final int nbDocuments) throws Exception {
-        copyBonitaHome();
+        // copyBonitaHome();
         setup();
         Map<String, String> stats = fillDatabase(nbProcessesDefinitions, nbProcessInstances, nbWaitingEvents, nbDocuments);
         for (Entry<String, String> entry : stats.entrySet()) {
@@ -295,11 +300,26 @@ public class DatabaseFiller {
         return Collections.singletonMap("Documents", String.valueOf(nbDocuments));
     }
 
-    public void shutdown() throws BonitaException, BonitaHomeNotSetException, ServerAPIException, UnknownAPITypeException {
+    public void shutdown() throws BonitaException, BonitaHomeNotSetException, ServerAPIException, UnknownAPITypeException, InstantiationException,
+            IllegalAccessException, ClassNotFoundException, IOException {
         final PlatformSession pSession = APITestUtil.loginPlatform();
         final PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(pSession);
         APITestUtil.stopPlatformAndTenant(platformAPI, false);
         APITestUtil.logoutPlatform(pSession);
+        shutdownWorkService();
+    }
+
+    private void shutdownWorkService() throws BonitaHomeNotSetException, InstantiationException, IllegalAccessException, ClassNotFoundException, IOException,
+            BonitaHomeConfigurationException {
+        WorkService workService = ServiceAccessorFactory.getInstance().createPlatformServiceAccessor().getWorkService();
+        Field[] fields = workService.getClass().getDeclaredFields();
+        for (Field field : fields) {
+            if (field.getName().equals("threadPoolExecutor")) {
+                field.setAccessible(true);
+                ThreadPoolExecutor tpe = (ThreadPoolExecutor) field.get(workService);
+                tpe.shutdown();
+            }
+        }
     }
 
     protected Map<String, String> fillProfiles(final APISession session) throws Exception {

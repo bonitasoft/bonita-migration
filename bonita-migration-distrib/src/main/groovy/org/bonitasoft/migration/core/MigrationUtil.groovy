@@ -30,6 +30,9 @@ public class MigrationUtil {
 
     public final static String DB_VENDOR = "db.vendor"
 
+    public final static String AUTO_ACCEPT = "auto.accept"
+
+
     public final static String REQUEST_SEPARATOR = "@@"
 
 
@@ -60,7 +63,10 @@ public class MigrationUtil {
             throw new IllegalArgumentException("Can't execute getAndPrintProperty method with arguments : propeties = " + properties + ", propertyName = " + propertyName);
         }
 
-        def String property = properties.getProperty(propertyName);
+        def String property = System.getProperty(propertyName);
+        if(property == null){
+            property = properties.getProperty(propertyName);
+        }
         if (property != null) {
             property = property.replaceAll("\t", "").replaceAll(" ", "");
             println "\t-" + propertyName + " = " + property
@@ -100,7 +106,7 @@ public class MigrationUtil {
         System.setOut(stdout);
         printSuccessMigration(startFeatureDate, startMigrationDate);
     }
-    
+
     public static printSuccessMigration(Date startFeatureDate, Date startMigrationDate){
         if (startFeatureDate == null || startMigrationDate == null){
             throw new IllegalArgumentException("Can't execute printSuccessMigration method with arguments : startFeatureDate = " + startFeatureDate + ", startMigrationDate = " + startMigrationDate);
@@ -298,5 +304,9 @@ public class MigrationUtil {
         out.writeObject(object);
         out.flush();
         return baos.toByteArray();
+    }
+
+    public static boolean isAutoAccept(){
+        return System.getProperty(MigrationUtil.AUTO_ACCEPT)=="true"
     }
 }
