@@ -1,5 +1,7 @@
 import org.bonitasoft.migration.core.MigrationUtil;
 
+MigrationUtil.executeDefaultSqlFile(feature, dbVendor, sql);
+
 def currentTime = System.currentTimeMillis()
 def tenants = MigrationUtil.getTenantsId(feature, dbVendor, sql)
 

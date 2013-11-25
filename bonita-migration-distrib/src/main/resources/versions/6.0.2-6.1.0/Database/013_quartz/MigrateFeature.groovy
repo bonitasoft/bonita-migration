@@ -9,6 +9,8 @@ import org.bonitasoft.engine.scheduler.JobIdentifier;
 import org.bonitasoft.migration.core.MigrationUtil;
 
 
+MigrationUtil.executeDefaultSqlFile(feature, dbVendor, sql);
+
 def nonConcurrentJobs = [
     "BPMEventHandling",
     "CleanInvalidSessions"
@@ -41,4 +43,3 @@ map.each {
     }
 }
 
-//MigrationUtil.executeDefaultSqlFile(feature, dbVendor, sql)
