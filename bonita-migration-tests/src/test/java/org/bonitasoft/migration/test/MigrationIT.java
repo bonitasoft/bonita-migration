@@ -1,16 +1,19 @@
 package org.bonitasoft.migration.test;
 
+import java.lang.reflect.Method;
+
 import org.junit.Test;
 
 public class MigrationIT {
 
     @Test
-    public void migration_6_0_2_to_6_1_0() throws Exception {
-        // setup database
-        // run db filler 6.0.2
-        // execute migration on same db/bonitahome
-        // run db checker 6.1.0
-        throw new IllegalStateException("NYI");
+    public void checkResult() throws Exception {
+        String targetVersion = System.getProperty("target.version");
+        System.out.println("Test: target = " + targetVersion);
+        Class<?> checker = Class.forName("org.bonitasoft.migration.DatabaseChecker" + targetVersion.replace('.', '_'));
+        Method method = checker.getMethod("verify");
+        method.invoke(null);
+        // if()
     }
 
 }

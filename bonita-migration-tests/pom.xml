@@ -24,6 +24,7 @@
 			<groupId>org.bonitasoft.migration</groupId>
 			<artifactId>bonita-migration-db-filler-${target.version}</artifactId>
 			<version>${project.version}</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.bonitasoft.migration</groupId>
@@ -187,14 +188,62 @@
 								<argument>-Dbonita.home=${bonita.home}</argument>
 								<argument>-Dauto.accept=true</argument>
 								<argument>-classpath</argument>
-								<argument>${project.build.directory}/migration/lib/groovy-all-1.8.6.jar</argument><!-- 
-									TODO version hard coded -->
+								<argument>${project.build.directory}/migration/lib/groovy-all-1.8.6.jar</argument><!-- TODO version hard coded -->
 								<argument>groovy.lang.GroovyShell</argument>
 								<argument>Migration.groovy</argument>
 							</arguments>
 						</configuration>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>2.12</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<systemProperties>
+						<property>
+							<name>bonita.home</name>
+							<value>${bonita.home}</value>
+						</property>
+						<property>
+							<name>target.version</name>
+							<value>${target.version}</value>
+						</property>
+						<property>
+							<name>sysprop.bonita.db.vendor</name>
+							<value>${db.vendor}</value>
+						</property>
+						<property>
+							<name>jdbc.vendor</name>
+							<value>${db.vendor}</value>
+						</property>
+						<property>
+							<name>jdbc.url</name>
+							<value>${db.url}</value>
+						</property>
+						<property>
+							<name>jdbc.user</name>
+							<value>${db.user}</value>
+						</property>
+						<property>
+							<name>jdbc.password</name>
+							<value>${db.password}</value>
+						</property>
+						<property>
+							<name>jdbc.driverClass</name>
+							<value>${db.driverClass}</value>
+						</property>
+					</systemProperties>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
