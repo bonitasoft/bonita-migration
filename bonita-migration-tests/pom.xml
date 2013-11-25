@@ -148,6 +148,11 @@
 							<executable>java</executable>
 							<arguments>
 								<argument>-Dsysprop.bonita.db.vendor=${db.vendor}</argument>
+								<argument>-Djdbc.vendor=${db.vendor}</argument>
+								<argument>-Djdbc.url=${db.url}</argument>
+								<argument>-Djdbc.user=${db.user}</argument>
+								<argument>-Djdbc.password=${db.password}</argument>
+								<argument>-Djdbc.driverClass=${db.driverClass}</argument>
 								<argument>-Dbonita.home=${project.build.directory}/home</argument>
 								<argument>-classpath</argument>
 								<argument>${project.build.directory}/source-filler/*</argument>

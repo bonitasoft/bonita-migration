@@ -1,1 +1,1 @@
-TODO : Put description
+Add job_log table and update job_param table

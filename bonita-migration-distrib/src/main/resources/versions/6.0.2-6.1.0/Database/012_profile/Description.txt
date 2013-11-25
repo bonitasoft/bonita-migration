@@ -1,1 +1,1 @@
-TODO : Put description
+Add columns on profile table and update data
