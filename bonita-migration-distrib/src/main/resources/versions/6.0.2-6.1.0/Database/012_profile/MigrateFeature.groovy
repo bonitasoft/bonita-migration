@@ -14,7 +14,7 @@ tenants.each {
     def directoryId = MigrationUtil.getId(feature, dbVendor, "get_dir_profile_entry_id", it, sql)
 
     if(adminId != null && directoryId != null){
-        def parameters = new HashMap()
+        parameters = new HashMap()
         parameters.put(":tenantId", String.valueOf(it))
         parameters.put(":admin_profile_id", String.valueOf(adminId))
         parameters.put(":dir_profile_entry_id", String.valueOf(directoryId))
