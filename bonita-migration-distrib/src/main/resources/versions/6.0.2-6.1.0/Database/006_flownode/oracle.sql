@@ -11,3 +11,10 @@ ALTER TABLE "ARCH_FLOWNODE_INSTANCE" ADD "EXECUTEDBYDELEGATE" NUMBER(19,0) @@
 
 ALTER TABLE "FLOWNODE_INSTANCE" MODIFY "PRIORITY" SMALLINT @@
 ALTER TABLE "FLOWNODE_INSTANCE" ADD "EXECUTEDBYDELEGATE" NUMBER(19,0) @@
+
+--
+-- Datas
+-- 
+
+UPDATE flownode_instance SET executedbydelegate = executedby @@
+UPDATE arch_flownode_instance SET executedbydelegate = executedby @@

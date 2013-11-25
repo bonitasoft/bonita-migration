@@ -26,3 +26,11 @@ DROP INDEX idx_user_name ON user_
 @@
 CREATE INDEX idx_user_name ON user_ (tenantid ASC, userName ASC, id ASC)
 @@
+
+
+--
+-- Datas
+--
+
+UPDATE user_ 
+	SET enabled = TRUE

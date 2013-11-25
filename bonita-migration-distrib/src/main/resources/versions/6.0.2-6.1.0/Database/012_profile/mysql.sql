@@ -23,9 +23,9 @@ ALTER TABLE profileentry DROP INDEX tenantId;
 --
 
 UPDATE profile 
-	SET creationDate = ?,
+	SET creationDate = :creationDate,
 	createdBy = -1, 
-	lastUpdateDate = ?,
+	lastUpdateDate = :creationDate,
 	lastUpdatedBy = -1,
 	isDefault = 1
 	WHERE name in ('User', 'Administrator');
