@@ -87,9 +87,9 @@ public class MigrationRunner {
         MigrationUtil.getAndDisplayPlatformVersion(sql);
 
         if(!MigrationUtil.isAutoAccept()){
-        println "Press ENTER to start migration !"
-        System.console().readLine()
-    }
+            println "Press ENTER to start migration !"
+            System.console().readLine()
+        }
     }
 
     public migrateDatabase(GroovyScriptEngine gse, String migrationVersionFolder) {
@@ -103,8 +103,8 @@ public class MigrationRunner {
         PrintStream stdout = MigrationUtil.setSystemOutWithTab(2);
         println "You should make a backup of your database."
         if(!MigrationUtil.isAutoAccept()){
-        println "Press ENTER to continue..."
-        System.console().readLine()
+            println "Press ENTER to continue..."
+            System.console().readLine()
         }
         println ""
 
@@ -144,7 +144,7 @@ public class MigrationRunner {
         PrintStream stdout = MigrationUtil.setSystemOutWithTab(nbTabs);
         new File(file, "Description.txt").eachLine{ line -> println "Description : " + line }
         System.setOut(stdout);
-        
+
         MigrationUtil.executeMigration(gse, file, "MigrateFeature.groovy", binding, nbTabs, startMigrationDate);
     }
 }

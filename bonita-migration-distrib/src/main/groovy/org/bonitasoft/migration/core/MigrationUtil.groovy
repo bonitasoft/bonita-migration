@@ -68,7 +68,7 @@ public class MigrationUtil {
             property = properties.getProperty(propertyName);
         }
         if (property != null) {
-            property = property.replaceAll("\t", "").replaceAll(" ", "");
+            property = property.replaceAll("\t", "").trim();
             println "\t-" + propertyName + " = " + property
         } else {
             throw new NotFoundException("The property " + propertyName + " doesn't exist !!");
@@ -111,7 +111,7 @@ public class MigrationUtil {
         if (startFeatureDate == null || startMigrationDate == null){
             throw new IllegalArgumentException("Can't execute printSuccessMigration method with arguments : startFeatureDate = " + startFeatureDate + ", startMigrationDate = " + startMigrationDate);
         }
-        
+
         def endFeatureDate = new Date()
         println "[ Success in "+ TimeCategory.minus(endFeatureDate, startFeatureDate) + ". The migration started, there is " + TimeCategory.minus(endFeatureDate, startMigrationDate) + " ]"
         println ""
@@ -206,32 +206,33 @@ public class MigrationUtil {
         return tenants
     }
 
-    public static migrateDirectory(String fromDir, String toDir){
+    public static migrateDirectory(String fromDir, String toDir, boolean deleteOldDirectory){
         if (fromDir == null || toDir == null){
             throw new IllegalArgumentException("Can't execute migrateDirectory method with arguments : fromDir = " + fromDir + ", toDir = " + toDir);
         }
 
         println "Migration of " + toDir + "..."
-        def deleted = false
         def fileFromDir = new File(fromDir);
         def fileToDir = new File(toDir);
-        if (!(deleted = fileToDir.deleteDir())) {
+        if (!fileFromDir.exists() || !fileFromDir.isDirectory()) {
+            throw new IllegalStateException("Migration failed. Source folder does not exist : " + fromDir)
+        }
+        if (deleteOldDirectory && !(fileToDir.deleteDir())) {
             throw new IllegalStateException("Migration failed. Unable to delete : " + toDir)
         }
-        if (!fileFromDir.exists() || !fileFromDir.isDirectory()) {
-            throw new IllegalStateException("Migration failed. source folder does not exists : " + fromDir)
-        }
-        copyDirectory(fileFromDir, fileToDir)
+        copyDirectory(fileFromDir, fileToDir, deleteOldDirectory)
         println "Done"
     }
 
-    private static void copyDirectory(File srcDir, File destDir) throws IOException {
-        if (destDir.mkdirs() == false) {
-            throw new IOException("Destination '" + destDir + "' directory cannot be created");
-        }
-        destDir.setLastModified(srcDir.lastModified());
-        if (destDir.canWrite() == false) {
-            throw new IOException("Destination '" + destDir + "' cannot be written to");
+    private static void copyDirectory(File srcDir, File destDir, boolean destDirIsDeleted) throws IOException {
+        if (destDirIsDeleted){
+            if (destDir.mkdirs() == false) {
+                throw new IOException("Destination '" + destDir + "' directory cannot be created");
+            }
+            destDir.setLastModified(srcDir.lastModified());
+            if (destDir.canWrite() == false) {
+                throw new IOException("Destination '" + destDir + "' cannot be written to");
+            }
         }
         // recurse
         File[] files = srcDir.listFiles();
@@ -241,13 +242,17 @@ public class MigrationUtil {
         for (int i = 0; i < files.length; i++) {
             File copiedFile = new File(destDir, files[i].getName());
             if (files[i].isDirectory()) {
-                copyDirectory(files[i], copiedFile);
+                copyDirectory(files[i], copiedFile, destDirIsDeleted);
             } else {
                 copyFile(files[i], copiedFile);
             }
         }
     }
     private static void copyFile(File srcFile, File destFile) throws IOException {
+        if (destFile.exists() && !(destFile.delete())) {
+            throw new IllegalStateException("Migration failed. Unable to delete : " + destFile)
+        }
+
         FileInputStream input = new FileInputStream(srcFile);
         try {
             FileOutputStream output = new FileOutputStream(destFile);

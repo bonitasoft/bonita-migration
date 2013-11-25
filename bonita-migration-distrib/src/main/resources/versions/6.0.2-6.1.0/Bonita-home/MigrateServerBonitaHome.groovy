@@ -6,10 +6,10 @@ def File newServerBonitaHome = new File(feature, "bonita/server/");
 def File oldServerBonitaHome = new File(bonitaHome, "/server/");
 
 currentDir = "/platform/conf"
-MigrationUtil.migrateDirectory(newServerBonitaHome.path + currentDir, oldServerBonitaHome.path + currentDir)
+MigrationUtil.migrateDirectory(newServerBonitaHome.path + currentDir, oldServerBonitaHome.path + currentDir, true)
 
 currentDir = "/platform/tenant-template"
-MigrationUtil.migrateDirectory(newServerBonitaHome.path + currentDir, oldServerBonitaHome.path + currentDir)
+MigrationUtil.migrateDirectory(newServerBonitaHome.path + currentDir, oldServerBonitaHome.path + currentDir, true)
 
 println "Detecting tenants..."
 def tenantsServerDir = new File(oldServerBonitaHome, "/tenants")
@@ -23,7 +23,7 @@ if (tenantsServerDir.exists()) {
             println "For tenant : " + tenant.name
             PrintStream stdout = MigrationUtil.setSystemOutWithTab(4);
             
-            MigrationUtil.migrateDirectory(newServerBonitaHome.path + "/platform/tenant-template/conf", tenant.path + "/conf")
+            MigrationUtil.migrateDirectory(newServerBonitaHome.path + "/platform/tenant-template/conf", tenant.path + "/conf", true)
             System.setOut(stdout);
         }
     }

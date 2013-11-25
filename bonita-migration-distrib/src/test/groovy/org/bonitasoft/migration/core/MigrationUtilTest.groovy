@@ -74,7 +74,7 @@ class JobDataMapTest {
         def Properties properties = buildProperties();
 
         def String result = MigrationUtil.getAndPrintProperty(properties, "os.name");
-        def String propertyName = System.getProperty("os.name").replaceAll(" ", "");
+        def String propertyName = System.getProperty("os.name");
         assertEquals(propertyName, result);
         // Get output
         baos.flush();
@@ -89,7 +89,7 @@ class JobDataMapTest {
         System.setOut(new PrintStream(baos));
         // Build properties
         def Properties properties = new Properties();
-        properties.setProperty("name", "L\tinu x");
+        properties.setProperty("name", "Linux \t");
 
         def String result = MigrationUtil.getAndPrintProperty(properties, "name");
         assertEquals("Linux", result);
