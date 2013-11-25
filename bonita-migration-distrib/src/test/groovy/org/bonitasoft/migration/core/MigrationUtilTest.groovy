@@ -42,8 +42,7 @@ class JobDataMapTest {
 
     private Properties buildProperties(){
         def Properties properties = new Properties();
-        properties.setProperty("user.name", "HackTrack");
-        properties.setProperty("os.name", "Linux");
+        properties.setProperty("name", "Linux");
         properties.setProperty("user.function", "Developer");
         properties.setProperty("user.age", "You are too curious!");
         return properties;
@@ -57,12 +56,30 @@ class JobDataMapTest {
         // Build properties
         def Properties properties = buildProperties();
 
-        def String result = MigrationUtil.getAndPrintProperty(properties, "os.name");
+        def String result = MigrationUtil.getAndPrintProperty(properties, "name");
         assertEquals("Linux", result);
         // Get output
         baos.flush();
         def String standardOutput = baos.toString().replaceAll(System.getProperty("line.separator"), "");
-        assertEquals("\t-os.name = Linux", standardOutput);
+        assertEquals("\t-name = Linux", standardOutput);
+    }
+    
+    
+    @Test
+    public void getAndPrintSystemProperty(){
+        // To capture output
+        def ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(baos));
+        // Build properties
+        def Properties properties = buildProperties();
+
+        def String result = MigrationUtil.getAndPrintProperty(properties, "os.name");
+        def String propertyName = System.getProperty("os.name").replaceAll(" ", "");
+        assertEquals(propertyName, result);
+        // Get output
+        baos.flush();
+        def String standardOutput = baos.toString().replaceAll(System.getProperty("line.separator"), "");
+        assertEquals("\t-os.name = " + propertyName, standardOutput);
     }
 
     @Test
@@ -72,14 +89,14 @@ class JobDataMapTest {
         System.setOut(new PrintStream(baos));
         // Build properties
         def Properties properties = new Properties();
-        properties.setProperty("os.name", "L\tinu x");
+        properties.setProperty("name", "L\tinu x");
 
-        def String result = MigrationUtil.getAndPrintProperty(properties, "os.name");
+        def String result = MigrationUtil.getAndPrintProperty(properties, "name");
         assertEquals("Linux", result);
         // Get output
         baos.flush();
         def String standardOutput = baos.toString().replaceAll(System.getProperty("line.separator"), "");
-        assertEquals("\t-os.name = Linux", standardOutput);
+        assertEquals("\t-name = Linux", standardOutput);
     }
 
 
