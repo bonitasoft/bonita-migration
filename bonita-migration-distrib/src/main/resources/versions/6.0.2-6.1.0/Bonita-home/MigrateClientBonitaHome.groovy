@@ -17,7 +17,7 @@ MigrationUtil.migrateDirectory(newClientBonitaHome.path + currentDir, oldClientB
 println "Detecting tenants..."
 def tenantsClientDir = new File(oldClientBonitaHome, "/tenants")
 if (tenantsClientDir.exists()) {
-    def tenants = Arrays.asList(tenantsServerDir.listFiles());
+    def tenants = Arrays.asList(tenantsClientDir.listFiles());
     if (tenants.empty){
         println "Not found any tenants."
     } else {
