@@ -22,6 +22,11 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.bonitasoft.migration</groupId>
+			<artifactId>bonita-migration-db-filler-${target.version}</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.bonitasoft.migration</groupId>
 			<artifactId>bonita-migration-db-filler-${source.version}</artifactId>
 			<version>${project.version}</version>
 		</dependency>

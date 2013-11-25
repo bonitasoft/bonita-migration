@@ -15,6 +15,7 @@ package org.bonitasoft.migration;
 
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,7 +42,7 @@ public class DatabaseFiller6_1_0 extends DatabaseFiller {
 
     public static void main(final String[] args) throws Exception {
         DatabaseFiller6_1_0 databaseFiller = new DatabaseFiller6_1_0();
-        databaseFiller.execute(1, 1, 1, 50);
+        databaseFiller.execute(1, 1, 1, 1);
     }
 
     @Override
@@ -66,6 +67,12 @@ public class DatabaseFiller6_1_0 extends DatabaseFiller {
         Map<String, String> map = new HashMap<String, String>(1);
         map.put("Profiles", String.valueOf(profileAPI.searchProfiles(searchOptions).getCount()));
         return map;
+    }
+
+    @Override
+    protected Map<String, String> fillProcessWithTransitions(final APISession session) throws Exception {
+        // no transition in 6.1.0
+        return Collections.emptyMap();
     }
 
     static ConfigurableApplicationContext springContext;

@@ -200,7 +200,7 @@ public class DatabaseFiller {
         return map;
     }
 
-    private Map<String, String> fillProcessWithTransitions(final APISession session) throws Exception {
+    protected Map<String, String> fillProcessWithTransitions(final APISession session) throws Exception {
 
         ProcessAPI processAPI = TenantAPIAccessor.getProcessAPI(session);
 

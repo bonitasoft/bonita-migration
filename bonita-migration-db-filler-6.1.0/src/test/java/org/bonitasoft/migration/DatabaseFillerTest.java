@@ -6,7 +6,7 @@ public class DatabaseFillerTest {
 
     @Test
     public void testMain() throws Exception {
-        DatabaseFiller.main(null);
+        DatabaseFiller6_1_0.main(null);
     }
 
 }

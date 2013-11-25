@@ -9,8 +9,7 @@
 	<modules>
 		<module>bonita-migration-distrib</module>
 		<module>bonita-migration-db-filler-6.0.2</module>
-		<!-- Not up to date -->
-		<!-- <module>bonita-migration-db-filler-6.1.0</module> -->
+		<module>bonita-migration-db-filler-6.1.0</module>
 <!-- 		integration tests -->
 <!-- 		<module>bonita-migration-tests</module> -->
 	</modules>
