@@ -1,6 +1,7 @@
 import org.bonitasoft.migration.core.MigrationUtil;
 
-MigrationUtil.executeDefaultSqlFile(feature, dbVendor, sql);
+def parameters = Collections.singletonMap(":creationDate", new Date().getTime());
+MigrationUtil.executeSqlFile(feature, dbVendor, null, parameters, sql, true);
 
 def currentTime = System.currentTimeMillis()
 def tenants = MigrationUtil.getTenantsId(feature, dbVendor, sql)
