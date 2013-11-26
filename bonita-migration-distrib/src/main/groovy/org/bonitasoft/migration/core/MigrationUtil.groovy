@@ -220,12 +220,12 @@ public class MigrationUtil {
         if (deleteOldDirectory && !(fileToDir.deleteDir())) {
             throw new IllegalStateException("Migration failed. Unable to delete : " + toDir)
         }
-        copyDirectory(fileFromDir, fileToDir, deleteOldDirectory)
+        copyDirectory(fileFromDir, fileToDir)
         println "Done"
     }
 
-    private static void copyDirectory(File srcDir, File destDir, boolean destDirIsDeleted) throws IOException {
-        if (destDirIsDeleted){
+    private static void copyDirectory(File srcDir, File destDir) throws IOException {
+        if (!destDir.exists()){
             if (destDir.mkdirs() == false) {
                 throw new IOException("Destination '" + destDir + "' directory cannot be created");
             }
@@ -242,7 +242,7 @@ public class MigrationUtil {
         for (int i = 0; i < files.length; i++) {
             File copiedFile = new File(destDir, files[i].getName());
             if (files[i].isDirectory()) {
-                copyDirectory(files[i], copiedFile, destDirIsDeleted);
+                copyDirectory(files[i], copiedFile);
             } else {
                 copyFile(files[i], copiedFile);
             }
