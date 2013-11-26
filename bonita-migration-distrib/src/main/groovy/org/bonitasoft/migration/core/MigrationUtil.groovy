@@ -290,6 +290,7 @@ public class MigrationUtil {
     }
 
     public static Object deserialize(byte[] bytes, ClassLoader theClassLoader){
+        //had to override the method of objectinputstream to be able to give the object classloader in input
         ObjectInputStream input = new ObjectInputStream(new ByteArrayInputStream(bytes)){
                     protected Class<?> resolveClass(ObjectStreamClass objectStreamClass) throws IOException, ClassNotFoundException {
                         return Class.forName(objectStreamClass.getName(), true, theClassLoader);
