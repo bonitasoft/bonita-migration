@@ -20,13 +20,13 @@ def concurrentJobClassName = "org.bonitasoft.engine.scheduler.impl.ConcurrentQua
 def map = [:]
 
 sql.eachRow("select * from QRTZ_JOB_DETAILS",{row ->
-    map.putAt([row.JOB_NAME, row.JOB_GROUP], row.JOB_DATA)
+    map.putAt([row.JOB_NAME, row.JOB_GROUP], row.JOB_DATA.bytes)
 });
 
 def jobIdentifierClassLoader = JobIdentifier.class.getClassLoader()
 map.each {
     //give the same class loader as the one of the class we deserialize
-    def JobDataMap jobData = MigrationUtil.deserialize(it.value,jobIdentifierClassLoader);
+    def JobDataMap jobData = MigrationUtil.deserialize(it.value, jobIdentifierClassLoader);
     def uncasted = jobData.get("jobIdentifier");
     def JobIdentifier jobIdent = uncasted;
     def newMap = new JobDataMap();
