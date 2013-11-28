@@ -28,10 +28,10 @@ public migrateTransition(TransitionInstance transition, File feature, Map flowno
             //select the correponding gateway:
                 def GatewayInstance gateway = getGateway(transition,target);
                 def hitBys = "FINISH:1";
-                def nbIncommingTransition = target.incommingTransitions.size()
+                def nbIncomingTransition = target.incommingTransitions.size()
                 def transitionIndex = target.incommingTransitions.indexOf(transition.name) +1 // index of transition start at 1
                 if(gateway == null){//create new gateway
-                    if( nbIncommingTransition > 1 ){//only 1 incomming: the gateway is finished, more than one: put in hitBys the transition index in definition
+                    if( nbIncomingTransition > 1 ){//only 1 incomming: the gateway is finished, more than one: put in hitBys the transition index in definition
                         hitBys = transitionIndex;
                     }
                     println "Insert new gateway with hitBys = '"+hitBys+"'";
@@ -39,7 +39,7 @@ public migrateTransition(TransitionInstance transition, File feature, Map flowno
                 }else{//update the existing gateway
                     hitBys = gateway.hitBys;
                     def nbHit = hitBys.split(",").length +1
-                    def isFinished = nbHit == nbIncommingTransition
+                    def isFinished = nbHit == nbIncomingTransition
                     //is finished if all tr are here
                     updateGateway(isFinished, hitBys, nbHit, transitionIndex, gateway);
                 }
