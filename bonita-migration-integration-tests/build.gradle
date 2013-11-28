@@ -1,0 +1,99 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'maven'
+
+group = 'org.bonitasoft.migration'
+version = '1.0.0-SNAPSHOT'
+
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
+
+ext{
+    sourceversion = "6.0.2"
+    targetversion = "6.1.0"
+    dbvendor = "mysql"
+    dburl = "jdbc:mysql://localhost:3306/bonita?allowMultiQueries=true"
+    dbuser="root"
+    dbpassword="root"
+    dbdriverClass="com.mysql.jdbc.Driver"
+    bonitahome="${buildDir.path}/home"
+    distDir="${buildDir.path}/dist"
+}
+
+configurations {
+    sourcefiller
+    targetfiller
+    migrationdist
+    drivers
+    homezip
+}
+
+repositories {
+    mavenLocal()
+    maven { url "http://192.168.0.254:9080/archiva/repository/internal/" }
+    maven { url "http://192.168.0.254:9080/archiva/repository/snapshots/" }
+    maven { url "http://repo.maven.apache.org/maven2" }
+}
+dependencies {
+    sourcefiller "org.bonitasoft.migration:bonita-migration-db-filler-${sourceversion}:1.0.0-SNAPSHOT"
+    homezip  group: 'org.bonitasoft.engine', name: 'bonita-home', version: sourceversion, ext: 'zip'
+    targetfiller "org.bonitasoft.migration:bonita-migration-db-filler-${targetversion}:1.0.0-SNAPSHOT"
+    migrationdist group: 'org.bonitasoft.migration', name: "bonita-migration-distrib", version: "1.0.0-SNAPSHOT", ext: 'zip'
+    drivers group: 'mysql', name: 'mysql-connector-java', version: '5.1.26'
+    drivers group: 'org.postgresql', name: 'postgresql', version: '9.2-1003-jdbc4'
+}
+task unpackhome(type: Copy){
+    def zipFile = configurations.homezip.files.iterator().next()
+    def outputDir = file("${buildDir.path}")
+
+    from zipTree(zipFile)
+    into outputDir
+}
+
+task execfill(dependsOn:unpackhome, type: JavaExec) {
+    classpath configurations.sourcefiller
+    systemProperties(["sysprop.bonita.db.vendor":dbvendor,
+        "jdbc.vendor":dbvendor,
+        "jdbc.url":dburl,
+        "jdbc.user":dbuser,
+        "jdbc.password":dbpassword,
+        "jdbc.driverClass":dbdriverClass,
+        "bonita.home":bonitahome])
+    main = "org.bonitasoft.migration.DatabaseFiller"
+}
+task unpackdist(dependsOn:execfill, type: Copy){
+    def zipFile = configurations.migrationdist.files.iterator().next()
+    def outputDir = file(distDir)
+
+    from zipTree(zipFile)
+    into outputDir
+}
+task copyDrivers(dependsOn:unpackdist, type: Copy){
+    into "$distDir/lib"
+    from configurations.drivers
+}
+
+task changeproperties(dependsOn:copyDrivers)<<{
+    def propFile = new File(distDir,"Config.properties")
+    def fis = new FileInputStream(propFile)
+    def Properties props = new Properties()
+    props.load(fis)
+    fis.close()
+    props.put("source.version",String.valueOf(sourceversion))
+    props.put("target.version",String.valueOf(targetversion))
+    props.put("db.vendor",String.valueOf(dbvendor));
+    props.put("db.url",String.valueOf(dburl));
+    props.put("db.user",String.valueOf(dbuser));
+    props.put("db.password",String.valueOf(dbpassword));
+    props.put("db.driverClass",String.valueOf(dbdriverClass));
+    props.put("bonita.home",String.valueOf(bonitahome));
+    props.store(new FileWriter(propFile), "config");
+}
+task runmigration(dependsOn:changeproperties, type:JavaExec){
+    workingDir distDir
+    main = 'groovy.lang.GroovyShell'
+    classpath = files(["build/dist/lib/groovy-all-1.8.6.jar"]as String[])
+    args 'Migration.groovy'
+    systemProperty 'auto.accept', 'true'
+}
+
