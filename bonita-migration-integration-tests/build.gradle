@@ -97,3 +97,15 @@ task runmigration(dependsOn:changeproperties, type:JavaExec){
     systemProperty 'auto.accept', 'true'
 }
 
+task testmigration(dependsOn:runmigration, type: JavaExec) {
+    classpath configurations.targetfiller
+    systemProperties(["sysprop.bonita.db.vendor":dbvendor,
+        "jdbc.vendor":dbvendor,
+        "jdbc.url":dburl,
+        "jdbc.user":dbuser,
+        "jdbc.password":dbpassword,
+        "jdbc.driverClass":dbdriverClass,
+        "bonita.home":bonitahome])
+    main = "org.bonitasoft.migration.DatabaseChecker"+targetversion.replace('.', '_')
+}
+
