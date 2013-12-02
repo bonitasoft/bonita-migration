@@ -28,8 +28,8 @@ public migrateTransition(TransitionInstance transition, File feature, Map flowno
             //select the correponding gateway:
                 def GatewayInstance gateway = getGateway(transition,target);
                 def hitBys = "FINISH:1";
-                def nbIncomingTransition = target.incommingTransitions.size()
-                def transitionIndex = target.incommingTransitions.indexOf(transition.name) +1 // index of transition start at 1
+                def nbIncomingTransition = target.incomingTransitions.size()
+                def transitionIndex = target.incomingTransitions.indexOf(transition.name) +1 // index of transition start at 1
                 if(gateway == null){//create new gateway
                     if( nbIncomingTransition > 1 ){//only 1 incomming: the gateway is finished, more than one: put in hitBys the transition index in definition
                         hitBys = transitionIndex;
@@ -52,8 +52,8 @@ public migrateTransition(TransitionInstance transition, File feature, Map flowno
             //select the correponding gateway:
                 def GatewayInstance gateway = getGateway(transition,target);
                 def hitBys = "FINISH:1";
-                def nbIncommingTransition = target.incommingTransitions.size()
-                def transitionIndex = target.incommingTransitions.indexOf(transition.name) +1 // index of transition start at 1
+                def nbIncommingTransition = target.incomingTransitions.size()
+                def transitionIndex = target.incomingTransitions.indexOf(transition.name) +1 // index of transition start at 1
                 if(gateway == null){//create new gateway for this transition
                     if( nbIncommingTransition > 1 && getNumberOfTokens(transition.tenantid,transition.parentContainerId,transition.tokenRefId) > 1){
                         //more than one incomming AND this branch is not the only one active (nb token >1): the gateway is not finished
@@ -131,7 +131,7 @@ private GatewayInstance toGateway(row){
 }
 public void insertFlowNode(TransitionInstance transition, FlowNodeDefinition target, File feature, Map flownodeIdsByTenants, Map overrideParameters){
     def nextId = flownodeIdsByTenants.get(transition.tenantid);
-    def Map parameters = [":tenantid":transition.tenantid,":id":nextId,":flownodeDefinitionId":target.getId(),":kind":target.type,":rootContainerId":transition.rootContainerId,":parentContainerId":transition.parentContainerId,
+    def Map parameters = [":tenantid":transition.tenantid,":id":nextId,":flownodeDefinitionId":target.getId(),":kind":toDatabaseKind(target.type),":rootContainerId":transition.rootContainerId,":parentContainerId":transition.parentContainerId,
         ":name":target.name,":stateId":target.getStateId(),":stateName":target.getStateName(),":stateCategory":"NORMAL", ":logicalGroup1":transition.processDefId,":logicalGroup2":transition.rootContainerId,":logicalGroup3":"0",
         ":logicalGroup4":transition.parentContainerId,":token_ref_id":transition.tokenRefId,":gatewayType":null,":hitBys":null]
     parameters.putAll(overrideParameters)
@@ -139,6 +139,18 @@ public void insertFlowNode(TransitionInstance transition, FlowNodeDefinition tar
     flownodeIdsByTenants.put(transition.tenantid, nextId+1)
 }
 
+public String toDatabaseKind(String type){
+    switch(type){
+        case "gateway":
+            return "gate"
+            break
+        case "intermediateCatchEvent":
+            return "intermediateCatchEvent"
+            break
+        default:
+            throw new IllegalStateException("type unknown: $type")
+    }
+}
 public Object getTargetOfTransition(String processDefXml, TransitionInstance transition) {
     def processDefinition = new XmlParser().parseText(processDefXml);
     def targetDefId = processDefinition.flowElements.transitions.transition.find{it.@name==transition.name}.@target
@@ -149,7 +161,7 @@ public Object getTargetOfTransition(String processDefXml, TransitionInstance tra
     def flownodeDef = new FlowNodeDefinition(id:flownode.@id,name:flownode.@name, type:type)
     if(flownodeDef.isGateway()){
         flownodeDef.gateType = flownode.@gatewayType
-        flownode.incomingTransition.each {
+        flownode.incomingTransitions.each {
             def idref = it.@idref
             flownodeDef.addTransition(processDefinition.depthFirst().grep{ it.@id == idref }[0].@name)
         }
