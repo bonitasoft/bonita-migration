@@ -35,6 +35,7 @@ import org.bonitasoft.engine.api.PlatformAPIAccessor;
 import org.bonitasoft.engine.api.ProcessAPI;
 import org.bonitasoft.engine.api.ProfileAPI;
 import org.bonitasoft.engine.api.TenantAPIAccessor;
+import org.bonitasoft.engine.bpm.actor.ActorNotFoundException;
 import org.bonitasoft.engine.bpm.bar.BarResource;
 import org.bonitasoft.engine.bpm.bar.BusinessArchive;
 import org.bonitasoft.engine.bpm.bar.BusinessArchiveBuilder;
@@ -59,12 +60,14 @@ import org.bonitasoft.engine.exception.AlreadyExistsException;
 import org.bonitasoft.engine.exception.BonitaException;
 import org.bonitasoft.engine.exception.BonitaHomeConfigurationException;
 import org.bonitasoft.engine.exception.BonitaHomeNotSetException;
+import org.bonitasoft.engine.exception.CreationException;
 import org.bonitasoft.engine.exception.ServerAPIException;
 import org.bonitasoft.engine.exception.UnknownAPITypeException;
 import org.bonitasoft.engine.expression.ExpressionBuilder;
 import org.bonitasoft.engine.expression.InvalidExpressionException;
 import org.bonitasoft.engine.identity.ImportPolicy;
 import org.bonitasoft.engine.identity.User;
+import org.bonitasoft.engine.identity.UserNotFoundException;
 import org.bonitasoft.engine.io.IOUtil;
 import org.bonitasoft.engine.operation.OperationBuilder;
 import org.bonitasoft.engine.search.SearchOptions;
@@ -203,14 +206,15 @@ public class DatabaseFiller {
     protected Map<String, String> fillProcessWithTransitions(final APISession session) throws Exception {
 
         ProcessAPI processAPI = TenantAPIAccessor.getProcessAPI(session);
+        IdentityAPI identityApi = TenantAPIAccessor.getIdentityAPI(session);
 
         final ProcessDefinition processDefinitionEvent = deployProcessWithTransitionToEvent(processAPI);
-        final ProcessDefinition processDefinitionPara1 = deployProcessWithGateways(processAPI, GatewayType.PARALLEL, 2, "para1");
-        final ProcessDefinition processDefinitionPara2 = deployProcessWithGateways(processAPI, GatewayType.PARALLEL, 4, "para4");
-        final ProcessDefinition processDefinitionInclu1 = deployProcessWithGateways(processAPI, GatewayType.INCLUSIVE, 2, "inclu1");
-        final ProcessDefinition processDefinitionInclu2 = deployProcessWithGateways(processAPI, GatewayType.INCLUSIVE, 2, "inclu2");
-        final ProcessDefinition processDefinitionInclu3 = deployProcessWithGateways(processAPI, GatewayType.INCLUSIVE, 3, "inclu3");
-        final ProcessDefinition processDefinitionExclu2 = deployProcessWithGateways(processAPI, GatewayType.EXCLUSIVE, 2, "exclu2");
+        final ProcessDefinition processDefinitionPara1 = deployProcessWithGateways(processAPI, identityApi, GatewayType.PARALLEL, 2, "para1");
+        final ProcessDefinition processDefinitionPara2 = deployProcessWithGateways(processAPI, identityApi, GatewayType.PARALLEL, 4, "para4");
+        final ProcessDefinition processDefinitionInclu1 = deployProcessWithGateways(processAPI, identityApi, GatewayType.INCLUSIVE, 2, "inclu1");
+        final ProcessDefinition processDefinitionInclu2 = deployProcessWithGateways(processAPI, identityApi, GatewayType.INCLUSIVE, 2, "inclu2");
+        final ProcessDefinition processDefinitionInclu3 = deployProcessWithGateways(processAPI, identityApi, GatewayType.INCLUSIVE, 3, "inclu3");
+        final ProcessDefinition processDefinitionExclu2 = deployProcessWithGateways(processAPI, identityApi, GatewayType.EXCLUSIVE, 2, "exclu2");
         HashMap<Long, String> transitions = new HashMap<Long, String>();
         transitions.put(processDefinitionEvent.getId(), "event");
         transitions.put(processDefinitionPara1.getId(), "gate1");
@@ -258,13 +262,16 @@ public class DatabaseFiller {
         return processDefinition;
     }
 
-    private ProcessDefinition deployProcessWithGateways(final ProcessAPI processAPI, final GatewayType gatewayType, final int nbBranches, final String name)
+    private ProcessDefinition deployProcessWithGateways(final ProcessAPI processAPI, final IdentityAPI identityApi, final GatewayType gatewayType,
+            final int nbBranches, final String name)
             throws InvalidBusinessArchiveFormatException,
             InvalidProcessDefinitionException,
-            AlreadyExistsException, ProcessDeployException, ProcessDefinitionNotFoundException, ProcessEnablementException, InvalidExpressionException {
+            ProcessDeployException, ProcessDefinitionNotFoundException, ProcessEnablementException, InvalidExpressionException, UserNotFoundException,
+            ActorNotFoundException, CreationException {
         ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("ProcessWithTransitions" + name, "1.0");
         boolean addCondition = gatewayType != GatewayType.PARALLEL;
         builder.addStartEvent("start");
+        builder.addActor("actor");
         builder.addGateway("gate1", gatewayType);
         builder.addGateway("gate2", gatewayType);
         builder.addTransition("start", "gate1");
@@ -278,10 +285,14 @@ public class DatabaseFiller {
                 builder.addTransition("step" + i, "gate2");
             }
         }
+        builder.addUserTask("finished_" + name, "actor");
         builder.addEndEvent("end");
-        builder.addTransition("gate2", "end");
+        builder.addTransition("gate2", "finished_" + name);
+        builder.addTransition("finished_" + name, "end");
         BusinessArchive businessArchive = new BusinessArchiveBuilder().createNewBusinessArchive().setProcessDefinition(builder.done()).done();
         final ProcessDefinition processDefinition = processAPI.deploy(businessArchive);
+        User hellen = identityApi.getUserByUserName("april.sanchez");
+        processAPI.addUserToActor("actor", processDefinition, hellen.getId());
         processAPI.enableProcess(processDefinition.getId());
         return processDefinition;
     }
