@@ -20,7 +20,8 @@ def concurrentJobClassName = "org.bonitasoft.engine.scheduler.impl.ConcurrentQua
 def map = [:]
 
 sql.eachRow("select * from QRTZ_JOB_DETAILS",{row ->
-    map.putAt([row.JOB_NAME, row.JOB_GROUP], row.JOB_DATA.bytes)
+    def content = dbVendor == "oracle"?row.JOB_DATA.bytes:row.JOB_DATA
+    map.putAt([row.JOB_NAME, row.JOB_GROUP], content)
 });
 
 def jobIdentifierClassLoader = JobIdentifier.class.getClassLoader()
