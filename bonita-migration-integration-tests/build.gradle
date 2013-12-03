@@ -30,6 +30,11 @@ configurations {
 
 repositories {
     mavenLocal()
+    def props = System.getProperties();
+    props.each { elem->
+        println elem.getKey()+"="+elem.getValue() 
+    }
+    
     if(System.getProperty("localRepository")!=null){
         maven { url System.getProperty("localRepository") }
     }
