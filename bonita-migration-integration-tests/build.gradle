@@ -34,7 +34,26 @@ repositories {
     props.each { elem->
         println elem.getKey()+"="+elem.getValue() 
     }
-    
+    Object.metaClass.printIfExists =
+    { name ->
+         def prop = this.hasProperty(name)?this.getProperty(name):null
+      println name + " = "+ prop
+    }
+    printIfExists("BUILD_NUMBER")
+    printIfExists("BUILD_ID")
+    printIfExists("BUILD_DISPLAY_NAME")
+    printIfExists("JOB_NAME")
+    printIfExists("BUILD_TAG")
+    printIfExists("EXECUTOR_NUMBER")
+    printIfExists("NODE_NAME")
+    printIfExists("NODE_LABELS")
+    printIfExists("WORKSPACE")
+    printIfExists("JENKINS_HOME")
+    printIfExists("JENKINS_URL")
+    printIfExists("BUILD_URL")
+    printIfExists("JOB_URL")
+    printIfExists("SVN_REVISION")
+    printIfExists("SVN_URL")
     if(System.getProperty("localRepository")!=null){
         maven { url System.getProperty("localRepository") }
     }
