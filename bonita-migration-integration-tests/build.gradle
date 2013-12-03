@@ -30,36 +30,14 @@ configurations {
 
 repositories {
     mavenLocal()
-    def props = System.getProperties();
-    props.each { elem->
-        println elem.getKey()+"="+elem.getValue() 
+    if(System.getProperty("maven.repository")!=null){
+        def customRepo = System.getProperty("maven.repository")
+        println "using custom maven repository: $customRepo"
+        maven { url customRepo }
+    }else{
+        println "no custom repository defined, use system property 'maven.repository' to add one"
     }
-    Object.metaClass.printIfExists =
-    { name ->
-         def prop = this.hasProperty(name)?this.getProperty(name):null
-      println name + " = "+ prop
-    }
-    printIfExists("BUILD_NUMBER")
-    printIfExists("BUILD_ID")
-    printIfExists("BUILD_DISPLAY_NAME")
-    printIfExists("JOB_NAME")
-    printIfExists("BUILD_TAG")
-    printIfExists("EXECUTOR_NUMBER")
-    printIfExists("NODE_NAME")
-    printIfExists("NODE_LABELS")
-    printIfExists("WORKSPACE")
-    printIfExists("JENKINS_HOME")
-    printIfExists("JENKINS_URL")
-    printIfExists("BUILD_URL")
-    printIfExists("JOB_URL")
-    printIfExists("SVN_REVISION")
-    printIfExists("SVN_URL")
-    if(System.getProperty("localRepository")!=null){
-        maven { url System.getProperty("localRepository") }
-    }
-    maven { url "http://192.168.0.254:9080/archiva/repository/internal/" }
-    maven { url "http://192.168.0.254:9080/archiva/repository/snapshots/" }
-    maven { url "http://repo.maven.apache.org/maven2" }
+    mavenCentral()
 }
 dependencies {
     sourcefiller "org.bonitasoft.migration:bonita-migration-db-filler-${sourceversion}:1.0.0-SNAPSHOT"
