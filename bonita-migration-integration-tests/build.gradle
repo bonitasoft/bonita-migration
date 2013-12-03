@@ -30,6 +30,9 @@ configurations {
 
 repositories {
     mavenLocal()
+    if(System.getProperty("localRepository")!=null){
+        maven { url System.getProperty("localRepository") }
+    }
     maven { url "http://192.168.0.254:9080/archiva/repository/internal/" }
     maven { url "http://192.168.0.254:9080/archiva/repository/snapshots/" }
     maven { url "http://repo.maven.apache.org/maven2" }
@@ -92,13 +95,26 @@ task changeproperties(dependsOn:copyDrivers)<<{
 task runmigration(dependsOn:changeproperties, type:JavaExec){
     workingDir distDir
     main = 'groovy.lang.GroovyShell'
-    classpath = files(["build/dist/lib/groovy-all-1.8.6.jar"]as String[])
+    classpath = files([
+        "build/dist/lib/groovy-all-1.8.6.jar"
+    ]as String[])
     args 'Migration.groovy'
     systemProperty 'auto.accept', 'true'
 }
 
-task testmigration(dependsOn:runmigration, type: JavaExec) {
-    classpath configurations.targetfiller
+test.dependsOn(runmigration)
+//task testmigration(dependsOn:runmigration, type: JavaExec) {
+//    classpath configurations.targetfiller
+//    systemProperties(["sysprop.bonita.db.vendor":dbvendor,
+//        "jdbc.vendor":dbvendor,
+//        "jdbc.url":dburl,
+//        "jdbc.user":dbuser,
+//        "jdbc.password":dbpassword,
+//        "jdbc.driverClass":dbdriverClass,
+//        "bonita.home":bonitahome])
+//    main = "org.bonitasoft.migration.DatabaseChecker"+targetversion.replace('.', '_')
+//}
+test {
     systemProperties(["sysprop.bonita.db.vendor":dbvendor,
         "jdbc.vendor":dbvendor,
         "jdbc.url":dburl,
@@ -106,6 +122,9 @@ task testmigration(dependsOn:runmigration, type: JavaExec) {
         "jdbc.password":dbpassword,
         "jdbc.driverClass":dbdriverClass,
         "bonita.home":bonitahome])
-    main = "org.bonitasoft.migration.DatabaseChecker"+targetversion.replace('.', '_')
+    classpath = configurations.targetfiller
+    include "org.bonitasoft.migration.DatabaseChecker"+targetversion.replace('.', '_')
+    testLogging.showStandardStreams = true
 }
+
 
