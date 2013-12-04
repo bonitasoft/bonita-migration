@@ -24,7 +24,6 @@ ext{
 
 configurations {
     sourcefiller
-    targetfiller
     migrationdist
     drivers
     homezip
@@ -32,6 +31,7 @@ configurations {
 
 repositories {
     mavenLocal()
+    //used in jenkins: add in system property $ {JENKINS_HOME}/userContent/m2_repo
     if(System.getProperty("maven.repository")!=null){
         def customRepo = System.getProperty("maven.repository")
         println "using custom maven repository: $customRepo"
@@ -44,17 +44,19 @@ repositories {
 dependencies {
     sourcefiller "org.bonitasoft.migration:bonita-migration-db-filler-${sourceversion}:1.0.0-SNAPSHOT"
     homezip  group: 'org.bonitasoft.engine', name: 'bonita-home', version: sourceversion, ext: 'zip'
-    targetfiller "org.bonitasoft.migration:bonita-migration-db-filler-${targetversion}:1.0.0-SNAPSHOT"
+    testCompile "org.bonitasoft.migration:bonita-migration-db-filler-${targetversion}:1.0.0-SNAPSHOT"
     migrationdist group: 'org.bonitasoft.migration', name: "bonita-migration-distrib", version: "1.0.0-SNAPSHOT", ext: 'zip'
     drivers group: 'mysql', name: 'mysql-connector-java', version: '5.1.26'
     drivers group: 'org.postgresql', name: 'postgresql', version: '9.2-1003-jdbc4'
+    testCompile group: 'junit', name: 'junit', version: '4.+'
 }
-
+//allow to execute sql from the build script -> see cleardb task
 URLClassLoader loader = GroovyObject.class.classLoader
 configurations.drivers.each {File file ->
     loader.addURL(file.toURI().toURL())
 }
-task cleardb(){
+//drop and create the database
+task cleardb<<{
     println "dburl=$dburl"
     def parsedUrl = (dburl =~ /(jdbc:\w+:\/\/[\w\d\.]+:\d+\/)([\w-_\d]+).*/)
     def genericUrl = parsedUrl[0][1]
@@ -68,7 +70,7 @@ task cleardb(){
         println "can't drop database, maybe it did not exist"
     }
     sql.executeUpdate("create database `"+databaseName+"` DEFAULT CHARACTER SET utf8")
-    
+
 }
 task unpackhome(dependsOn:cleardb,type: Copy){
     def zipFile = configurations.homezip.files.iterator().next()
@@ -79,9 +81,8 @@ task unpackhome(dependsOn:cleardb,type: Copy){
 }
 
 task execfill(dependsOn:unpackhome, type: JavaExec) {
-    println "execute fill of the database using classpath "
-    configurations.sourcefiller.each {
-        println it
+    doFirst {
+        println "execute fill of the database using classpath of $sourceversion"
     }
     classpath configurations.sourcefiller
     systemProperties(["sysprop.bonita.db.vendor":dbvendor,
@@ -131,29 +132,17 @@ task runmigration(dependsOn:changeproperties, type:JavaExec){
     systemProperty 'auto.accept', 'true'
 }
 
-//test.dependsOn(runmigration)
-////task testmigration(dependsOn:runmigration, type: JavaExec) {
-////    classpath configurations.targetfiller
-////    systemProperties(["sysprop.bonita.db.vendor":dbvendor,
-////        "jdbc.vendor":dbvendor,
-////        "jdbc.url":dburl,
-////        "jdbc.user":dbuser,
-////        "jdbc.password":dbpassword,
-////        "jdbc.driverClass":dbdriverClass,
-////        "bonita.home":bonitahome])
-////    main = "org.bonitasoft.migration.DatabaseChecker"+targetversion.replace('.', '_')
-////}
-//test <<{
-//    systemProperties(["sysprop.bonita.db.vendor":dbvendor,
-//        "jdbc.vendor":dbvendor,
-//        "jdbc.url":dburl,
-//        "jdbc.user":dbuser,
-//        "jdbc.password":dbpassword,
-//        "jdbc.driverClass":dbdriverClass,
-//        "bonita.home":bonitahome])
-//    classpath = configurations.targetfiller
-//    include "org.bonitasoft.migration.DatabaseChecker"+targetversion.replace('.', '_')
-//    testLogging.showStandardStreams = true
-//}
+test.dependsOn(runmigration)
+test {
+    systemProperty "sysprop.bonita.db.vendor",dbvendor
+    systemProperty "jdbc.vendor",dbvendor
+    systemProperty "jdbc.url",dburl
+    systemProperty "jdbc.user",dbuser
+    systemProperty "jdbc.password",dbpassword
+    systemProperty "jdbc.driverClass",dbdriverClass
+    systemProperty "bonita.home",bonitahome
+    systemProperty "target.version",targetversion
+    testLogging.showStandardStreams = true
+}
 
 
