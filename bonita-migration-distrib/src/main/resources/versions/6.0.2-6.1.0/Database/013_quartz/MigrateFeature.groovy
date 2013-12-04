@@ -22,10 +22,9 @@ def map = [:]
 sql.eachRow("select * from QRTZ_JOB_DETAILS",{row ->
     def content;
     if(dbVendor == "oracle"){
-        println "deserialize job using oracle system"
-        content= row.JOB_DATA.bytes
+        def blob = row.JOB_DATA
+        content= blob.getBytes(1l,blob.length().intValue())
     }else{
-        println "deserialize job using non-oracle system"
         content = row.JOB_DATA
     }
     map.putAt([row.JOB_NAME, row.JOB_GROUP], content)
