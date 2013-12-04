@@ -20,6 +20,9 @@ ext{
     dbdriverClass=System.getProperty("db.driverClass","com.mysql.jdbc.Driver")
     bonitahome="${buildDir.path}/home"
     distDir="${buildDir.path}/dist"
+    //used for oracle: creates table not the same way
+    dbRootUser = System.getProperty("db.root.user")
+    dbRootPassword = System.getProperty("db.root.password")
 }
 
 configurations {
@@ -62,20 +65,40 @@ configurations.drivers.each {File file ->
 }
 //drop and create the database
 task cleardb<<{
-    println "dburl=$dburl"
-    def parsedUrl = (dburl =~ /(jdbc:\w+:\/\/[\w\d\.]+:\d+\/)([\w-_\d]+).*/)
-    def genericUrl = parsedUrl[0][1]
-    def databaseName = parsedUrl[0][2]
-    println "recreate database $databaseName on $genericUrl with driver $dbdriverClass"
-    def props = [user: dbuser, password: dbpassword] as Properties
-    def sql = Sql.newInstance(genericUrl, props, dbdriverClass)
-    try{
-        sql.executeUpdate("drop database `"+databaseName+"`")
-    }catch(Exception e){
-        println "can't drop database, maybe it did not exist"
-    }
-    sql.executeUpdate("create database `"+databaseName+"` DEFAULT CHARACTER SET utf8")
 
+    if(dbvendor.equals("oracle")){
+        println "cleaning oracle database $dbuser"
+        if(dbRootUser == null || dbRootUser.isEmpty() || dbRootPassword == null || dbRootPassword.isEmpty()){
+            throw new IllegalStateException("must specify db.root.user and db.root.password for oracle")
+        }
+        def props = [user: dbRootUser, password: dbRootPassword] as Properties
+        def sql = Sql.newInstance(dburl, props, dbdriverClass)
+        try{
+            sql.executeUpdate("DROP user bonita cascade");
+        }catch(Exception e){
+            println "can't drop database, maybe it did not exist"
+        }
+        sql.executeUpdate("CREATE USER $dbuser IDENTIFIED BY $dbpassword");
+        sql.executeUpdate("GRANT connect, resource TO $dbuser IDENTIFIED BY $dbpassword");
+        sql.executeUpdate("GRANT select ON sys.dba_pending_transactions TO $dbuser");
+        sql.executeUpdate("GRANT select ON sys.pending_trans\$ TO $dbuser");
+        sql.executeUpdate("GRANT select ON sys.dba_2pc_pending TO $dbuser");
+        sql.executeUpdate("GRANT execute ON sys.dbms_system TO $dbuser");
+    }else{
+        println "dburl=$dburl"
+        def parsedUrl = (dburl =~ /(jdbc:\w+:\/\/[\w\d\.]+:\d+\/)([\w-_\d]+).*/)
+        def genericUrl = parsedUrl[0][1]
+        def databaseName = parsedUrl[0][2]
+        println "recreate database $databaseName on $genericUrl with driver $dbdriverClass"
+        def props = [user: dbuser, password: dbpassword] as Properties
+        def sql = Sql.newInstance(genericUrl, props, dbdriverClass)
+        try{
+            sql.executeUpdate("drop database `"+databaseName+"`")
+        }catch(Exception e){
+            println "can't drop database, maybe it did not exist"
+        }
+        sql.executeUpdate("create database `"+databaseName+"` DEFAULT CHARACTER SET utf8")
+    }
 }
 task unpackhome(dependsOn:cleardb,type: Copy){
     def zipFile = configurations.homezip.files.iterator().next()
