@@ -174,7 +174,7 @@ public class MigrationUtil {
 
     public static getAndDisplayPlatformVersion(groovy.sql.Sql sql){
         sql.eachRow("SELECT version FROM platform") { row ->
-            println "The platform version in database is : " + row[0] + "."
+            println "The platform version in database is : " + row[0] 
         }
     }
 

@@ -17,7 +17,7 @@ ALTER TABLE report ADD CONSTRAINT UQ_Report UNIQUE (tenantId, name)
 @@
 ALTER TABLE report ALTER COLUMN description NVARCHAR(MAX)
 @@
-ALTER TABLE report ADD lastModificationDate NUMERIC(19,0) NOT NULL
+ALTER TABLE report ADD lastModificationDate NUMERIC(19,0) NOT NULL DEFAULT 0
 @@
 ALTER TABLE report ADD screenshot VARBINARY(MAX)
 @@

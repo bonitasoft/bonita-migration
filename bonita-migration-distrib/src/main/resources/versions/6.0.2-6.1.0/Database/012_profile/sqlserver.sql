@@ -2,15 +2,15 @@
 -- profile
 -- 
 
-ALTER TABLE profile ADD isDefault BIT NOT NULL
+ALTER TABLE profile ADD isDefault BIT NOT NULL DEFAULT 'False'
 @@
-ALTER TABLE profile ADD creationDate NUMERIC(19,0) NOT NULL
+ALTER TABLE profile ADD creationDate NUMERIC(19,0) NOT NULL DEFAULT 0
 @@
-ALTER TABLE profile ADD createdBy NUMERIC(19,0) NOT NULL
+ALTER TABLE profile ADD createdBy NUMERIC(19,0) NOT NULL DEFAULT 0
 @@
-ALTER TABLE profile ADD lastUpdateDate NUMERIC(19,0) NOT NULL
+ALTER TABLE profile ADD lastUpdateDate NUMERIC(19,0) NOT NULL DEFAULT 0
 @@
-ALTER TABLE profile ADD lastUpdatedBy NUMERIC(19,0) NOT NULL
+ALTER TABLE profile ADD lastUpdatedBy NUMERIC(19,0) NOT NULL DEFAULT 0
 @@
 
 --
