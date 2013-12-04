@@ -17,6 +17,7 @@ public class MigrationIT {
         Class<?> testClass = Class.forName(nameOfClassToRun);
         System.out.println(testClass);
         suite.addTest(new JUnit4TestAdapter(testClass));
+        suite.addTest(new JUnit4TestAdapter(TestFailure.class));
         return suite;
     }
 }
