@@ -20,7 +20,14 @@ def concurrentJobClassName = "org.bonitasoft.engine.scheduler.impl.ConcurrentQua
 def map = [:]
 
 sql.eachRow("select * from QRTZ_JOB_DETAILS",{row ->
-    def content = dbVendor == "oracle"?row.JOB_DATA.bytes:row.JOB_DATA
+    def content;
+    if(dbVendor == "oracle"){
+        println "deserialize job using oracle system"
+        content= row.JOB_DATA.bytes
+    }else{
+        println "deserialize job using non-oracle system"
+        content = row.JOB_DATA
+    }
     map.putAt([row.JOB_NAME, row.JOB_GROUP], content)
 });
 
