@@ -33,4 +33,4 @@ CREATE INDEX idx_user_name ON user_ (tenantid ASC, userName ASC, id ASC)
 --
 
 UPDATE user_ 
-	SET enabled = TRUE
+	SET enabled = 'True'
