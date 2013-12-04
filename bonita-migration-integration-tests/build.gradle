@@ -80,7 +80,7 @@ task cleardb<<{
         }
         //do not use gstring because it create prepared statement
         sql.executeUpdate("CREATE USER "+dbuser+" IDENTIFIED BY "+dbpassword);
-        sql.executeUpdate("GRANT connect, resource TO "+dbuser+" IDENTIFIED BY "+dbpassword");
+        sql.executeUpdate("GRANT connect, resource TO "+dbuser+" IDENTIFIED BY "+dbpassword);
         sql.executeUpdate("GRANT select ON sys.dba_pending_transactions TO "+dbuser);
         sql.executeUpdate("GRANT select ON sys.pending_trans\$ TO "+dbuser);
         sql.executeUpdate("GRANT select ON sys.dba_2pc_pending TO "+dbuser);
