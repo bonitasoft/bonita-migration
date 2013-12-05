@@ -174,6 +174,7 @@ public class DatabaseFiller {
         stats.putAll(fillProcessesWithEvents(session, nbWaitingEvents));
         stats.putAll(fillProcessWithTransitions(session));
         stats.putAll(fillProcessWithStartTimer(session));
+        stats.putAll(fillCompletedProcess(session));
         APITestUtil.logoutTenant(session);
         logger.info("Finished to fill the database");
         return stats;
@@ -399,6 +400,22 @@ public class DatabaseFiller {
         Map<String, String> map = new HashMap<String, String>(2);
         map.put("Process definitions", String.valueOf(nbProcessesDefinitions));
         map.put("Process instances", String.valueOf(nbProcessInstances));
+        return map;
+    }
+
+    protected Map<String, String> fillCompletedProcess(final APISession session)
+            throws Exception {
+        ProcessAPI processAPI = TenantAPIAccessor.getProcessAPI(session);
+
+        ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("ProcessThatFinish", "1.0");
+        builder.addAutomaticTask("step1");
+
+        BusinessArchiveBuilder archiveBuilder = new BusinessArchiveBuilder().createNewBusinessArchive();
+        archiveBuilder.setProcessDefinition(builder.done());
+        ProcessDefinition processDefinition = processAPI.deploy(archiveBuilder.done());
+        processAPI.enableProcess(processDefinition.getId());
+        processAPI.startProcess(processDefinition.getId());
+        Map<String, String> map = new HashMap<String, String>(2);
         return map;
     }
 

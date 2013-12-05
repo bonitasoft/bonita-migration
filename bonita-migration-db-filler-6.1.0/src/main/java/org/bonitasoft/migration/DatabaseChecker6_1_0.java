@@ -1,5 +1,7 @@
 package org.bonitasoft.migration;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
 
 import javax.naming.Context;
@@ -11,7 +13,11 @@ import org.bonitasoft.engine.api.ProcessAPI;
 import org.bonitasoft.engine.api.TenantAPIAccessor;
 import org.bonitasoft.engine.bpm.flownode.ActivityInstanceCriterion;
 import org.bonitasoft.engine.bpm.flownode.HumanTaskInstance;
+import org.bonitasoft.engine.bpm.process.ArchivedProcessInstance;
+import org.bonitasoft.engine.bpm.process.ArchivedProcessInstancesSearchDescriptor;
 import org.bonitasoft.engine.exception.BonitaException;
+import org.bonitasoft.engine.search.SearchOptionsBuilder;
+import org.bonitasoft.engine.search.SearchResult;
 import org.bonitasoft.engine.session.APISession;
 import org.bonitasoft.engine.session.PlatformSession;
 import org.bonitasoft.engine.test.APITestUtil;
@@ -72,6 +78,16 @@ public class DatabaseChecker6_1_0 {
                 System.out.println("task: " + humanTaskInstance.getName());
             }
         }
+    }
+
+    @Test
+    public void check_archivedProcessInstance_can_be_retrive() throws Exception {
+        long processDefinitionId = processAPI.getProcessDefinitionId("ProcessThatFinish", "1.0");
+        System.out.println("processDefinitionId= " + processDefinitionId);
+        SearchResult<ArchivedProcessInstance> archivedProcessInstances = processAPI.searchArchivedProcessInstances(new SearchOptionsBuilder(0, 10).filter(
+                ArchivedProcessInstancesSearchDescriptor.PROCESS_DEFINITION_ID, processDefinitionId).done());
+        System.out.println(archivedProcessInstances.getResult());
+        assertTrue(archivedProcessInstances.getCount() > 0);
     }
 
     private static void setupSpringContext() {
