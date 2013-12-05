@@ -113,7 +113,7 @@ public class MigrationUtil {
         }
 
         def endFeatureDate = new Date()
-        println "[ Success in "+ TimeCategory.minus(endFeatureDate, startFeatureDate) + ". The migration started, there is " + TimeCategory.minus(endFeatureDate, startMigrationDate) + " ]"
+        println "[ Migration step success in "+ TimeCategory.minus(endFeatureDate, startFeatureDate) + ". Migration started  " + TimeCategory.minus(endFeatureDate, startMigrationDate) + " ago. ]"
         println ""
     }
 
@@ -174,7 +174,7 @@ public class MigrationUtil {
 
     public static getAndDisplayPlatformVersion(groovy.sql.Sql sql){
         sql.eachRow("SELECT version FROM platform") { row ->
-            println "The platform version in database is : " + row[0] 
+            println "Platform version in database: " + row[0]
         }
     }
 

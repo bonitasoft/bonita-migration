@@ -13,11 +13,6 @@
  **/
 package org.bonitasoft.migration.core
 
-import java.io.File;
-import java.io.PrintStream;
-import java.util.Date;
-
-import groovy.lang.Binding;
 import groovy.time.TimeCategory
 
 
@@ -60,7 +55,7 @@ public class MigrationRunner {
         System.setOut(stdout);
 
         def end = new Date()
-        println "\nMigration successful, in " + TimeCategory.minus(end, startMigrationDate);
+        println "\nMigration successfully completed, in " + TimeCategory.minus(end, startMigrationDate);
         MigrationUtil.getAndDisplayPlatformVersion(sql);
         sql.close()
     }
@@ -87,7 +82,7 @@ public class MigrationRunner {
         MigrationUtil.getAndDisplayPlatformVersion(sql);
 
         if(!MigrationUtil.isAutoAccept()){
-            println "Press ENTER to start migration !"
+            println "Press ENTER to start migration or Ctrl+C to cancel."
             System.console().readLine()
         }
     }
@@ -101,9 +96,9 @@ public class MigrationRunner {
 
         println "Migration of database :"
         PrintStream stdout = MigrationUtil.setSystemOutWithTab(2);
-        println "You should make a backup of your database."
+        println "Make a backup of your database and bonita_home before migrating."
         if(!MigrationUtil.isAutoAccept()){
-            println "Press ENTER to continue..."
+            println "Press ENTER to continue or Ctrl+C to cancel."
             System.console().readLine()
         }
         println ""

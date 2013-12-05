@@ -1,1 +1,1 @@
-Add error informations on connector
+Add error information on connector

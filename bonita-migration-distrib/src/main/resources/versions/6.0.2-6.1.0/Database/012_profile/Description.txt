@@ -1,1 +1,1 @@
-Add columns on profile table and update data
+Add columns in profile table and update data

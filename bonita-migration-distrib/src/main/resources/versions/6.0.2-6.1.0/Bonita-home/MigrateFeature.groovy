@@ -1,10 +1,7 @@
 import org.bonitasoft.migration.core.MigrationUtil;
 
-
-println "Some folders will be deleted, you should make a backup of your bonita home."
-println "If you have customized the configuration, reapply it after the migration is done."
 if(!MigrationUtil.isAutoAccept()){
-    println "Press ENTER to continue..."
+    println "Press ENTER to continue or Ctrl+C to cancel."
     System.console().readLine()
 }
 println ""

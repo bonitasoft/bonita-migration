@@ -14,12 +14,12 @@ MigrationUtil.migrateDirectory(newClientBonitaHome.path + currentDir, oldClientB
 currentDir = "/platform/work"
 MigrationUtil.migrateDirectory(newClientBonitaHome.path + currentDir, oldClientBonitaHome.path + currentDir, false)
 
-println "Detecting tenants..."
+println "Checking for tenants."
 def tenantsClientDir = new File(oldClientBonitaHome, "/tenants")
 if (tenantsClientDir.exists()) {
     def tenants = Arrays.asList(tenantsClientDir.listFiles());
     if (tenants.empty){
-        println "Not found any tenants."
+        println "No tenants found."
     } else {
         println "Executing update for each tenant : " + tenants;
         tenantsClientDir.eachFile { tenant ->
