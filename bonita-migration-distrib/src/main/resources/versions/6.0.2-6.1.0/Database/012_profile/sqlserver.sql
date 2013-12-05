@@ -45,6 +45,6 @@ SET creationDate = :creationDate,
 	createdBy = -1, 
 	lastUpdateDate = :creationDate,
 	lastUpdatedBy = -1,
-	isDefault = TRUE
+	isDefault = 'True'
 WHERE name in ('User', 'Administrator')
 @@
