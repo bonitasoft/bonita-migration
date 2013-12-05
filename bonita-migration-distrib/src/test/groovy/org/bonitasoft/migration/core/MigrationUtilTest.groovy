@@ -2,11 +2,8 @@ package org.bonitasoft.migration.core;
 
 import static org.junit.Assert.*
 
-import java.io.PrintStream;
-import java.util.Date;
-
+import org.bonitasoft.migration.core.exception.NotFoundException
 import org.junit.Test
-import org.bonitasoft.migration.core.exception.NotFoundException;
 
 class JobDataMapTest {
 
@@ -63,8 +60,8 @@ class JobDataMapTest {
         def String standardOutput = baos.toString().replaceAll(System.getProperty("line.separator"), "");
         assertEquals("\t-name = Linux", standardOutput);
     }
-    
-    
+
+
     @Test
     public void getAndPrintSystemProperty(){
         // To capture output
@@ -181,7 +178,7 @@ class JobDataMapTest {
         def PrintStream stdout = System.out;
 
         def PrintStream oldPrintStream = MigrationUtil.setSystemOutWithTab(0);
-        
+
         assertEquals(stdout, oldPrintStream);
         println "plop"
         // Get output
@@ -200,23 +197,23 @@ class JobDataMapTest {
         System.setOut(new PrintStream(baos));
         def Date startMigrationDate = new Date(0);
         def Date startFeatureDate = new Date(1);
-        
+
         MigrationUtil.printSuccessMigration(startFeatureDate, startMigrationDate);
-        
+
         // Get output
         baos.flush();
         def String standardOutput = baos.toString().replaceAll(System.getProperty("line.separator"), "");
-        assertTrue(standardOutput.contains("[ Success in "));
-        assertTrue(standardOutput.contains(". The migration started, there is "));
-        assertTrue(standardOutput.contains(" ]"));
+        assertTrue(standardOutput.contains("[ Migration step success in "));
+        assertTrue(standardOutput.contains(". Migration started "));
+        assertTrue(standardOutput.contains(" ago. ]"));
         assertTrue(standardOutput.contains("seconds") || standardOutput.contains("days") || standardOutput.contains("hours"));
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void printSuccessMigrationWithNullStartFeatureDate(){
         MigrationUtil.printSuccessMigration(null, new Date());
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void printSuccessMigrationWithNullStartMigrationDate(){
         MigrationUtil.printSuccessMigration(new Date(), null);
