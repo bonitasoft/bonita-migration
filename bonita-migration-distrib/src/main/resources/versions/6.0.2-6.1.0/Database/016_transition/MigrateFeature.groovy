@@ -73,7 +73,7 @@ public migrateTransition(TransitionInstance transition, File feature, Map flowno
     }else{
         //if target is not a gateway create the element
         println "Insert a flow node";
-        insertFlowNode(transition, target,feature,flownodeIdsByTenants, [:]);
+        insertFlowNode(transition, target,feature,flownodeIdsByTenants, [":gatewayType":"NULL",":hitBys":"NULL"]);
     }
     sql.execute("DELETE FROM transition_instance WHERE id = $transition.id AND tenantid = $transition.tenantid")
     //archive transition
