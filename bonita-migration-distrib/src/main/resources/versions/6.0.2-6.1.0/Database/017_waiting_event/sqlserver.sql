@@ -1,2 +1,2 @@
-ALTER TABLE waiting_event ADD progress TINYINT
+ALTER TABLE waiting_event ADD progress TINYINT DEFAULT 0
 @@

@@ -1,1 +1,1 @@
-ALTER TABLE waiting_event ADD progress INT2;
+ALTER TABLE waiting_event ADD progress INT2 DEFAULT 0;

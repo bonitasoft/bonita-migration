@@ -66,7 +66,7 @@ INSERT INTO flownode_instance
             0,
             0,
             0,
-            1,
+            0,
             0,
             0,
             :token_ref_id,

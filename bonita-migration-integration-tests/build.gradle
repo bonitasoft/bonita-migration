@@ -49,6 +49,7 @@ dependencies {
     sourcefiller "org.bonitasoft.migration:bonita-migration-db-filler-${sourceversion}:1.0.0-SNAPSHOT"
     homezip  group: 'org.bonitasoft.engine', name: 'bonita-home', version: sourceversion, ext: 'zip'
     testCompile "org.bonitasoft.migration:bonita-migration-db-filler-${targetversion}:1.0.0-SNAPSHOT"
+    testCompile group: 'ch.qos.logback', name:'logback-classic', version: '1.0.11'
     migrationdist group: 'org.bonitasoft.migration', name: "bonita-migration-distrib", version: "1.0.0-SNAPSHOT", ext: 'zip'
     drivers group: 'mysql', name: 'mysql-connector-java', version: '5.1.26'
     drivers group: 'org.postgresql', name: 'postgresql', version: '9.2-1003-jdbc4'
@@ -76,7 +77,9 @@ task cleardb<<{
         try{
             sql.executeUpdate("DROP user "+dbuser+" cascade");
         }catch(Exception e){
-            println "can't drop database, maybe it did not exist"
+            println "can't drop database, maybe it did not exist, cause = "
+            e.printStackTrace()
+            
         }
         //do not use gstring because it create prepared statement
         sql.executeUpdate("CREATE USER "+dbuser+" IDENTIFIED BY "+dbpassword);
@@ -91,14 +94,15 @@ task cleardb<<{
         def genericUrl = parsedUrl[0][1]
         def databaseName = parsedUrl[0][2]
         println "recreate database $databaseName on $genericUrl with driver $dbdriverClass"
-        def props = [user: dbuser, password: dbpassword] as Properties
-        def sql = Sql.newInstance(genericUrl, props, dbdriverClass)
+        println "$genericUrl, $dbuser, $dbpassword, $dbdriverClass"
+        def sql = Sql.newInstance(genericUrl, dbuser, dbpassword, dbdriverClass)
         try{
-            sql.executeUpdate("drop database `"+databaseName+"`")
+            sql.executeUpdate("drop database "+databaseName)
+            e.printStackTrace()
         }catch(Exception e){
             println "can't drop database, maybe it did not exist"
         }
-        sql.executeUpdate("create database `"+databaseName+"` DEFAULT CHARACTER SET utf8")
+        sql.executeUpdate("create database "+databaseName+(dbvendor.equals("mysql")?" DEFAULT CHARACTER SET utf8":""))
     }
 }
 task unpackhome(dependsOn:cleardb,type: Copy){
@@ -113,6 +117,7 @@ task execfill(dependsOn:unpackhome, type: JavaExec) {
     doFirst { println "execute fill of the database using classpath of $sourceversion" }
     classpath configurations.sourcefiller
     systemProperties(["sysprop.bonita.db.vendor":dbvendor,
+        "db.vendor":dbvendor,
         "jdbc.vendor":dbvendor,
         "jdbc.url":dburl,
         "jdbc.user":dbuser,
@@ -169,6 +174,7 @@ test {
     systemProperty "jdbc.driverClass",dbdriverClass
     systemProperty "bonita.home",bonitahome
     systemProperty "target.version",targetversion
+    systemProperty "logback.configurationFile",file("logback.xml").getAbsolutePath()
     testLogging.showStandardStreams = true
 }
 

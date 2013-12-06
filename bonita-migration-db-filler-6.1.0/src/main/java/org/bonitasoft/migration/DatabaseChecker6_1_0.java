@@ -16,6 +16,7 @@ import org.bonitasoft.engine.bpm.flownode.HumanTaskInstance;
 import org.bonitasoft.engine.bpm.process.ArchivedProcessInstance;
 import org.bonitasoft.engine.bpm.process.ArchivedProcessInstancesSearchDescriptor;
 import org.bonitasoft.engine.exception.BonitaException;
+import org.bonitasoft.engine.identity.User;
 import org.bonitasoft.engine.search.SearchOptionsBuilder;
 import org.bonitasoft.engine.search.SearchResult;
 import org.bonitasoft.engine.session.APISession;
@@ -88,6 +89,22 @@ public class DatabaseChecker6_1_0 {
                 ArchivedProcessInstancesSearchDescriptor.PROCESS_DEFINITION_ID, processDefinitionId).done());
         System.out.println(archivedProcessInstances.getResult());
         assertTrue(archivedProcessInstances.getCount() > 0);
+    }
+
+    @Test
+    public void check_process_with_messages_still_work() throws Exception {
+        long processDefinitionId = processAPI.getProcessDefinitionId("ProcessWithSendMessage", "1.0");
+
+        User favio = TenantAPIAccessor.getIdentityAPI(session).getUserByUserName("favio.riviera");
+
+        int pendingTaskOfFavio = Long.valueOf(processAPI.getNumberOfPendingHumanTaskInstances(favio.getId())).intValue();
+
+        processAPI.startProcess(processDefinitionId);
+
+        WaitForPendingTasks waitForPendingTasks = new WaitForPendingTasks(100, 20000, pendingTaskOfFavio + 1, favio.getId(), processAPI);
+        if (!waitForPendingTasks.waitUntil()) {
+            throw new IllegalStateException("throw/catch message don't work");
+        }
     }
 
     private static void setupSpringContext() {

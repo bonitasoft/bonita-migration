@@ -175,6 +175,7 @@ public class DatabaseFiller {
         stats.putAll(fillProcessWithTransitions(session));
         stats.putAll(fillProcessWithStartTimer(session));
         stats.putAll(fillCompletedProcess(session));
+        stats.putAll(fillProcessWithMessages(session));
         APITestUtil.logoutTenant(session);
         logger.info("Finished to fill the database");
         return stats;
@@ -201,6 +202,42 @@ public class DatabaseFiller {
         }
         Map<String, String> map = new HashMap<String, String>(1);
         map.put("Timer job", "1");
+        return map;
+    }
+
+    private Map<? extends String, ? extends String> fillProcessWithMessages(final APISession session) throws Exception {
+        ProcessAPI processAPI = TenantAPIAccessor.getProcessAPI(session);
+        ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("ProcessWithSendMessage", "1.0");
+        builder.addStartEvent("start");
+        builder.addIntermediateThrowEvent("send").addMessageEventTrigger("message",
+                new ExpressionBuilder().createConstantStringExpression("ProcessWithReceiveMessage"));
+        builder.addTransition("start", "send");
+        BusinessArchiveBuilder archiveBuilder = new BusinessArchiveBuilder().createNewBusinessArchive();
+        archiveBuilder.setProcessDefinition(builder.done());
+        ProcessDefinition sendProcess = processAPI.deploy(archiveBuilder.done());
+        processAPI.enableProcess(sendProcess.getId());
+
+        builder = new ProcessDefinitionBuilder().createNewInstance("ProcessWithReceiveMessage", "1.0");
+        builder.addActor("actor");
+        builder.addStartEvent("start").addMessageEventTrigger("message");
+        builder.addUserTask("taskTriggeredByMessage", "actor");
+        builder.addTransition("start", "taskTriggeredByMessage");
+        archiveBuilder = new BusinessArchiveBuilder().createNewBusinessArchive();
+        archiveBuilder.setProcessDefinition(builder.done());
+        ProcessDefinition receiveProcess = processAPI.deploy(archiveBuilder.done());
+        User favio = TenantAPIAccessor.getIdentityAPI(session).getUserByUserName("favio.riviera");
+        processAPI.addUserToActor("actor", receiveProcess, favio.getId());
+        processAPI.enableProcess(receiveProcess.getId());
+
+        processAPI.startProcess(sendProcess.getId());
+
+        WaitForPendingTasks waitForPendingTasks = new WaitForPendingTasks(100, 5000, 1, favio.getId(), processAPI);
+        if (!waitForPendingTasks.waitUntil()) {
+            throw new IllegalStateException("timer process did not start once");
+        }
+        Map<String, String> map = new HashMap<String, String>(1);
+        map.put("Receive message", "1");
+        map.put("Send message", "1");
         return map;
     }
 

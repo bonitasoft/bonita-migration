@@ -89,7 +89,7 @@ public updateGateway(def isFinished, def hitBys, def nbHit, def transitionIndex,
 }
 public GatewayInstance getGateway(TransitionInstance transition, FlowNodeDefinition target){
     def GatewayInstance gateway = null;
-    sql.eachRow("SELECT * FROM flownode_instance WHERE tenantid = $transition.tenantid AND parentContainerId = $transition.parentContainerId AND flownodeDefinitionId = $target.id",{row ->
+    sql.eachRow("SELECT * FROM flownode_instance WHERE tenantid = "+transition.tenantid+" AND parentContainerId = "+transition.parentContainerId+" AND flownodeDefinitionId = "+target.id,{row ->
         if(gateway == null){//if not found
             if(!row.hitBys.contains("$transition.name") && !row.hitBys.contains("FINISH:")){//if the transition already hit this gateway, create a new one
                 gateway = toGateway(row)
