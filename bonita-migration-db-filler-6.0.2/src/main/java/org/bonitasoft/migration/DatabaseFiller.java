@@ -233,7 +233,7 @@ public class DatabaseFiller {
 
         WaitForPendingTasks waitForPendingTasks = new WaitForPendingTasks(100, 5000, 1, favio.getId(), processAPI);
         if (!waitForPendingTasks.waitUntil()) {
-            throw new IllegalStateException("timer process did not start once");
+            throw new IllegalStateException("catch message did not work");
         }
         Map<String, String> map = new HashMap<String, String>(1);
         map.put("Receive message", "1");

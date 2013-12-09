@@ -146,6 +146,8 @@ public String toDatabaseKind(String type){
             break
         case "intermediateCatchEvent":
             return "intermediateCatchEvent"
+        case "intermediateThrowEvent":
+            return "intermediateThrowEvent"
             break
         default:
             throw new IllegalStateException("type unknown: $type")
