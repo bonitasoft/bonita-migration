@@ -14,8 +14,12 @@
  */
 package org.bonitasoft.migration;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.naming.Context;
@@ -90,7 +94,7 @@ public class DatabaseChecker6_1_0 {
     @Test
     public void verify() throws Exception {
         long id = identityApi.getUserByUserName("april.sanchez").getId();
-        WaitForPendingTasks waitForPendingTasks = new WaitForPendingTasks(50, 10000, 6, id, processAPI);
+        WaitForPendingTasks waitForPendingTasks = new WaitForPendingTasks(50, 10000, 10, id, processAPI);
         if (!waitForPendingTasks.waitUntil()) {
             String message = "Not all task after transitions were created";
             System.out.println(message);
@@ -98,9 +102,16 @@ public class DatabaseChecker6_1_0 {
         } else {
             System.out.println("all tasks found");
             List<HumanTaskInstance> pendingHumanTaskInstances = processAPI.getPendingHumanTaskInstances(id, 0, 100, ActivityInstanceCriterion.NAME_ASC);
+            List<String> taskNames = new ArrayList<String>();
             for (HumanTaskInstance humanTaskInstance : pendingHumanTaskInstances) {
                 System.out.println("task: " + humanTaskInstance.getName());
+                taskNames.add(humanTaskInstance.getName());
             }
+            Collections.sort(taskNames);
+            List<String> expected = Arrays.asList("finished_exclu2", "finished_para4", "finished_para4", "finished_para4", "finished_inclu3",
+                    "finished_inclu2", "finished_para1", "finished_inclu3", "finished_para4", "finished_inclu1");
+            Collections.sort(expected);
+            assertEquals(expected, taskNames);
         }
     }
 
