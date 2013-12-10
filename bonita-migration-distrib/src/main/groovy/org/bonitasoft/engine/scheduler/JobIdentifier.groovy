@@ -13,9 +13,11 @@
  **/
 package org.bonitasoft.engine.scheduler;
 
-import java.io.Serializable;
 
 /**
+ *
+ * Skeleton used to deserialize class
+ *
  * @author Baptiste Mesta
  */
 public class JobIdentifier implements Serializable {
@@ -50,5 +52,4 @@ public class JobIdentifier implements Serializable {
     public String toString() {
         return "JobIdentifier [id=" + id + ", tenantId=" + tenantId + ", jobName=" + jobName + "]";
     }
-
 }

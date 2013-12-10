@@ -1,3 +1,17 @@
+/**
+ * Copyright (C) 2013 BonitaSoft S.A.
+ * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
+ * accessor program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2.0 of the License, or
+ * (at your option) any later version.
+ * accessor program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with accessor program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.bonitasoft.migration;
 
 import static org.junit.Assert.assertTrue;
@@ -29,6 +43,15 @@ import org.junit.Test;
 import org.junit.runner.JUnitCore;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+/**
+ * 
+ * 
+ * Check that the migrated database is ok
+ * 
+ * @author Baptiste Mesta
+ * 
+ */
+@SuppressWarnings("deprecation")
 public class DatabaseChecker6_1_0 {
 
     private static ClassPathXmlApplicationContext springContext;
