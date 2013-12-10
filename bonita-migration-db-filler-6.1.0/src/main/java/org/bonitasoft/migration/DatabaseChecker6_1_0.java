@@ -94,17 +94,30 @@ public class DatabaseChecker6_1_0 {
     @Test
     public void check_process_with_messages_still_work() throws Exception {
         long processDefinitionId = processAPI.getProcessDefinitionId("ProcessWithSendMessage", "1.0");
+        long receiveProcess = processAPI.getProcessDefinitionId("ProcessWithIntermediateReceiveMessage", "1.0");
 
         User favio = TenantAPIAccessor.getIdentityAPI(session).getUserByUserName("favio.riviera");
 
         int pendingTaskOfFavio = Long.valueOf(processAPI.getNumberOfPendingHumanTaskInstances(favio.getId())).intValue();
 
+        // there is one intermediate catch waiting + a start message
         processAPI.startProcess(processDefinitionId);
 
-        WaitForPendingTasks waitForPendingTasks = new WaitForPendingTasks(100, 20000, pendingTaskOfFavio + 1, favio.getId(), processAPI);
+        WaitForPendingTasks waitForPendingTasks = new WaitForPendingTasks(100, 20000, pendingTaskOfFavio + 2, favio.getId(), processAPI);
+        boolean bothReceived = waitForPendingTasks.waitUntil();
+        if (!bothReceived) {
+            throw new IllegalStateException("throw/catch message don't work");
+        }
+
+        // // start the intermediate catch waiting
+        processAPI.startProcess(receiveProcess);
+        // // there is one intermediate catch waiting + a start message
+        processAPI.startProcess(processDefinitionId);
+        waitForPendingTasks = new WaitForPendingTasks(100, 20000, pendingTaskOfFavio + 4, favio.getId(), processAPI);
         if (!waitForPendingTasks.waitUntil()) {
             throw new IllegalStateException("throw/catch message don't work");
         }
+
     }
 
     private static void setupSpringContext() {
