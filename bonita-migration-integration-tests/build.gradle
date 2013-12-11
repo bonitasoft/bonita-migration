@@ -71,7 +71,7 @@ configurations.drivers.each {File file ->
 }
 //drop and create the database
 task cleardb<<{
-
+    println "Migration of $dbvendor"
     if(dbvendor.equals("oracle")){
         println "cleaning oracle database $dbuser"
         if(dbRootUser == null || dbRootUser.isEmpty() || dbRootPassword == null || dbRootPassword.isEmpty()){
@@ -93,6 +93,28 @@ task cleardb<<{
         sql.executeUpdate("GRANT select ON sys.pending_trans\$ TO "+dbuser);
         sql.executeUpdate("GRANT select ON sys.dba_2pc_pending TO "+dbuser);
         sql.executeUpdate("GRANT execute ON sys.dbms_system TO "+dbuser);
+    }else if(dbvendor.equals("sqlserver")){
+        println "cleaning sqlserver database $dburl"
+        if(dbRootUser == null || dbRootUser.isEmpty() || dbRootPassword == null || dbRootPassword.isEmpty()){
+            throw new IllegalStateException("must specify db.root.user and db.root.password for sqlserver")
+        }
+
+        def parsedUrl = (dburl =~ /(jdbc:\w+:\/\/)([\w\d\.]+):(\d+);database=([\w-_\d]+).*/)
+        project.serverName = parsedUrl[0][2]
+        project.portNumber = parsedUrl[0][3]
+        project.databaseName = parsedUrl[0][4]
+        def genericUrl = parsedUrl[0][1] + serverName + ":"+portNumber
+        println "recreate database $databaseName on server $serverName and port $portNumber with driver $dbdriverClass"
+        println "url is  $genericUrl"
+        def sql = Sql.newInstance(genericUrl, dbRootUser, dbRootPassword, dbdriverClass)
+        def script = file("init-sqlserver.sql").text
+        script = script.replace("@sqlserver.db.name@",databaseName)
+        script = script.replace("@sqlserver.connection.username@",dbuser)
+        script = script.replace("@sqlserver.connection.password@",dbpassword)
+        script.split("GO").each {
+            sql.executeUpdate(it)
+        }
+        sql.close()
     }else{
         println "drop and create: $dburl"
         def parsedUrl = (dburl =~ /(jdbc:\w+:\/\/)([\w\d\.]+):(\d+)\/([\w-_\d]+).*/)
@@ -103,14 +125,14 @@ task cleardb<<{
         println "recreate database $databaseName on server $serverName and port $portNumber with driver $dbdriverClass"
         println "url is  $genericUrl"
         if(dbvendor.equals("postgres")){
-            println "cleaning oracle database $dbuser"
+            println "cleaning postgres database $dbuser"
             if(dbRootUser == null || dbRootUser.isEmpty() || dbRootPassword == null || dbRootPassword.isEmpty()){
                 throw new IllegalStateException("must specify db.root.user and db.root.password for postgres")
             }
             def sql = Sql.newInstance(genericUrl, dbRootUser, dbRootPassword, dbdriverClass)
-            sql.executeUpdate("DROP DATABASE IF EXISTS $databaseName;".toString());
-            sql.executeUpdate("CREATE DATABASE $databaseName OWNER $dbuser;".toString());
-            sql.executeUpdate("GRANT ALL PRIVILEGES ON DATABASE $databaseName TO $dbuser;".toString());
+            sql.executeUpdate("DROP DATABASE IF EXISTS $databaseName;".toString())
+            sql.executeUpdate("CREATE DATABASE $databaseName OWNER $dbuser;".toString())
+            sql.executeUpdate("GRANT ALL PRIVILEGES ON DATABASE $databaseName TO $dbuser;".toString())
             sql.close()
         }else{
             def sql = Sql.newInstance(genericUrl, dbuser, dbpassword, dbdriverClass)
