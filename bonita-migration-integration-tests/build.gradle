@@ -15,7 +15,7 @@ ext{
     if( matrix != null){
         matrix.split("@@@").each {
             key = it.substring(0, it.indexOf("="))
-            value = it.substring(it.indexOf("="))
+            value = it.substring(it.indexOf("=")+1)
             println "Using matrix configuration: key=<$key> and value=<$value>"
             System.setProperty(key, value)
         }
