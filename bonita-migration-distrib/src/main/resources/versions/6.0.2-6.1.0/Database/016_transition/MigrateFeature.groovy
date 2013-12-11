@@ -178,7 +178,7 @@ sql.eachRow("SELECT tenantid,nextId from sequence WHERE id = 10011") { row ->
     flownodeIdsByTenants.put(row[0],row[1]) }
 println "next id by tenants "+flownodeIdsByTenants;
 //get all transitions
-sql.eachRow("SELECT * from transition_instance", { row ->
+sql.eachRow("SELECT * from transition_instance WHERE deleted = ?",[false], { row ->
     def transition = new TransitionInstance(tenantid:row[0], id:row[1], rootContainerId:row[2], parentContainerId:row[3], name:row[4],source:row[5], processDefId:row[9], tokenRefId:row[15]);
     migrateTransition(transition, feature, flownodeIdsByTenants);
 
