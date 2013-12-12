@@ -31,18 +31,6 @@
 			<version>${bonita.version}</version>
 		</dependency>
 		<dependency>
-			<artifactId>bonita-integration-local-tests</artifactId>
-			<groupId>org.bonitasoft.engine</groupId>
-			<version>${bonita.version}</version>
-			<type>test-jar</type>
-		</dependency>
-		<dependency>
-			<artifactId>bonita-integration-local-tests</artifactId>
-			<groupId>org.bonitasoft.engine</groupId>
-			<version>${bonita.version}</version>
-		</dependency>
-		<!-- Local JNDI implementation -->
-		<dependency>
 			<groupId>org.bonitasoft.engine.jndi</groupId>
 			<artifactId>bonita-jndi-memory</artifactId>
 			<version>${bonita.version}</version>
@@ -50,6 +38,10 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
