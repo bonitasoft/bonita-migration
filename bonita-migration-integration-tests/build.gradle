@@ -11,15 +11,6 @@ sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
 ext{
-    def matrix = System.getProperty("matrix")
-    if( matrix != null){
-        matrix.split("@@@").each {
-            key = it.substring(0, it.indexOf("="))
-            value = it.substring(it.indexOf("=")+1)
-            println "Using matrix configuration: key=<$key> and value=<$value>"
-            System.setProperty(key, value)
-        }
-    }
     sourceversion = System.getProperty("source.version","6.0.2")
     targetversion = System.getProperty("target.version","6.1.0")
     dbvendor = System.getProperty("db.vendor", "mysql")
