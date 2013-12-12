@@ -1,10 +1,12 @@
 package org.quartz.utils;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
+/**
+ *
+ * Skeleton of Quartz classes in order to deserialize it
+ *
+ * @author Baptiste Mesta
+ *
+ */
 public class DirtyFlagMap implements Map<String, Object>, Cloneable, java.io.Serializable {
 
     /*

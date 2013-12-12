@@ -1,3 +1,16 @@
+/**
+ * Copyright (C) 2013 BonitaSoft S.A.
+ * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
+ * This library is free software; you can redistribute it and/or modify it under the terms
+ * of the GNU Lesser General Public License as published by the Free Software Foundation
+ * version 2.1 of the License.
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ * You should have received a copy of the GNU Lesser General Public License along with this
+ * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
+ * Floor, Boston, MA 02110-1301, USA.
+ **/
 package org.bonitasoft.migration.core
 
 import groovy.sql.Sql
@@ -9,7 +22,13 @@ import org.bonitasoft.migration.core.exception.MigrationException
 import org.bonitasoft.migration.core.exception.NotFoundException
 
 
-
+/**
+ *
+ * Util classes that contains common methods for migration
+ *
+ * @author Baptiste Mesta
+ *
+ */
 public class MigrationUtil {
 
     public final static String FILE_SEPARATOR = System.getProperty("file.separator");
@@ -38,6 +57,10 @@ public class MigrationUtil {
 
     private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
 
+    /**
+     * Load properties form the 'Config.properties' file inside the distribution
+     * @return the properties of the migration distribution
+     */
     public static Properties getProperties(){
         def Properties properties = new Properties();
         def FileInputStream fileInputStream = null;
@@ -57,7 +80,11 @@ public class MigrationUtil {
         }
         return properties;
     }
-
+    /**
+     * Get a single property and print it
+     * First it try to get it from system (in order to override properties)
+     * then from the given property object
+     */
     public static String getAndPrintProperty(Properties properties, String propertyName) {
         if (properties == null || propertyName == null || "".equals(propertyName)){
             throw new IllegalArgumentException("Can't execute getAndPrintProperty method with arguments : propeties = " + properties + ", propertyName = " + propertyName);
@@ -77,6 +104,8 @@ public class MigrationUtil {
     }
 
     /**
+     *
+     * Wrap the current system.out in order to display tabulation and a pype at begining of the line
      * @param nbTabs
      *      Number of tabulations to display
      * @return Old System.out
@@ -99,6 +128,17 @@ public class MigrationUtil {
         return stdout;
     }
 
+    /**
+     * Execute a feature migration script
+     *
+     * @param gse
+     * @param file
+     * @param scriptName
+     * @param binding
+     * @param nbTabs
+     * @param startMigrationDate
+     * @return
+     */
     public static executeMigration(GroovyScriptEngine gse, File file, String scriptName, Binding binding, int nbTabs, Date startMigrationDate){
         def startFeatureDate = new Date();
         PrintStream stdout = setSystemOutWithTab(nbTabs);
@@ -125,6 +165,21 @@ public class MigrationUtil {
         executeSqlFile(file, dbVendor, null, null, sql, true)
     }
 
+    /**
+     * execute a sql file
+     * @param feature
+     *      the folder where the feature to migrate is
+     * @param dbVendor
+     *      the current database type
+     * @param suffix
+     *      the suffix of the file to execute, format is: <dbVendor>-<suffixe>.sql
+     * @param parameters
+     *      parameters to replace inside the file, if parameter 'tenant' is given, all word 'tenant' will be replace by the value
+     * @param sql
+     *      the sql connection to the database
+     * @param toUpdate
+     *      if this will update elements
+     */
     public static executeSqlFile(File feature, String dbVendor, String suffix, Map<String, String> parameters, groovy.sql.Sql sql, boolean toUpdate){
         def sqlFile = getSqlFile(feature, dbVendor, suffix)
         sql.withTransaction {

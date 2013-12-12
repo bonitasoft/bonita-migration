@@ -19,6 +19,9 @@ import org.bonitasoft.engine.connector.ConnectorValidationException;
 
 /**
  * 
+ * Dummy connector
+ * 
+ * 
  * @author Baptiste Mesta
  * 
  */

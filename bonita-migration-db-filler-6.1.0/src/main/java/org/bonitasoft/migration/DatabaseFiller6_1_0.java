@@ -38,6 +38,13 @@ import org.bonitasoft.engine.session.PlatformSession;
 import org.bonitasoft.engine.test.APITestUtil;
 import org.springframework.context.ConfigurableApplicationContext;
 
+/**
+ * 
+ * Launch Database filler but with 6.1.0 dependencies
+ * 
+ * @author Baptiste Mesta
+ * 
+ */
 public class DatabaseFiller6_1_0 extends DatabaseFiller {
 
     public static void main(final String[] args) throws Exception {

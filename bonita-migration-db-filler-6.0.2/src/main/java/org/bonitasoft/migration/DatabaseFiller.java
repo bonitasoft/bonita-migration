@@ -209,9 +209,12 @@ public class DatabaseFiller {
         ProcessAPI processAPI = TenantAPIAccessor.getProcessAPI(session);
         ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("ProcessWithSendMessage", "1.0");
         builder.addStartEvent("start");
-        builder.addIntermediateThrowEvent("send").addMessageEventTrigger("message",
+        builder.addIntermediateThrowEvent("sendToStart").addMessageEventTrigger("message",
                 new ExpressionBuilder().createConstantStringExpression("ProcessWithReceiveMessage"));
-        builder.addTransition("start", "send");
+        builder.addIntermediateThrowEvent("sendToIntermediate").addMessageEventTrigger("message",
+                new ExpressionBuilder().createConstantStringExpression("ProcessWithIntermediateReceiveMessage"));
+        builder.addTransition("start", "sendToStart");
+        builder.addTransition("start", "sendToIntermediate");
         BusinessArchiveBuilder archiveBuilder = new BusinessArchiveBuilder().createNewBusinessArchive();
         archiveBuilder.setProcessDefinition(builder.done());
         ProcessDefinition sendProcess = processAPI.deploy(archiveBuilder.done());
@@ -229,12 +232,27 @@ public class DatabaseFiller {
         processAPI.addUserToActor("actor", receiveProcess, favio.getId());
         processAPI.enableProcess(receiveProcess.getId());
 
+        builder = new ProcessDefinitionBuilder().createNewInstance("ProcessWithIntermediateReceiveMessage", "1.0");
+        builder.addActor("actor");
+        builder.addStartEvent("start");
+        builder.addIntermediateCatchEvent("catch").addMessageEventTrigger("message");
+        builder.addUserTask("taskTriggeredByIntermediateMessage", "actor");
+        builder.addTransition("start", "catch");
+        builder.addTransition("catch", "taskTriggeredByIntermediateMessage");
+        archiveBuilder = new BusinessArchiveBuilder().createNewBusinessArchive();
+        archiveBuilder.setProcessDefinition(builder.done());
+        ProcessDefinition intermediateReceiveProcess = processAPI.deploy(archiveBuilder.done());
+        processAPI.addUserToActor("actor", intermediateReceiveProcess, favio.getId());
+        processAPI.enableProcess(intermediateReceiveProcess.getId());
+        processAPI.startProcess(intermediateReceiveProcess.getId());
+
         processAPI.startProcess(sendProcess.getId());
 
-        WaitForPendingTasks waitForPendingTasks = new WaitForPendingTasks(100, 5000, 1, favio.getId(), processAPI);
+        WaitForPendingTasks waitForPendingTasks = new WaitForPendingTasks(100, 10000, 2, favio.getId(), processAPI);
         if (!waitForPendingTasks.waitUntil()) {
-            throw new IllegalStateException("timer process did not start once");
+            throw new IllegalStateException("catch message did not work");
         }
+        processAPI.startProcess(intermediateReceiveProcess.getId());
         Map<String, String> map = new HashMap<String, String>(1);
         map.put("Receive message", "1");
         map.put("Send message", "1");

@@ -1,7 +1,25 @@
+/**
+ * Copyright (C) 2013 BonitaSoft S.A.
+ * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
+ * accessor program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2.0 of the License, or
+ * (at your option) any later version.
+ * accessor program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with accessor program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.bonitasoft.migration;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.naming.Context;
@@ -29,6 +47,15 @@ import org.junit.Test;
 import org.junit.runner.JUnitCore;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+/**
+ * 
+ * 
+ * Check that the migrated database is ok
+ * 
+ * @author Baptiste Mesta
+ * 
+ */
+@SuppressWarnings("deprecation")
 public class DatabaseChecker6_1_0 {
 
     private static ClassPathXmlApplicationContext springContext;
@@ -67,7 +94,7 @@ public class DatabaseChecker6_1_0 {
     @Test
     public void verify() throws Exception {
         long id = identityApi.getUserByUserName("april.sanchez").getId();
-        WaitForPendingTasks waitForPendingTasks = new WaitForPendingTasks(50, 10000, 6, id, processAPI);
+        WaitForPendingTasks waitForPendingTasks = new WaitForPendingTasks(50, 10000, 10, id, processAPI);
         if (!waitForPendingTasks.waitUntil()) {
             String message = "Not all task after transitions were created";
             System.out.println(message);
@@ -75,9 +102,16 @@ public class DatabaseChecker6_1_0 {
         } else {
             System.out.println("all tasks found");
             List<HumanTaskInstance> pendingHumanTaskInstances = processAPI.getPendingHumanTaskInstances(id, 0, 100, ActivityInstanceCriterion.NAME_ASC);
+            List<String> taskNames = new ArrayList<String>();
             for (HumanTaskInstance humanTaskInstance : pendingHumanTaskInstances) {
                 System.out.println("task: " + humanTaskInstance.getName());
+                taskNames.add(humanTaskInstance.getName());
             }
+            Collections.sort(taskNames);
+            List<String> expected = Arrays.asList("finished_exclu2", "finished_para4", "finished_para4", "finished_para4", "finished_inclu3",
+                    "finished_inclu2", "finished_para1", "finished_inclu3", "finished_para4", "finished_inclu1");
+            Collections.sort(expected);
+            assertEquals(expected, taskNames);
         }
     }
 
@@ -94,17 +128,30 @@ public class DatabaseChecker6_1_0 {
     @Test
     public void check_process_with_messages_still_work() throws Exception {
         long processDefinitionId = processAPI.getProcessDefinitionId("ProcessWithSendMessage", "1.0");
+        long receiveProcess = processAPI.getProcessDefinitionId("ProcessWithIntermediateReceiveMessage", "1.0");
 
         User favio = TenantAPIAccessor.getIdentityAPI(session).getUserByUserName("favio.riviera");
 
         int pendingTaskOfFavio = Long.valueOf(processAPI.getNumberOfPendingHumanTaskInstances(favio.getId())).intValue();
 
+        // there is one intermediate catch waiting + a start message
         processAPI.startProcess(processDefinitionId);
 
-        WaitForPendingTasks waitForPendingTasks = new WaitForPendingTasks(100, 20000, pendingTaskOfFavio + 1, favio.getId(), processAPI);
+        WaitForPendingTasks waitForPendingTasks = new WaitForPendingTasks(100, 20000, pendingTaskOfFavio + 2, favio.getId(), processAPI);
+        boolean bothReceived = waitForPendingTasks.waitUntil();
+        if (!bothReceived) {
+            throw new IllegalStateException("throw/catch message don't work");
+        }
+
+        // // start the intermediate catch waiting
+        processAPI.startProcess(receiveProcess);
+        // // there is one intermediate catch waiting + a start message
+        processAPI.startProcess(processDefinitionId);
+        waitForPendingTasks = new WaitForPendingTasks(100, 20000, pendingTaskOfFavio + 4, favio.getId(), processAPI);
         if (!waitForPendingTasks.waitUntil()) {
             throw new IllegalStateException("throw/catch message don't work");
         }
+
     }
 
     private static void setupSpringContext() {
