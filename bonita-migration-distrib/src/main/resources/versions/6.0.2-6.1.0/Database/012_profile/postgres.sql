@@ -23,6 +23,7 @@ ALTER TABLE profile ADD lastupdatedby INT8 NOT NULL DEFAULT 0;
 
 ALTER TABLE profileentry ALTER COLUMN name DROP NOT NULL;
 CREATE INDEX indexprofileentry ON profileentry (tenantid, parentid, profileid);
+-- change constraint name to profileentry_tenantid_key for postgres < 9.0
 ALTER TABLE profileentry DROP CONSTRAINT profileentry_tenantid_parentid_profileid_name_key;
 
 
