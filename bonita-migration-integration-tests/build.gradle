@@ -42,9 +42,11 @@ repositories {
     mavenLocal()
     //used in jenkins: add in system property $ {JENKINS_HOME}/userContent/m2_repo
     if(System.getProperty("maven.repository")!=null){
-        def customRepo = System.getProperty("maven.repository")
-        println "using custom maven repository: $customRepo"
-        maven { url customRepo }
+        System.getProperty("maven.repository").split(',').each {
+            println "using custom maven repository: "+it
+            maven { url it }
+        }
+        
     }else{
         println "no custom repository defined, use system property 'maven.repository' to add one"
     }
