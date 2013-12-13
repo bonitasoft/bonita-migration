@@ -7,6 +7,7 @@ import groovy.sql.Sql;
 
 import org.bonitasoft.engine.scheduler.JobIdentifier;
 import org.bonitasoft.migration.core.MigrationUtil;
+import org.bonitasoft.migration.core.IOUtil;
 
 
 MigrationUtil.executeDefaultSqlFile(feature, dbVendor, sql);
@@ -33,14 +34,14 @@ sql.eachRow("select * from QRTZ_JOB_DETAILS",{row ->
 def jobIdentifierClassLoader = JobIdentifier.class.getClassLoader()
 map.each {
     //give the same class loader as the one of the class we deserialize
-    def JobDataMap jobData = MigrationUtil.deserialize(it.value, jobIdentifierClassLoader);
+    def JobDataMap jobData = IOUtil.deserialize(it.value, jobIdentifierClassLoader);
     def uncasted = jobData.get("jobIdentifier");
     def JobIdentifier jobIdent = uncasted;
     def newMap = new JobDataMap();
     newMap.put("jobId", jobIdent.id);
     newMap.put("tenantId", jobIdent.tenantId);
     newMap.put("jobName", jobIdent.jobName);
-    byte[] out = MigrationUtil.serialize(newMap);
+    byte[] out = IOUtil.serialize(newMap);
     println "Update job <$jobIdent.jobName> of tenant <$jobIdent.tenantId> in quartz table"
     //change the job class name to be concurrent or not
     def jobClassName = jobIdent.jobName in nonConcurrentJobs ? nonConcurrentJobClassName: concurrentJobClassName

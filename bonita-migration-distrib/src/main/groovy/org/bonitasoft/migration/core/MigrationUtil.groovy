@@ -21,12 +21,15 @@ import java.sql.ResultSet
 import org.bonitasoft.migration.core.exception.MigrationException
 import org.bonitasoft.migration.core.exception.NotFoundException
 
+import org.bonitasoft.migration.core.IOUtil;
+
 
 /**
  *
  * Util classes that contains common methods for migration
  *
  * @author Baptiste Mesta
+ * @author Celine Souchet
  *
  */
 public class MigrationUtil {
@@ -51,11 +54,12 @@ public class MigrationUtil {
 
     public final static String AUTO_ACCEPT = "auto.accept"
 
-
     public final static String REQUEST_SEPARATOR = "@@"
 
 
-    private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
+    public static boolean isAutoAccept(){
+        return System.getProperty(MigrationUtil.AUTO_ACCEPT)=="true"
+    }
 
     /**
      * Load properties form the 'Config.properties' file inside the distribution
@@ -104,31 +108,6 @@ public class MigrationUtil {
     }
 
     /**
-     *
-     * Wrap the current system.out in order to display tabulation and a pype at begining of the line
-     * @param nbTabs
-     *      Number of tabulations to display
-     * @return Old System.out
-     * @since 6.1
-     */
-    public static PrintStream setSystemOutWithTab(int nbTabs){
-        PrintStream stdout = System.out;
-        System.setOut(new PrintStream(stdout){
-                    @Override
-                    public void println(String x) {
-                        if (nbTabs != 0){
-                            for (int i = 0; i < nbTabs; i++){
-                                super.print("   |");
-                            }
-                            super.print(" ");
-                        }
-                        super.println(x);
-                    }
-                });
-        return stdout;
-    }
-
-    /**
      * Execute a feature migration script
      *
      * @param gse
@@ -141,7 +120,7 @@ public class MigrationUtil {
      */
     public static executeMigration(GroovyScriptEngine gse, File file, String scriptName, Binding binding, int nbTabs, Date startMigrationDate){
         def startFeatureDate = new Date();
-        PrintStream stdout = setSystemOutWithTab(nbTabs);
+        PrintStream stdout = IOUtil.setSystemOutWithTab(nbTabs);
         gse.run(new File(file, scriptName).getPath(), binding)
         System.setOut(stdout);
         printSuccessMigration(startFeatureDate, startMigrationDate);
@@ -275,99 +254,8 @@ public class MigrationUtil {
         if (deleteOldDirectory && !(fileToDir.deleteDir())) {
             throw new IllegalStateException("Migration failed. Unable to delete : " + toDir)
         }
-        copyDirectory(fileFromDir, fileToDir)
+        IOUtil.copyDirectory(fileFromDir, fileToDir)
         println "Done"
     }
 
-    private static void copyDirectory(File srcDir, File destDir) throws IOException {
-        if (!destDir.exists()){
-            if (destDir.mkdirs() == false) {
-                throw new IOException("Destination '" + destDir + "' directory cannot be created");
-            }
-            destDir.setLastModified(srcDir.lastModified());
-            if (destDir.canWrite() == false) {
-                throw new IOException("Destination '" + destDir + "' cannot be written to");
-            }
-        }
-        // recurse
-        File[] files = srcDir.listFiles();
-        if (files == null) {  // null if security restricted
-            throw new IOException("Failed to list contents of " + srcDir);
-        }
-        for (int i = 0; i < files.length; i++) {
-            File copiedFile = new File(destDir, files[i].getName());
-            if (files[i].isDirectory()) {
-                copyDirectory(files[i], copiedFile);
-            } else {
-                copyFile(files[i], copiedFile);
-            }
-        }
-    }
-    private static void copyFile(File srcFile, File destFile) throws IOException {
-        if (destFile.exists() && !(destFile.delete())) {
-            throw new IllegalStateException("Migration failed. Unable to delete : " + destFile)
-        }
-
-        FileInputStream input = new FileInputStream(srcFile);
-        try {
-            FileOutputStream output = new FileOutputStream(destFile);
-            try {
-                byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
-                long count = 0;
-                int n = 0;
-                while (-1 != (n = input.read(buffer))) {
-                    output.write(buffer, 0, n);
-                    count += n;
-                }
-            } finally {
-                try {
-                    if (output != null) {
-                        output.close();
-                    }
-                } catch (IOException ioe) {
-                    // ignore
-                }
-            }
-        } finally {
-            try {
-                if (input != null) {
-                    input.close();
-                }
-            } catch (IOException ioe) {
-                // ignore
-            }
-        }
-        if (srcFile.length() != destFile.length()) {
-            throw new IOException("Failed to copy full contents from '" +
-            srcFile + "' to '" + destFile + "'");
-        }
-        destFile.setLastModified(srcFile.lastModified());
-    }
-
-    public static Object deserialize(byte[] bytes, ClassLoader theClassLoader){
-        //had to override the method of objectinputstream to be able to give the object classloader in input
-        ObjectInputStream input = new ObjectInputStream(new ByteArrayInputStream(bytes)){
-                    protected Class<?> resolveClass(ObjectStreamClass objectStreamClass) throws IOException, ClassNotFoundException {
-                        return Class.forName(objectStreamClass.getName(), true, theClassLoader);
-                    }
-                };
-        try {
-            return input.readObject();
-        } finally {
-            input.close();
-        }
-    }
-
-    public static byte[] serialize(Object object){
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ObjectOutputStream out;
-        out = new ObjectOutputStream(baos);
-        out.writeObject(object);
-        out.flush();
-        return baos.toByteArray();
-    }
-
-    public static boolean isAutoAccept(){
-        return System.getProperty(MigrationUtil.AUTO_ACCEPT)=="true"
-    }
 }

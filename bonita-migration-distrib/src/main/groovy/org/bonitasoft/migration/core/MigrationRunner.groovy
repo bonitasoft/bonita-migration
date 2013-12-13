@@ -48,7 +48,7 @@ public class MigrationRunner {
         println ""
         println "MIGRATE " + sourceVersion + " TO " + targetVersion
 
-        PrintStream stdout = MigrationUtil.setSystemOutWithTab(1);
+        PrintStream stdout = IOUtil.setSystemOutWithTab(1);
         def String migrationVersionFolder = "versions" + MigrationUtil.FILE_SEPARATOR + sourceVersion + "-" + targetVersion + MigrationUtil.FILE_SEPARATOR
         migrateDatabase(gse, migrationVersionFolder)
         migrateBonitaHome(gse, migrationVersionFolder)
@@ -95,7 +95,7 @@ public class MigrationRunner {
         }
 
         println "Migration of database :"
-        PrintStream stdout = MigrationUtil.setSystemOutWithTab(2);
+        PrintStream stdout = IOUtil.setSystemOutWithTab(2);
         println "Make a backup of your database and bonita_home before migrating."
         if(!MigrationUtil.isAutoAccept()){
             println "Press ENTER to continue or Ctrl+C to cancel."
@@ -136,7 +136,7 @@ public class MigrationRunner {
     }
     private migrateFeature(GroovyScriptEngine gse, File file, Binding binding, int nbTabs){
         // TODO : Lire le fichier de description et l'afficher
-        PrintStream stdout = MigrationUtil.setSystemOutWithTab(nbTabs);
+        PrintStream stdout = IOUtil.setSystemOutWithTab(nbTabs);
         new File(file, "Description.txt").eachLine{ line -> println "Description : " + line }
         System.setOut(stdout);
 
