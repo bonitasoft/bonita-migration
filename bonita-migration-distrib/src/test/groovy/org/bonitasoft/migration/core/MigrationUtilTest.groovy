@@ -1,13 +1,45 @@
 package org.bonitasoft.migration.core;
 
 import static org.junit.Assert.*
+import groovy.sql.Sql
 
 import org.bonitasoft.migration.core.exception.NotFoundException
+import org.dbunit.JdbcDatabaseTester
 import org.junit.Test
 
 class JobDataMapTest {
 
     def final static String FILE_SEPARATOR = System.getProperty("file.separator");
+    final static DB_CONFIG = [
+        'jdbc:h2:mem:test',
+        'sa',
+        ''
+    ];
+    final static DB_DRIVER = 'org.h2.Driver'
+
+
+    @Test
+    public void check_get_platform_version(){
+        Sql sql
+        sql = Sql.newInstance(*DB_CONFIG, DB_DRIVER);
+        sql.execute('''CREATE TABLE platform (
+  id BIGINT NOT NULL,
+  version VARCHAR(50) NOT NULL,
+  previousVersion VARCHAR(50) NOT NULL,
+  initialVersion VARCHAR(50) NOT NULL,
+  created BIGINT NOT NULL,
+  createdBy VARCHAR(50) NOT NULL,
+  PRIMARY KEY (id)
+);''');
+        sql.executeInsert("insert into platform values(1,'the_version','the_previous_version','the_initial_version',1,1)")
+        sql.eachRow("select * from platform") { row->
+            fail( "row="+row)
+        }
+        JdbcDatabaseTester tester = new JdbcDatabaseTester(DB_DRIVER, *DB_CONFIG)
+
+        assertEquals("the_version",MigrationUtil.getAndDisplayPlatformVersion(sql))
+        tester.onTearDown()
+    }
 
     @Test
     public void getProperties(){
@@ -307,4 +339,6 @@ class JobDataMapTest {
 
         MigrationUtil.getSqlFile(folder, dbVendor, suffix);
     }
+
+
 }

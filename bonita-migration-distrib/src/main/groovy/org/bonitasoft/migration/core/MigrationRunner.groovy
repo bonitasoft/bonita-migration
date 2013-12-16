@@ -13,6 +13,7 @@
  **/
 package org.bonitasoft.migration.core
 
+import groovy.sql.Sql
 import groovy.time.TimeCategory
 
 
@@ -34,6 +35,7 @@ public class MigrationRunner {
     private def String targetVersion
 
     private def startMigrationDate
+    def read = System.in.newReader().&readLine
 
     public void execute(GroovyScriptEngine gse){
         startMigrationDate = new Date()
@@ -45,8 +47,6 @@ public class MigrationRunner {
                     })
         }
         init();
-        println ""
-        println "MIGRATE " + sourceVersion + " TO " + targetVersion
 
         PrintStream stdout = MigrationUtil.setSystemOutWithTab(1);
         def String migrationVersionFolder = "versions" + MigrationUtil.FILE_SEPARATOR + sourceVersion + "-" + targetVersion + MigrationUtil.FILE_SEPARATOR
@@ -79,11 +79,57 @@ public class MigrationRunner {
 
         sql = MigrationUtil.getSqlConnection(dburl, user, pwd, driverClass);
         println ""
-        MigrationUtil.getAndDisplayPlatformVersion(sql);
+        sourceVersion = checkSourceVersion(sql,bonitaHome,sourceVersion)
+
+        println ""
+        println "MIGRATE " + sourceVersion + " TO " + targetVersion
 
         if(!MigrationUtil.isAutoAccept()){
             println "Press ENTER to start migration or Ctrl+C to cancel."
             System.console().readLine()
+        }
+    }
+
+    String checkSourceVersion(Sql sql,File bonitaHome,String defaultSourceVersion){
+        def String platformVersionInDatabase = MigrationUtil.getPlatformVersion(sql)
+        def s = File.separator;
+        def File versionFile = new File(bonitaHome, "server${s}platform${s}conf${s}VERSION");
+        def String platformVersionInBonitaHome = versionFile.exists()?versionFile.text:null;
+
+        def String sourceVersion = null
+        if(!platformVersionInDatabase.startsWith("6") || platformVersionInBonitaHome == null){
+            if(defaultSourceVersion != null){
+                sourceVersion = defaultSourceVersion
+            }else{
+                println "Unable to detect the current version of bonita, please enter it (e.g 6.0.2):"
+                sourceVersion = read();
+            }
+        }
+        println "Version is "+sourceVersion
+        System.exit(0)
+
+        //        def String platformVersionInDatabase = getPlatformVersionInDatabase(sql,defaultSourceVersion)
+        //        def String platformVersionInBonitaHome = getPlatformVersionInBonitaHome(bonitaHome,defaultSourceVersion)
+
+
+        return defaultSourceVersion
+    }
+    String getPlatformVersionInBonitaHome(File bonitaHome,String defaultSourceVersion){
+        new File(bonitaHome,)
+    }
+
+    String getPlatformVersionInDatabase(Sql sql, String defaultPlatformVersion){
+        def String platformVersion = MigrationUtil.getPlatformVersion(sql)
+        def String version = null;
+        if(platformVersion == "BOS-6.0"){
+            //means that version is in [6.0.0,6.1.0[
+            if(defaultPlatformVersion != null){
+                version = defaultPlatformVersion
+            }else{
+                println "Can't detect version in database, please enter the current version of bonita:"
+                version = read()
+                println "version is $version"
+            }
         }
     }
 

@@ -228,8 +228,12 @@ public class MigrationUtil {
     }
 
     public static getAndDisplayPlatformVersion(groovy.sql.Sql sql){
+        println getPlatformVersion(sql);
+    }
+
+    public static String getPlatformVersion(groovy.sql.Sql sql){
         sql.eachRow("SELECT version FROM platform") { row ->
-            println "Platform version in database: " + row[0]
+            return row[0]
         }
     }
 
