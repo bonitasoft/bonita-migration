@@ -46,6 +46,12 @@ public class MigrationRunner {
                         }
                     })
         }
+        println ''
+        println ''
+        MigrationUtil.printInRectangle("","Bonita migration tool","",
+                "This tool will migrate your installation of bonita including database and bonita home",
+                "Make a backup before going any further","")
+
         def path = init()
         if(path == null){
             return;
@@ -55,12 +61,13 @@ public class MigrationRunner {
         transitions.eachWithIndex { Transition transition, idx ->
             def sourceStepVersion = transition.source
             def targetStepVersion = transition.target
-            println "step ${idx+1} on ${transitions.size()} for migration of version, start migration of version $sourceStepVersion to version $targetStepVersion"
-            PrintStream stdout = MigrationUtil.setSystemOutWithTab(1);
+            MigrationUtil.printInRectangle("Migration of version $sourceStepVersion to version $targetStepVersion",
+                    "migration number ${idx+1} on a total of ${transitions.size()}");
+
+
             def String migrationVersionFolder = "versions" + File.separatorChar + sourceStepVersion + "-" + targetStepVersion + File.separatorChar
             migrateDatabase(gse, migrationVersionFolder)
             migrateBonitaHome(gse, migrationVersionFolder)
-            System.setOut(stdout);
         }
 
         def end = new Date()
@@ -73,7 +80,7 @@ public class MigrationRunner {
         def Properties properties = MigrationUtil.getProperties();
 
         println ""
-        println "Properties : "
+        println "Configuration : "
         sourceVersion = MigrationUtil.getAndPrintProperty(properties, MigrationUtil.SOURCE_VERSION, false);
         targetVersion = MigrationUtil.getAndPrintProperty(properties, MigrationUtil.TARGET_VERSION, false);
         bonitaHome = new File(MigrationUtil.getAndPrintProperty(properties, MigrationUtil.BONITA_HOME, true));

@@ -52,6 +52,8 @@ public class MigrationUtil {
 
     public final static String REQUEST_SEPARATOR = "@@"
 
+    public final static String LINE_SEPARATOR = System.getProperty("line.separator");
+
 
     private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
 
@@ -375,4 +377,39 @@ public class MigrationUtil {
     public static boolean isAutoAccept(){
         return System.getProperty(MigrationUtil.AUTO_ACCEPT)=="true"
     }
+    static void printInRectangle(String... lines){
+        def maxSize = lines.collect{ it.size() }.max() +2
+        printLine(maxSize)
+        lines.each {
+            int spaces = maxSize - it.size()
+            print "|"
+            printSpaces((int)(spaces/2))
+            print it
+            printSpaces(((int)(spaces/2)) + spaces%2)
+            print "|"
+            print LINE_SEPARATOR
+        }
+        printLine(maxSize)
+
+    }
+
+    static printSpaces(int size){
+        int i = 0;
+        while (i<size) {
+            i++;
+            print ' '
+        }
+    }
+    static printLine(int size){
+        print '+'
+        int i = 0;
+        while (i<size) {
+            i++;
+            print '-'
+        }
+        print '+'
+        print LINE_SEPARATOR
+    }
+
 }
+
