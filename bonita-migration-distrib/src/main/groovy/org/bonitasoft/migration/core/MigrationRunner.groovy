@@ -39,7 +39,6 @@ public class MigrationRunner {
     def read = System.in.newReader().&readLine
 
     public void execute(GroovyScriptEngine gse){
-        startMigrationDate = new Date()
         def childWithExt = { file,ext->
             file.listFiles(new FileFilter(){
                         public boolean accept(File pathname) {
@@ -51,6 +50,7 @@ public class MigrationRunner {
         if(path == null){
             return;
         }
+        startMigrationDate = new Date()
         def transitions = path.getTransitions()
         transitions.eachWithIndex { Transition transition, idx ->
             def sourceStepVersion = transition.source
@@ -281,7 +281,6 @@ public class MigrationRunner {
         migrateFeature(gse, feature, binding, 2);
     }
     private migrateFeature(GroovyScriptEngine gse, File file, Binding binding, int nbTabs){
-        // TODO : Lire le fichier de description et l'afficher
         PrintStream stdout = MigrationUtil.setSystemOutWithTab(nbTabs);
         new File(file, "Description.txt").eachLine{ line -> println "Description : " + line }
         System.setOut(stdout);
