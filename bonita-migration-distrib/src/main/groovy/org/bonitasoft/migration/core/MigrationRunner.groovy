@@ -14,7 +14,7 @@
 package org.bonitasoft.migration.core
 
 import groovy.sql.Sql
-import groovy.time.TimeCategory
+
 
 
 
@@ -33,6 +33,7 @@ public class MigrationRunner {
     private def groovy.sql.Sql sql
     private def String sourceVersion
     private def String targetVersion
+    private def TransitionGraph graph
 
     private def startMigrationDate
     def read = System.in.newReader().&readLine
@@ -46,13 +47,21 @@ public class MigrationRunner {
                         }
                     })
         }
-        init();
-
-        PrintStream stdout = MigrationUtil.setSystemOutWithTab(1);
-        def String migrationVersionFolder = "versions" + MigrationUtil.FILE_SEPARATOR + sourceVersion + "-" + targetVersion + MigrationUtil.FILE_SEPARATOR
-        migrateDatabase(gse, migrationVersionFolder)
-        migrateBonitaHome(gse, migrationVersionFolder)
-        System.setOut(stdout);
+        def path = init()
+        if(path == null){
+            return;
+        }
+        def transitions = path.getTransitions()
+        transitions.eachWithIndex { Transition transition, idx ->
+            def sourceStepVersion = transition.source
+            def targetStepVersion = transition.target
+            println "step ${idx+1} on ${transitions.size()} for migration of version, start migration of version $sourceStepVersion to version $targetStepVersion"
+            PrintStream stdout = MigrationUtil.setSystemOutWithTab(1);
+            def String migrationVersionFolder = "versions" + File.separatorChar + sourceStepVersion + "-" + targetStepVersion + File.separatorChar
+            migrateDatabase(gse, migrationVersionFolder)
+            migrateBonitaHome(gse, migrationVersionFolder)
+            System.setOut(stdout);
+        }
 
         def end = new Date()
         println "\nMigration successfully completed, in " + TimeCategory.minus(end, startMigrationDate);
@@ -60,60 +69,151 @@ public class MigrationRunner {
         sql.close()
     }
 
-    void init(){
+    Path init(){
         def Properties properties = MigrationUtil.getProperties();
 
         println ""
         println "Properties : "
-        sourceVersion = MigrationUtil.getAndPrintProperty(properties, MigrationUtil.SOURCE_VERSION);
-        targetVersion = MigrationUtil.getAndPrintProperty(properties, MigrationUtil.TARGET_VERSION);
-        bonitaHome = new File(MigrationUtil.getAndPrintProperty(properties, MigrationUtil.BONITA_HOME));
+        sourceVersion = MigrationUtil.getAndPrintProperty(properties, MigrationUtil.SOURCE_VERSION, false);
+        targetVersion = MigrationUtil.getAndPrintProperty(properties, MigrationUtil.TARGET_VERSION, false);
+        bonitaHome = new File(MigrationUtil.getAndPrintProperty(properties, MigrationUtil.BONITA_HOME, true));
         if(!bonitaHome.exists()){
             throw new IllegalStateException("Bonita home does not exist.");
         }
-        dbVendor = MigrationUtil.getAndPrintProperty(properties, MigrationUtil.DB_VENDOR);
-        def dburl = MigrationUtil.getAndPrintProperty(properties, MigrationUtil.DB_URL);
-        def user = MigrationUtil.getAndPrintProperty(properties, MigrationUtil.DB_USER);
-        def pwd = MigrationUtil.getAndPrintProperty(properties, MigrationUtil.DB_PASSWORD);
-        def driverClass = MigrationUtil.getAndPrintProperty(properties, MigrationUtil.DB_DRIVERCLASS);
+        dbVendor = MigrationUtil.getAndPrintProperty(properties, MigrationUtil.DB_VENDOR, true);
+        def dburl = MigrationUtil.getAndPrintProperty(properties, MigrationUtil.DB_URL, true);
+        def user = MigrationUtil.getAndPrintProperty(properties, MigrationUtil.DB_USER, true);
+        def pwd = MigrationUtil.getAndPrintProperty(properties, MigrationUtil.DB_PASSWORD, true);
+        def driverClass = MigrationUtil.getAndPrintProperty(properties, MigrationUtil.DB_DRIVERCLASS, true);
 
         sql = MigrationUtil.getSqlConnection(dburl, user, pwd, driverClass);
-        println ""
+        graph = getMigrationPaths(new File("versions"))
         sourceVersion = checkSourceVersion(sql,bonitaHome,sourceVersion)
-
-        println ""
-        println "MIGRATE " + sourceVersion + " TO " + targetVersion
-
+        if(sourceVersion == null){
+            return false;
+        }
+        targetVersion = checkTargetVersion(sourceVersion, targetVersion);
+        if(targetVersion == null){
+            return false;
+        }
+        def path = graph.getShortestPath(sourceVersion,targetVersion)
+        println "MIGRATE $sourceVersion TO $targetVersion using path $path"
         if(!MigrationUtil.isAutoAccept()){
             println "Press ENTER to start migration or Ctrl+C to cancel."
             System.console().readLine()
         }
+        return path;
     }
 
-    String checkSourceVersion(Sql sql,File bonitaHome,String defaultSourceVersion){
+    String checkSourceVersion(Sql sql,File bonitaHome,String givenSourceVersion){
+        //get version in sources
         def String platformVersionInDatabase = MigrationUtil.getPlatformVersion(sql)
         def s = File.separator;
         def File versionFile = new File(bonitaHome, "server${s}platform${s}conf${s}VERSION");
         def String platformVersionInBonitaHome = versionFile.exists()?versionFile.text:null;
-
-        def String sourceVersion = null
-        if(!platformVersionInDatabase.startsWith("6") || platformVersionInBonitaHome == null){
-            if(defaultSourceVersion != null){
-                sourceVersion = defaultSourceVersion
-            }else{
-                println "Unable to detect the current version of bonita, please enter it (e.g 6.0.2):"
-                sourceVersion = read();
-            }
-        }
-        println "Version is "+sourceVersion
-        System.exit(0)
-
-        //        def String platformVersionInDatabase = getPlatformVersionInDatabase(sql,defaultSourceVersion)
-        //        def String platformVersionInBonitaHome = getPlatformVersionInBonitaHome(bonitaHome,defaultSourceVersion)
-
-
-        return defaultSourceVersion
+        return checkSourceVersion(platformVersionInDatabase, platformVersionInBonitaHome, givenSourceVersion);
     }
+
+    String checkTargetVersion(String sourceVersion, String givenTargetVersion){
+        //all steps from a version to an other
+        println "List of all possible migration starting from your version"
+
+        List<Path> paths = graph.getPaths(sourceVersion)
+        paths.each {
+            println it.toString();
+        }
+        //check if we can migrate to an other version here
+        if(paths.isEmpty()){
+            println "no migration possible starting from version $sourceVersion, possible paths are:"
+            paths.each { println "${it.key} --> ${it.value}" }
+            return null;
+        }
+        def targetVersion = givenTargetVersion
+        //ask user for a target version
+        def possibleTarget = paths.collect{ it.getLastVersion() }
+
+        if(targetVersion == null){
+            println "Please choose a target version from the list below:"
+            targetVersion = askForOptions(possibleTarget);
+        }
+        if (!possibleTarget.contains(targetVersion)){
+            println "no migration possible to the version $targetVersion, possible target are: $possibleTarget"
+
+        }
+        return targetVersion;
+    }
+
+    TransitionGraph getMigrationPaths(File migrationFolders){
+        def dirNames = []
+        migrationFolders.eachDir {
+            dirNames.add(it.getName())
+        }
+        return new TransitionGraph(dirNames);
+    }
+
+    String checkSourceVersion(String platformVersionInDatabase, String platformVersionInBonitaHome, String givenSourceVersion){
+        def String sourceVersion = null
+        def String detectedVersion = null;
+        if(!platformVersionInDatabase.startsWith("6")){
+            //[6.0,6.1[
+            if(givenSourceVersion != null){
+                println "No version detected: using given version $givenSourceVersion"
+                detectedVersion = givenSourceVersion
+            }else{
+                println "Unable to detect the current version of bonita, please choose a start version from the list below:"
+                def possibleVersion = graph.getStartNodes().findAll{it.startsWith("6.0")}
+                detectedVersion = askForOptions(possibleVersion)
+
+            }
+            //pre 6.1 --> use given version, but check that it start's with 6.0
+            if(!detectedVersion.startsWith("6.0")){
+                println "sorry the but you're installation seems to be between 6.0.0 included and 6.1.0 excluded"
+                return null;
+            }
+            return detectedVersion
+        }else if(platformVersionInBonitaHome == null){
+            //[6.1,6.2[ -> use database version, but check that given version starts with 6.1
+            if(givenSourceVersion != null && !givenSourceVersion.equals(platformVersionInDatabase)){
+                println "Sorry,your installation is $platformVersionInDatabase but you specified $givenSourceVersion"
+                return null;
+            }
+            return platformVersionInDatabase;
+        }else{
+            // > 6.2
+            if(platformVersionInBonitaHome != platformVersionInDatabase || (givenSourceVersion != null && platformVersionInDatabase != givenSourceVersion) ){
+                //invalid case: given source (if any) not the same as version in db and as version in bonita home
+                println "The versions are not consistent:"
+                println "The version of the database is $platformVersionInDatabase"
+                println "The version of the bonita home is $platformVersionInBonitaHome"
+                if(givenSourceVersion != null){
+                    println "The declared version is $givenSourceVersion"
+                }
+                println "Check that you configuration is correct and restart the migration"
+                return null;
+            }
+            return platformVersionInBonitaHome
+        }
+    }
+
+    String askForOptions(List<String> options){
+        def input = null;
+        while(true){
+            options.eachWithIndex {it,idx->
+                println "${idx+1} -- $it "
+            }
+            print "choice: "
+            input = read();
+            try{
+                def choiceNumber = Integer.valueOf(input) -1 //index in the list is -1
+                if(choiceNumber <= options.size()){
+                    return options.get(choiceNumber)
+                }
+            }catch (Exception e){
+            }
+            println "Invalid choice, please enter a value between 1 and ${options.size()}"
+        }
+    }
+
     String getPlatformVersionInBonitaHome(File bonitaHome,String defaultSourceVersion){
         new File(bonitaHome,)
     }

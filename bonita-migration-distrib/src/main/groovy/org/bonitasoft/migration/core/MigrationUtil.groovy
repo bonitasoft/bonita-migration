@@ -31,8 +31,6 @@ import org.bonitasoft.migration.core.exception.NotFoundException
  */
 public class MigrationUtil {
 
-    public final static String FILE_SEPARATOR = System.getProperty("file.separator");
-
     public final static String SOURCE_VERSION = "source.version"
 
     public final static String TARGET_VERSION = "target.version"
@@ -85,22 +83,23 @@ public class MigrationUtil {
      * First it try to get it from system (in order to override properties)
      * then from the given property object
      */
-    public static String getAndPrintProperty(Properties properties, String propertyName) {
+    public static String getAndPrintProperty(Properties properties, String propertyName, boolean isMandatory) {
         if (properties == null || propertyName == null || "".equals(propertyName)){
             throw new IllegalArgumentException("Can't execute getAndPrintProperty method with arguments : propeties = " + properties + ", propertyName = " + propertyName);
         }
-
         def String property = System.getProperty(propertyName);
-        if(property == null){
-            property = properties.getProperty(propertyName);
+        if(property != null){
+            return property
         }
+        property = properties.getProperty(propertyName);
         if (property != null) {
-            property = property.replaceAll("\t", "").trim();
-            println "\t-" + propertyName + " = " + property
-        } else {
+            property = property.trim()
+            println "" + propertyName + " = " + property
+            return property
+        }
+        if(isMandatory){
             throw new NotFoundException("The property " + propertyName + " doesn't exist !!");
         }
-        return property;
     }
 
     /**
@@ -232,9 +231,11 @@ public class MigrationUtil {
     }
 
     public static String getPlatformVersion(groovy.sql.Sql sql){
+        def version = null;
         sql.eachRow("SELECT version FROM platform") { row ->
-            return row[0]
+            version = row[0]
         }
+        return version;
     }
 
     public static Object getId(File feature, String dbVendor, String fileExtension, Object it, groovy.sql.Sql sql){
