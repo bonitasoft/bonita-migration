@@ -57,6 +57,9 @@ public class MigrationUtil {
 
     private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
 
+
+    public static read = System.in.newReader().&readLine
+
     /**
      * Load properties form the 'Config.properties' file inside the distribution
      * @return the properties of the migration distribution
@@ -117,16 +120,29 @@ public class MigrationUtil {
         System.setOut(new PrintStream(stdout){
                     @Override
                     public void println(String x) {
-                        if (nbTabs != 0){
-                            for (int i = 0; i < nbTabs; i++){
-                                super.print("   |");
-                            }
-                            super.print(" ");
-                        }
-                        super.println(x);
+                        super.print(" | ")
+                        super.println(x)
                     }
-                });
+                })
         return stdout;
+    }
+
+    /**
+     *
+     *  Wrap the system out with ' | ' when executing the closure
+     */
+    public static void executeWrappedWithTabs(Closure closure){
+        PrintStream stdout = System.out;
+
+        System.setOut(new PrintStream(stdout){
+                    @Override
+                    public void println(String x) {
+                        stdout.print(" | ")
+                        stdout.println(x)
+                    }
+                })
+        closure.call()
+        System.setOut(stdout);
     }
 
     /**
@@ -140,12 +156,12 @@ public class MigrationUtil {
      * @param startMigrationDate
      * @return
      */
-    public static executeMigration(GroovyScriptEngine gse, File file, String scriptName, Binding binding, int nbTabs, Date startMigrationDate){
-        def startFeatureDate = new Date();
-        PrintStream stdout = setSystemOutWithTab(nbTabs);
-        gse.run(new File(file, scriptName).getPath(), binding)
-        System.setOut(stdout);
-        printSuccessMigration(startFeatureDate, startMigrationDate);
+    public static executeMigration(GroovyScriptEngine gse, File file, String scriptName, Binding binding, Date startMigrationDate){
+        def startDate = new Date();
+        executeWrappedWithTabs {
+            gse.run(new File(file, scriptName).getPath(), binding)
+        }
+        MigrationUtil.printSuccessMigration(startDate, startMigrationDate);
     }
 
     public static printSuccessMigration(Date startFeatureDate, Date startMigrationDate){
@@ -411,5 +427,33 @@ public class MigrationUtil {
         print LINE_SEPARATOR
     }
 
+    public static void  askIfWeContinue(){
+        if(!MigrationUtil.isAutoAccept()){
+            print "Continue migration? (yes/no): "
+            String input = read()
+            if(input != "yes"){
+                println "Migration cancelled"
+                System.exit(0);
+            }
+        }
+    }
+    public static String askForOptions(List<String> options){
+        def input = null;
+        while(true){
+            options.eachWithIndex {it,idx->
+                println "${idx+1} -- $it "
+            }
+            print "choice: "
+            input = MigrationUtil.read();
+            try{
+                def choiceNumber = Integer.valueOf(input) -1 //index in the list is -1
+                if(choiceNumber <= options.size()){
+                    return options.get(choiceNumber)
+                }
+            }catch (Exception e){
+            }
+            println "Invalid choice, please enter a value between 1 and ${options.size()}"
+        }
+    }
 }
 
