@@ -24,23 +24,22 @@ if (tenantsClientDir.exists()) {
         println "Executing update for each tenant : " + tenants;
         tenantsClientDir.eachFile { tenant ->
             println "For tenant : " + tenant.name
-            PrintStream stdout = MigrationUtil.setSystemOutWithTab(4);
+            PrintStream stdout = MigrationUtil.executeWrappedWithTabs {
+                currentDir = "/conf"
+                MigrationUtil.migrateDirectory(newClientBonitaHome.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir, true)
 
-            currentDir = "/conf"
-            MigrationUtil.migrateDirectory(newClientBonitaHome.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir, true)
+                currentDir = "/work/icons/default"
+                MigrationUtil.migrateDirectory(newClientBonitaHome.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir, true)
 
-            currentDir = "/work/icons/default"
-            MigrationUtil.migrateDirectory(newClientBonitaHome.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir, true)
+                currentDir = "/work/icons/priority"
+                MigrationUtil.migrateDirectory(newClientBonitaHome.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir, true)
 
-            currentDir = "/work/icons/priority"
-            MigrationUtil.migrateDirectory(newClientBonitaHome.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir, true)
+                currentDir = "/work/icons/profiles"
+                MigrationUtil.migrateDirectory(newClientBonitaHome.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir, true)
 
-            currentDir = "/work/icons/profiles"
-            MigrationUtil.migrateDirectory(newClientBonitaHome.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir, true)
-
-            currentDir = "/work/looknfeel"
-            MigrationUtil.migrateDirectory(newClientBonitaHome.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir, true)
-            System.setOut(stdout);
+                currentDir = "/work/looknfeel"
+                MigrationUtil.migrateDirectory(newClientBonitaHome.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir, true)
+            }
         }
     }
 } else {

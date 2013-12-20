@@ -21,10 +21,9 @@ if (tenantsServerDir.exists()) {
         println "Executing update for each tenant : " + tenants;
         tenantsServerDir.eachFile { tenant ->
             println "For tenant : " + tenant.name
-            PrintStream stdout = MigrationUtil.setSystemOutWithTab(4);
-            
-            MigrationUtil.migrateDirectory(newServerBonitaHome.path + "/platform/tenant-template/conf", tenant.path + "/conf", true)
-            System.setOut(stdout);
+            PrintStream stdout = MigrationUtil.executeWrappedWithTabs {
+                MigrationUtil.migrateDirectory(newServerBonitaHome.path + "/platform/tenant-template/conf", tenant.path + "/conf", true)
+            }
         }
     }
 } else {

@@ -181,7 +181,7 @@ class MigrationUtilTest {
     }
 
     @Test()
-    public void setSystemOutWithTab(){
+    public void executeWrappedWithTabs(){
         // To capture output
         def ByteArrayOutputStream baos = new ByteArrayOutputStream();
         System.setOut(new PrintStream(baos));
