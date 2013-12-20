@@ -4,9 +4,9 @@ import java.io.File;
 import java.util.Map;
 
 import org.bonitasoft.migration.core.MigrationUtil;
-import org.bonitasoft.migration.versions.v6_0_2to_6_1_0.GatewayInstance;
-import org.bonitasoft.migration.versions.v6_0_2to_6_1_0.TransitionInstance;
-import org.bonitasoft.migration.versions.v6_0_2to_6_1_0.FlowNodeDefinition;
+import org.bonitasoft.migration.versions.v6_0_4to_6_1_0.GatewayInstance;
+import org.bonitasoft.migration.versions.v6_0_4to_6_1_0.TransitionInstance;
+import org.bonitasoft.migration.versions.v6_0_4to_6_1_0.FlowNodeDefinition;
 
 
 

@@ -1,4 +1,4 @@
-package org.bonitasoft.migration.versions.v6_0_2to_6_1_0;
+package org.bonitasoft.migration.versions.v6_0_4to_6_1_0;
 
 import static org.junit.Assert.*
 

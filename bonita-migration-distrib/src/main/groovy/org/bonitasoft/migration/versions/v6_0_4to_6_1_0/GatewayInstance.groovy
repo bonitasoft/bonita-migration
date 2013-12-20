@@ -11,7 +11,7 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
-package org.bonitasoft.migration.versions.v6_0_2to_6_1_0;
+package org.bonitasoft.migration.versions.v6_0_4to_6_1_0;
 
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
