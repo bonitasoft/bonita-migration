@@ -103,7 +103,7 @@ task cleardb<<{
             throw new IllegalStateException("must specify db.root.user and db.root.password for sqlserver")
         }
 
-        def parsedUrl = (dburl =~ /(jdbc:\w+:\/\/)([\w\d\.]+):(\d+);database=([\w-_\d]+).*/)
+        def parsedUrl = (dburl =~ /(jdbc:\w+:\/\/)([\w\d\.-]+):(\d+);database=([\w-_\d]+).*/)
         project.serverName = parsedUrl[0][2]
         project.portNumber = parsedUrl[0][3]
         project.databaseName = parsedUrl[0][4]
@@ -121,7 +121,7 @@ task cleardb<<{
         sql.close()
     }else{
         println "drop and create: $dburl"
-        def parsedUrl = (dburl =~ /(jdbc:\w+:\/\/)([\w\d\.]+):(\d+)\/([\w-_\d]+).*/)
+        def parsedUrl = (dburl =~ /(jdbc:\w+:\/\/)([\w\d\.-]+):(\d+)\/([\w-_\d]+).*/)
         project.serverName = parsedUrl[0][2]
         project.portNumber = parsedUrl[0][3]
         project.databaseName = parsedUrl[0][4]
