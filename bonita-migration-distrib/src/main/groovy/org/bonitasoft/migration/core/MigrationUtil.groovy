@@ -270,8 +270,11 @@ public class MigrationUtil {
         if (fromDir == null || toDir == null){
             throw new IllegalArgumentException("Can't execute migrateDirectory method with arguments : fromDir = " + fromDir + ", toDir = " + toDir);
         }
-
-        println "Migration of " + toDir + "..."
+        if(deleteOldDirectory){
+            println "Replacing all content of $toDir..."
+        }else{
+            println "Adding/overwriting content in $toDir..."
+        }
         def fileFromDir = new File(fromDir);
         def fileToDir = new File(toDir);
         if (!fileFromDir.exists() || !fileFromDir.isDirectory()) {
@@ -281,7 +284,6 @@ public class MigrationUtil {
             throw new IllegalStateException("Migration failed. Unable to delete : " + toDir)
         }
         copyDirectory(fileFromDir, fileToDir)
-        println "Done"
     }
 
     private static void copyDirectory(File srcDir, File destDir) throws IOException {

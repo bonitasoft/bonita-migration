@@ -122,7 +122,6 @@ public class MigrationRunner {
         }
         def path = graph.getShortestPath(sourceVersion,targetVersion)
         println "MIGRATE $sourceVersion TO $targetVersion using path $path"
-        MigrationUtil.askIfWeContinue();
         return path;
     }
 
@@ -143,7 +142,7 @@ public class MigrationRunner {
                 println "No version detected: using given version $givenSourceVersion"
                 detectedVersion = givenSourceVersion
             }else{
-                println "Unable to detect the current version of bonita, please choose a start version from the list below:"
+                println "Your bonita version is below 6.1.0, because of this we can't determine the exact version of your installation\nPlease choose your version in the following list: "
                 def possibleVersion = graph.getStartNodes().findAll{it.startsWith("6.0")}
                 detectedVersion = MigrationUtil.askForOptions(possibleVersion)
 
