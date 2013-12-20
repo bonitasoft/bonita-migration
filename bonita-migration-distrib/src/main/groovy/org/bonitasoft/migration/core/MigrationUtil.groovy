@@ -31,8 +31,6 @@ import org.bonitasoft.migration.core.exception.NotFoundException
  */
 public class MigrationUtil {
 
-    public final static String FILE_SEPARATOR = System.getProperty("file.separator");
-
     public final static String SOURCE_VERSION = "source.version"
 
     public final static String TARGET_VERSION = "target.version"
@@ -54,8 +52,13 @@ public class MigrationUtil {
 
     public final static String REQUEST_SEPARATOR = "@@"
 
+    public final static String LINE_SEPARATOR = System.getProperty("line.separator");
+
 
     private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
+
+
+    public static read = System.in.newReader().&readLine
 
     /**
      * Load properties form the 'Config.properties' file inside the distribution
@@ -85,47 +88,43 @@ public class MigrationUtil {
      * First it try to get it from system (in order to override properties)
      * then from the given property object
      */
-    public static String getAndPrintProperty(Properties properties, String propertyName) {
+    public static String getAndPrintProperty(Properties properties, String propertyName, boolean isMandatory) {
         if (properties == null || propertyName == null || "".equals(propertyName)){
             throw new IllegalArgumentException("Can't execute getAndPrintProperty method with arguments : propeties = " + properties + ", propertyName = " + propertyName);
         }
-
         def String property = System.getProperty(propertyName);
-        if(property == null){
-            property = properties.getProperty(propertyName);
+        if(property != null){
+            println "" + propertyName + " = " + property
+            return property
         }
+        property = properties.getProperty(propertyName);
         if (property != null) {
-            property = property.replaceAll("\t", "").trim();
-            println "\t-" + propertyName + " = " + property
-        } else {
+            property = property.trim()
+            println "" + propertyName + " = " + property
+            return property
+        }
+        if(isMandatory){
             throw new NotFoundException("The property " + propertyName + " doesn't exist !!");
         }
-        return property;
     }
+
 
     /**
      *
-     * Wrap the current system.out in order to display tabulation and a pype at begining of the line
-     * @param nbTabs
-     *      Number of tabulations to display
-     * @return Old System.out
-     * @since 6.1
+     *  Wrap the system out with ' | ' when executing the closure
      */
-    public static PrintStream setSystemOutWithTab(int nbTabs){
+    public static void executeWrappedWithTabs(Closure closure){
         PrintStream stdout = System.out;
+
         System.setOut(new PrintStream(stdout){
                     @Override
                     public void println(String x) {
-                        if (nbTabs != 0){
-                            for (int i = 0; i < nbTabs; i++){
-                                super.print("   |");
-                            }
-                            super.print(" ");
-                        }
-                        super.println(x);
+                        stdout.print(" | ")
+                        stdout.println(x)
                     }
-                });
-        return stdout;
+                })
+        closure.call()
+        System.setOut(stdout);
     }
 
     /**
@@ -139,12 +138,12 @@ public class MigrationUtil {
      * @param startMigrationDate
      * @return
      */
-    public static executeMigration(GroovyScriptEngine gse, File file, String scriptName, Binding binding, int nbTabs, Date startMigrationDate){
-        def startFeatureDate = new Date();
-        PrintStream stdout = setSystemOutWithTab(nbTabs);
-        gse.run(new File(file, scriptName).getPath(), binding)
-        System.setOut(stdout);
-        printSuccessMigration(startFeatureDate, startMigrationDate);
+    public static executeMigration(GroovyScriptEngine gse, File file, String scriptName, Binding binding, Date startMigrationDate){
+        def startDate = new Date();
+        executeWrappedWithTabs {
+            gse.run(new File(file, scriptName).getPath(), binding)
+        }
+        MigrationUtil.printSuccessMigration(startDate, startMigrationDate);
     }
 
     public static printSuccessMigration(Date startFeatureDate, Date startMigrationDate){
@@ -228,9 +227,15 @@ public class MigrationUtil {
     }
 
     public static getAndDisplayPlatformVersion(groovy.sql.Sql sql){
+        println getPlatformVersion(sql);
+    }
+
+    public static String getPlatformVersion(groovy.sql.Sql sql){
+        def version = null;
         sql.eachRow("SELECT version FROM platform") { row ->
-            println "Platform version in database: " + row[0]
+            version = row[0]
         }
+        return version;
     }
 
     public static Object getId(File feature, String dbVendor, String fileExtension, Object it, groovy.sql.Sql sql){
@@ -265,8 +270,11 @@ public class MigrationUtil {
         if (fromDir == null || toDir == null){
             throw new IllegalArgumentException("Can't execute migrateDirectory method with arguments : fromDir = " + fromDir + ", toDir = " + toDir);
         }
-
-        println "Migration of " + toDir + "..."
+        if(deleteOldDirectory){
+            println "Replacing all content of $toDir..."
+        }else{
+            println "Adding/overwriting content in $toDir..."
+        }
         def fileFromDir = new File(fromDir);
         def fileToDir = new File(toDir);
         if (!fileFromDir.exists() || !fileFromDir.isDirectory()) {
@@ -276,7 +284,6 @@ public class MigrationUtil {
             throw new IllegalStateException("Migration failed. Unable to delete : " + toDir)
         }
         copyDirectory(fileFromDir, fileToDir)
-        println "Done"
     }
 
     private static void copyDirectory(File srcDir, File destDir) throws IOException {
@@ -370,4 +377,67 @@ public class MigrationUtil {
     public static boolean isAutoAccept(){
         return System.getProperty(MigrationUtil.AUTO_ACCEPT)=="true"
     }
+    static void printInRectangle(String... lines){
+        def maxSize = lines.collect{ it.size() }.max() +2
+        printLine(maxSize)
+        lines.each {
+            int spaces = maxSize - it.size()
+            print "|"
+            printSpaces((int)(spaces/2))
+            print it
+            printSpaces(((int)(spaces/2)) + spaces%2)
+            print "|"
+            print LINE_SEPARATOR
+        }
+        printLine(maxSize)
+
+    }
+
+    static printSpaces(int size){
+        int i = 0;
+        while (i<size) {
+            i++;
+            print ' '
+        }
+    }
+    static printLine(int size){
+        print '+'
+        int i = 0;
+        while (i<size) {
+            i++;
+            print '-'
+        }
+        print '+'
+        print LINE_SEPARATOR
+    }
+
+    public static void  askIfWeContinue(){
+        if(!MigrationUtil.isAutoAccept()){
+            print "Continue migration? (yes/no): "
+            String input = read()
+            if(input != "yes"){
+                println "Migration cancelled"
+                System.exit(0);
+            }
+        }
+    }
+    public static String askForOptions(List<String> options){
+        def input = null;
+        while(true){
+            options.eachWithIndex {it,idx->
+                println "${idx+1} -- $it "
+            }
+            print "choice: "
+            input = MigrationUtil.read();
+            try{
+                def choiceNumber = Integer.valueOf(input) -1 //index in the list is -1
+                if(choiceNumber <= options.size()){
+                    return options.get(choiceNumber)
+                }
+            }catch (Exception e){
+            }
+            println "Invalid choice, please enter a value between 1 and ${options.size()}"
+        }
+    }
 }
+
