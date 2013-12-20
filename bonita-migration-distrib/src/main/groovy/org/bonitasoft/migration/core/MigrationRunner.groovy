@@ -50,8 +50,12 @@ public class MigrationRunner {
 
         PrintStream stdout = MigrationUtil.setSystemOutWithTab(1);
         def String migrationVersionFolder = "versions" + MigrationUtil.FILE_SEPARATOR + sourceVersion + "-" + targetVersion + MigrationUtil.FILE_SEPARATOR
-        migrateDatabase(gse, migrationVersionFolder)
-        migrateBonitaHome(gse, migrationVersionFolder)
+
+        //the new bonita home
+        def bonitaHomeMigrationFolder = new File(migrationVersionFolder + "Bonita-home")
+        def newBonitaHome = bonitaHomeMigrationFolder.listFiles().findAll { it.isDirectory() && it.exists() && it.getName().startsWith("bonita")}[0]
+        migrateDatabase(gse, migrationVersionFolder, newBonitaHome)
+        migrateBonitaHome(gse, migrationVersionFolder, bonitaHomeMigrationFolder, newBonitaHome)
         System.setOut(stdout);
 
         def end = new Date()
@@ -87,7 +91,7 @@ public class MigrationRunner {
         }
     }
 
-    public migrateDatabase(GroovyScriptEngine gse, String migrationVersionFolder) {
+    public migrateDatabase(GroovyScriptEngine gse, String migrationVersionFolder, File newBonitaHome) {
         def startDate = new Date();
         def resources = new File(migrationVersionFolder + "Database")
         if(!resources.exists()){
@@ -115,7 +119,7 @@ public class MigrationRunner {
             def feature = result.replace(0, 1, result.substring(0, 1).toUpperCase()).toString()
             println "[ Migrating <" + feature + "> " + (idx + 1) + "/" + features.size() + " ]"
 
-            def binding = new Binding(["sql":sql, "dbVendor":dbVendor, "bonitaHome":bonitaHome, "feature":file]);
+            def binding = new Binding(["sql":sql, "dbVendor":dbVendor, "bonitaHome":bonitaHome, "feature":file, "newBonitaHome":newBonitaHome]);
             migrateFeature(gse, file, binding, 3);
         }
         System.setOut(stdout);
@@ -123,16 +127,15 @@ public class MigrationRunner {
     }
 
 
-    public migrateBonitaHome(GroovyScriptEngine gse, String migrationVersionFolder) {
+    public migrateBonitaHome(GroovyScriptEngine gse, String migrationVersionFolder, File bonitaHomeMigrationFolder, File newBonitaHome) {
         def startDate = new Date();
-        def feature = new File(migrationVersionFolder + "Bonita-home")
-        if(!feature.exists()){
-            throw new IllegalStateException(feature.absolutePath + " doesn't exist.")
+        if(!bonitaHomeMigrationFolder.exists()){
+            throw new IllegalStateException(bonitaHomeMigrationFolder.absolutePath + " doesn't exist.")
         }
 
         println "Migration of bonita home :"
-        def binding = new Binding(["bonitaHome":bonitaHome, "feature":feature, "startMigrationDate":startMigrationDate, "gse":gse]);
-        migrateFeature(gse, feature, binding, 2);
+        def binding = new Binding(["bonitaHome":bonitaHome, "feature":bonitaHomeMigrationFolder, "newBonitaHome":newBonitaHome, "startMigrationDate":startMigrationDate, "gse":gse]);
+        migrateFeature(gse, bonitaHomeMigrationFolder, binding, 2);
     }
     private migrateFeature(GroovyScriptEngine gse, File file, Binding binding, int nbTabs){
         // TODO : Lire le fichier de description et l'afficher

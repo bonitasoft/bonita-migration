@@ -5,9 +5,6 @@ if(!MigrationUtil.isAutoAccept()){
     System.console().readLine()
 }
 println ""
-
-//the new bonita home
-def newBonitaHome = feature.listFiles().findAll { it.isDirectory() && it.exists() && it.getName().startsWith("bonita")}[0]
 def binding = new Binding(["bonitaHome":bonitaHome, "feature":feature, "newBonitaHome":newBonitaHome, "startMigrationDate":startMigrationDate]);
 //extra setup of bonita home
 def setupScript = new File(feature, "setup.groovy")
