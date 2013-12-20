@@ -62,9 +62,13 @@ public class MigrationRunner {
                     "migration number ${idx+1} on a total of ${transitions.size()}");
 
 
-            def String migrationVersionFolder = "versions" + File.separatorChar + sourceStepVersion + "-" + targetStepVersion + File.separatorChar
-            migrateDatabase(gse, migrationVersionFolder)
-            migrateBonitaHome(gse, migrationVersionFolder)
+
+        def String migrationVersionFolder = "versions" + File.separatorChar + sourceStepVersion + "-" + targetStepVersion + File.separatorChar
+        //the new bonita home
+        def bonitaHomeMigrationFolder = new File(migrationVersionFolder + "Bonita-home")
+        def newBonitaHome = bonitaHomeMigrationFolder.listFiles().findAll { it.isDirectory() && it.exists() && it.getName().startsWith("bonita")}[0]
+        migrateDatabase(gse, migrationVersionFolder, newBonitaHome)
+        migrateBonitaHome(gse, migrationVersionFolder, bonitaHomeMigrationFolder, newBonitaHome)
         }
 
         def end = new Date()
@@ -195,7 +199,7 @@ public class MigrationRunner {
             dirNames.add(it.getName())
         }
         return new TransitionGraph(dirNames);
-    }
+        }
 
     void migrateFolder(String migrationVersionFolder, String folderName, String description, Closure closure){
         def folder = new File(migrationVersionFolder + folderName)
@@ -210,30 +214,30 @@ public class MigrationRunner {
 
     public migrateDatabase(GroovyScriptEngine gse, String migrationVersionFolder) {
         migrateFolder(migrationVersionFolder, "Database", "Migration of database") { File folder ->
-            def features = []
+        def features = []
             def files = folder.listFiles()
-            Arrays.sort(files)
-            files.each {
-                if(it.isDirectory())
-                    features.add(it)
-            }
-            features.eachWithIndex { file, idx->
-                StringBuilder result = new StringBuilder(file.getName().substring(4))
-                def feature = result.replace(0, 1, result.substring(0, 1).toUpperCase()).toString()
-                println "[ Migrating <" + feature + "> " + (idx + 1) + "/" + features.size() + " ]"
+        Arrays.sort(files)
+        files.each {
+            if(it.isDirectory())
+                features.add(it)
+        }
+        features.eachWithIndex { file, idx->
+            StringBuilder result = new StringBuilder(file.getName().substring(4))
+            def feature = result.replace(0, 1, result.substring(0, 1).toUpperCase()).toString()
+            println "[ Migrating <" + feature + "> " + (idx + 1) + "/" + features.size() + " ]"
 
-                def binding = new Binding(["sql":sql, "dbVendor":dbVendor, "bonitaHome":bonitaHome, "feature":file]);
+            def binding = new Binding(["sql":sql, "dbVendor":dbVendor, "bonitaHome":bonitaHome, "feature":file, "newBonitaHome":newBonitaHome]);
                 migrateFeature(gse, file, binding);
             }
         }
     }
 
-    public migrateBonitaHome(GroovyScriptEngine gse, String migrationVersionFolder) {
+    public migrateBonitaHome(GroovyScriptEngine gse, String migrationVersionFolder, File bonitaHomeMigrationFolder, File newBonitaHome) {
         migrateFolder(migrationVersionFolder, "Bonita-home", "Migration of bonita home") { File folder ->
-            def binding = new Binding(["bonitaHome":bonitaHome, "feature":folder, "startMigrationDate":startMigrationDate, "gse":gse]);
+            def binding = new Binding(["bonitaHome":bonitaHome, "feature":folder, "startMigrationDate":startMigrationDate, "newBonitaHome":newBonitaHome, "gse":gse]);
             migrateFeature(gse, folder, binding);
         }
-    }
+        }
 
     private migrateFeature(GroovyScriptEngine gse, File file, Binding binding){
         new File(file, "Description.txt").eachLine{ line -> println "Description : " + line }

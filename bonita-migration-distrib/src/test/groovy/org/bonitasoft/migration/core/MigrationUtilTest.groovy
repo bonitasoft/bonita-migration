@@ -7,7 +7,7 @@ import org.bonitasoft.migration.core.exception.NotFoundException
 import org.dbunit.JdbcDatabaseTester
 import org.junit.Test
 
-class JobDataMapTest {
+class MigrationUtilTest {
 
     def final static String FILE_SEPARATOR = System.getProperty("file.separator");
     final static DB_CONFIG = [
@@ -32,12 +32,9 @@ class JobDataMapTest {
   PRIMARY KEY (id)
 );''');
         sql.executeInsert("insert into platform values(1,'the_version','the_previous_version','the_initial_version',1,1)")
-        sql.eachRow("select * from platform") { row->
-            fail( "row="+row)
-        }
         JdbcDatabaseTester tester = new JdbcDatabaseTester(DB_DRIVER, *DB_CONFIG)
 
-        assertEquals("the_version",MigrationUtil.getAndDisplayPlatformVersion(sql))
+        assertEquals("the_version",MigrationUtil.getPlatformVersion(sql))
         tester.onTearDown()
     }
 
@@ -85,12 +82,12 @@ class JobDataMapTest {
         // Build properties
         def Properties properties = buildProperties();
 
-        def String result = MigrationUtil.getAndPrintProperty(properties, "name");
+        def String result = MigrationUtil.getAndPrintProperty(properties, "name", true);
         assertEquals("Linux", result);
         // Get output
         baos.flush();
         def String standardOutput = baos.toString().replaceAll(System.getProperty("line.separator"), "");
-        assertEquals("\t-name = Linux", standardOutput);
+        assertEquals("name = Linux", standardOutput);
     }
 
 
@@ -102,13 +99,13 @@ class JobDataMapTest {
         // Build properties
         def Properties properties = buildProperties();
 
-        def String result = MigrationUtil.getAndPrintProperty(properties, "os.name");
         def String propertyName = System.getProperty("os.name");
+        def String result = MigrationUtil.getAndPrintProperty(properties, "os.name", true);
         assertEquals(propertyName, result);
         // Get output
         baos.flush();
         def String standardOutput = baos.toString().replaceAll(System.getProperty("line.separator"), "");
-        assertEquals("\t-os.name = " + propertyName, standardOutput);
+        assertEquals("os.name = " + propertyName, standardOutput);
     }
 
     @Test
@@ -120,12 +117,12 @@ class JobDataMapTest {
         def Properties properties = new Properties();
         properties.setProperty("name", "Linux \t");
 
-        def String result = MigrationUtil.getAndPrintProperty(properties, "name");
+        def String result = MigrationUtil.getAndPrintProperty(properties, "name", true);
         assertEquals("Linux", result);
         // Get output
         baos.flush();
         def String standardOutput = baos.toString().replaceAll(System.getProperty("line.separator"), "");
-        assertEquals("\t-name = Linux", standardOutput);
+        assertEquals("name = Linux", standardOutput);
     }
 
 
@@ -164,7 +161,7 @@ class JobDataMapTest {
         System.setOut(new PrintStream(baos));
 
         try {
-            MigrationUtil.getAndPrintProperty(properties, propertyName);
+            MigrationUtil.getAndPrintProperty(properties, propertyName, true);
         } finally {
             // Get output
             baos.flush();
@@ -190,13 +187,15 @@ class JobDataMapTest {
         System.setOut(new PrintStream(baos));
         def PrintStream stdout = System.out;
 
-        def PrintStream oldPrintStream = MigrationUtil.setSystemOutWithTab(3);
-        assertEquals(stdout, oldPrintStream);
-        println "plop"
+        def PrintStream oldPrintStream = MigrationUtil.executeWrappedWithTabs {
+            MigrationUtil.executeWrappedWithTabs {
+                MigrationUtil.executeWrappedWithTabs { println "plop" }
+            }
+        }
         // Get output
         baos.flush();
         def String standardOutput = baos.toString().replaceAll(System.getProperty("line.separator"), "");
-        assertEquals("   |   |   | plop", standardOutput);
+        assertEquals(" |  |  | plop", standardOutput);
 
         // Clean up
         System.setOut(stdout);
@@ -209,14 +208,11 @@ class JobDataMapTest {
         System.setOut(new PrintStream(baos));
         def PrintStream stdout = System.out;
 
-        def PrintStream oldPrintStream = MigrationUtil.setSystemOutWithTab(0);
-
-        assertEquals(stdout, oldPrintStream);
-        println "plop"
+        def PrintStream oldPrintStream = MigrationUtil.executeWrappedWithTabs { println "plop" }
         // Get output
         baos.flush();
         def String standardOutput = baos.toString().replaceAll(System.getProperty("line.separator"), "");
-        assertEquals("plop", standardOutput);
+        assertEquals(" | plop", standardOutput);
 
         // Clean up
         System.setOut(stdout);

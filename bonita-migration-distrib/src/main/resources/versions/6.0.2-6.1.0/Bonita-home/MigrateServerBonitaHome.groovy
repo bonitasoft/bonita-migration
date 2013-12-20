@@ -2,7 +2,7 @@ import org.bonitasoft.migration.core.MigrationUtil;
 
 def currentDir = ""
 
-def File newServerBonitaHome = new File(feature, "bonita/server/");
+def File newServerBonitaHome = new File(newBonitaHome, "/server/");
 def File oldServerBonitaHome = new File(bonitaHome, "/server/");
 
 currentDir = "/platform/conf"

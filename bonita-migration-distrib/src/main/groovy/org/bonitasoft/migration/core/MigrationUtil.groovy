@@ -94,6 +94,7 @@ public class MigrationUtil {
         }
         def String property = System.getProperty(propertyName);
         if(property != null){
+            println "" + propertyName + " = " + property
             return property
         }
         property = properties.getProperty(propertyName);
@@ -107,25 +108,6 @@ public class MigrationUtil {
         }
     }
 
-    /**
-     *
-     * Wrap the current system.out in order to display tabulation and a pype at begining of the line
-     * @param nbTabs
-     *      Number of tabulations to display
-     * @return Old System.out
-     * @since 6.1
-     */
-    public static PrintStream setSystemOutWithTab(int nbTabs){
-        PrintStream stdout = System.out;
-        System.setOut(new PrintStream(stdout){
-                    @Override
-                    public void println(String x) {
-                        super.print(" | ")
-                        super.println(x)
-                    }
-                })
-        return stdout;
-    }
 
     /**
      *
