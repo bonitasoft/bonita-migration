@@ -50,7 +50,7 @@ public class MigrationRunner {
 
         PrintStream stdout = MigrationUtil.setSystemOutWithTab(1);
         def String migrationVersionFolder = "versions" + MigrationUtil.FILE_SEPARATOR + sourceVersion + "-" + targetVersion + MigrationUtil.FILE_SEPARATOR
-        migrateDatabase(gse, migrationVersionFolder)
+        //        migrateDatabase(gse, migrationVersionFolder)
         migrateBonitaHome(gse, migrationVersionFolder)
         System.setOut(stdout);
 

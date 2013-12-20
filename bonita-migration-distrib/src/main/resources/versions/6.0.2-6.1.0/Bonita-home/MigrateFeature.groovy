@@ -6,7 +6,15 @@ if(!MigrationUtil.isAutoAccept()){
 }
 println ""
 
-def binding = new Binding(["bonitaHome":bonitaHome, "feature":feature, "startMigrationDate":startMigrationDate]);
+//the new bonita home
+def newBonitaHome = feature.listFiles().findAll { it.isDirectory() && it.exists() && it.getName().startsWith("bonita")}[0]
+def binding = new Binding(["bonitaHome":bonitaHome, "feature":feature, "newBonitaHome":newBonitaHome, "startMigrationDate":startMigrationDate]);
+//extra setup of bonita home
+def setupScript = new File(feature, "setup.groovy")
+if(setupScript.exists()){
+    println "executing setup of bonita home"
+    gse.run(setupScript.getPath(), binding)
+}
 
 // Migration of client bonita home
 println "[ Migrating <Client bonita home> 1/2 ]"
