@@ -238,7 +238,7 @@ public class MigrationRunner {
 
         println "$description :"
         println ""
-        MigrationUtil.executeWrappedWithTabs { closure.call(folder) }
+        IOUtil.executeWrappedWithTabs { closure.call(folder) }
     }
     
     private migrateFeature(GroovyScriptEngine gse, File file, Binding binding){

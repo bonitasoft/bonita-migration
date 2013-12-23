@@ -248,18 +248,17 @@ public class MigrationUtil {
         if (fromDir == null || toDir == null){
             throw new IllegalArgumentException("Can't execute migrateDirectory method with arguments : fromDir = " + fromDir + ", toDir = " + toDir);
         }
-        if(deleteOldDirectory){
-            println "Replacing all content of $toDir..."
-        }else{
-            println "Adding/overwriting content in $toDir..."
-        }
         def fileFromDir = new File(fromDir);
         def fileToDir = new File(toDir);
+        
         if (!fileFromDir.exists() || !fileFromDir.isDirectory()) {
             throw new IllegalStateException("Migration failed. Source folder does not exist : " + fromDir)
         }
-        if (deleteOldDirectory && !(fileToDir.deleteDir())) {
-            throw new IllegalStateException("Migration failed. Unable to delete : " + toDir)
+        
+        if(!deleteOldDirectory){
+            println "Adding/overwriting content in $toDir..."
+        } else {
+            IOUtil.deleteDirectory(fileToDir);
         }
         IOUtil.copyDirectory(fileFromDir, fileToDir)
     }

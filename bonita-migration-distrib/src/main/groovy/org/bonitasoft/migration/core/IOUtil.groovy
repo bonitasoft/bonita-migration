@@ -58,6 +58,18 @@ public class IOUtil {
         System.setOut(stdout);
     }
     
+    public static void deleteDirectory(File dir){
+        if (dir == null){
+            throw new IllegalArgumentException("Can't execute migrateDirectory method with arguments : dir = " + dir);
+        }
+        
+        println "Replacing all content of $dir..."
+        
+        if (!(dir.deleteDir())) {
+            throw new IllegalStateException("Migration failed. Unable to delete : " + dir)
+        }
+    }
+    
     public static void copyDirectory(File srcDir, File destDir) throws IOException {
         if (!destDir.exists()){
             if (destDir.mkdirs() == false) {
