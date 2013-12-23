@@ -70,6 +70,7 @@ public class MigrationRunner {
             def newBonitaHome = bonitaHomeMigrationFolder.listFiles().findAll { it.isDirectory() && it.exists() && it.getName().startsWith("bonita")}[0]
             migrateDatabase(gse, migrationVersionFolder, newBonitaHome)
             migrateBonitaHome(gse, migrationVersionFolder, bonitaHomeMigrationFolder, newBonitaHome)
+            changePlatformVersion(transition.getTarget())
         }
 
         def end = new Date()
@@ -210,6 +211,12 @@ public class MigrationRunner {
         println ""
         MigrationUtil.executeWrappedWithTabs { closure.call(folder) }
     }
+    public changePlatformVersion(String version){
+        println "Change platform version in database to $version"
+        sql.executeUpdate("UPDATE platform SET previousVersion = version");
+        sql.executeUpdate("UPDATE platform SET version = $version")
+    }
+
 
     public migrateDatabase(GroovyScriptEngine gse, String migrationVersionFolder, File newBonitaHome) {
         migrateFolder(migrationVersionFolder, "Database", "Migration of database") { File folder ->
