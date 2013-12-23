@@ -36,9 +36,15 @@ if (tenantsClientDir.exists()) {
 
                 currentDir = "/work/icons/profiles"
                 MigrationUtil.migrateDirectory(newClientBonitaHome.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir, true)
-
+                
                 currentDir = "/work/looknfeel"
                 MigrationUtil.migrateDirectory(newClientBonitaHome.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir, true)
+                
+                currentDir = "/work/reports"
+                fromDir = newClientBonitaHome.path + "/platform/tenant-template" + currentDir
+                if(new File(fromDir).exists()){
+                    MigrationUtil.migrateDirectory(fromDir, tenant.path + currentDir, true)
+                }
             }
         }
     }
