@@ -72,6 +72,7 @@ public class MigrationRunner {
             def newBonitaHome = bonitaHomeMigrationFolder.listFiles().findAll { it.isDirectory() && it.exists() && it.getName().startsWith("bonita")}[0]
             migrateDatabase(gse, migrationVersionFolder, newBonitaHome)
             migrateBonitaHome(gse, migrationVersionFolder, bonitaHomeMigrationFolder, newBonitaHome)
+            changePlatformVersion(transition.getTarget())
         }
 
         def end = new Date()
@@ -203,7 +204,13 @@ public class MigrationRunner {
         return new TransitionGraph(dirNames);
     }
 
-    void migrateDatabase(GroovyScriptEngine gse, String migrationVersionFolder, File newBonitaHome) {
+    public changePlatformVersion(String version){
+        println "Change platform version in database to $version"
+        sql.executeUpdate("UPDATE platform SET previousVersion = version");
+        sql.executeUpdate("UPDATE platform SET version = $version")
+    }
+
+    public migrateDatabase(GroovyScriptEngine gse, String migrationVersionFolder, File newBonitaHome) {
         migrateFolder(migrationVersionFolder, "Database", "Migration of database") { File folder ->
             def features = []
             def files = folder.listFiles()
@@ -230,7 +237,7 @@ public class MigrationRunner {
         }
     }
 
-    private void migrateFolder(String migrationVersionFolder, String folderName, String description, Closure closure){
+    void migrateFolder(String migrationVersionFolder, String folderName, String description, Closure closure){
         def folder = new File(migrationVersionFolder + folderName)
         if(!folder.exists()){
             throw new IllegalStateException(folder.absolutePath + " doesn't exist.")
@@ -238,7 +245,7 @@ public class MigrationRunner {
 
         println "$description :"
         println ""
-        IOUtil.executeWrappedWithTabs { closure.call(folder) }
+        MigrationUtil.executeWrappedWithTabs { closure.call(folder) }
     }
     
     private migrateFeature(GroovyScriptEngine gse, File file, Binding binding){
