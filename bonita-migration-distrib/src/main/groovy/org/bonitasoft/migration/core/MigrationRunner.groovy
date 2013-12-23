@@ -18,7 +18,6 @@ import groovy.time.TimeCategory
 
 
 
-
 /**
  *
  * Launched by Migration.groovy
@@ -203,16 +202,6 @@ public class MigrationRunner {
         return new TransitionGraph(dirNames);
     }
 
-    void migrateFolder(String migrationVersionFolder, String folderName, String description, Closure closure){
-        def folder = new File(migrationVersionFolder + folderName)
-        if(!folder.exists()){
-            throw new IllegalStateException(folder.absolutePath + " doesn't exist.")
-        }
-
-        println "$description: "
-        println ""
-        MigrationUtil.executeWrappedWithTabs { closure.call(folder) }
-    }
     public changePlatformVersion(String version){
         sql.executeUpdate("UPDATE platform SET previousVersion = version");
         sql.executeUpdate("UPDATE platform SET version = $version")
@@ -245,6 +234,17 @@ public class MigrationRunner {
             def binding = new Binding(["bonitaHome":bonitaHome, "feature":folder, "startMigrationDate":startMigrationDate, "newBonitaHome":newBonitaHome, "gse":gse]);
             migrateFeature(gse, folder, binding);
         }
+    }
+
+    void migrateFolder(String migrationVersionFolder, String folderName, String description, Closure closure){
+        println "$description:"
+        println ""
+        def folder = new File(migrationVersionFolder + folderName)
+        if(!folder.exists()){
+            println "Nothing to do"
+            return;
+        }
+        MigrationUtil.executeWrappedWithTabs { closure.call(folder) }
     }
 
     private migrateFeature(GroovyScriptEngine gse, File file, Binding binding){
