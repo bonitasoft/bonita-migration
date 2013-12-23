@@ -15,9 +15,10 @@ package org.bonitasoft.migration.core
 
 import groovy.sql.Sql
 import groovy.time.TimeCategory
-import org.bonitasoft.migration.core.graph.TransitionGraph
-import org.bonitasoft.migration.core.graph.Transition
+
 import org.bonitasoft.migration.core.graph.Path
+import org.bonitasoft.migration.core.graph.Transition
+import org.bonitasoft.migration.core.graph.TransitionGraph
 
 
 
@@ -135,7 +136,7 @@ public class MigrationRunner {
         def String platformVersionInBonitaHome = versionFile.exists()?versionFile.text:null;
         return checkSourceVersion(platformVersionInDatabase, platformVersionInBonitaHome, givenSourceVersion);
     }
-    
+
     String checkSourceVersion(String platformVersionInDatabase, String platformVersionInBonitaHome, String givenSourceVersion){
         def String sourceVersion = null
         def String detectedVersion = null;
@@ -238,16 +239,16 @@ public class MigrationRunner {
     }
 
     void migrateFolder(String migrationVersionFolder, String folderName, String description, Closure closure){
-        def folder = new File(migrationVersionFolder + folderName)
-        if(!folder.exists()){
-            throw new IllegalStateException(folder.absolutePath + " doesn't exist.")
-        }
-
         println "$description :"
         println ""
-        MigrationUtil.executeWrappedWithTabs { closure.call(folder) }
+        def folder = new File(migrationVersionFolder + folderName)
+        if(!folder.exists()){
+            println "Nothing to do"
+            return;
+        }
+        IOUtil.executeWrappedWithTabs { closure.call(folder) }
     }
-    
+
     private migrateFeature(GroovyScriptEngine gse, File file, Binding binding){
         new File(file, "Description.txt").eachLine{ line -> println "Description : " + line }
         MigrationUtil.executeMigration(gse, file, "MigrateFeature.groovy", binding, startMigrationDate)
