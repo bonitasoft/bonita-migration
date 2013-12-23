@@ -74,7 +74,7 @@ public class MigrationRunner {
 
         def end = new Date()
         println "\nMigration successfully completed, in " + TimeCategory.minus(end, startMigrationDate);
-        MigrationUtil.getAndDisplayPlatformVersion(sql);
+        println "The version of your bonita installation is now: " +MigrationUtil.getPlatformVersion(sql);
         sql.close()
     }
 
@@ -103,16 +103,15 @@ public class MigrationRunner {
             return false;
         }
         //all steps from a version to an other
-        println "List of all possible migration starting from your version:"
         List<Path> paths = graph.getPaths(sourceVersion)
-        paths.each {
-            println it.toString();
-        }
-        println ""
-        //check if we can migrate to an other version here
-        if(paths.isEmpty()){
-            println "no migration possible starting from version $sourceVersion, possible paths are:"
-            paths.each { println "${it.key} --> ${it.value}" }
+        if(!paths.isEmpty()){
+            println "List of all possible migration starting from your version:"
+            paths.each {
+                println it.toString();
+            }
+            println ""
+        }else{
+            println "no migration possible starting from version $sourceVersion"
             return null;
         }
         targetVersion = checkTargetVersion(sourceVersion, targetVersion, paths);
