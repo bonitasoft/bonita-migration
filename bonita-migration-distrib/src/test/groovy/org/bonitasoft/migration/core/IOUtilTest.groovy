@@ -10,39 +10,40 @@ class IOUtilTest {
     def final static String FILE_SEPARATOR = System.getProperty("file.separator");
 
     @Test()
-    public void setSystemOutWithTab(){
+    public void executeWrappedWithTabs(){
+        def PrintStream stdout = System.out;
+        
         // To capture output
         def ByteArrayOutputStream baos = new ByteArrayOutputStream();
         System.setOut(new PrintStream(baos));
-        def PrintStream stdout = System.out;
 
-        def PrintStream oldPrintStream = IOUtil.setSystemOutWithTab(3);
-        assertEquals(stdout, oldPrintStream);
-        println "plop"
+        IOUtil.executeWrappedWithTabs {
+            IOUtil.executeWrappedWithTabs {
+                IOUtil.executeWrappedWithTabs { println "plop" }
+            }
+        }
         // Get output
         baos.flush();
         def String standardOutput = baos.toString().replaceAll(System.getProperty("line.separator"), "");
-        assertEquals("   |   |   | plop", standardOutput);
+        assertEquals(" |  |  | plop", standardOutput);
 
         // Clean up
         System.setOut(stdout);
     }
 
     @Test()
-    public void setSystemOutWithoutTab(){
+    public void executeWrappedWithOneTab(){
+        def PrintStream stdout = System.out;
+        
         // To capture output
         def ByteArrayOutputStream baos = new ByteArrayOutputStream();
         System.setOut(new PrintStream(baos));
-        def PrintStream stdout = System.out;
-
-        def PrintStream oldPrintStream = IOUtil.setSystemOutWithTab(0);
-
-        assertEquals(stdout, oldPrintStream);
-        println "plop"
+       
+        IOUtil.executeWrappedWithTabs { println "plop" }
         // Get output
         baos.flush();
         def String standardOutput = baos.toString().replaceAll(System.getProperty("line.separator"), "");
-        assertEquals("plop", standardOutput);
+        assertEquals(" | plop", standardOutput);
 
         // Clean up
         System.setOut(stdout);

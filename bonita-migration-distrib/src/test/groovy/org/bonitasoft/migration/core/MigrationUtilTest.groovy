@@ -1,13 +1,42 @@
 package org.bonitasoft.migration.core;
 
 import static org.junit.Assert.*
+import groovy.sql.Sql
 
 import org.bonitasoft.migration.core.exception.NotFoundException
+import org.dbunit.JdbcDatabaseTester
 import org.junit.Test
 
 class MigrationUtilTest {
 
     def final static String FILE_SEPARATOR = System.getProperty("file.separator");
+    final static DB_CONFIG = [
+        'jdbc:h2:mem:test',
+        'sa',
+        ''
+    ];
+    final static DB_DRIVER = 'org.h2.Driver'
+
+
+    @Test
+    public void check_get_platform_version(){
+        Sql sql
+        sql = Sql.newInstance(*DB_CONFIG, DB_DRIVER);
+        sql.execute('''CREATE TABLE platform (
+  id BIGINT NOT NULL,
+  version VARCHAR(50) NOT NULL,
+  previousVersion VARCHAR(50) NOT NULL,
+  initialVersion VARCHAR(50) NOT NULL,
+  created BIGINT NOT NULL,
+  createdBy VARCHAR(50) NOT NULL,
+  PRIMARY KEY (id)
+);''');
+        sql.executeInsert("insert into platform values(1,'the_version','the_previous_version','the_initial_version',1,1)")
+        JdbcDatabaseTester tester = new JdbcDatabaseTester(DB_DRIVER, *DB_CONFIG)
+
+        assertEquals("the_version",MigrationUtil.getPlatformVersion(sql))
+        tester.onTearDown()
+    }
 
     @Test
     public void getProperties(){
@@ -53,12 +82,12 @@ class MigrationUtilTest {
         // Build properties
         def Properties properties = buildProperties();
 
-        def String result = MigrationUtil.getAndPrintProperty(properties, "name");
+        def String result = MigrationUtil.getAndPrintProperty(properties, "name", true);
         assertEquals("Linux", result);
         // Get output
         baos.flush();
         def String standardOutput = baos.toString().replaceAll(System.getProperty("line.separator"), "");
-        assertEquals("\t-name = Linux", standardOutput);
+        assertEquals("name = Linux", standardOutput);
     }
 
 
@@ -70,13 +99,13 @@ class MigrationUtilTest {
         // Build properties
         def Properties properties = buildProperties();
 
-        def String result = MigrationUtil.getAndPrintProperty(properties, "os.name");
         def String propertyName = System.getProperty("os.name");
+        def String result = MigrationUtil.getAndPrintProperty(properties, "os.name", true);
         assertEquals(propertyName, result);
         // Get output
         baos.flush();
         def String standardOutput = baos.toString().replaceAll(System.getProperty("line.separator"), "");
-        assertEquals("\t-os.name = " + propertyName, standardOutput);
+        assertEquals("os.name = " + propertyName, standardOutput);
     }
 
     @Test
@@ -88,12 +117,12 @@ class MigrationUtilTest {
         def Properties properties = new Properties();
         properties.setProperty("name", "Linux \t");
 
-        def String result = MigrationUtil.getAndPrintProperty(properties, "name");
+        def String result = MigrationUtil.getAndPrintProperty(properties, "name", true);
         assertEquals("Linux", result);
         // Get output
         baos.flush();
         def String standardOutput = baos.toString().replaceAll(System.getProperty("line.separator"), "");
-        assertEquals("\t-name = Linux", standardOutput);
+        assertEquals("name = Linux", standardOutput);
     }
 
 
@@ -132,7 +161,7 @@ class MigrationUtilTest {
         System.setOut(new PrintStream(baos));
 
         try {
-            MigrationUtil.getAndPrintProperty(properties, propertyName);
+            MigrationUtil.getAndPrintProperty(properties, propertyName, true);
         } finally {
             // Get output
             baos.flush();
@@ -150,6 +179,8 @@ class MigrationUtilTest {
         assertEquals(1, result.size());
         assertEquals("UPDATE platform SET version = '6.1.0';", result.get(0));
     }
+
+   
 
     @Test()
     public void printSuccessMigration(){
@@ -198,7 +229,6 @@ class MigrationUtilTest {
         assertEquals(1, result.size());
         assertEquals("plop", result.get(0));
     }
-
 
     @Test()
     public void getSqlContentToSplit(){
@@ -268,4 +298,6 @@ class MigrationUtilTest {
 
         MigrationUtil.getSqlFile(folder, dbVendor, suffix);
     }
+
+
 }

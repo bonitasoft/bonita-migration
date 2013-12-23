@@ -11,15 +11,6 @@ sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
 ext{
-    def matrix = System.getProperty("matrix")
-    if( matrix != null){
-        matrix.split("@@@").each {
-            key = it.substring(0, it.indexOf("="))
-            value = it.substring(it.indexOf("=")+1)
-            println "Using matrix configuration: key=<$key> and value=<$value>"
-            System.setProperty(key, value)
-        }
-    }
     sourceversion = System.getProperty("source.version","6.0.2")
     targetversion = System.getProperty("target.version","6.1.0")
     dbvendor = System.getProperty("db.vendor", "mysql")
@@ -49,15 +40,19 @@ configurations {
 repositories {
     flatDir name: 'localRepository', dirs: 'lib'
     mavenLocal()
-    //used in jenkins: add in system property $ {JENKINS_HOME}/userContent/m2_repo
-    if(System.getProperty("maven.repository")!=null){
-        def customRepo = System.getProperty("maven.repository")
-        println "using custom maven repository: $customRepo"
-        maven { url customRepo }
-    }else{
-        println "no custom repository defined, use system property 'maven.repository' to add one"
+    def customMavenRepo = System.getProperty("maven.repository")
+    //used in jenkins: add in system property $ {JENKINS_HOME}/userContent/m2_repo and archiva
+    if(customMavenRepo!=null){
+        println "using custom maven.repository: "+customMavenRepo
+        maven { url customMavenRepo}
     }
-    mavenCentral()
+    def customMavenRepoExtra = System.getProperty("maven.repository.extra")
+    if(customMavenRepoExtra!=null){
+        println "using custom maven.repository.extra: "+customMavenRepoExtra
+        maven { url customMavenRepoExtra}
+    }
+
+mavenCentral()
 }
 dependencies {
     sourcefiller "org.bonitasoft.migration:bonita-migration-db-filler-${sourceversion}:1.0.0-SNAPSHOT"
@@ -108,7 +103,7 @@ task cleardb<<{
             throw new IllegalStateException("must specify db.root.user and db.root.password for sqlserver")
         }
 
-        def parsedUrl = (dburl =~ /(jdbc:\w+:\/\/)([\w\d\.]+):(\d+);database=([\w-_\d]+).*/)
+        def parsedUrl = (dburl =~ /(jdbc:\w+:\/\/)([\w\d\.-]+):(\d+);database=([\w-_\d]+).*/)
         project.serverName = parsedUrl[0][2]
         project.portNumber = parsedUrl[0][3]
         project.databaseName = parsedUrl[0][4]
@@ -126,7 +121,7 @@ task cleardb<<{
         sql.close()
     }else{
         println "drop and create: $dburl"
-        def parsedUrl = (dburl =~ /(jdbc:\w+:\/\/)([\w\d\.]+):(\d+)\/([\w-_\d]+).*/)
+        def parsedUrl = (dburl =~ /(jdbc:\w+:\/\/)([\w\d\.-]+):(\d+)\/([\w-_\d]+).*/)
         project.serverName = parsedUrl[0][2]
         project.portNumber = parsedUrl[0][3]
         project.databaseName = parsedUrl[0][4]

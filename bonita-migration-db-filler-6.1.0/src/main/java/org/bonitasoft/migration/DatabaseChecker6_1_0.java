@@ -60,11 +60,11 @@ public class DatabaseChecker6_1_0 {
 
     private static ClassPathXmlApplicationContext springContext;
 
-    private static ProcessAPI processAPI;
+    protected static ProcessAPI processAPI;
 
-    private static IdentityAPI identityApi;
+    protected static IdentityAPI identityApi;
 
-    private static APISession session;
+    protected static APISession session;
 
     public static void main(final String[] args) throws Exception {
         JUnitCore.main(DatabaseChecker6_1_0.class.getName());

@@ -13,11 +13,14 @@
  **/
 package org.bonitasoft.migration.core
 
+import groovy.lang.Closure;
 import groovy.sql.Sql
 import groovy.time.TimeCategory
 
 import java.io.File;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectStreamClass;
 import java.io.PrintStream;
 import java.sql.ResultSet
 
@@ -34,31 +37,25 @@ import org.bonitasoft.migration.core.exception.NotFoundException
  */
 public class IOUtil {
 
-    private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
+    private final static int DEFAULT_BUFFER_SIZE = 1024 * 4;
+    
+    public final static String LINE_SEPARATOR = System.getProperty("line.separator");
     
     /**
      *
-     * Wrap the current system.out in order to display tabulation and a pype at begining of the line
-     * @param nbTabs
-     *      Number of tabulations to display
-     * @return Old System.out
-     * @since 6.1
+     *  Wrap the system out with ' | ' when executing the closure
      */
-    public static PrintStream setSystemOutWithTab(int nbTabs){
+    public static void executeWrappedWithTabs(Closure closure){
         PrintStream stdout = System.out;
         System.setOut(new PrintStream(stdout){
                     @Override
                     public void println(String x) {
-                        if (nbTabs != 0){
-                            for (int i = 0; i < nbTabs; i++){
-                                super.print("   |");
-                            }
-                            super.print(" ");
-                        }
-                        super.println(x);
+                        stdout.print(" | ")
+                        stdout.println(x)
                     }
-                });
-        return stdout;
+                })
+        closure.call()
+        System.setOut(stdout);
     }
     
     public static void copyDirectory(File srcDir, File destDir) throws IOException {
@@ -81,7 +78,7 @@ public class IOUtil {
             if (files[i].isDirectory()) {
                 copyDirectory(files[i], copiedFile);
             } else {
-               copyFile(files[i], copiedFile);
+                copyFile(files[i], copiedFile);
             }
         }
     }
@@ -127,7 +124,7 @@ public class IOUtil {
         destFile.setLastModified(srcFile.lastModified());
     }
 
-    public static Object deserialize(byte[] bytes, ClassLoader theClassLoader){
+   public static Object deserialize(byte[] bytes, ClassLoader theClassLoader){
         //had to override the method of objectinputstream to be able to give the object classloader in input
         ObjectInputStream input = new ObjectInputStream(new ByteArrayInputStream(bytes)){
                     protected Class<?> resolveClass(ObjectStreamClass objectStreamClass) throws IOException, ClassNotFoundException {
@@ -150,4 +147,37 @@ public class IOUtil {
         return baos.toByteArray();
     }
     
+    static void printInRectangle(String... lines){
+        def maxSize = lines.collect{ it.size() }.max() +2
+        printLine(maxSize)
+        lines.each {
+            int spaces = maxSize - it.size()
+            print "|"
+            printSpaces((int)(spaces/2))
+            print it
+            printSpaces(((int)(spaces/2)) + spaces%2)
+            print "|"
+            print LINE_SEPARATOR
+        }
+        printLine(maxSize)
+    }
+
+    static printSpaces(int size){
+        int i = 0;
+        while (i<size) {
+            i++;
+            print ' '
+        }
+    }
+    
+    static printLine(int size){
+        print '+'
+        int i = 0;
+        while (i<size) {
+            i++;
+            print '-'
+        }
+        print '+'
+        print LINE_SEPARATOR
+    }
 }
