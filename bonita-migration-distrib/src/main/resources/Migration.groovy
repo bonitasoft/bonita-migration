@@ -1,3 +1,6 @@
+import java.io.IOException;
+import java.io.OutputStream;
+
 import groovy.io.FileType
 
 /**
@@ -13,7 +16,6 @@ import groovy.io.FileType
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
-;
 
 
 
@@ -64,6 +66,9 @@ public class Migration {
             }
             return root;
         };
+        def logInFile = new FileOutputStream(new File("out.log")
+        System.setOut(new PrintStream(new SplitPrintStream(System.out, logInFile ))));
+        System.setErr(new PrintStream(new SplitPrintStream(System.err, logInFile ))));
         def classLoader = getRootParent(this.class.classLoader);
         new File("lib").eachFile(FileType.FILES, {
             if(it.getName().endsWith(".jar") && ! it.getName().startsWith("groovy-all")){//groovy-all added by the .sh/.bat
@@ -76,5 +81,30 @@ public class Migration {
         def instance = runner.newInstance();
         def method = runner.getMethod("execute", GroovyScriptEngine.class)
         method.invoke(instance, gse);
+    }
+    public class SplitPrintStream extends OutputStream {
+
+        private final OutputStream out1
+        private final OutputStream out2
+        public SplitPrintStream(OutputStream out1, OutputStream out2){
+            this.out2 = out2
+            this.out1 = out1
+        }
+        @Override
+        public void write(int b) throws IOException {
+            out1.write(b)
+            out2.write(b)
+        }
+        @Override
+        public void flush() throws IOException {
+            out1.flush();
+            out2.flush();
+        }
+
+        @Override
+        public void close() throws IOException {
+            out1.close()
+            out2.close()
+        }
     }
 }
