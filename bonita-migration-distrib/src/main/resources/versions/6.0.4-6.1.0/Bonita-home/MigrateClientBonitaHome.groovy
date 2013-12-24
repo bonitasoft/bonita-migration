@@ -23,7 +23,7 @@ if (tenantsClientDir.exists()) {
         println "No tenants found."
     } else {
         println "Executing update for each tenant : " + tenants;
-        tenantsClientDir.eachFile { tenant ->
+        tenantsClientDir.eachDir { tenant ->
             println "For tenant : " + tenant.name
             PrintStream stdout = IOUtil.executeWrappedWithTabs {
                 currentDir = "/conf"
