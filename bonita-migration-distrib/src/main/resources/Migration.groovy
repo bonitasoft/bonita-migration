@@ -67,8 +67,8 @@ public class Migration {
             return root;
         };
         def logInFile = new FileOutputStream(new File("out.log"))
-        System.setOut(new PrintStream(new SplitPrintStream(System.out, logInFile ))));
-        System.setErr(new PrintStream(new SplitPrintStream(System.err, logInFile ))));
+        System.setOut(new PrintStream(new SplitPrintStream(System.out, logInFile )))
+        System.setErr(new PrintStream(new SplitPrintStream(System.err, logInFile )))
         def classLoader = getRootParent(this.class.classLoader);
         new File("lib").eachFile(FileType.FILES, {
             if(it.getName().endsWith(".jar") && ! it.getName().startsWith("groovy-all")){//groovy-all added by the .sh/.bat
