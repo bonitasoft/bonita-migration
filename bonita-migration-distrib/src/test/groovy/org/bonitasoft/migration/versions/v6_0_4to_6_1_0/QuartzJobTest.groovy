@@ -3,7 +3,7 @@ package org.bonitasoft.migration.versions.v6_0_4to_6_1_0;
 import static org.junit.Assert.*
 
 import org.bonitasoft.engine.scheduler.JobIdentifier
-import org.bonitasoft.migration.core.MigrationUtil
+import org.bonitasoft.migration.core.IOUtil
 import org.junit.Test
 import org.quartz.JobDataMap
 
@@ -447,7 +447,7 @@ public class QuartzJobTest {
 
     @Test
     public void deserialize() throws IOException, ClassNotFoundException {
-        JobDataMap map = MigrationUtil.deserialize(jobDataMapBytes, JobIdentifier.class.getClassLoader());
+        JobDataMap map = IOUtil.deserialize(jobDataMapBytes, JobIdentifier.class.getClassLoader());
         println map
         JobIdentifier jobIdent = map.get("jobIdentifier");
         assertEquals(1,jobIdent.getId());
@@ -458,9 +458,9 @@ public class QuartzJobTest {
         newMap.put("jobId", 1);
         newMap.put("tenantId", 1);
         newMap.put("jobName", "BPMEventHandling");
-        byte[] out = MigrationUtil.serialize(newMap);
+        byte[] out = IOUtil.serialize(newMap);
 
-        map = MigrationUtil.deserialize(out,JobIdentifier.class.getClassLoader());
+        map = IOUtil.deserialize(out,JobIdentifier.class.getClassLoader());
         assertEquals(1,map.get("jobId"));
         assertEquals(1,map.get("tenantId"));
         assertEquals("BPMEventHandling",map.get("jobName"));

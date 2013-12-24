@@ -21,12 +21,15 @@ import java.sql.ResultSet
 import org.bonitasoft.migration.core.exception.MigrationException
 import org.bonitasoft.migration.core.exception.NotFoundException
 
+import org.bonitasoft.migration.core.IOUtil;
+
 
 /**
  *
  * Util classes that contains common methods for migration
  *
  * @author Baptiste Mesta
+ * @author Celine Souchet
  *
  */
 public class MigrationUtil {
@@ -49,16 +52,13 @@ public class MigrationUtil {
 
     public final static String AUTO_ACCEPT = "auto.accept"
 
-
     public final static String REQUEST_SEPARATOR = "@@"
 
-    public final static String LINE_SEPARATOR = System.getProperty("line.separator");
-
-
-    private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
-
-
     public static read = System.in.newReader().&readLine
+    
+    public static boolean isAutoAccept(){
+        return System.getProperty(MigrationUtil.AUTO_ACCEPT)=="true"
+    }
 
     /**
      * Load properties form the 'Config.properties' file inside the distribution
@@ -83,6 +83,7 @@ public class MigrationUtil {
         }
         return properties;
     }
+    
     /**
      * Get a single property and print it
      * First it try to get it from system (in order to override properties)
@@ -108,25 +109,6 @@ public class MigrationUtil {
         }
     }
 
-
-    /**
-     *
-     *  Wrap the system out with ' | ' when executing the closure
-     */
-    public static void executeWrappedWithTabs(Closure closure){
-        PrintStream stdout = System.out;
-
-        System.setOut(new PrintStream(stdout){
-                    @Override
-                    public void println(String x) {
-                        stdout.print(" | ")
-                        stdout.println(x)
-                    }
-                })
-        closure.call()
-        System.setOut(stdout);
-    }
-
     /**
      * Execute a feature migration script
      *
@@ -140,7 +122,7 @@ public class MigrationUtil {
      */
     public static executeMigration(GroovyScriptEngine gse, File file, String scriptName, Binding binding, Date startMigrationDate){
         def startDate = new Date();
-        executeWrappedWithTabs {
+        IOUtil.executeWrappedWithTabs {
             gse.run(new File(file, scriptName).getPath(), binding)
         }
         MigrationUtil.printSuccessMigration(startDate, startMigrationDate);
@@ -266,145 +248,19 @@ public class MigrationUtil {
         if (fromDir == null || toDir == null){
             throw new IllegalArgumentException("Can't execute migrateDirectory method with arguments : fromDir = " + fromDir + ", toDir = " + toDir);
         }
-        if(deleteOldDirectory){
-            println "Replacing all content of $toDir..."
-        }else{
-            println "Adding/overwriting content in $toDir..."
-        }
         def fileFromDir = new File(fromDir);
         def fileToDir = new File(toDir);
+        
         if (!fileFromDir.exists() || !fileFromDir.isDirectory()) {
             throw new IllegalStateException("Migration failed. Source folder does not exist : " + fromDir)
         }
-        if (deleteOldDirectory && !(fileToDir.deleteDir())) {
-            throw new IllegalStateException("Migration failed. Unable to delete : " + toDir)
+        
+        if(!deleteOldDirectory){
+            println "Adding/overwriting content in $toDir..."
+        } else {
+            IOUtil.deleteDirectory(fileToDir);
         }
-        copyDirectory(fileFromDir, fileToDir)
-    }
-
-    private static void copyDirectory(File srcDir, File destDir) throws IOException {
-        if (!destDir.exists()){
-            if (destDir.mkdirs() == false) {
-                throw new IOException("Destination '" + destDir + "' directory cannot be created");
-            }
-            destDir.setLastModified(srcDir.lastModified());
-            if (destDir.canWrite() == false) {
-                throw new IOException("Destination '" + destDir + "' cannot be written to");
-            }
-        }
-        // recurse
-        File[] files = srcDir.listFiles();
-        if (files == null) {  // null if security restricted
-            throw new IOException("Failed to list contents of " + srcDir);
-        }
-        for (int i = 0; i < files.length; i++) {
-            File copiedFile = new File(destDir, files[i].getName());
-            if (files[i].isDirectory()) {
-                copyDirectory(files[i], copiedFile);
-            } else {
-                copyFile(files[i], copiedFile);
-            }
-        }
-    }
-    private static void copyFile(File srcFile, File destFile) throws IOException {
-        if (destFile.exists() && !(destFile.delete())) {
-            throw new IllegalStateException("Migration failed. Unable to delete : " + destFile)
-        }
-
-        FileInputStream input = new FileInputStream(srcFile);
-        try {
-            FileOutputStream output = new FileOutputStream(destFile);
-            try {
-                byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
-                long count = 0;
-                int n = 0;
-                while (-1 != (n = input.read(buffer))) {
-                    output.write(buffer, 0, n);
-                    count += n;
-                }
-            } finally {
-                try {
-                    if (output != null) {
-                        output.close();
-                    }
-                } catch (IOException ioe) {
-                    // ignore
-                }
-            }
-        } finally {
-            try {
-                if (input != null) {
-                    input.close();
-                }
-            } catch (IOException ioe) {
-                // ignore
-            }
-        }
-        if (srcFile.length() != destFile.length()) {
-            throw new IOException("Failed to copy full contents from '" +
-            srcFile + "' to '" + destFile + "'");
-        }
-        destFile.setLastModified(srcFile.lastModified());
-    }
-
-    public static Object deserialize(byte[] bytes, ClassLoader theClassLoader){
-        //had to override the method of objectinputstream to be able to give the object classloader in input
-        ObjectInputStream input = new ObjectInputStream(new ByteArrayInputStream(bytes)){
-                    protected Class<?> resolveClass(ObjectStreamClass objectStreamClass) throws IOException, ClassNotFoundException {
-                        return Class.forName(objectStreamClass.getName(), true, theClassLoader);
-                    }
-                };
-        try {
-            return input.readObject();
-        } finally {
-            input.close();
-        }
-    }
-
-    public static byte[] serialize(Object object){
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ObjectOutputStream out;
-        out = new ObjectOutputStream(baos);
-        out.writeObject(object);
-        out.flush();
-        return baos.toByteArray();
-    }
-
-    public static boolean isAutoAccept(){
-        return System.getProperty(MigrationUtil.AUTO_ACCEPT)=="true"
-    }
-    static void printInRectangle(String... lines){
-        def maxSize = lines.collect{ it.size() }.max() +2
-        printLine(maxSize)
-        lines.each {
-            int spaces = maxSize - it.size()
-            print "|"
-            printSpaces((int)(spaces/2))
-            print it
-            printSpaces(((int)(spaces/2)) + spaces%2)
-            print "|"
-            print LINE_SEPARATOR
-        }
-        printLine(maxSize)
-
-    }
-
-    static printSpaces(int size){
-        int i = 0;
-        while (i<size) {
-            i++;
-            print ' '
-        }
-    }
-    static printLine(int size){
-        print '+'
-        int i = 0;
-        while (i<size) {
-            i++;
-            print '-'
-        }
-        print '+'
-        print LINE_SEPARATOR
+        IOUtil.copyDirectory(fileFromDir, fileToDir)
     }
 
     public static void  askIfWeContinue(){
@@ -417,6 +273,7 @@ public class MigrationUtil {
             }
         }
     }
+    
     public static String askForOptions(List<String> options){
         def input = null;
         while(true){

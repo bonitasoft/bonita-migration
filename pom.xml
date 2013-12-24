@@ -10,11 +10,12 @@
 		<module>bonita-migration-distrib</module>
 		<module>bonita-migration-db-filler-6.0.2</module>
 		<module>bonita-migration-db-filler-6.1.0</module>
+		<module>bonita-migration-db-filler-6.2.0</module>
 	</modules>
 
 	<dependencyManagement>
 		<dependencies>
-			<!-- bonita web -->
+			<!-- Bonita web -->
 			<dependency>
 				<groupId>org.bonitasoft.console</groupId>
 				<artifactId>bonita-home</artifactId>
@@ -26,6 +27,7 @@
 				<artifactId>groovy-all</artifactId>
 				<version>1.8.6</version>
 			</dependency>
+			<!-- Tests -->
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>

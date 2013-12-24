@@ -1,4 +1,5 @@
 import org.bonitasoft.migration.core.MigrationUtil;
+import org.bonitasoft.migration.core.IOUtil;
 
 def currentDir = ""
 
@@ -22,9 +23,9 @@ if (tenantsClientDir.exists()) {
         println "No tenants found."
     } else {
         println "Executing update for each tenant : " + tenants;
-        tenantsClientDir.eachFile { tenant ->
+        tenantsClientDir.eachDir { tenant ->
             println "For tenant : " + tenant.name
-            PrintStream stdout = MigrationUtil.executeWrappedWithTabs {
+            PrintStream stdout = IOUtil.executeWrappedWithTabs {
                 currentDir = "/conf"
                 MigrationUtil.migrateDirectory(newClientBonitaHome.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir, true)
 

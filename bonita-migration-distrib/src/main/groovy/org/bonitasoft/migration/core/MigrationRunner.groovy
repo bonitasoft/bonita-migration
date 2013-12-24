@@ -16,6 +16,9 @@ package org.bonitasoft.migration.core
 import groovy.sql.Sql
 import groovy.time.TimeCategory
 
+import org.bonitasoft.migration.core.graph.Path
+import org.bonitasoft.migration.core.graph.Transition
+import org.bonitasoft.migration.core.graph.TransitionGraph
 
 
 /**
@@ -39,7 +42,7 @@ public class MigrationRunner {
 
     public void execute(GroovyScriptEngine gse){
         println ''
-        MigrationUtil.printInRectangle("","Bonita BPM migration tool","",
+        IOUtil.printInRectangle("","Bonita BPM migration tool","",
                 "This tool will migrate your installation of Bonita BPM.",
                 "Both database and bonita home will be modified.",
                 "Please refer to the documentation for further steps to completely migrate your production environment.",
@@ -57,7 +60,7 @@ public class MigrationRunner {
         transitions.eachWithIndex { Transition transition, idx ->
             def sourceStepVersion = transition.source
             def targetStepVersion = transition.target
-            MigrationUtil.printInRectangle("Migration of version $sourceStepVersion to version $targetStepVersion",
+            IOUtil.printInRectangle("Migration of version $sourceStepVersion to version $targetStepVersion",
                     "migration number ${idx+1} of a total of ${transitions.size()}");
             MigrationUtil.askIfWeContinue()
 
@@ -75,8 +78,9 @@ public class MigrationRunner {
         }
 
         def end = new Date()
-        println "\nMigration successfully completed, in " + TimeCategory.minus(end, startMigrationDate);
-        println "The version of your bonita installation is now: " +MigrationUtil.getPlatformVersion(sql);
+        println "Migration successfully completed, in " + TimeCategory.minus(end, startMigrationDate);
+        println "The version of your Bonita BPM installation is now: " +MigrationUtil.getPlatformVersion(sql);
+        println ""
         sql.close()
     }
 
@@ -134,6 +138,7 @@ public class MigrationRunner {
         def String platformVersionInBonitaHome = versionFile.exists()?versionFile.text:null;
         return checkSourceVersion(platformVersionInDatabase, platformVersionInBonitaHome, givenSourceVersion);
     }
+
     String checkSourceVersion(String platformVersionInDatabase, String platformVersionInBonitaHome, String givenSourceVersion){
         def String sourceVersion = null
         def String detectedVersion = null;
@@ -208,7 +213,6 @@ public class MigrationRunner {
         println "Platform version in database changed to $version"
     }
 
-
     public migrateDatabase(GroovyScriptEngine gse, String migrationVersionFolder, File newBonitaHome) {
         migrateFolder(migrationVersionFolder, "Database", "Migration of database") { File folder ->
             def features = []
@@ -229,7 +233,7 @@ public class MigrationRunner {
         }
     }
 
-    public migrateBonitaHome(GroovyScriptEngine gse, String migrationVersionFolder, File bonitaHomeMigrationFolder, File newBonitaHome) {
+    void migrateBonitaHome(GroovyScriptEngine gse, String migrationVersionFolder, File bonitaHomeMigrationFolder, File newBonitaHome) {
         migrateFolder(migrationVersionFolder, "Bonita-home", "Migration of bonita home") { File folder ->
             def binding = new Binding(["bonitaHome":bonitaHome, "feature":folder, "startMigrationDate":startMigrationDate, "newBonitaHome":newBonitaHome, "gse":gse]);
             migrateFeature(gse, folder, binding);
@@ -244,7 +248,7 @@ public class MigrationRunner {
             println "Nothing to do"
             return;
         }
-        MigrationUtil.executeWrappedWithTabs { closure.call(folder) }
+        IOUtil.executeWrappedWithTabs { closure.call(folder) }
     }
 
     private migrateFeature(GroovyScriptEngine gse, File file, Binding binding){

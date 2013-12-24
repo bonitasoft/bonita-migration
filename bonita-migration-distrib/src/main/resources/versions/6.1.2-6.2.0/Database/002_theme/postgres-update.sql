@@ -1,0 +1,2 @@
+INSERT INTO theme (tenantId, id, isDefault, content, cssContent, type, lastUpdateDate)
+VALUES ( :tenantId, (SELECT coalesce(MAX(id) + 1, 1) FROM theme), true, ':content', ':cssContent', ':type', :lastUpdateDate);

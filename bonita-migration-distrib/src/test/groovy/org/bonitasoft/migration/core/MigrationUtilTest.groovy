@@ -180,43 +180,7 @@ class MigrationUtilTest {
         assertEquals("UPDATE platform SET version = '6.1.0';", result.get(0));
     }
 
-    @Test()
-    public void executeWrappedWithTabs(){
-        // To capture output
-        def ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(baos));
-        def PrintStream stdout = System.out;
-
-        def PrintStream oldPrintStream = MigrationUtil.executeWrappedWithTabs {
-            MigrationUtil.executeWrappedWithTabs {
-                MigrationUtil.executeWrappedWithTabs { println "plop" }
-            }
-        }
-        // Get output
-        baos.flush();
-        def String standardOutput = baos.toString().replaceAll(System.getProperty("line.separator"), "");
-        assertEquals(" |  |  | plop", standardOutput);
-
-        // Clean up
-        System.setOut(stdout);
-    }
-
-    @Test()
-    public void setSystemOutWithoutTab(){
-        // To capture output
-        def ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(baos));
-        def PrintStream stdout = System.out;
-
-        def PrintStream oldPrintStream = MigrationUtil.executeWrappedWithTabs { println "plop" }
-        // Get output
-        baos.flush();
-        def String standardOutput = baos.toString().replaceAll(System.getProperty("line.separator"), "");
-        assertEquals(" | plop", standardOutput);
-
-        // Clean up
-        System.setOut(stdout);
-    }
+   
 
     @Test()
     public void printSuccessMigration(){
@@ -265,7 +229,6 @@ class MigrationUtilTest {
         assertEquals(1, result.size());
         assertEquals("plop", result.get(0));
     }
-
 
     @Test()
     public void getSqlContentToSplit(){
