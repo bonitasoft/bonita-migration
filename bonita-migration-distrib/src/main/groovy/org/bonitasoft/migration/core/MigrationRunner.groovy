@@ -78,8 +78,9 @@ public class MigrationRunner {
         }
 
         def end = new Date()
-        println "\nMigration successfully completed, in " + TimeCategory.minus(end, startMigrationDate);
-        println "The version of your bonita installation is now: " +MigrationUtil.getPlatformVersion(sql);
+        println "Migration successfully completed, in " + TimeCategory.minus(end, startMigrationDate);
+        println "The version of your Bonita BPM installation is now: " +MigrationUtil.getPlatformVersion(sql);
+        println ""
         sql.close()
     }
 
