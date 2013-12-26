@@ -264,9 +264,9 @@ public class MigrationUtil {
     }
 
     public static void  askIfWeContinue(){
-        if(!MigrationUtil.isAutoAccept()){
-            print "Continue migration? (yes/no): "
-            String input = read()
+        if(!isAutoAccept()){
+            println "Continue migration? (yes/no): "
+            def String input = read();
             if(input != "yes"){
                 println "Migration cancelled"
                 System.exit(0);
@@ -280,8 +280,8 @@ public class MigrationUtil {
             options.eachWithIndex {it,idx->
                 println "${idx+1} -- $it "
             }
-            print "choice: "
-            input = MigrationUtil.read();
+            println "choice: "
+            input = read();
             try{
                 def choiceNumber = Integer.valueOf(input) -1 //index in the list is -1
                 if(choiceNumber <= options.size()){
