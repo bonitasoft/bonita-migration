@@ -48,7 +48,8 @@ public class MigrationRunner {
                 "Please refer to the documentation for further steps to completely migrate your production environment.",
                 "",
                 "Warning:",
-                "Back up the database AND the bonita home before migrating,","")
+                "Back up the database AND the bonita home before migrating",
+                "If you have customized the configuration of your bonita home, reapply the customizations when the migration is finished.","")
         MigrationUtil.askIfWeContinue();
 
         def path = initPropertiesAndChooseMigrationPath()
@@ -79,7 +80,8 @@ public class MigrationRunner {
 
         def end = new Date()
         println "Migration successfully completed, in " + TimeCategory.minus(end, startMigrationDate);
-        println "The version of your Bonita BPM installation is now: " +MigrationUtil.getPlatformVersion(sql);
+        println "The version of your Bonita BPM installation is now: " + MigrationUtil.getPlatformVersion(sql);
+        println "Now, you must to reapply the customizations of your bonita home."
         println ""
         sql.close()
     }
@@ -151,7 +153,6 @@ public class MigrationRunner {
                 println "Your bonita version is below 6.1.0, because of this we can't determine the exact version of your installation\nPlease choose your version in the following list: "
                 def possibleVersion = graph.getStartNodes().findAll{it.startsWith("6.0")}
                 detectedVersion = MigrationUtil.askForOptions(possibleVersion)
-
             }
             //pre 6.1 --> use given version, but check that it start's with 6.0
             if(!detectedVersion.startsWith("6.0")){
