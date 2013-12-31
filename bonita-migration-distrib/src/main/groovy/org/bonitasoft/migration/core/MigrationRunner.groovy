@@ -229,7 +229,9 @@ public class MigrationRunner {
                 println "[ Migrating <" + feature + "> " + (idx + 1) + "/" + features.size() + " ]"
 
                 def binding = new Binding(["sql":sql, "dbVendor":dbVendor, "bonitaHome":bonitaHome, "feature":file, "newBonitaHome":newBonitaHome, "gse":gse]);
-                migrateFeature(gse, file, binding);
+                sql.withTransaction {
+                    migrateFeature(gse, file, binding);
+                }
             }
         }
     }

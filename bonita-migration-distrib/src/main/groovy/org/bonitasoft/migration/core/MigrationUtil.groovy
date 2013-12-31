@@ -21,8 +21,6 @@ import java.sql.ResultSet
 import org.bonitasoft.migration.core.exception.MigrationException
 import org.bonitasoft.migration.core.exception.NotFoundException
 
-import org.bonitasoft.migration.core.IOUtil;
-
 
 /**
  *
@@ -55,7 +53,7 @@ public class MigrationUtil {
     public final static String REQUEST_SEPARATOR = "@@"
 
     public static read = System.in.newReader().&readLine
-    
+
     public static boolean isAutoAccept(){
         return System.getProperty(MigrationUtil.AUTO_ACCEPT)=="true"
     }
@@ -83,7 +81,7 @@ public class MigrationUtil {
         }
         return properties;
     }
-    
+
     /**
      * Get a single property and print it
      * First it try to get it from system (in order to override properties)
@@ -163,22 +161,20 @@ public class MigrationUtil {
      */
     public static executeSqlFile(File feature, String dbVendor, String suffix, Map<String, String> parameters, groovy.sql.Sql sql, boolean toUpdate){
         def sqlFile = getSqlFile(feature, dbVendor, suffix)
-        sql.withTransaction {
-            if(sqlFile.exists()){
-                def List<String> contents = getSqlContent(sqlFile.text, parameters)
+        if(sqlFile.exists()){
+            def List<String> contents = getSqlContent(sqlFile.text, parameters)
 
-                for (content in contents) {
-                    if (!content.trim().empty) {
-                        if (toUpdate) {
-                            println sql.executeUpdate(content) + " row(s) updated"
-                        } else {
-                            sql.execute(content)
-                        }
+            for (content in contents) {
+                if (!content.trim().empty) {
+                    if (toUpdate) {
+                        println sql.executeUpdate(content) + " row(s) updated"
+                    } else {
+                        sql.execute(content)
                     }
                 }
-            } else{
-                println "nothing to execute"
             }
+        } else{
+            println "nothing to execute"
         }
     }
 
@@ -250,11 +246,11 @@ public class MigrationUtil {
         }
         def fileFromDir = new File(fromDir);
         def fileToDir = new File(toDir);
-        
+
         if (!fileFromDir.exists() || !fileFromDir.isDirectory()) {
             throw new IllegalStateException("Migration failed. Source folder does not exist : " + fromDir)
         }
-        
+
         if(!deleteOldDirectory){
             println "Adding/overwriting content in $toDir..."
         } else {
@@ -273,7 +269,7 @@ public class MigrationUtil {
             }
         }
     }
-    
+
     public static String askForOptions(List<String> options){
         def input = null;
         while(true){
