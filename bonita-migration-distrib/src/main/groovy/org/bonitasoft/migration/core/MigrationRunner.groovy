@@ -228,7 +228,7 @@ public class MigrationRunner {
                 def feature = result.replace(0, 1, result.substring(0, 1).toUpperCase()).toString()
                 println "[ Migrating <" + feature + "> " + (idx + 1) + "/" + features.size() + " ]"
 
-                def binding = new Binding(["sql":sql, "dbVendor":dbVendor, "bonitaHome":bonitaHome, "feature":file, "newBonitaHome":newBonitaHome]);
+                def binding = new Binding(["sql":sql, "dbVendor":dbVendor, "bonitaHome":bonitaHome, "feature":file, "newBonitaHome":newBonitaHome, "gse":gse]);
                 migrateFeature(gse, file, binding);
             }
         }
