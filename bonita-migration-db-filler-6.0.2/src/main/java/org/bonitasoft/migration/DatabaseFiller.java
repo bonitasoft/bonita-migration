@@ -390,7 +390,7 @@ public class DatabaseFiller {
     }
 
     protected Map<String, String> fillProfiles(final APISession session) throws Exception {
-        final InputStream xmlStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("InitProfiles.xml");
+        final InputStream xmlStream = getProfilesXMLStream();
         final byte[] xmlContent = IOUtils.toByteArray(xmlStream);
         HashMap<String, Serializable> parameters = new HashMap<String, Serializable>(2);
         parameters.put("xmlContent", xmlContent);
@@ -402,6 +402,10 @@ public class DatabaseFiller {
         Map<String, String> map = new HashMap<String, String>(1);
         map.put("Profiles", String.valueOf(profileAPI.searchProfiles(searchOptions).getCount()));
         return map;
+    }
+
+    protected InputStream getProfilesXMLStream() {
+        return getClass().getResourceAsStream("profiles.xml");
     }
 
     protected Map<String, String> fillProcessesWithEvents(final APISession session, final int nbWaitingEvents) throws Exception {
@@ -441,7 +445,7 @@ public class DatabaseFiller {
             userTask.addConnector("phoneConnector", "org.bonitasoft.phoneconnector", "1.0", ConnectorEvent.ON_ENTER);
 
             BusinessArchiveBuilder archiveBuilder = new BusinessArchiveBuilder().createNewBusinessArchive();
-            final InputStream contentAsStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("PhoneConnector.impl");
+            final InputStream contentAsStream = DatabaseFiller.class.getResourceAsStream("PhoneConnector.impl");
             final byte[] content = IOUtils.toByteArray(contentAsStream);
             archiveBuilder.addConnectorImplementation(new BarResource("PhoneConnector.impl", content));
             archiveBuilder.setProcessDefinition(builder.done());

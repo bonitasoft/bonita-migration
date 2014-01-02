@@ -43,6 +43,7 @@ import org.springframework.context.ConfigurableApplicationContext;
  * Launch Database filler but with 6.1.0 dependencies
  * 
  * @author Baptiste Mesta
+ * @author Celine Souchet
  * 
  */
 public class DatabaseFiller6_1_0 extends DatabaseFiller {
@@ -62,7 +63,7 @@ public class DatabaseFiller6_1_0 extends DatabaseFiller {
 
     @Override
     protected Map<String, String> fillProfiles(final APISession session) throws Exception {
-        final InputStream xmlStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("profiles.xml");
+        final InputStream xmlStream = getProfilesXMLStream();
         final byte[] xmlContent = IOUtils.toByteArray(xmlStream);
         HashMap<String, Serializable> parameters = new HashMap<String, Serializable>(2);
         parameters.put("xmlContent", xmlContent);
@@ -74,6 +75,10 @@ public class DatabaseFiller6_1_0 extends DatabaseFiller {
         Map<String, String> map = new HashMap<String, String>(1);
         map.put("Profiles", String.valueOf(profileAPI.searchProfiles(searchOptions).getCount()));
         return map;
+    }
+
+    protected InputStream getProfilesXMLStream() {
+        return getClass().getResourceAsStream("profiles.xml");
     }
 
     @Override

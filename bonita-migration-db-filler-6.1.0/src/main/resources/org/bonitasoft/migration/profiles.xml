@@ -95,7 +95,7 @@
             <page>importexportorganization</page>
           </profileEntry>
         </childrenEntries>
-      </parentProfileEntry>  
+      </parentProfileEntry>
       <parentProfileEntry name="Configuration">
           <parentName>NULL</parentName>
           <index>6</index>
@@ -110,7 +110,7 @@
               <page>profilelisting</page>
             </profileEntry>
           </childrenEntries>
-        </parentProfileEntry>           
+        </parentProfileEntry>
     </profileEntries>
   </profile>
 </profiles:proFiles>
