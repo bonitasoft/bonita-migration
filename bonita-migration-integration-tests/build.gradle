@@ -5,7 +5,7 @@ apply plugin: 'eclipse'
 apply plugin: 'maven'
 
 group = 'org.bonitasoft.migration'
-version = '1.0.0-RC-01'
+version = '1.0.0-SNAPSHOT'
 
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
@@ -55,11 +55,11 @@ repositories {
 mavenCentral()
 }
 dependencies {
-    sourcefiller "org.bonitasoft.migration:bonita-migration-db-filler-${sourceversion}:1.0.0-RC-01"
+    sourcefiller "org.bonitasoft.migration:bonita-migration-db-filler-${sourceversion}:1.0.0-SNAPSHOT"
     homezip  group: 'org.bonitasoft.engine', name: 'bonita-home', version: sourceversion, ext: 'zip'
-    testCompile "org.bonitasoft.migration:bonita-migration-db-filler-${targetversion}:1.0.0-RC-01"
+    testCompile "org.bonitasoft.migration:bonita-migration-db-filler-${targetversion}:1.0.0-SNAPSHOT"
     testCompile group: 'ch.qos.logback', name:'logback-classic', version: '1.0.11'
-    migrationdist group: 'org.bonitasoft.migration', name: "bonita-migration-distrib", version: "1.0.0-RC-01", ext: 'zip'
+    migrationdist group: 'org.bonitasoft.migration', name: "bonita-migration-distrib", version: "1.0.0-SNAPSHOT", ext: 'zip'
     drivers group: 'mysql', name: 'mysql-connector-java', version: '5.1.26'
     drivers group: 'org.postgresql', name: 'postgresql', version: '9.2-1003-jdbc4'
     drivers name:'ojdbc6'
