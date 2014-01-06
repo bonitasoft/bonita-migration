@@ -72,7 +72,7 @@ public class MigrationRunner {
             def bonitaHomeMigrationFolder = new File(migrationVersionFolder + "Bonita-home")
             def newBonitaHome = bonitaHomeMigrationFolder.listFiles().findAll { it.isDirectory() && it.exists() && it.getName().startsWith("bonita")}[0]
             migrateDatabase(gse, migrationVersionFolder, newBonitaHome)
-            migrateBonitaHome(gse, migrationVersionFolder, bonitaHomeMigrationFolder, newBonitaHome)
+            migrateBonitaHome(gse, migrationVersionFolder, newBonitaHome)
             changePlatformVersion(transition.getTarget())
             println "Migration from $transition.source to $transition.target is complete."
             println ""
@@ -236,7 +236,7 @@ public class MigrationRunner {
         }
     }
 
-    void migrateBonitaHome(GroovyScriptEngine gse, String migrationVersionFolder, File bonitaHomeMigrationFolder, File newBonitaHome) {
+    void migrateBonitaHome(GroovyScriptEngine gse, String migrationVersionFolder, File newBonitaHome) {
         migrateFolder(migrationVersionFolder, "Bonita-home", "Migration of bonita home") { File folder ->
             def binding = new Binding(["bonitaHome":bonitaHome, "feature":folder, "startMigrationDate":startMigrationDate, "newBonitaHome":newBonitaHome, "gse":gse]);
             migrateFeature(gse, folder, binding);
