@@ -66,7 +66,7 @@ public class Migration {
             }
             return root;
         };
-        def logInFile = new FileOutputStream(new File("out-"+new Date().format("yyyy-MM-dd")+".log"))
+        def logInFile = new FileOutputStream(new File("migration-"+new Date().format("yyyy-MM-dd-HHmmss")+".log"))
         System.setOut(new PrintStream(new SplitPrintStream(System.out, logInFile )))
         System.setErr(new PrintStream(new SplitPrintStream(System.err, logInFile )))
         def classLoader = getRootParent(this.class.classLoader);
