@@ -153,9 +153,13 @@ public class IOUtil {
     public static byte[] serialize(Object object){
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream out;
-        out = new ObjectOutputStream(baos);
-        out.writeObject(object);
-        out.flush();
+        try {
+            out = new ObjectOutputStream(baos);
+            out.writeObject(object);
+            out.flush();
+        } finally {
+            out.close();
+        }
         return baos.toByteArray();
     }
     
