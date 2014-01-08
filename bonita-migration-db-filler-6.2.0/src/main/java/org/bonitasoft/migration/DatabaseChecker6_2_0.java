@@ -227,12 +227,13 @@ public class DatabaseChecker6_2_0 {
         final SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 10);
         builder.sort("name", Order.DESC);
         builder.filter("name", profileEntryElement.attributeValue("name"));
+        builder.filter("profileId", profileId);
         final List<ProfileEntry> profileEntries = profileAPI.searchProfileEntries(builder.done()).getResult();
         assertEquals(1, profileEntries.size());
 
         final ProfileEntry profileEntry = profileEntries.get(0);
         assertEquals(parentProfileEntryId, profileEntry.getParentId());
-        assertEquals(profileEntryElement.elementText("index"), profileEntry.getIndex());
+        assertEquals(Long.valueOf(profileEntryElement.elementText("index")), Long.valueOf(profileEntry.getIndex()));
         assertEquals(profileEntryElement.elementText("description"), profileEntry.getDescription());
         assertEquals(profileEntryElement.elementText("type"), profileEntry.getType());
         assertEquals(profileEntryElement.elementText("page"), profileEntry.getPage());
