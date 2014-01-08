@@ -172,7 +172,7 @@ public class DatabaseChecker6_1_0 {
     @Test
     public void check_profiles() throws Exception {
         final SAXReader reader = new SAXReader();
-        final Document document = getDocumentXML(reader);
+        final Document document = getProfilesXML(reader);
         final Element profiles = document.getRootElement();
 
         // Iterate through child elements of root with element name "profile"
@@ -196,8 +196,8 @@ public class DatabaseChecker6_1_0 {
         }
     }
 
-    protected Document getDocumentXML(final SAXReader reader) throws DocumentException {
-        return reader.read("profiles.xml");
+    protected Document getProfilesXML(final SAXReader reader) throws DocumentException {
+        return reader.read(getClass().getPackage() + "profiles.xml");
     }
 
     private Profile checkProfile(final Element profileElement) throws SearchException {
