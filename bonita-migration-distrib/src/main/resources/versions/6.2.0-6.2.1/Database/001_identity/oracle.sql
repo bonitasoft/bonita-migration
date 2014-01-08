@@ -1,0 +1,1 @@
+ALTER TABLE "GROUP_" MODIFY "parentPath" VARCHAR2(1024) @@

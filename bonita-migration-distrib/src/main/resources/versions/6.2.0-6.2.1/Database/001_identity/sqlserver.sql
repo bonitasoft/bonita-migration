@@ -1,0 +1,1 @@
+ALTER TABLE group_ ALTER COLUMN parentPath NVARCHAR(1024) @@

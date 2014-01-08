@@ -1,0 +1,1 @@
+ALTER TABLE group_ MODIFY COLUMN parentPath VARCHAR(1024);
