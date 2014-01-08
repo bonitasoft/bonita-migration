@@ -208,7 +208,7 @@ public class DatabaseChecker6_2_0 {
         assertEquals(1, resultProfiles.size());
 
         final Profile profile = resultProfiles.get(0);
-        assertEquals(profileElement.attributeValue("isDefault"), profile.isDefault());
+        assertEquals(Boolean.valueOf(profileElement.attributeValue("isDefault")), profile.isDefault());
         assertNotNull(profile.getCreatedBy());
         assertNotEquals(0, profile.getCreatedBy());
         assertNotNull(profile.getCreationDate());
