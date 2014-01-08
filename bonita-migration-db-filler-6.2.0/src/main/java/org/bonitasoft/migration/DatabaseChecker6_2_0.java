@@ -197,7 +197,7 @@ public class DatabaseChecker6_2_0 {
     }
 
     protected Document getProfilesXML(final SAXReader reader) throws DocumentException {
-        return reader.read(getClass().getPackage() + "profiles.xml");
+        return reader.read(getClass().getResource("profiles.xml"));
     }
 
     private Profile checkProfile(final Element profileElement) throws SearchException {
