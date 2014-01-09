@@ -181,16 +181,20 @@ public class DatabaseChecker6_2_0 {
             final Profile profile = checkProfile(profileElement);
 
             final Element profileEntriesElement = profileElement.element("profileEntries");
-            for (Iterator<Element> parentProfileEntryIterator = profileEntriesElement.elementIterator("parentProfileEntry"); parentProfileEntryIterator
-                    .hasNext();) {
-                final Element parentProfileEntryElement = parentProfileEntryIterator.next();
-                final ProfileEntry profileEntry = checkProfileEntry(parentProfileEntryElement, profile.getId(), 0);
-
-                final Element childProfileEntriesElement = profileElement.element("childrenEntries");
-                for (Iterator<Element> childProfileEntryIterator = childProfileEntriesElement.elementIterator("profileEntry"); childProfileEntryIterator
+            if (profileEntriesElement != null) {
+                for (Iterator<Element> parentProfileEntryIterator = profileEntriesElement.elementIterator("parentProfileEntry"); parentProfileEntryIterator
                         .hasNext();) {
-                    final Element childProfileEntryElement = childProfileEntryIterator.next();
-                    checkProfileEntry(childProfileEntryElement, profile.getId(), profileEntry.getId());
+                    final Element parentProfileEntryElement = parentProfileEntryIterator.next();
+                    final ProfileEntry profileEntry = checkProfileEntry(parentProfileEntryElement, profile.getId(), 0);
+
+                    final Element childProfileEntriesElement = profileElement.element("childrenEntries");
+                    if (childProfileEntriesElement != null) {
+                        for (Iterator<Element> childProfileEntryIterator = childProfileEntriesElement.elementIterator("profileEntry"); childProfileEntryIterator
+                                .hasNext();) {
+                            final Element childProfileEntryElement = childProfileEntryIterator.next();
+                            checkProfileEntry(childProfileEntryElement, profile.getId(), profileEntry.getId());
+                        }
+                    }
                 }
             }
         }
