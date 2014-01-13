@@ -50,7 +50,6 @@ import org.bonitasoft.engine.session.PlatformSession;
 import org.bonitasoft.engine.test.APITestUtil;
 import org.bonitasoft.engine.test.wait.WaitForPendingTasks;
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.junit.AfterClass;
@@ -113,14 +112,11 @@ public class DatabaseChecker6_2_0 {
         WaitForPendingTasks waitForPendingTasks = new WaitForPendingTasks(50, 10000, 10, id, processAPI);
         if (!waitForPendingTasks.waitUntil()) {
             String message = "Not all task after transitions were created";
-            System.out.println(message);
             throw new IllegalStateException(message);
         } else {
-            System.out.println("all tasks found");
             List<HumanTaskInstance> pendingHumanTaskInstances = processAPI.getPendingHumanTaskInstances(id, 0, 100, ActivityInstanceCriterion.NAME_ASC);
             List<String> taskNames = new ArrayList<String>();
             for (HumanTaskInstance humanTaskInstance : pendingHumanTaskInstances) {
-                System.out.println("task: " + humanTaskInstance.getName());
                 taskNames.add(humanTaskInstance.getName());
             }
             Collections.sort(taskNames);
@@ -134,10 +130,8 @@ public class DatabaseChecker6_2_0 {
     @Test
     public void check_archivedProcessInstance_can_be_retrive() throws Exception {
         long processDefinitionId = processAPI.getProcessDefinitionId("ProcessThatFinish", "1.0");
-        System.out.println("processDefinitionId= " + processDefinitionId);
         SearchResult<ArchivedProcessInstance> archivedProcessInstances = processAPI.searchArchivedProcessInstances(new SearchOptionsBuilder(0, 10).filter(
                 ArchivedProcessInstancesSearchDescriptor.PROCESS_DEFINITION_ID, processDefinitionId).done());
-        System.out.println(archivedProcessInstances.getResult());
         assertTrue(archivedProcessInstances.getCount() > 0);
     }
 
@@ -200,7 +194,7 @@ public class DatabaseChecker6_2_0 {
         }
     }
 
-    protected Document getProfilesXML(final SAXReader reader) throws DocumentException {
+    protected Document getProfilesXML(final SAXReader reader) throws Exception {
         return reader.read(getClass().getResource("profiles.xml"));
     }
 
@@ -231,6 +225,7 @@ public class DatabaseChecker6_2_0 {
         final SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 10);
         builder.sort("name", Order.DESC);
         builder.filter("name", profileEntryElement.attributeValue("name"));
+        builder.filter("parentId", parentProfileEntryId);
         builder.filter("profileId", profileId);
         final List<ProfileEntry> profileEntries = profileAPI.searchProfileEntries(builder.done()).getResult();
         assertEquals(1, profileEntries.size());

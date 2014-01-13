@@ -113,7 +113,6 @@ public class DatabaseFiller {
             if (transitionThatPointOnToStop.containsKey(transition.getProcessDefinitionId())
                     && transition.getName().endsWith(transitionThatPointOnToStop.get(transition.getProcessDefinitionId()))) {
                 hitnb++;
-                System.out.println("stopped transition " + transition);
                 try {
                     // rollback the transaction so the transition is not deleted
                     instance.getTransactionService().setRollbackOnly();

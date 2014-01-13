@@ -113,14 +113,11 @@ public class DatabaseChecker6_1_0 {
         WaitForPendingTasks waitForPendingTasks = new WaitForPendingTasks(50, 10000, 10, id, processAPI);
         if (!waitForPendingTasks.waitUntil()) {
             String message = "Not all task after transitions were created";
-            System.out.println(message);
             throw new IllegalStateException(message);
         } else {
-            System.out.println("all tasks found");
             List<HumanTaskInstance> pendingHumanTaskInstances = processAPI.getPendingHumanTaskInstances(id, 0, 100, ActivityInstanceCriterion.NAME_ASC);
             List<String> taskNames = new ArrayList<String>();
             for (HumanTaskInstance humanTaskInstance : pendingHumanTaskInstances) {
-                System.out.println("task: " + humanTaskInstance.getName());
                 taskNames.add(humanTaskInstance.getName());
             }
             Collections.sort(taskNames);
@@ -134,10 +131,8 @@ public class DatabaseChecker6_1_0 {
     @Test
     public void check_archivedProcessInstance_can_be_retrive() throws Exception {
         long processDefinitionId = processAPI.getProcessDefinitionId("ProcessThatFinish", "1.0");
-        System.out.println("processDefinitionId= " + processDefinitionId);
         SearchResult<ArchivedProcessInstance> archivedProcessInstances = processAPI.searchArchivedProcessInstances(new SearchOptionsBuilder(0, 10).filter(
                 ArchivedProcessInstancesSearchDescriptor.PROCESS_DEFINITION_ID, processDefinitionId).done());
-        System.out.println(archivedProcessInstances.getResult());
         assertTrue(archivedProcessInstances.getCount() > 0);
     }
 
