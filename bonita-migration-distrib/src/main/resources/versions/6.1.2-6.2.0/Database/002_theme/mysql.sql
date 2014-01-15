@@ -13,7 +13,7 @@ CREATE TABLE theme (
 CREATE INDEX fk_theme_tenantId_idx ON theme (tenantid ASC);
 
 INSERT INTO sequence (tenantid, id, nextid)
-SELECT ID, 9890, 1 FROM tenant
+SELECT ID, 9890, 3 FROM tenant
 ORDER BY id ASC;
 ALTER TABLE theme ADD CONSTRAINT fk_theme_tenantId FOREIGN KEY (tenantId) REFERENCES tenant (id)
                                                              ON DELETE NO ACTION
