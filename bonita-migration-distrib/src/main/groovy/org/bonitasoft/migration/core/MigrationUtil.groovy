@@ -212,6 +212,13 @@ public class MigrationUtil {
         return version;
     }
 
+    public static String getPlatformVersion(dburl, user, pwd, driverClass){
+        def sql = MigrationUtil.getSqlConnection(dburl, user, pwd, driverClass)
+        def String platformVersionInDatabase = MigrationUtil.getPlatformVersion(sql)
+        sql.close()
+        return platformVersionInDatabase;
+    }
+
     public static Object getId(File feature, String dbVendor, String fileExtension, Object it, groovy.sql.Sql sql){
         if (it == null || sql == null){
             throw new IllegalArgumentException("Can't execute getId method with arguments : it = " + it + ", sql = " + sql);
