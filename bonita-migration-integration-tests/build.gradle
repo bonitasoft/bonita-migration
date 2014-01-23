@@ -4,6 +4,7 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'maven'
 apply plugin: "sonar-runner"
+apply plugin: 'jacoco'
 
 group = 'org.bonitasoft.migration'
 version = '1.0.1-SNAPSHOT'
@@ -19,7 +20,10 @@ sonarRunner {
         property "sonar.jdbc.username", "sonar"
         property "sonar.jdbc.password", "sa"
         property "sonar.sourceEncoding", "UTF-8"
-        property "sonar.language", "grvy"
+        
+        property "sonar.projectName", "Bonita Migration Distrib"
+        property "sonar.projectKey", "org.bonitasoft.migration:bonita-migration"
+        property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
     }
 }
 
@@ -51,6 +55,10 @@ configurations {
     homezip
 }
 
+buildscript {
+    dependencies { classpath 'org.ajoberstar:gradle-jacoco:0.1.0' }
+}
+
 repositories {
     flatDir name: 'localRepository', dirs: 'lib'
     mavenLocal()
@@ -66,8 +74,9 @@ repositories {
         maven { url customMavenRepoExtra}
     }
 
-mavenCentral()
+    mavenCentral()
 }
+
 dependencies {
     sourcefiller "${group}:bonita-migration-db-filler-${sourceversion}:${version}"
     homezip  group: 'org.bonitasoft.engine', name: 'bonita-home', version: sourceversion, ext: 'zip'
@@ -82,6 +91,7 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.+'
     testCompile configurations.drivers
 }
+
 //allow to execute sql from the build script -> see cleardb task
 URLClassLoader loader = GroovyObject.class.classLoader
 configurations.drivers.each {File file ->
