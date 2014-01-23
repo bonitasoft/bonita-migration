@@ -58,6 +58,9 @@
 
 	<!-- Compile in order to validate + run tests -->
 	<build>
+		<!-- Limitation of SonarQube. It does not call the gmaven plugin -->
+	 	<sourceDirectory>src/main/groovy</sourceDirectory>
+	 	
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>

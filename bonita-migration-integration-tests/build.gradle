@@ -19,11 +19,15 @@ sonarRunner {
         property "sonar.jdbc.driverClassName", "org.postgresql.Driver"
         property "sonar.jdbc.username", "sonar"
         property "sonar.jdbc.password", "sa"
-        property "sonar.sourceEncoding", "UTF-8"
         
+        property "sonar.sourceEncoding", "UTF-8"
+        property "sonar.sources", "src"
+        property "sonar.binaries", "build"
         property "sonar.projectName", "Bonita Migration Distrib"
         property "sonar.projectKey", "org.bonitasoft.migration:bonita-migration"
         property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
+        property "sonar.junit.reportsPath", "${project.buildDir}/test-results"
+        property "sonar.groovy.coveragePlugin", "jacoco"
     }
 }
 
@@ -53,10 +57,6 @@ configurations {
     migrationdist
     drivers
     homezip
-}
-
-buildscript {
-    dependencies { classpath 'org.ajoberstar:gradle-jacoco:0.1.0' }
 }
 
 repositories {
