@@ -77,6 +77,7 @@ public class DatabaseFiller6_2_0 extends DatabaseFiller {
         return map;
     }
 
+    @Override
     protected InputStream getProfilesXMLStream() {
         return getClass().getResourceAsStream("profiles.xml");
     }

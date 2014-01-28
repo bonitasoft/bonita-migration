@@ -130,7 +130,7 @@ public class DatabaseFiller {
 
     private static final String BONITA_HOME = "bonita.home";
 
-    private final Logger logger = LoggerFactory.getLogger(DatabaseFiller.class);
+    protected final Logger logger = LoggerFactory.getLogger(DatabaseFiller.class);
 
     public static void main(final String[] args) throws Exception {
         DatabaseFiller databaseFiller = new DatabaseFiller();
