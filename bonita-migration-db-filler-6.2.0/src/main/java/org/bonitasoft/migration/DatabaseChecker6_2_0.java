@@ -18,6 +18,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,11 +34,13 @@ import org.bonitasoft.engine.api.PlatformAPIAccessor;
 import org.bonitasoft.engine.api.ProcessAPI;
 import org.bonitasoft.engine.api.ProfileAPI;
 import org.bonitasoft.engine.api.TenantAPIAccessor;
+import org.bonitasoft.engine.api.ThemeAPI;
 import org.bonitasoft.engine.bpm.flownode.ActivityInstanceCriterion;
 import org.bonitasoft.engine.bpm.flownode.HumanTaskInstance;
 import org.bonitasoft.engine.bpm.process.ArchivedProcessInstance;
 import org.bonitasoft.engine.bpm.process.ArchivedProcessInstancesSearchDescriptor;
 import org.bonitasoft.engine.exception.BonitaException;
+import org.bonitasoft.engine.exception.BonitaRuntimeException;
 import org.bonitasoft.engine.exception.SearchException;
 import org.bonitasoft.engine.identity.User;
 import org.bonitasoft.engine.profile.Profile;
@@ -49,6 +52,8 @@ import org.bonitasoft.engine.session.APISession;
 import org.bonitasoft.engine.session.PlatformSession;
 import org.bonitasoft.engine.test.APITestUtil;
 import org.bonitasoft.engine.test.wait.WaitForPendingTasks;
+import org.bonitasoft.engine.theme.ThemeType;
+import org.bonitasoft.engine.theme.exception.SThemeNotFoundException;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -78,6 +83,8 @@ public class DatabaseChecker6_2_0 {
 
     protected static IdentityAPI identityApi;
 
+    private static ThemeAPI themeAPI;
+
     protected static APISession session;
 
     public static void main(final String[] args) throws Exception {
@@ -95,6 +102,7 @@ public class DatabaseChecker6_2_0 {
         processAPI = TenantAPIAccessor.getProcessAPI(session);
         identityApi = TenantAPIAccessor.getIdentityAPI(session);
         profileAPI = TenantAPIAccessor.getProfileAPI(session);
+        themeAPI = TenantAPIAccessor.getThemeAPI(session);
     }
 
     @AfterClass
@@ -239,6 +247,19 @@ public class DatabaseChecker6_2_0 {
         assertEquals(profileId, profileEntry.getProfileId());
 
         return profileEntry;
+    }
+
+    @Test
+    public void check_themes() throws Exception {
+        assertNotNull(themeAPI.getDefaultTheme(ThemeType.PORTAL));
+
+        try {
+            themeAPI.getDefaultTheme(ThemeType.MOBILE);
+        } catch (final BonitaRuntimeException e) {
+            if (!(e.getCause().getCause() instanceof SThemeNotFoundException)) {
+                fail();
+            }
+        }
     }
 
     private static void setupSpringContext() {

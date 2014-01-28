@@ -3,12 +3,34 @@ import groovy.sql.Sql
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'maven'
+apply plugin: "sonar-runner"
+apply plugin: 'jacoco'
 
 group = 'org.bonitasoft.migration'
-version = '1.0.0-SNAPSHOT'
+version = '1.0.1-SNAPSHOT'
 
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
+
+sonarRunner {
+    sonarProperties {
+        property "sonar.host.url", "http://repositories.rd.lan:9000/"
+        property "sonar.jdbc.url", "jdbc:postgresql://repositories.rd.lan/sonarqube"
+        property "sonar.jdbc.driverClassName", "org.postgresql.Driver"
+        property "sonar.jdbc.username", "sonar"
+        property "sonar.jdbc.password", "sa"
+        
+        property "sonar.sourceEncoding", "UTF-8"
+        property "sonar.sources", "src"
+        property "sonar.binaries", "build"
+        property "sonar.projectName", "Bonita Migration Distrib"
+        property "sonar.projectKey", "org.bonitasoft.migration:bonita-migration"
+        property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
+        property "sonar.junit.reportsPath", "${project.buildDir}/test-results"
+        property "sonar.groovy.coveragePlugin", "jacoco"
+    }
+}
+
 
 ext{
     sourceversion = System.getProperty("source.version","6.0.2")
@@ -52,14 +74,15 @@ repositories {
         maven { url customMavenRepoExtra}
     }
 
-mavenCentral()
+    mavenCentral()
 }
+
 dependencies {
-    sourcefiller "org.bonitasoft.migration:bonita-migration-db-filler-${sourceversion}:1.0.0-SNAPSHOT"
+    sourcefiller "${group}:bonita-migration-db-filler-${sourceversion}:${version}"
     homezip  group: 'org.bonitasoft.engine', name: 'bonita-home', version: sourceversion, ext: 'zip'
-    testCompile "org.bonitasoft.migration:bonita-migration-db-filler-${targetversion}:1.0.0-SNAPSHOT"
+    testCompile "${group}:bonita-migration-db-filler-${targetversion}:${version}"
     testCompile group: 'ch.qos.logback', name:'logback-classic', version: '1.0.11'
-    migrationdist group: 'org.bonitasoft.migration', name: "bonita-migration-distrib", version: "1.0.0-SNAPSHOT", ext: 'zip'
+    migrationdist group: group, name: "bonita-migration-distrib", version: "${version}", ext: 'zip'
     drivers group: 'mysql', name: 'mysql-connector-java', version: '5.1.26'
     drivers group: 'org.postgresql', name: 'postgresql', version: '9.2-1003-jdbc4'
     drivers name:'ojdbc6'
@@ -68,6 +91,7 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.+'
     testCompile configurations.drivers
 }
+
 //allow to execute sql from the build script -> see cleardb task
 URLClassLoader loader = GroovyObject.class.classLoader
 configurations.drivers.each {File file ->

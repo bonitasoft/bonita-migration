@@ -12,7 +12,7 @@ CREATE TABLE theme (
 @@
 
 INSERT INTO sequence (tenantid, id, nextid)
-	SELECT id, 9890, 1 FROM tenant
+	SELECT id, 9890, 3 FROM tenant
 	ORDER BY id ASC
 @@
 

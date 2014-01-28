@@ -38,9 +38,6 @@ if (tenantsClientDir.exists()) {
                 currentDir = "/work/icons/profiles"
                 MigrationUtil.migrateDirectory(newClientBonitaHome.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir, true)
 
-                currentDir = "/work/theme"
-                MigrationUtil.migrateDirectory(newClientBonitaHome.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir, false)
-           
                 currentDir = "/work/looknfeel"
                 def fileDir = new File(currentDir);
                 IOUtil.deleteDirectory(fileDir);

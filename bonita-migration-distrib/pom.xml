@@ -6,16 +6,21 @@
 	<parent>
 		<groupId>org.bonitasoft.migration</groupId>
 		<artifactId>bonita-migration</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
+		<version>1.0.1-SNAPSHOT</version>
 	</parent>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<sonar.language>grvy</sonar.language>
+	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.codehaus.groovy</groupId>
 			<artifactId>groovy-all</artifactId>
 		</dependency>
-        
-         <!-- Tests -->
+
+		<!-- Tests -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -53,6 +58,9 @@
 
 	<!-- Compile in order to validate + run tests -->
 	<build>
+		<!-- Limitation of SonarQube. It does not call the gmaven plugin -->
+	 	<sourceDirectory>src/main/groovy</sourceDirectory>
+	 	
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>

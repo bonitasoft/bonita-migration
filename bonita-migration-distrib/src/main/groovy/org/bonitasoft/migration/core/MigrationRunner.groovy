@@ -33,7 +33,10 @@ public class MigrationRunner {
 
     private def File bonitaHome
     private def dbVendor
-    private def groovy.sql.Sql sql
+    private def dburl
+    private def user
+    private def pwd
+    private def driverClass
     private def String sourceVersion
     private def String targetVersion
     private def TransitionGraph graph
@@ -65,25 +68,25 @@ public class MigrationRunner {
                     "migration number ${idx+1} of a total of ${transitions.size()}");
             MigrationUtil.askIfWeContinue()
 
-
+            def sql = MigrationUtil.getSqlConnection(dburl, user, pwd, driverClass)
 
             def String migrationVersionFolder = "versions" + File.separatorChar + sourceStepVersion + "-" + targetStepVersion + File.separatorChar
             //the new bonita home
             def bonitaHomeMigrationFolder = new File(migrationVersionFolder + "Bonita-home")
             def newBonitaHome = bonitaHomeMigrationFolder.listFiles().findAll { it.isDirectory() && it.exists() && it.getName().startsWith("bonita")}[0]
-            migrateDatabase(gse, migrationVersionFolder, newBonitaHome)
+            migrateDatabase(gse, migrationVersionFolder, newBonitaHome, sql)
             migrateBonitaHome(gse, migrationVersionFolder, newBonitaHome)
-            changePlatformVersion(transition.getTarget())
+            changePlatformVersion(sql, transition.getTarget())
+            sql.close();
             println "Migration from $transition.source to $transition.target is complete."
             println ""
         }
 
         def end = new Date()
         println "Migration successfully completed, in " + TimeCategory.minus(end, startMigrationDate);
-        println "The version of your Bonita BPM installation is now: " + MigrationUtil.getPlatformVersion(sql);
+        println "The version of your Bonita BPM installation is now: " + MigrationUtil.getPlatformVersion(dburl, user, pwd, driverClass);
         println "Now, you must to reapply the customizations of your bonita home."
         println ""
-        sql.close()
     }
 
     Path initPropertiesAndChooseMigrationPath(){
@@ -98,15 +101,14 @@ public class MigrationRunner {
             throw new IllegalStateException("Bonita home does not exist.");
         }
         dbVendor = MigrationUtil.getAndPrintProperty(properties, MigrationUtil.DB_VENDOR, true);
-        def dburl = MigrationUtil.getAndPrintProperty(properties, MigrationUtil.DB_URL, true);
-        def user = MigrationUtil.getAndPrintProperty(properties, MigrationUtil.DB_USER, true);
-        def pwd = MigrationUtil.getAndPrintProperty(properties, MigrationUtil.DB_PASSWORD, true);
-        def driverClass = MigrationUtil.getAndPrintProperty(properties, MigrationUtil.DB_DRIVERCLASS, true);
+        dburl = MigrationUtil.getAndPrintProperty(properties, MigrationUtil.DB_URL, true);
+        user = MigrationUtil.getAndPrintProperty(properties, MigrationUtil.DB_USER, true);
+        pwd = MigrationUtil.getAndPrintProperty(properties, MigrationUtil.DB_PASSWORD, true);
+        driverClass = MigrationUtil.getAndPrintProperty(properties, MigrationUtil.DB_DRIVERCLASS, true);
         println ""
 
-        sql = MigrationUtil.getSqlConnection(dburl, user, pwd, driverClass);
         graph = getMigrationPaths(new File("versions"))
-        sourceVersion = checkSourceVersion(sql,bonitaHome,sourceVersion)
+        sourceVersion = checkSourceVersion(bonitaHome,sourceVersion)
         if(sourceVersion == null){
             return false;
         }
@@ -132,9 +134,9 @@ public class MigrationRunner {
         return path;
     }
 
-    String checkSourceVersion(Sql sql,File bonitaHome,String givenSourceVersion){
+    String checkSourceVersion(File bonitaHome,String givenSourceVersion){
         //get version in sources
-        def String platformVersionInDatabase = MigrationUtil.getPlatformVersion(sql)
+        def String platformVersionInDatabase = MigrationUtil.getPlatformVersion(dburl, user, pwd, driverClass)
         def s = File.separator;
         def File versionFile = new File(bonitaHome, "server${s}platform${s}conf${s}VERSION");
         def String platformVersionInBonitaHome = versionFile.exists()?versionFile.text:null;
@@ -208,13 +210,13 @@ public class MigrationRunner {
         return new TransitionGraph(dirNames);
     }
 
-    public changePlatformVersion(String version){
+    public changePlatformVersion(groovy.sql.Sql sql, String version){
         sql.executeUpdate("UPDATE platform SET previousVersion = version");
         sql.executeUpdate("UPDATE platform SET version = $version")
         println "Platform version in database changed to $version"
     }
 
-    public migrateDatabase(GroovyScriptEngine gse, String migrationVersionFolder, File newBonitaHome) {
+    public migrateDatabase(GroovyScriptEngine gse, String migrationVersionFolder, File newBonitaHome, groovy.sql.Sql sql) {
         migrateFolder(migrationVersionFolder, "Database", "Migration of database") { File folder ->
             def features = []
             def files = folder.listFiles()
