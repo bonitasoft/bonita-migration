@@ -61,6 +61,12 @@ configurations {
 
 repositories {
     flatDir name: 'localRepository', dirs: 'lib'
+    //put the extra repo first: issue with gradle
+    def customMavenRepoExtra = System.getProperty("maven.repository.extra")
+    if(customMavenRepoExtra!=null){
+        println "using custom maven.repository.extra: "+customMavenRepoExtra
+        maven { url customMavenRepoExtra}
+    }
     mavenLocal()
     def customMavenRepo = System.getProperty("maven.repository")
     //used in jenkins: add in system property $ {JENKINS_HOME}/userContent/m2_repo and archiva
@@ -68,11 +74,7 @@ repositories {
         println "using custom maven.repository: "+customMavenRepo
         maven { url customMavenRepo}
     }
-    def customMavenRepoExtra = System.getProperty("maven.repository.extra")
-    if(customMavenRepoExtra!=null){
-        println "using custom maven.repository.extra: "+customMavenRepoExtra
-        maven { url customMavenRepoExtra}
-    }
+
 
     mavenCentral()
 }
