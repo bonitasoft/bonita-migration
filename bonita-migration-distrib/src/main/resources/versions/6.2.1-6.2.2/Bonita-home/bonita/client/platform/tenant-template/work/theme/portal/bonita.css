@@ -633,7 +633,7 @@ body {
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
-  padding-top: 85px;
+  padding-top: 88px;
   padding-bottom: 25px;
   height: 100%;
   display: table;
@@ -770,9 +770,9 @@ body {
 }
 #header #menu {
   font-family: "Signika-Semibold", sans-serif;
-  font-size: 115.38461538461537%;
-  height: 35px;
-  *height: 35px;
+  font-size: 138.46153846153845%;
+  height: 38px;
+  *height: 38px;
   padding-top: 0;
   padding-bottom: 0;
   position: relative;
@@ -792,8 +792,8 @@ body {
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
-  height: 35px;
-  *height: 35px;
+  height: 38px;
+  *height: 38px;
   padding-top: 0;
   padding-bottom: 0;
 }
@@ -821,7 +821,7 @@ body {
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
-  height: 35px;
+  height: 38px;
   min-width: 105px;
   padding: 0;
 }
@@ -940,6 +940,7 @@ body {
 }
 #header #menu > div > ul.dropdownmenu > li ul li,
 #header #menu > div > ul.dropdownmenu > li ul a {
+  font-size: 92.3076923076923%;
   color: #313433;
   text-align: left;
 }
@@ -1677,7 +1678,7 @@ form.success .formentries .formentry .input div.alert_message.ERROR {
 .filters_panel {
   font-family: "Signika-Semibold", sans-serif;
   color: #ffffff;
-  padding: 35px 0 0 5px;
+  padding: 35px 0 0 0;
   margin: 0;
   position: relative;
 }
@@ -1687,7 +1688,7 @@ form.success .formentries .formentry .input div.alert_message.ERROR {
 .filters_panel > .body > .actions {
   z-index: 996;
   position: absolute;
-  top: -55px;
+  top: -50px;
   left: 30px;
 }
 .filters_panel > .body > .actions a {
@@ -1749,6 +1750,13 @@ form.success .formentries .formentry .input div.alert_message.ERROR {
   height: 100%;
   width: 30px;
   background: url("themeResource?theme=portal&location=skin/images/button-add.png") transparent no-repeat center center !important;
+}
+.filters_panel > .body > .actions .bigAddButton {
+  padding: 0 10px 0 30px;
+  left: -15px;
+}
+.filters_panel .section .body {
+  padding-left: 5px;
 }
 .filters_panel h1,
 .filters_panel h2,
@@ -2367,18 +2375,17 @@ form.success .formentries .formentry .input div.alert_message.ERROR {
   z-index: 995;
 }
 .filters_panel .resource_filters .header {
-  margin: 15px 15px 0 0;
-  border-top: 3px solid #dc0907;
-  border-bottom: 1px #8f0605;
+  background-color: #940605;
+  border-bottom: 1px solid #860505;
+  border-top: 1px solid #860505;
+  margin: 40px 0 5px 0;
 }
 .filters_panel .resource_filters .header h1 {
-  margin: 0;
   display: block;
-  padding: 10px 5px 10px 55px;
-  font-size: 169.23076923076923%;
+  font-size: 140%;
   font-style: italic;
-  border-top: 1px solid #8f0605;
-  border-bottom: 1px solid #dc0907;
+  margin: 0;
+  padding: 10px 5px 10px 20px;
 }
 .filters_panel .resource_filters .body {
   position: relative;
@@ -2395,15 +2402,6 @@ form.success .formentries .formentry .input div.alert_message.ERROR {
 }
 .filters_panel .resource_filters .body a.current img.empty {
   background: url("themeResource?theme=portal&location=skin/images/filters-resource-default-current.png") transparent no-repeat center center !important;
-}
-.page_tasklistinguser .filters_panel .resource_filters .header h1,
-.page_tasklistingadmin .filters_panel .resource_filters .header h1,
-.page_caselistinguser .filters_panel .resource_filters .header h1,
-.page_caselistingadmin .filters_panel .resource_filters .header h1 {
-  background: url("themeResource?theme=portal&location=skin/images/filters-resource-process.png") transparent no-repeat 20px center !important;
-}
-.page_processlistingadmin .filters_panel .resource_filters .header h1 {
-  background: url("themeResource?theme=portal&location=skin/images/filters-resource-category.png") transparent no-repeat 20px center !important;
 }
 .itemlistingpage .header > H1,
 .itemlistingpage .header .dropdownmenu_sort {
@@ -3091,7 +3089,7 @@ form.success .formentries .formentry .input div.alert_message.ERROR {
 #LoginPage #floater {
   float: left;
   height: 50%;
-  margin-bottom: -190px;
+  margin-bottom: -191.5px;
 }
 #LoginPage #LoginHeader {
   position: relative;
@@ -3273,8 +3271,8 @@ form.success .formentries .formentry .input div.alert_message.ERROR {
 }
 .page.moredetails > .body {
   min-width: 1250px;
-  top: 185px;
-  padding: 182px 35px 45px 40px !important;
+  top: 188px;
+  padding: 185px 35px 45px 40px !important;
   *behavior: url(css/boxsizing.htc);
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
@@ -3639,7 +3637,7 @@ form.success .formentries .formentry .input div.alert_message.ERROR {
   min-width: 1250px;
   min-height: 27px;
   padding: 0 35px 0 40px;
-  margin: 85px 0 40px 0;
+  margin: 88px 0 40px 0;
   position: absolute;
   width: 100%;
   *behavior: url(css/boxsizing.htc);
@@ -3751,8 +3749,8 @@ form.success .formentries .formentry .input div.alert_message.ERROR {
 }
 .page.twoCols > .body {
   min-width: 1250px;
-  top: 85px;
-  padding: 85px 25px 35px 0 !important;
+  top: 88px;
+  padding: 88px 25px 35px 0 !important;
   *behavior: url(css/boxsizing.htc);
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
@@ -3866,7 +3864,7 @@ form.success .formentries .formentry .input div.alert_message.ERROR {
   min-width: 1250px;
   min-height: 27px;
   padding: 0 35px 0 40px;
-  margin: 85px 0 40px 0;
+  margin: 88px 0 40px 0;
   position: absolute;
   width: 100%;
   *behavior: url(css/boxsizing.htc);
@@ -5178,7 +5176,7 @@ form.success .formentries .formentry .input div.alert_message.ERROR {
   margin-top: 0;
 }
 .doublesection .body {
-  font-size: 115.38461538461537%;
+  font-size: 138.46153846153845%;
 }
 .doublesection .body .menuOptions {
   padding-top: 5px;
@@ -5190,8 +5188,8 @@ form.success .formentries .formentry .input div.alert_message.ERROR {
 .doublesection .body .menuEditor .menu {
   position: absolute;
   width: 100%;
-  height: 35px;
-  *height: 35px;
+  height: 38px;
+  *height: 38px;
   padding-top: 0;
   padding-bottom: 0;
   background-color: #cd0807;
@@ -5218,7 +5216,7 @@ form.success .formentries .formentry .input div.alert_message.ERROR {
   -pie-watch-ancestors: 1;
 }
 .doublesection .body .menuEditor > .tablesPannel > .btn-action {
-  margin: 5px 5px;
+  margin: 6.5px 5px;
 }
 .doublesection .body .menuEditor > .tablesPannel > .btn-action #btn-addprofileentry {
   color: red;
@@ -5236,7 +5234,7 @@ form.success .formentries .formentry .input div.alert_message.ERROR {
   text-align: center;
 }
 .doublesection .body .menuEditor > .tablesPannel > .tablePannel > .datatable.resetOption {
-  height: 35px;
+  height: 38px;
 }
 .doublesection .body .menuEditor > .tablesPannel > .tablePannel > .datatable > .pager {
   display: none;
@@ -5296,8 +5294,8 @@ form.success .formentries .formentry .input div.alert_message.ERROR {
   visibility: hidden;
   display: inline-block;
   width: 30px;
-  height: 35px;
-  *height: 35px;
+  height: 38px;
+  *height: 38px;
   padding-top: 0;
   padding-bottom: 0;
   color: transparent !important;
@@ -5325,8 +5323,8 @@ form.success .formentries .formentry .input div.alert_message.ERROR {
   -pie-watch-ancestors: 1;
   color: #ffffff;
   text-align: left;
-  height: 35px;
-  *height: 35px;
+  height: 38px;
+  *height: 38px;
   padding-top: 0;
   padding-bottom: 0;
 }
@@ -5336,8 +5334,8 @@ form.success .formentries .formentry .input div.alert_message.ERROR {
 .doublesection .body .menuEditor > .tablesPannel > .tablePannel > .datatable > .table > .tbody .tr.tr_1 > .td {
   border: none;
   padding: 10px 10px 10px 40px;
-  height: 35px;
-  *height: 35px;
+  height: 38px;
+  *height: 38px;
   padding-top: 0;
   padding-bottom: 0;
 }
