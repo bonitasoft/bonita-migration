@@ -62,6 +62,20 @@ public class DatabaseFiller6_2_0 extends DatabaseFiller {
     }
 
     @Override
+    public Map<String, String> fillDatabase(final int nbProcessesDefinitions, final int nbProcessInstances, final int nbWaitingEvents, final int nbDocuments)
+            throws BonitaException,
+            Exception {
+        logger.info("Starting to fill the database");
+        APISession session = APITestUtil.loginDefaultTenant();
+        Map<String, String> stats = new HashMap<String, String>();
+        stats.putAll(fillOrganization(session));
+        stats.putAll(fillProfiles(session));
+        APITestUtil.logoutTenant(session);
+        logger.info("Finished to fill the database");
+        return stats;
+    }
+
+    @Override
     protected Map<String, String> fillProfiles(final APISession session) throws Exception {
         final InputStream xmlStream = getProfilesXMLStream();
         final byte[] xmlContent = IOUtils.toByteArray(xmlStream);

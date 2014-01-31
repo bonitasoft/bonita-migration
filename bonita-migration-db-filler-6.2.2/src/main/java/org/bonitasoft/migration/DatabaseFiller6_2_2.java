@@ -46,10 +46,10 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @author Celine Souchet
  * 
  */
-public class DatabaseFiller6_2_0 extends DatabaseFiller {
+public class DatabaseFiller6_2_2 extends DatabaseFiller {
 
     public static void main(final String[] args) throws Exception {
-        DatabaseFiller6_2_0 databaseFiller = new DatabaseFiller6_2_0();
+        DatabaseFiller6_2_2 databaseFiller = new DatabaseFiller6_2_2();
         databaseFiller.execute(1, 1, 1, 1);
     }
 
@@ -77,6 +77,7 @@ public class DatabaseFiller6_2_0 extends DatabaseFiller {
         return map;
     }
 
+    @Override
     protected InputStream getProfilesXMLStream() {
         return getClass().getResourceAsStream("profiles.xml");
     }
