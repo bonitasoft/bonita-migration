@@ -7,7 +7,7 @@ apply plugin: "sonar-runner"
 apply plugin: 'jacoco'
 
 group = 'org.bonitasoft.migration'
-version = '1.1.0-rc-01'
+version = '1.1.0-SNAPSHOT'
 
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
