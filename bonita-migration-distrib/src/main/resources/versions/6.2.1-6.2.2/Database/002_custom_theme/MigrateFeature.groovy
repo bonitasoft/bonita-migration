@@ -40,7 +40,7 @@ sql.eachRow("SELECT * from theme WHERE isDefault = false AND type = 'PORTAL'") {
             newZipContent = modifiedZipBOS.toByteArray()
         }
     }
-    sql.executeUpdate("UPDATE theme SET content = ? WHERE tenantid = ? AND id = ?", newZipContent, tenantId, rowId)
+    sql.executeUpdate("UPDATE theme SET content = ? , lastUpdateDate = ? WHERE tenantid = ? AND id = ?", newZipContent, currentTime, tenantId, rowId)
 }
 
 println "Migration of custom themes done"
