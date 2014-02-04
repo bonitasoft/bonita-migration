@@ -41,7 +41,12 @@ if (tenantsClientDir.exists()) {
                 //first version that have theme so we create the folder
                 currentDir = "/work/theme"
                 MigrationUtil.migrateDirectory(newClientBonitaHome.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir, false)
-
+                
+                portalDir = tenant.path + currentDir + "/portal"
+                mobileDir = tenant.path + currentDir + "/mobile"
+                //make the portal believe the theme is outdated so it's reloaded
+                new File(portalDir+"/.lastupdate").withWriter {it << "0"}
+                new File(mobileDir+"/.lastupdate").withWriter {it << "0"}
                 currentDir = "/work/looknfeel"
                 def fileDir = new File(currentDir);
                 IOUtil.deleteDirectory(fileDir);
