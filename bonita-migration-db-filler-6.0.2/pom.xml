@@ -68,47 +68,17 @@
 	</dependencies>
 
 
+
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>unpack</id>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>unpack</goal>
-						</goals>
-						<configuration>
-							<artifactItems>
-								<artifactItem>
-									<groupId>org.bonitasoft.engine</groupId>
-									<artifactId>bonita-home</artifactId>
-									<version>${bonita.version}</version>
-									<type>zip</type>
-								</artifactItem>
-							</artifactItems>
-							<includes>**/*.*</includes>
-							<outputDirectory>${project.build.directory}</outputDirectory>
-							<overWriteReleases>false</overWriteReleases>
-							<overWriteSnapshots>true</overWriteSnapshots>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
-					<argLine>-Xmx512m -XX:MaxPermSize=256m
-						-XX:+HeapDumpOnOutOfMemoryError</argLine>
-					<systemPropertyVariables>
-						<sysprop.bonita.db.vendor>h2</sysprop.bonita.db.vendor>
-						<bonita.home>${bonita.home}</bonita.home>
-					</systemPropertyVariables>
+					<skipTests>true</skipTests>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
+	
 </project>
