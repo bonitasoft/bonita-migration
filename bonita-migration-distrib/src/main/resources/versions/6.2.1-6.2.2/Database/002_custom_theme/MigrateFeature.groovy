@@ -7,7 +7,13 @@ import java.io.ByteArrayOutputStream;
 def currentTime = System.currentTimeMillis()
 
 sql.eachRow(MigrationUtil.getSqlFile(feature, dbVendor, "select").text) { row ->
-    def byte[] content = row.getAt("content")
+    def byte[] content
+    if(dbVendor == "oracle"){
+        def blob = row.getAt("content")
+        content= blob.getBytes(1l,blob.length().intValue())
+    }else{
+        content = row.getAt("content")
+    }
     def tenantId = row.getAt("tenantId")
     def rowId = row.getAt("id")
     println "Update content of theme ${rowId}"
