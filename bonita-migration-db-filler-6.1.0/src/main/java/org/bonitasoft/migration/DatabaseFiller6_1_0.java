@@ -22,20 +22,12 @@ import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.bonitasoft.engine.TestsInitializer;
 import org.bonitasoft.engine.api.CommandAPI;
-import org.bonitasoft.engine.api.PlatformAPI;
-import org.bonitasoft.engine.api.PlatformAPIAccessor;
 import org.bonitasoft.engine.api.ProfileAPI;
 import org.bonitasoft.engine.api.TenantAPIAccessor;
-import org.bonitasoft.engine.exception.BonitaException;
-import org.bonitasoft.engine.exception.BonitaHomeNotSetException;
-import org.bonitasoft.engine.exception.ServerAPIException;
-import org.bonitasoft.engine.exception.UnknownAPITypeException;
 import org.bonitasoft.engine.identity.ImportPolicy;
 import org.bonitasoft.engine.search.SearchOptions;
 import org.bonitasoft.engine.search.SearchOptionsBuilder;
 import org.bonitasoft.engine.session.APISession;
-import org.bonitasoft.engine.session.PlatformSession;
-import org.bonitasoft.engine.test.APITestUtil;
 import org.springframework.context.ConfigurableApplicationContext;
 
 /**
@@ -54,14 +46,6 @@ public class DatabaseFiller6_1_0 extends DatabaseFiller {
     }
 
     @Override
-    public void shutdown() throws BonitaException, BonitaHomeNotSetException, ServerAPIException, UnknownAPITypeException {
-        final PlatformSession pSession = APITestUtil.loginPlatform();
-        final PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(pSession);
-        APITestUtil.stopPlatformAndTenant(platformAPI, false);
-        APITestUtil.logoutPlatform(pSession);
-    }
-
-    @Override
     protected Map<String, String> fillProfiles(final APISession session) throws Exception {
         final InputStream xmlStream = getProfilesXMLStream();
         final byte[] xmlContent = IOUtils.toByteArray(xmlStream);
@@ -77,6 +61,7 @@ public class DatabaseFiller6_1_0 extends DatabaseFiller {
         return map;
     }
 
+    @Override
     protected InputStream getProfilesXMLStream() {
         return getClass().getResourceAsStream("profiles.xml");
     }

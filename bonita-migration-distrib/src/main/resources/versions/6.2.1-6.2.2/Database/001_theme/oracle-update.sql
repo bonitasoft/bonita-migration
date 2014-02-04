@@ -1,7 +1,5 @@
 UPDATE theme 
-SET content = utl_raw.cast_to_raw(':content'),
-	cssContent = utl_raw.cast_to_raw(':cssContent'), 
-	lastUpdateDate = :lastUpdateDate
+SET lastUpdateDate = :lastUpdateDate
 WHERE isDefault = 1
 	AND type = ':type' @@
 

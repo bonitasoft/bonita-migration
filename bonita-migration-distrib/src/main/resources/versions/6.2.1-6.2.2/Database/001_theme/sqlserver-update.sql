@@ -1,7 +1,5 @@
 UPDATE theme 
-SET content = CONVERT(VARBINARY(MAX), ':content'),
-	cssContent = CONVERT(VARBINARY(MAX), ':cssContent'), 
-	lastUpdateDate = :lastUpdateDate
+SET lastUpdateDate = :lastUpdateDate
 WHERE isDefault = 1
 	AND type = ':type' @@
 
