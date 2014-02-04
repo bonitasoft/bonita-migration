@@ -6,7 +6,7 @@ import java.io.ByteArrayOutputStream;
 
 def currentTime = System.currentTimeMillis()
 
-sql.eachRow("SELECT * from theme WHERE isDefault = false AND type = 'PORTAL'") { row ->
+sql.eachRow(MigrationUtil.getSqlFile(feature, dbVendor, "select").text) { row ->
     def byte[] content = row.getAt("content")
     def tenantId = row.getAt("tenantId")
     def rowId = row.getAt("id")
