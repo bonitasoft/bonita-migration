@@ -87,7 +87,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-public class DatabaseFiller {
+public class DatabaseFiller6_0_2 {
 
     private final class SpotTransitionHandler implements SHandler<SEvent> {
 
@@ -130,10 +130,10 @@ public class DatabaseFiller {
 
     private static final String BONITA_HOME = "bonita.home";
 
-    protected final Logger logger = LoggerFactory.getLogger(DatabaseFiller.class);
+    protected final Logger logger = LoggerFactory.getLogger(DatabaseFiller6_0_2.class);
 
     public static void main(final String[] args) throws Exception {
-        DatabaseFiller databaseFiller = new DatabaseFiller();
+        DatabaseFiller6_0_2 databaseFiller = new DatabaseFiller6_0_2();
         databaseFiller.execute(1, 1, 1, 1);
     }
 
@@ -444,7 +444,7 @@ public class DatabaseFiller {
             userTask.addConnector("phoneConnector", "org.bonitasoft.phoneconnector", "1.0", ConnectorEvent.ON_ENTER);
 
             BusinessArchiveBuilder archiveBuilder = new BusinessArchiveBuilder().createNewBusinessArchive();
-            final InputStream contentAsStream = DatabaseFiller.class.getResourceAsStream("PhoneConnector.impl");
+            final InputStream contentAsStream = DatabaseFiller6_0_2.class.getResourceAsStream("PhoneConnector.impl");
             final byte[] content = IOUtils.toByteArray(contentAsStream);
             archiveBuilder.addConnectorImplementation(new BarResource("PhoneConnector.impl", content));
             archiveBuilder.setProcessDefinition(builder.done());

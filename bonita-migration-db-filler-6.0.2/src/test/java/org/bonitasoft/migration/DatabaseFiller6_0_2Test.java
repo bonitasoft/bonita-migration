@@ -8,13 +8,13 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class DatabaseFillerTest {
+public class DatabaseFiller6_0_2Test {
 
-    private static DatabaseFiller databaseFiller;
+    private static DatabaseFiller6_0_2 databaseFiller;
 
     @BeforeClass
     public static void beforeClass() throws Exception {
-        databaseFiller = new DatabaseFiller();
+        databaseFiller = new DatabaseFiller6_0_2();
         databaseFiller.setup();
         System.out.println("Finished init");
     }

@@ -46,7 +46,7 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @author Celine Souchet
  * 
  */
-public class DatabaseFiller6_2_2 extends DatabaseFiller {
+public class DatabaseFiller6_2_2 extends DatabaseFiller6_0_2 {
 
     public static void main(final String[] args) throws Exception {
         DatabaseFiller6_2_2 databaseFiller = new DatabaseFiller6_2_2();
