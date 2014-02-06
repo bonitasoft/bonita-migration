@@ -1638,23 +1638,23 @@ form.success .formentries .formentry .input div.alert_message.ERROR {
   min-height: 15px;
 }
 .page_tasklistingadmin .filters_panel .primary_filters a.performed {
-  background: url("themeResource?theme=portal&location=skin/images/filters-performed.png") transparent no-repeat 20px 10px !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-performed.png") transparent no-repeat 20px center !important;
 }
 .page_tasklistingadmin .filters_panel .primary_filters a.performed:hover {
-  background: url("themeResource?theme=portal&location=skin/images/filters-performed.png") transparent no-repeat 20px 10px,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-performed.png") no-repeat 20px 10px,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-performed.png") transparent no-repeat 20px 10px,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-performed.png") no-repeat 20px 10px,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-performed.png") transparent no-repeat 20px 10px, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-performed.png") no-repeat 20px 10px, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-performed.png") transparent no-repeat 20px 10px, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-performed.png") no-repeat 20px 10px, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) !important;
-  -pie-background: url("themeResource?theme=portal&location=skin/images/filters-performed.png") no-repeat 20px 10px, linear-gradient(#f20a08 0%, #b20706 100%);
+  background: url("themeResource?theme=portal&location=skin/images/filters-performed.png") transparent no-repeat 20px center,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-performed.png") no-repeat 20px center,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-performed.png") transparent no-repeat 20px center,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-performed.png") no-repeat 20px center,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-performed.png") transparent no-repeat 20px center, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-performed.png") no-repeat 20px center, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-performed.png") transparent no-repeat 20px center, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-performed.png") no-repeat 20px center, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) !important;
+  -pie-background: url("themeResource?theme=portal&location=skin/images/filters-performed.png") no-repeat 20px center, linear-gradient(#f20a08 0%, #b20706 100%);
   behavior: url(css/PIE.htc);
   -pie-watch-ancestors: 1;
 }
 .page_tasklistingadmin .filters_panel .primary_filters a.current.performed {
-  background: url("themeResource?theme=portal&location=skin/images/filters-performed-selected.png") #b20706 no-repeat 20px 10px !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-performed-selected.png") #b20706 no-repeat 20px center !important;
 }
 .page_tasklistingadmin .filters_panel .primary_filters .body a.current,
 .page_tasklistingadmin .filters_panel .primary_filters .body a.current:hover {
@@ -1792,40 +1792,40 @@ form.success .formentries .formentry .input div.alert_message.ERROR {
 .filters_panel .primary_filters a.enabledprocesses,
 .filters_panel .secondary_filters a.enabledprocesses,
 .filters_panel .resource_filters a.enabledprocesses {
-  background: url("themeResource?theme=portal&location=skin/images/filters-available.png") transparent no-repeat 20px 10px !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-available.png") transparent no-repeat 20px center !important;
 }
 .filters_panel .primary_filters a.enabledprocesses:hover,
 .filters_panel .secondary_filters a.enabledprocesses:hover,
 .filters_panel .resource_filters a.enabledprocesses:hover {
-  background: url("themeResource?theme=portal&location=skin/images/filters-available.png") transparent no-repeat 20px 10px,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-available.png") no-repeat 20px 10px,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-available.png") transparent no-repeat 20px 10px,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-available.png") no-repeat 20px 10px,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-available.png") transparent no-repeat 20px 10px, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-available.png") no-repeat 20px 10px, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-available.png") transparent no-repeat 20px 10px, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-available.png") no-repeat 20px 10px, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) !important;
-  -pie-background: url("themeResource?theme=portal&location=skin/images/filters-available.png") no-repeat 20px 10px, linear-gradient(#f20a08 0%, #b20706 100%);
+  background: url("themeResource?theme=portal&location=skin/images/filters-available.png") transparent no-repeat 20px center,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-available.png") no-repeat 20px center,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-available.png") transparent no-repeat 20px center,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-available.png") no-repeat 20px center,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-available.png") transparent no-repeat 20px center, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-available.png") no-repeat 20px center, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-available.png") transparent no-repeat 20px center, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-available.png") no-repeat 20px center, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) !important;
+  -pie-background: url("themeResource?theme=portal&location=skin/images/filters-available.png") no-repeat 20px center, linear-gradient(#f20a08 0%, #b20706 100%);
   behavior: url(css/PIE.htc);
   -pie-watch-ancestors: 1;
 }
 .filters_panel .primary_filters a.available,
 .filters_panel .secondary_filters a.available,
 .filters_panel .resource_filters a.available {
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-todo.png") transparent no-repeat 20px 10px !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-todo.png") transparent no-repeat 20px center !important;
 }
 .filters_panel .primary_filters a.available:hover,
 .filters_panel .secondary_filters a.available:hover,
 .filters_panel .resource_filters a.available:hover {
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-todo.png") transparent no-repeat 20px 10px,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-todo.png") no-repeat 20px 10px,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-todo.png") transparent no-repeat 20px 10px,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-todo.png") no-repeat 20px 10px,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-todo.png") transparent no-repeat 20px 10px, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-todo.png") no-repeat 20px 10px, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-todo.png") transparent no-repeat 20px 10px, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-todo.png") no-repeat 20px 10px, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) !important;
-  -pie-background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-todo.png") no-repeat 20px 10px, linear-gradient(#f20a08 0%, #b20706 100%);
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-todo.png") transparent no-repeat 20px center,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-todo.png") no-repeat 20px center,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-todo.png") transparent no-repeat 20px center,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-todo.png") no-repeat 20px center,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-todo.png") transparent no-repeat 20px center, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-todo.png") no-repeat 20px center, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-todo.png") transparent no-repeat 20px center, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-todo.png") no-repeat 20px center, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) !important;
+  -pie-background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-todo.png") no-repeat 20px center, linear-gradient(#f20a08 0%, #b20706 100%);
   behavior: url(css/PIE.htc);
   -pie-watch-ancestors: 1;
 }
@@ -1834,42 +1834,42 @@ form.success .formentries .formentry .input div.alert_message.ERROR {
 .filters_panel .resource_filters a.unassigned {
   padding: 15px 15px 15px 70px;
   font-size: 100%;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-available.png") transparent no-repeat 35px 10px !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-available.png") transparent no-repeat 35px center !important;
 }
 .filters_panel .primary_filters a.unassigned:hover,
 .filters_panel .secondary_filters a.unassigned:hover,
 .filters_panel .resource_filters a.unassigned:hover {
   padding: 15px 15px 15px 70px;
   font-size: 100%;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-available.png") transparent no-repeat 35px 10px,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-available.png") no-repeat 35px 10px,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-available.png") transparent no-repeat 35px 10px,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-available.png") no-repeat 35px 10px,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-available.png") transparent no-repeat 35px 10px, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-available.png") no-repeat 35px 10px, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-available.png") transparent no-repeat 35px 10px, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-available.png") no-repeat 35px 10px, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) !important;
-  -pie-background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-available.png") no-repeat 35px 10px, linear-gradient(#f20a08 0%, #b20706 100%);
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-available.png") transparent no-repeat 35px center,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-available.png") no-repeat 35px center,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-available.png") transparent no-repeat 35px center,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-available.png") no-repeat 35px center,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-available.png") transparent no-repeat 35px center, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-available.png") no-repeat 35px center, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-available.png") transparent no-repeat 35px center, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-available.png") no-repeat 35px center, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) !important;
+  -pie-background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-available.png") no-repeat 35px center, linear-gradient(#f20a08 0%, #b20706 100%);
   behavior: url(css/PIE.htc);
   -pie-watch-ancestors: 1;
 }
 .filters_panel .primary_filters a.disabledprocesses,
 .filters_panel .secondary_filters a.disabledprocesses,
 .filters_panel .resource_filters a.disabledprocesses {
-  background: url("themeResource?theme=portal&location=skin/images/filters-unassigned.png") transparent no-repeat 20px 10px !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-unassigned.png") transparent no-repeat 20px center !important;
 }
 .filters_panel .primary_filters a.disabledprocesses:hover,
 .filters_panel .secondary_filters a.disabledprocesses:hover,
 .filters_panel .resource_filters a.disabledprocesses:hover {
-  background: url("themeResource?theme=portal&location=skin/images/filters-unassigned.png") transparent no-repeat 20px 10px,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-unassigned.png") no-repeat 20px 10px,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-unassigned.png") transparent no-repeat 20px 10px,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-unassigned.png") no-repeat 20px 10px,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-unassigned.png") transparent no-repeat 20px 10px, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-unassigned.png") no-repeat 20px 10px, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-unassigned.png") transparent no-repeat 20px 10px, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-unassigned.png") no-repeat 20px 10px, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) !important;
-  -pie-background: url("themeResource?theme=portal&location=skin/images/filters-unassigned.png") no-repeat 20px 10px, linear-gradient(#f20a08 0%, #b20706 100%);
+  background: url("themeResource?theme=portal&location=skin/images/filters-unassigned.png") transparent no-repeat 20px center,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-unassigned.png") no-repeat 20px center,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-unassigned.png") transparent no-repeat 20px center,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-unassigned.png") no-repeat 20px center,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-unassigned.png") transparent no-repeat 20px center, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-unassigned.png") no-repeat 20px center, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-unassigned.png") transparent no-repeat 20px center, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-unassigned.png") no-repeat 20px center, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) !important;
+  -pie-background: url("themeResource?theme=portal&location=skin/images/filters-unassigned.png") no-repeat 20px center, linear-gradient(#f20a08 0%, #b20706 100%);
   behavior: url(css/PIE.htc);
   -pie-watch-ancestors: 1;
 }
@@ -1878,22 +1878,22 @@ form.success .formentries .formentry .input div.alert_message.ERROR {
 .filters_panel .resource_filters a.resolvedprocesses {
   padding: 15px 15px 15px 70px;
   font-size: 100%;
-  background: url("themeResource?theme=portal&location=skin/images/filters-resolved.png") transparent no-repeat 35px 10px !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-resolved.png") transparent no-repeat 35px center !important;
 }
 .filters_panel .primary_filters a.resolvedprocesses:hover,
 .filters_panel .secondary_filters a.resolvedprocesses:hover,
 .filters_panel .resource_filters a.resolvedprocesses:hover {
   padding: 15px 15px 15px 70px;
   font-size: 100%;
-  background: url("themeResource?theme=portal&location=skin/images/filters-resolved.png") transparent no-repeat 35px 10px,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-resolved.png") no-repeat 35px 10px,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-resolved.png") transparent no-repeat 35px 10px,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-resolved.png") no-repeat 35px 10px,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-resolved.png") transparent no-repeat 35px 10px, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-resolved.png") no-repeat 35px 10px, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-resolved.png") transparent no-repeat 35px 10px, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-resolved.png") no-repeat 35px 10px, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) !important;
-  -pie-background: url("themeResource?theme=portal&location=skin/images/filters-resolved.png") no-repeat 35px 10px, linear-gradient(#f20a08 0%, #b20706 100%);
+  background: url("themeResource?theme=portal&location=skin/images/filters-resolved.png") transparent no-repeat 35px center,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-resolved.png") no-repeat 35px center,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-resolved.png") transparent no-repeat 35px center,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-resolved.png") no-repeat 35px center,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-resolved.png") transparent no-repeat 35px center, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-resolved.png") no-repeat 35px center, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-resolved.png") transparent no-repeat 35px center, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-resolved.png") no-repeat 35px center, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) !important;
+  -pie-background: url("themeResource?theme=portal&location=skin/images/filters-resolved.png") no-repeat 35px center, linear-gradient(#f20a08 0%, #b20706 100%);
   behavior: url(css/PIE.htc);
   -pie-watch-ancestors: 1;
 }
@@ -1902,22 +1902,22 @@ form.success .formentries .formentry .input div.alert_message.ERROR {
 .filters_panel .resource_filters a.unresolvedprocesses {
   padding: 15px 15px 15px 70px;
   font-size: 100%;
-  background: url("themeResource?theme=portal&location=skin/images/filters-unresolved.png") transparent no-repeat 35px 10px !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-unresolved.png") transparent no-repeat 35px center !important;
 }
 .filters_panel .primary_filters a.unresolvedprocesses:hover,
 .filters_panel .secondary_filters a.unresolvedprocesses:hover,
 .filters_panel .resource_filters a.unresolvedprocesses:hover {
   padding: 15px 15px 15px 70px;
   font-size: 100%;
-  background: url("themeResource?theme=portal&location=skin/images/filters-unresolved.png") transparent no-repeat 35px 10px,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-unresolved.png") no-repeat 35px 10px,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-unresolved.png") transparent no-repeat 35px 10px,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-unresolved.png") no-repeat 35px 10px,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-unresolved.png") transparent no-repeat 35px 10px, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-unresolved.png") no-repeat 35px 10px, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-unresolved.png") transparent no-repeat 35px 10px, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-unresolved.png") no-repeat 35px 10px, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) !important;
-  -pie-background: url("themeResource?theme=portal&location=skin/images/filters-unresolved.png") no-repeat 35px 10px, linear-gradient(#f20a08 0%, #b20706 100%);
+  background: url("themeResource?theme=portal&location=skin/images/filters-unresolved.png") transparent no-repeat 35px center,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-unresolved.png") no-repeat 35px center,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-unresolved.png") transparent no-repeat 35px center,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-unresolved.png") no-repeat 35px center,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-unresolved.png") transparent no-repeat 35px center, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-unresolved.png") no-repeat 35px center, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-unresolved.png") transparent no-repeat 35px center, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-unresolved.png") no-repeat 35px center, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) !important;
+  -pie-background: url("themeResource?theme=portal&location=skin/images/filters-unresolved.png") no-repeat 35px center, linear-gradient(#f20a08 0%, #b20706 100%);
   behavior: url(css/PIE.htc);
   -pie-watch-ancestors: 1;
 }
@@ -1926,82 +1926,82 @@ form.success .formentries .formentry .input div.alert_message.ERROR {
 .filters_panel .resource_filters a.assigned {
   padding: 15px 15px 15px 70px;
   font-size: 100%;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-mytasks.png") transparent no-repeat 35px 10px !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-mytasks.png") transparent no-repeat 35px center !important;
 }
 .filters_panel .primary_filters a.assigned:hover,
 .filters_panel .secondary_filters a.assigned:hover,
 .filters_panel .resource_filters a.assigned:hover {
   padding: 15px 15px 15px 70px;
   font-size: 100%;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-mytasks.png") transparent no-repeat 35px 10px,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-mytasks.png") no-repeat 35px 10px,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-mytasks.png") transparent no-repeat 35px 10px,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-mytasks.png") no-repeat 35px 10px,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-mytasks.png") transparent no-repeat 35px 10px, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-mytasks.png") no-repeat 35px 10px, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-mytasks.png") transparent no-repeat 35px 10px, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-mytasks.png") no-repeat 35px 10px, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) !important;
-  -pie-background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-mytasks.png") no-repeat 35px 10px, linear-gradient(#f20a08 0%, #b20706 100%);
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-mytasks.png") transparent no-repeat 35px center,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-mytasks.png") no-repeat 35px center,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-mytasks.png") transparent no-repeat 35px center,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-mytasks.png") no-repeat 35px center,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-mytasks.png") transparent no-repeat 35px center, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-mytasks.png") no-repeat 35px center, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-mytasks.png") transparent no-repeat 35px center, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-mytasks.png") no-repeat 35px center, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) !important;
+  -pie-background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-mytasks.png") no-repeat 35px center, linear-gradient(#f20a08 0%, #b20706 100%);
   behavior: url(css/PIE.htc);
   -pie-watch-ancestors: 1;
 }
 .filters_panel .primary_filters a.ignored,
 .filters_panel .secondary_filters a.ignored,
 .filters_panel .resource_filters a.ignored {
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-hidden.png") transparent no-repeat 20px 10px !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-hidden.png") transparent no-repeat 20px center !important;
 }
 .filters_panel .primary_filters a.ignored:hover,
 .filters_panel .secondary_filters a.ignored:hover,
 .filters_panel .resource_filters a.ignored:hover {
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-hidden.png") transparent no-repeat 20px 10px,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-hidden.png") no-repeat 20px 10px,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-hidden.png") transparent no-repeat 20px 10px,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-hidden.png") no-repeat 20px 10px,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-hidden.png") transparent no-repeat 20px 10px, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-hidden.png") no-repeat 20px 10px, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-hidden.png") transparent no-repeat 20px 10px, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-hidden.png") no-repeat 20px 10px, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) !important;
-  -pie-background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-hidden.png") no-repeat 20px 10px, linear-gradient(#f20a08 0%, #b20706 100%);
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-hidden.png") transparent no-repeat 20px center,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-hidden.png") no-repeat 20px center,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-hidden.png") transparent no-repeat 20px center,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-hidden.png") no-repeat 20px center,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-hidden.png") transparent no-repeat 20px center, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-hidden.png") no-repeat 20px center, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-hidden.png") transparent no-repeat 20px center, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-hidden.png") no-repeat 20px center, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) !important;
+  -pie-background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-hidden.png") no-repeat 20px center, linear-gradient(#f20a08 0%, #b20706 100%);
   behavior: url(css/PIE.htc);
   -pie-watch-ancestors: 1;
 }
 .filters_panel .primary_filters a.performed,
 .filters_panel .secondary_filters a.performed,
 .filters_panel .resource_filters a.performed {
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-performed.png") transparent no-repeat 20px 10px !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-performed.png") transparent no-repeat 20px center !important;
 }
 .filters_panel .primary_filters a.performed:hover,
 .filters_panel .secondary_filters a.performed:hover,
 .filters_panel .resource_filters a.performed:hover {
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-performed.png") transparent no-repeat 20px 10px,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-performed.png") no-repeat 20px 10px,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-performed.png") transparent no-repeat 20px 10px,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-performed.png") no-repeat 20px 10px,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-performed.png") transparent no-repeat 20px 10px, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-performed.png") no-repeat 20px 10px, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-performed.png") transparent no-repeat 20px 10px, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-performed.png") no-repeat 20px 10px, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) !important;
-  -pie-background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-performed.png") no-repeat 20px 10px, linear-gradient(#f20a08 0%, #b20706 100%);
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-performed.png") transparent no-repeat 20px center,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-performed.png") no-repeat 20px center,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-performed.png") transparent no-repeat 20px center,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-performed.png") no-repeat 20px center,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-performed.png") transparent no-repeat 20px center, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-performed.png") no-repeat 20px center, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-performed.png") transparent no-repeat 20px center, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-performed.png") no-repeat 20px center, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) !important;
+  -pie-background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-performed.png") no-repeat 20px center, linear-gradient(#f20a08 0%, #b20706 100%);
   behavior: url(css/PIE.htc);
   -pie-watch-ancestors: 1;
 }
 .filters_panel .primary_filters a.mycases,
 .filters_panel .secondary_filters a.mycases,
 .filters_panel .resource_filters a.mycases {
-  background: url("themeResource?theme=portal&location=skin/images/filters-mycases.png") transparent no-repeat 20px 10px !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-mycases.png") transparent no-repeat 20px center !important;
 }
 .filters_panel .primary_filters a.mycases:hover,
 .filters_panel .secondary_filters a.mycases:hover,
 .filters_panel .resource_filters a.mycases:hover {
-  background: url("themeResource?theme=portal&location=skin/images/filters-mycases.png") transparent no-repeat 20px 10px,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-mycases.png") no-repeat 20px 10px,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-mycases.png") transparent no-repeat 20px 10px,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-mycases.png") no-repeat 20px 10px,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-mycases.png") transparent no-repeat 20px 10px, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-mycases.png") no-repeat 20px 10px, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-mycases.png") transparent no-repeat 20px 10px, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-mycases.png") no-repeat 20px 10px, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) !important;
-  -pie-background: url("themeResource?theme=portal&location=skin/images/filters-mycases.png") no-repeat 20px 10px, linear-gradient(#f20a08 0%, #b20706 100%);
+  background: url("themeResource?theme=portal&location=skin/images/filters-mycases.png") transparent no-repeat 20px center,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-mycases.png") no-repeat 20px center,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-mycases.png") transparent no-repeat 20px center,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-mycases.png") no-repeat 20px center,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-mycases.png") transparent no-repeat 20px center, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-mycases.png") no-repeat 20px center, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-mycases.png") transparent no-repeat 20px center, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-mycases.png") no-repeat 20px center, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) !important;
+  -pie-background: url("themeResource?theme=portal&location=skin/images/filters-mycases.png") no-repeat 20px center, linear-gradient(#f20a08 0%, #b20706 100%);
   behavior: url(css/PIE.htc);
   -pie-watch-ancestors: 1;
 }
@@ -2011,7 +2011,7 @@ form.success .formentries .formentry .input div.alert_message.ERROR {
 .filters_panel .primary_filters a.openedcases,
 .filters_panel .secondary_filters a.openedcases,
 .filters_panel .resource_filters a.openedcases {
-  background: url("themeResource?theme=portal&location=skin/images/filters-workedon.png") transparent no-repeat 20px 10px !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-workedon.png") transparent no-repeat 20px center !important;
 }
 .filters_panel .primary_filters a.workedoncases:hover,
 .filters_panel .secondary_filters a.workedoncases:hover,
@@ -2019,35 +2019,35 @@ form.success .formentries .formentry .input div.alert_message.ERROR {
 .filters_panel .primary_filters a.openedcases:hover,
 .filters_panel .secondary_filters a.openedcases:hover,
 .filters_panel .resource_filters a.openedcases:hover {
-  background: url("themeResource?theme=portal&location=skin/images/filters-workedon.png") transparent no-repeat 20px 10px,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-workedon.png") no-repeat 20px 10px,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-workedon.png") transparent no-repeat 20px 10px,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-workedon.png") no-repeat 20px 10px,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-workedon.png") transparent no-repeat 20px 10px, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-workedon.png") no-repeat 20px 10px, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-workedon.png") transparent no-repeat 20px 10px, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-workedon.png") no-repeat 20px 10px, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) !important;
-  -pie-background: url("themeResource?theme=portal&location=skin/images/filters-workedon.png") no-repeat 20px 10px, linear-gradient(#f20a08 0%, #b20706 100%);
+  background: url("themeResource?theme=portal&location=skin/images/filters-workedon.png") transparent no-repeat 20px center,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-workedon.png") no-repeat 20px center,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-workedon.png") transparent no-repeat 20px center,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-workedon.png") no-repeat 20px center,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-workedon.png") transparent no-repeat 20px center, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-workedon.png") no-repeat 20px center, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-workedon.png") transparent no-repeat 20px center, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-workedon.png") no-repeat 20px center, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) !important;
+  -pie-background: url("themeResource?theme=portal&location=skin/images/filters-workedon.png") no-repeat 20px center, linear-gradient(#f20a08 0%, #b20706 100%);
   behavior: url(css/PIE.htc);
   -pie-watch-ancestors: 1;
 }
 .filters_panel .primary_filters a.archivedcases,
 .filters_panel .secondary_filters a.archivedcases,
 .filters_panel .resource_filters a.archivedcases {
-  background: url("themeResource?theme=portal&location=skin/images/filters-archived.png") transparent no-repeat 20px 10px !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-archived.png") transparent no-repeat 20px center !important;
 }
 .filters_panel .primary_filters a.archivedcases:hover,
 .filters_panel .secondary_filters a.archivedcases:hover,
 .filters_panel .resource_filters a.archivedcases:hover {
-  background: url("themeResource?theme=portal&location=skin/images/filters-archived.png") transparent no-repeat 20px 10px,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-archived.png") no-repeat 20px 10px,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-archived.png") transparent no-repeat 20px 10px,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-archived.png") no-repeat 20px 10px,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-archived.png") transparent no-repeat 20px 10px, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-archived.png") no-repeat 20px 10px, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-archived.png") transparent no-repeat 20px 10px, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-archived.png") no-repeat 20px 10px, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) !important;
-  -pie-background: url("themeResource?theme=portal&location=skin/images/filters-archived.png") no-repeat 20px 10px, linear-gradient(#f20a08 0%, #b20706 100%);
+  background: url("themeResource?theme=portal&location=skin/images/filters-archived.png") transparent no-repeat 20px center,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-archived.png") no-repeat 20px center,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-archived.png") transparent no-repeat 20px center,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-archived.png") no-repeat 20px center,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-archived.png") transparent no-repeat 20px center, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-archived.png") no-repeat 20px center, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-archived.png") transparent no-repeat 20px center, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-archived.png") no-repeat 20px center, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) !important;
+  -pie-background: url("themeResource?theme=portal&location=skin/images/filters-archived.png") no-repeat 20px center, linear-gradient(#f20a08 0%, #b20706 100%);
   behavior: url(css/PIE.htc);
   -pie-watch-ancestors: 1;
 }
@@ -2063,7 +2063,7 @@ form.success .formentries .formentry .input div.alert_message.ERROR {
 .filters_panel .primary_filters a.all,
 .filters_panel .secondary_filters a.all,
 .filters_panel .resource_filters a.all {
-  background: url("themeResource?theme=portal&location=skin/images/filters-all.png") transparent no-repeat 20px 10px !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-all.png") transparent no-repeat 20px center !important;
 }
 .filters_panel .primary_filters a.allusersfilter:hover,
 .filters_panel .secondary_filters a.allusersfilter:hover,
@@ -2077,135 +2077,135 @@ form.success .formentries .formentry .input div.alert_message.ERROR {
 .filters_panel .primary_filters a.all:hover,
 .filters_panel .secondary_filters a.all:hover,
 .filters_panel .resource_filters a.all:hover {
-  background: url("themeResource?theme=portal&location=skin/images/filters-all.png") transparent no-repeat 20px 10px,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-all.png") no-repeat 20px 10px,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-all.png") transparent no-repeat 20px 10px,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-all.png") no-repeat 20px 10px,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-all.png") transparent no-repeat 20px 10px, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-all.png") no-repeat 20px 10px, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-all.png") transparent no-repeat 20px 10px, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-all.png") no-repeat 20px 10px, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) !important;
-  -pie-background: url("themeResource?theme=portal&location=skin/images/filters-all.png") no-repeat 20px 10px, linear-gradient(#f20a08 0%, #b20706 100%);
+  background: url("themeResource?theme=portal&location=skin/images/filters-all.png") transparent no-repeat 20px center,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-all.png") no-repeat 20px center,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-all.png") transparent no-repeat 20px center,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-all.png") no-repeat 20px center,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-all.png") transparent no-repeat 20px center, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-all.png") no-repeat 20px center, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-all.png") transparent no-repeat 20px center, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-all.png") no-repeat 20px center, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) !important;
+  -pie-background: url("themeResource?theme=portal&location=skin/images/filters-all.png") no-repeat 20px center, linear-gradient(#f20a08 0%, #b20706 100%);
   behavior: url(css/PIE.htc);
   -pie-watch-ancestors: 1;
 }
 .filters_panel .primary_filters a.humantask,
 .filters_panel .secondary_filters a.humantask,
 .filters_panel .resource_filters a.humantask {
-  background: url("themeResource?theme=portal&location=skin/images/filters-human.png") transparent no-repeat 20px 10px !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-human.png") transparent no-repeat 20px center !important;
 }
 .filters_panel .primary_filters a.humantask:hover,
 .filters_panel .secondary_filters a.humantask:hover,
 .filters_panel .resource_filters a.humantask:hover {
-  background: url("themeResource?theme=portal&location=skin/images/filters-human.png") transparent no-repeat 20px 10px,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-human.png") no-repeat 20px 10px,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-human.png") transparent no-repeat 20px 10px,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-human.png") no-repeat 20px 10px,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-human.png") transparent no-repeat 20px 10px, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-human.png") no-repeat 20px 10px, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-human.png") transparent no-repeat 20px 10px, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-human.png") no-repeat 20px 10px, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) !important;
-  -pie-background: url("themeResource?theme=portal&location=skin/images/filters-human.png") no-repeat 20px 10px, linear-gradient(#f20a08 0%, #b20706 100%);
+  background: url("themeResource?theme=portal&location=skin/images/filters-human.png") transparent no-repeat 20px center,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-human.png") no-repeat 20px center,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-human.png") transparent no-repeat 20px center,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-human.png") no-repeat 20px center,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-human.png") transparent no-repeat 20px center, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-human.png") no-repeat 20px center, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-human.png") transparent no-repeat 20px center, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-human.png") no-repeat 20px center, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) !important;
+  -pie-background: url("themeResource?theme=portal&location=skin/images/filters-human.png") no-repeat 20px center, linear-gradient(#f20a08 0%, #b20706 100%);
   behavior: url(css/PIE.htc);
   -pie-watch-ancestors: 1;
 }
 .filters_panel .primary_filters a.failed,
 .filters_panel .secondary_filters a.failed,
 .filters_panel .resource_filters a.failed {
-  background: url("themeResource?theme=portal&location=skin/images/filters-failed.png") transparent no-repeat 20px 10px !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-failed.png") transparent no-repeat 20px center !important;
 }
 .filters_panel .primary_filters a.failed:hover,
 .filters_panel .secondary_filters a.failed:hover,
 .filters_panel .resource_filters a.failed:hover {
-  background: url("themeResource?theme=portal&location=skin/images/filters-failed.png") transparent no-repeat 20px 10px,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-failed.png") no-repeat 20px 10px,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-failed.png") transparent no-repeat 20px 10px,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-failed.png") no-repeat 20px 10px,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-failed.png") transparent no-repeat 20px 10px, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-failed.png") no-repeat 20px 10px, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-failed.png") transparent no-repeat 20px 10px, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-failed.png") no-repeat 20px 10px, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) !important;
-  -pie-background: url("themeResource?theme=portal&location=skin/images/filters-failed.png") no-repeat 20px 10px, linear-gradient(#f20a08 0%, #b20706 100%);
+  background: url("themeResource?theme=portal&location=skin/images/filters-failed.png") transparent no-repeat 20px center,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-failed.png") no-repeat 20px center,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-failed.png") transparent no-repeat 20px center,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-failed.png") no-repeat 20px center,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-failed.png") transparent no-repeat 20px center, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-failed.png") no-repeat 20px center, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-failed.png") transparent no-repeat 20px center, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-failed.png") no-repeat 20px center, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) !important;
+  -pie-background: url("themeResource?theme=portal&location=skin/images/filters-failed.png") no-repeat 20px center, linear-gradient(#f20a08 0%, #b20706 100%);
   behavior: url(css/PIE.htc);
   -pie-watch-ancestors: 1;
 }
 .filters_panel .primary_filters a.monitoring,
 .filters_panel .secondary_filters a.monitoring,
 .filters_panel .resource_filters a.monitoring {
-  background: url("themeResource?theme=portal&location=skin/images/filters-monitoring.png") transparent no-repeat 20px 10px !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-monitoring.png") transparent no-repeat 20px center !important;
 }
 .filters_panel .primary_filters a.monitoring:hover,
 .filters_panel .secondary_filters a.monitoring:hover,
 .filters_panel .resource_filters a.monitoring:hover {
-  background: url("themeResource?theme=portal&location=skin/images/filters-monitoring.png") transparent no-repeat 20px 10px,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-monitoring.png") no-repeat 20px 10px,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-monitoring.png") transparent no-repeat 20px 10px,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-monitoring.png") no-repeat 20px 10px,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-monitoring.png") transparent no-repeat 20px 10px, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-monitoring.png") no-repeat 20px 10px, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-monitoring.png") transparent no-repeat 20px 10px, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-monitoring.png") no-repeat 20px 10px, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) !important;
-  -pie-background: url("themeResource?theme=portal&location=skin/images/filters-monitoring.png") no-repeat 20px 10px, linear-gradient(#f20a08 0%, #b20706 100%);
+  background: url("themeResource?theme=portal&location=skin/images/filters-monitoring.png") transparent no-repeat 20px center,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-monitoring.png") no-repeat 20px center,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-monitoring.png") transparent no-repeat 20px center,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-monitoring.png") no-repeat 20px center,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-monitoring.png") transparent no-repeat 20px center, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-monitoring.png") no-repeat 20px center, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-monitoring.png") transparent no-repeat 20px center, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-monitoring.png") no-repeat 20px center, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) !important;
+  -pie-background: url("themeResource?theme=portal&location=skin/images/filters-monitoring.png") no-repeat 20px center, linear-gradient(#f20a08 0%, #b20706 100%);
   behavior: url(css/PIE.htc);
   -pie-watch-ancestors: 1;
 }
 .filters_panel .primary_filters a.reports,
 .filters_panel .secondary_filters a.reports,
 .filters_panel .resource_filters a.reports {
-  background: url("themeResource?theme=portal&location=skin/images/filters-reporting.png") transparent no-repeat 20px 10px !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-reporting.png") transparent no-repeat 20px center !important;
 }
 .filters_panel .primary_filters a.reports:hover,
 .filters_panel .secondary_filters a.reports:hover,
 .filters_panel .resource_filters a.reports:hover {
-  background: url("themeResource?theme=portal&location=skin/images/filters-reporting.png") transparent no-repeat 20px 10px,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-reporting.png") no-repeat 20px 10px,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-reporting.png") transparent no-repeat 20px 10px,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-reporting.png") no-repeat 20px 10px,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-reporting.png") transparent no-repeat 20px 10px, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-reporting.png") no-repeat 20px 10px, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-reporting.png") transparent no-repeat 20px 10px, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-reporting.png") no-repeat 20px 10px, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) !important;
-  -pie-background: url("themeResource?theme=portal&location=skin/images/filters-reporting.png") no-repeat 20px 10px, linear-gradient(#f20a08 0%, #b20706 100%);
+  background: url("themeResource?theme=portal&location=skin/images/filters-reporting.png") transparent no-repeat 20px center,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-reporting.png") no-repeat 20px center,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-reporting.png") transparent no-repeat 20px center,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-reporting.png") no-repeat 20px center,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-reporting.png") transparent no-repeat 20px center, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-reporting.png") no-repeat 20px center, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-reporting.png") transparent no-repeat 20px center, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-reporting.png") no-repeat 20px center, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) !important;
+  -pie-background: url("themeResource?theme=portal&location=skin/images/filters-reporting.png") no-repeat 20px center, linear-gradient(#f20a08 0%, #b20706 100%);
   behavior: url(css/PIE.htc);
   -pie-watch-ancestors: 1;
 }
 .filters_panel .primary_filters a.enabledusers,
 .filters_panel .secondary_filters a.enabledusers,
 .filters_panel .resource_filters a.enabledusers {
-  background: url("themeResource?theme=portal&location=skin/images/filters-user-active.png") transparent no-repeat 20px 10px !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-user-active.png") transparent no-repeat 20px center !important;
 }
 .filters_panel .primary_filters a.enabledusers:hover,
 .filters_panel .secondary_filters a.enabledusers:hover,
 .filters_panel .resource_filters a.enabledusers:hover {
-  background: url("themeResource?theme=portal&location=skin/images/filters-user-active.png") transparent no-repeat 20px 10px,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-user-active.png") no-repeat 20px 10px,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-user-active.png") transparent no-repeat 20px 10px,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-user-active.png") no-repeat 20px 10px,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-user-active.png") transparent no-repeat 20px 10px, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-user-active.png") no-repeat 20px 10px, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-user-active.png") transparent no-repeat 20px 10px, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-user-active.png") no-repeat 20px 10px, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) !important;
-  -pie-background: url("themeResource?theme=portal&location=skin/images/filters-user-active.png") no-repeat 20px 10px, linear-gradient(#f20a08 0%, #b20706 100%);
+  background: url("themeResource?theme=portal&location=skin/images/filters-user-active.png") transparent no-repeat 20px center,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-user-active.png") no-repeat 20px center,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-user-active.png") transparent no-repeat 20px center,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-user-active.png") no-repeat 20px center,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-user-active.png") transparent no-repeat 20px center, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-user-active.png") no-repeat 20px center, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-user-active.png") transparent no-repeat 20px center, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-user-active.png") no-repeat 20px center, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) !important;
+  -pie-background: url("themeResource?theme=portal&location=skin/images/filters-user-active.png") no-repeat 20px center, linear-gradient(#f20a08 0%, #b20706 100%);
   behavior: url(css/PIE.htc);
   -pie-watch-ancestors: 1;
 }
 .filters_panel .primary_filters a.disabledusers,
 .filters_panel .secondary_filters a.disabledusers,
 .filters_panel .resource_filters a.disabledusers {
-  background: url("themeResource?theme=portal&location=skin/images/filters-user-inactive.png") transparent no-repeat 20px 10px !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-user-inactive.png") transparent no-repeat 20px center !important;
 }
 .filters_panel .primary_filters a.disabledusers:hover,
 .filters_panel .secondary_filters a.disabledusers:hover,
 .filters_panel .resource_filters a.disabledusers:hover {
-  background: url("themeResource?theme=portal&location=skin/images/filters-user-inactive.png") transparent no-repeat 20px 10px,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-user-inactive.png") no-repeat 20px 10px,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-user-inactive.png") transparent no-repeat 20px 10px,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-user-inactive.png") no-repeat 20px 10px,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-user-inactive.png") transparent no-repeat 20px 10px, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-user-inactive.png") no-repeat 20px 10px, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-user-inactive.png") transparent no-repeat 20px 10px, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) center center !important;
-  background: url("themeResource?theme=portal&location=skin/images/filters-user-inactive.png") no-repeat 20px 10px, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) !important;
-  -pie-background: url("themeResource?theme=portal&location=skin/images/filters-user-inactive.png") no-repeat 20px 10px, linear-gradient(#f20a08 0%, #b20706 100%);
+  background: url("themeResource?theme=portal&location=skin/images/filters-user-inactive.png") transparent no-repeat 20px center,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-user-inactive.png") no-repeat 20px center,-webkit-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-user-inactive.png") transparent no-repeat 20px center,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-user-inactive.png") no-repeat 20px center,-moz-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-user-inactive.png") transparent no-repeat 20px center, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-user-inactive.png") no-repeat 20px center, -ms-linear-gradient(top, #f20a08 0%, #b20706 100%) !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-user-inactive.png") transparent no-repeat 20px center, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) center center !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-user-inactive.png") no-repeat 20px center, linear-gradient(to bottom, #f20a08 0%, #b20706 100%) !important;
+  -pie-background: url("themeResource?theme=portal&location=skin/images/filters-user-inactive.png") no-repeat 20px center, linear-gradient(#f20a08 0%, #b20706 100%);
   behavior: url(css/PIE.htc);
   -pie-watch-ancestors: 1;
 }
@@ -2225,60 +2225,60 @@ form.success .formentries .formentry .input div.alert_message.ERROR {
 .filters_panel .primary_filters a.current.enabledprocesses,
 .filters_panel .secondary_filters a.current.enabledprocesses,
 .filters_panel .resource_filters a.current.enabledprocesses {
-  background: url("themeResource?theme=portal&location=skin/images/filters-available-selected.png") #b20706 no-repeat 20px 10px !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-available-selected.png") #b20706 no-repeat 20px center !important;
 }
 .filters_panel .primary_filters a.current.available,
 .filters_panel .secondary_filters a.current.available,
 .filters_panel .resource_filters a.current.available {
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-todo-selected.png") #b20706 no-repeat 20px 10px !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-todo-selected.png") #b20706 no-repeat 20px center !important;
 }
 .filters_panel .primary_filters a.current.disabledprocesses,
 .filters_panel .secondary_filters a.current.disabledprocesses,
 .filters_panel .resource_filters a.current.disabledprocesses {
-  background: url("themeResource?theme=portal&location=skin/images/filters-unassigned-selected.png") #b20706 no-repeat 20px 10px !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-unassigned-selected.png") #b20706 no-repeat 20px center !important;
 }
 .filters_panel .primary_filters a.current.resolvedprocesses,
 .filters_panel .secondary_filters a.current.resolvedprocesses,
 .filters_panel .resource_filters a.current.resolvedprocesses {
   padding: 15px 15px 15px 70px;
   font-size: 100%;
-  background: url("themeResource?theme=portal&location=skin/images/filters-resolved-selected.png") #b20706 no-repeat 35px 10px !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-resolved-selected.png") #b20706 no-repeat 35px center !important;
 }
 .filters_panel .primary_filters a.current.unresolvedprocesses,
 .filters_panel .secondary_filters a.current.unresolvedprocesses,
 .filters_panel .resource_filters a.current.unresolvedprocesses {
   padding: 15px 15px 15px 70px;
   font-size: 100%;
-  background: url("themeResource?theme=portal&location=skin/images/filters-unresolved-selected.png") #b20706 no-repeat 35px 10px !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-unresolved-selected.png") #b20706 no-repeat 35px center !important;
 }
 .filters_panel .primary_filters a.current.assigned,
 .filters_panel .secondary_filters a.current.assigned,
 .filters_panel .resource_filters a.current.assigned {
   padding: 15px 15px 15px 70px;
   font-size: 100%;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-mytasks-selected.png") #b20706 no-repeat 35px 10px !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-mytasks-selected.png") #b20706 no-repeat 35px center !important;
 }
 .filters_panel .primary_filters a.current.unassigned,
 .filters_panel .secondary_filters a.current.unassigned,
 .filters_panel .resource_filters a.current.unassigned {
   padding: 15px 15px 15px 70px;
   font-size: 100%;
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-available-selected.png") #b20706 no-repeat 35px 10px !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-available-selected.png") #b20706 no-repeat 35px center !important;
 }
 .filters_panel .primary_filters a.current.ignored,
 .filters_panel .secondary_filters a.current.ignored,
 .filters_panel .resource_filters a.current.ignored {
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-hidden-selected.png") #b20706 no-repeat 20px 10px !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-hidden-selected.png") #b20706 no-repeat 20px center !important;
 }
 .filters_panel .primary_filters a.current.performed,
 .filters_panel .secondary_filters a.current.performed,
 .filters_panel .resource_filters a.current.performed {
-  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-performed-selected.png") #b20706 no-repeat 20px 10px !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-users-tasks-performed-selected.png") #b20706 no-repeat 20px center !important;
 }
 .filters_panel .primary_filters a.current.mycases,
 .filters_panel .secondary_filters a.current.mycases,
 .filters_panel .resource_filters a.current.mycases {
-  background: url("themeResource?theme=portal&location=skin/images/filters-mycases-selected.png") #b20706 no-repeat 20px 10px !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-mycases-selected.png") #b20706 no-repeat 20px center !important;
 }
 .filters_panel .primary_filters a.current.workedoncases,
 .filters_panel .secondary_filters a.current.workedoncases,
@@ -2286,12 +2286,12 @@ form.success .formentries .formentry .input div.alert_message.ERROR {
 .filters_panel .primary_filters a.current.openedcases,
 .filters_panel .secondary_filters a.current.openedcases,
 .filters_panel .resource_filters a.current.openedcases {
-  background: url("themeResource?theme=portal&location=skin/images/filters-workedon-selected.png") #b20706 no-repeat 20px 10px !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-workedon-selected.png") #b20706 no-repeat 20px center !important;
 }
 .filters_panel .primary_filters a.current.archivedcases,
 .filters_panel .secondary_filters a.current.archivedcases,
 .filters_panel .resource_filters a.current.archivedcases {
-  background: url("themeResource?theme=portal&location=skin/images/filters-archived-selected.png") #b20706 no-repeat 20px 10px !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-archived-selected.png") #b20706 no-repeat 20px center !important;
 }
 .filters_panel .primary_filters a.current.allusersfilter,
 .filters_panel .secondary_filters a.current.allusersfilter,
@@ -2305,37 +2305,37 @@ form.success .formentries .formentry .input div.alert_message.ERROR {
 .filters_panel .primary_filters a.current.all,
 .filters_panel .secondary_filters a.current.all,
 .filters_panel .resource_filters a.current.all {
-  background: url("themeResource?theme=portal&location=skin/images/filters-all-selected.png") #b20706 no-repeat 20px 10px !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-all-selected.png") #b20706 no-repeat 20px center !important;
 }
 .filters_panel .primary_filters a.current.humantask,
 .filters_panel .secondary_filters a.current.humantask,
 .filters_panel .resource_filters a.current.humantask {
-  background: url("themeResource?theme=portal&location=skin/images/filters-human-selected.png") #b20706 no-repeat 20px 10px !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-human-selected.png") #b20706 no-repeat 20px center !important;
 }
 .filters_panel .primary_filters a.current.failed,
 .filters_panel .secondary_filters a.current.failed,
 .filters_panel .resource_filters a.current.failed {
-  background: url("themeResource?theme=portal&location=skin/images/filters-failed-selected.png") #b20706 no-repeat 20px 10px !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-failed-selected.png") #b20706 no-repeat 20px center !important;
 }
 .filters_panel .primary_filters a.current.monitoring,
 .filters_panel .secondary_filters a.current.monitoring,
 .filters_panel .resource_filters a.current.monitoring {
-  background: url("themeResource?theme=portal&location=skin/images/filters-monitoring-selected.png") transparent no-repeat 20px 10px !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-monitoring-selected.png") transparent no-repeat 20px center !important;
 }
 .filters_panel .primary_filters a.current.reports,
 .filters_panel .secondary_filters a.current.reports,
 .filters_panel .resource_filters a.current.reports {
-  background: url("themeResource?theme=portal&location=skin/images/filters-reporting-selected.png") transparent no-repeat 20px 10px !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-reporting-selected.png") transparent no-repeat 20px center !important;
 }
 .filters_panel .primary_filters a.current.enabledusers,
 .filters_panel .secondary_filters a.current.enabledusers,
 .filters_panel .resource_filters a.current.enabledusers {
-  background: url("themeResource?theme=portal&location=skin/images/filters-user-active-selected.png") transparent no-repeat 20px 10px !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-user-active-selected.png") transparent no-repeat 20px center !important;
 }
 .filters_panel .primary_filters a.current.disabledusers,
 .filters_panel .secondary_filters a.current.disabledusers,
 .filters_panel .resource_filters a.current.disabledusers {
-  background: url("themeResource?theme=portal&location=skin/images/filters-user-inactive-selected.png") transparent no-repeat 20px 10px !important;
+  background: url("themeResource?theme=portal&location=skin/images/filters-user-inactive-selected.png") transparent no-repeat 20px center !important;
 }
 .filters_panel .primary_filters a.current:hover,
 .filters_panel .secondary_filters a.current:hover,
@@ -3360,10 +3360,6 @@ form.success .formentries .formentry .input div.alert_message.ERROR {
 }
 .page.moredetails > .body .section.doublesection .section h1 {
   font-size: 138.46153846153845%;
-}
-.page.moredetails > .body .section.doublesection .section .table,
-.page.moredetails > .body .section.doublesection .section .pager {
-  font-size: 76.92307692307693%;
 }
 .page.moredetails > .body .section.tasks,
 .page.moredetails > .body .section.cases {
@@ -5175,9 +5171,6 @@ form.success .formentries .formentry .input div.alert_message.ERROR {
 .page_importexportorganization .section.export p + .btn-action {
   margin-top: 0;
 }
-.doublesection .body {
-  font-size: 138.46153846153845%;
-}
 .doublesection .body .menuOptions {
   padding-top: 5px;
 }
@@ -5264,6 +5257,9 @@ form.success .formentries .formentry .input div.alert_message.ERROR {
 }
 .doublesection .body .menuEditor > .tablesPannel > .tablePannel > .datatable > .table > .tbody .tr:hover {
   cursor: move;
+}
+.doublesection .body .menuEditor > .tablesPannel > .tablePannel > .datatable > .table > .tbody .tr_1 {
+  font-size: 138.46153846153845%;
 }
 .doublesection .body .menuEditor > .tablesPannel > .tablePannel > .datatable > .table > .tbody .tr_last .td_last,
 .doublesection .body .menuEditor > .tablesPannel > .tablePannel > .datatable > .table > .tbody .tr_last .td_1 {
@@ -5422,12 +5418,6 @@ form.success .formentries .formentry .input div.alert_message.ERROR {
   padding: 1px 0 20px 20px;
   margin-bottom: -1px;
   word-wrap: break-word;
-}
-.section.doublesection .btn-action {
-  font-size: 80%;
-}
-.section.doublesection .section .btn-action {
-  font-size: 70%;
 }
 .section.tasks .datatable .td > span {
   overflow: hidden;
