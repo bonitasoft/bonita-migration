@@ -43,8 +43,8 @@ sql.eachRow(MigrationUtil.getSqlFile(feature, dbVendor, "select").text) { row ->
                     zous.closeEntry()
                 }
             }
-            newZipContent = modifiedZipBOS.toByteArray()
         }
+        newZipContent = modifiedZipBOS.toByteArray()
     }
     sql.executeUpdate("UPDATE theme SET content = ? , lastUpdateDate = ? WHERE tenantid = ? AND id = ?", newZipContent, currentTime, tenantId, rowId)
 }
