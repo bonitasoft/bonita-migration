@@ -113,6 +113,34 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<!-- Unpack Bonita_home and external files for configuration-->
+					<execution>
+						<id>unpack-bonita_home</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>org.bonitasoft.console</groupId>
+									<artifactId>bonita-home</artifactId>
+									<version>${current.bonita.version}</version>
+									<type>zip</type>
+									<overWrite>true</overWrite>
+								</artifactItem>
+							</artifactItems>
+							<outputDirectory>
+								${project.build.directory}/bonita-home
+							</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>	
+			</plugin>		
 		</plugins>
 	</build>
 </project>

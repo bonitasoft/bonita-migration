@@ -35,6 +35,10 @@
 			<fileMode>0755</fileMode>
 			<directoryMode>0644</directoryMode>
 		</fileSet>
+		<fileSet>
+			<outputDirectory>versions/${previous.bonita.version}-${next.bonita.version}/Bonita-home</outputDirectory>
+			<directory>target/bonita-home</directory>
+		</fileSet>
 	</fileSets>
 	<dependencySets>
 		<dependencySet>
