@@ -61,8 +61,6 @@ import org.bonitasoft.engine.exception.BonitaException;
 import org.bonitasoft.engine.exception.BonitaHomeConfigurationException;
 import org.bonitasoft.engine.exception.BonitaHomeNotSetException;
 import org.bonitasoft.engine.exception.CreationException;
-import org.bonitasoft.engine.exception.ServerAPIException;
-import org.bonitasoft.engine.exception.UnknownAPITypeException;
 import org.bonitasoft.engine.expression.ExpressionBuilder;
 import org.bonitasoft.engine.expression.InvalidExpressionException;
 import org.bonitasoft.engine.identity.ImportPolicy;
@@ -366,8 +364,7 @@ public class DatabaseFiller6_0_2 {
         return Collections.singletonMap("Documents", String.valueOf(nbDocuments));
     }
 
-    public void shutdown() throws BonitaException, BonitaHomeNotSetException, ServerAPIException, UnknownAPITypeException, InstantiationException,
-            IllegalAccessException, ClassNotFoundException, IOException {
+    public void shutdown() throws Exception {
         final PlatformSession pSession = APITestUtil.loginPlatform();
         final PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(pSession);
         APITestUtil.stopPlatformAndTenant(platformAPI, false);
