@@ -12,6 +12,7 @@
 	<properties>
 		<bonita.version>6.1.0</bonita.version>
 		<bonita.home>${project.build.directory}/home</bonita.home>
+		<skipTests>true</skipTests>
 	</properties>
 
 	<dependencies>
