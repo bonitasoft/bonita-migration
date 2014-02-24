@@ -23,8 +23,6 @@ println sql.executeUpdate("UPDATE pdependencymapping SET artifacttype = 'GLOBAL'
 
 println "Drop column version"
 if(dbVendor.equals("sqlserver")){
-    DROP INDEX IX_ProductVendor_BusinessEntityID
-    ON Purchasing.ProductVendor
     sql.executeUpdate("DROP INDEX idx_dependency_version ON dependency")
     sql.executeUpdate("DROP INDEX idx_pdependency_version ON pdependency")
 }
