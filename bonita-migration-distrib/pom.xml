@@ -139,6 +139,48 @@
 							</outputDirectory>
 						</configuration>
 					</execution>
+					<!-- unpack new theme that will be change in database -->
+					<execution>
+						<id>get-theme-less</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>org.bonitasoft.web.toolkit</groupId>
+									<artifactId>toolkit-looknfeel</artifactId>
+									<version>${current.bonita.version}</version>
+									<classifier>less</classifier>
+									<type>zip</type>
+									<overWrite>true</overWrite>
+									<destFileName>bonita-portal-theme.zip</destFileName>
+								</artifactItem>
+							</artifactItems>
+							<outputDirectory>${project.build.directory}/bonita-theme</outputDirectory>
+						</configuration>
+					</execution>
+					<execution>
+						<id>unpack-theme-css</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>org.bonitasoft.web.toolkit</groupId>
+									<artifactId>toolkit-looknfeel</artifactId>
+									<version>${current.bonita.version}</version>
+									<classifier>css</classifier>
+									<type>zip</type>
+									<overWrite>true</overWrite>
+								</artifactItem>
+							</artifactItems>
+							<outputDirectory>${project.build.directory}/bonita-theme</outputDirectory>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 		</plugins>

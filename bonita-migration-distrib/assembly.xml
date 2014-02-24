@@ -39,6 +39,14 @@
 			<outputDirectory>versions/${previous.bonita.version}-${next.bonita.version}/Bonita-home</outputDirectory>
 			<directory>target/bonita-home</directory>
 		</fileSet>
+		<fileSet>
+			<outputDirectory>versions/${previous.bonita.version}-${next.bonita.version}/Database/001_theme</outputDirectory>
+			<directory>target/bonita-theme</directory>
+			<includes>
+				<include>bonita.css</include>
+				<include>bonita-portal-theme.zip</include>
+			</includes>
+		</fileSet>
 	</fileSets>
 	<dependencySets>
 		<dependencySet>
