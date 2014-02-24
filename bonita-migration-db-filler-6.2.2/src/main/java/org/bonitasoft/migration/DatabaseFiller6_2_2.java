@@ -153,6 +153,7 @@ public class DatabaseFiller6_2_2 extends DatabaseFiller6_0_2 {
             System.out.println(thread.getName());
         }
         System.out.println("=======");
+	System.exit(0);
     }
 
     private static void setupSpringContext() {
