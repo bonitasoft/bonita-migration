@@ -22,5 +22,9 @@ println sql.executeUpdate("UPDATE dependencymapping SET artifacttype = 'TENANT' 
 println sql.executeUpdate("UPDATE pdependencymapping SET artifacttype = 'GLOBAL' WHERE artifacttype = '_global_'") + " platform dependency mapping updated"
 
 println "Drop column version"
+if(dbVendor.equals("sqlserver")){
+    sql.executeUpdate("ALTER TABLE dependency DROP INDEX idx_dependency_version")
+    sql.executeUpdate("ALTER TABLE pdependency DROP INDEX idx_pdependency_version")
+}
 sql.executeUpdate("ALTER TABLE dependency DROP COLUMN version")
 sql.executeUpdate("ALTER TABLE pdependency DROP COLUMN version")
