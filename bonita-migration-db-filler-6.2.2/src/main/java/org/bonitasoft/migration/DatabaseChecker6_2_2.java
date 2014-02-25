@@ -16,6 +16,7 @@ package org.bonitasoft.migration;
 
 import javax.naming.Context;
 
+import org.bonitasoft.engine.api.CommandAPI;
 import org.bonitasoft.engine.api.IdentityAPI;
 import org.bonitasoft.engine.api.PlatformAPI;
 import org.bonitasoft.engine.api.PlatformAPIAccessor;
@@ -54,7 +55,9 @@ public class DatabaseChecker6_2_2 {
     protected static ProfileAPI profileAPI;
 
     protected static IdentityAPI identityApi;
-
+    
+    protected static CommandAPI commandAPI;
+    
     private static ThemeAPI themeAPI;
 
     protected static APISession session;
@@ -75,6 +78,7 @@ public class DatabaseChecker6_2_2 {
         identityApi = TenantAPIAccessor.getIdentityAPI(session);
         profileAPI = TenantAPIAccessor.getProfileAPI(session);
         themeAPI = TenantAPIAccessor.getThemeAPI(session);
+        commandAPI = TenantAPIAccessor.getCommandAPI(session);
     }
 
     @AfterClass

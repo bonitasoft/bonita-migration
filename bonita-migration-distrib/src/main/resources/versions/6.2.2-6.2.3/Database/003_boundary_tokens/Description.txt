@@ -1,0 +1,1 @@
+Insert a token for each boundary event without token (states initializing, waiting and executing)

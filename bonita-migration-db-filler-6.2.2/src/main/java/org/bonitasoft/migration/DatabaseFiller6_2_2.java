@@ -35,6 +35,7 @@ import org.bonitasoft.engine.bpm.bar.BarResource;
 import org.bonitasoft.engine.bpm.bar.BusinessArchiveBuilder;
 import org.bonitasoft.engine.bpm.process.ProcessDefinition;
 import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder;
+import org.bonitasoft.engine.bpm.process.impl.UserTaskDefinitionBuilder;
 import org.bonitasoft.engine.exception.BonitaException;
 import org.bonitasoft.engine.exception.BonitaHomeNotSetException;
 import org.bonitasoft.engine.exception.ServerAPIException;
@@ -82,11 +83,37 @@ public class DatabaseFiller6_2_2 extends DatabaseFiller6_0_2 {
 
         // 6.2.3 specific
         stats.putAll(fillDependencies(session));
+        stats.putAll(fillProcessWithBoundaryEvent(session, 2));
 
         APITestUtil.logoutTenant(session);
         logger.info("Finished to fill the database");
         return stats;
     }
+    
+    protected Map<String, String> fillProcessWithBoundaryEvent(final APISession session, int nbOfProcessInstances) throws Exception {
+        ProcessAPI processAPI = TenantAPIAccessor.getProcessAPI(session);
+        IdentityAPI identityAPI = TenantAPIAccessor.getIdentityAPI(session);
+
+        ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("ProcessWithBoundaryToBeMigrated", "1.0.");
+        builder.addActor("delivery");
+        builder.addStartEvent("start");
+        UserTaskDefinitionBuilder userTaskBuilder = builder.addUserTask("step1", "delivery");
+        userTaskBuilder.addBoundaryEvent("boundary").addSignalEventTrigger("go");
+        builder.addUserTask("exceptionStep", "delivery");
+        builder.addEndEvent("end");
+        builder.addTransition("start", "step1");
+        builder.addTransition("step1", "end");
+        builder.addTransition("boundary", "exceptionStep");
+
+        ProcessDefinition processDefinition = processAPI.deploy(builder.done());
+        processAPI.addUserToActor("delivery", processDefinition, identityAPI.getUserByUserName("william.jobs").getId());
+        processAPI.enableProcess(processDefinition.getId());
+        for (int i = 0; i < nbOfProcessInstances; i++) {
+            processAPI.startProcess(processDefinition.getId());
+        }
+        return Collections.emptyMap();
+    }
+
 
     /**
      * 
