@@ -29,6 +29,7 @@ public class BoundaryTokensMigration {
         nextIds = MigrationUtil.getNexIdsForTable(sql, tokenSequenceId);
         insertTokens(sql);
         MigrationUtil.updateNextIdsForTable(sql, tokenSequenceId, nextIds);
+        updateTokenRefIds(sql);
     }
 
     private insertTokens(Sql sql) {
@@ -46,6 +47,24 @@ public class BoundaryTokensMigration {
             insertToken(sql, row.tenantid, row.logicalGroup4, tokenInfo);
         }
         println "$tokenCount tokens were created."
+    }
+    
+    private updateTokenRefIds(Sql sql) {
+        println "Updating token ref id for completed but not archived boundary events..."
+        def int tokenCountRefCount = 0;
+        sql.eachRow("SELECT * FROM flownode_instance WHERE kind = 'boundaryEvent' AND stateId = 2") { row ->
+            tokenCountRefCount++;
+            def boolean interrupting = row.interrupting;
+            if(!interrupting) {
+                updateTokenRefId(sql, row.tenantid, row.id)
+            } 
+        }
+        println "$tokenCountRefCount token ref ids were were updated."
+    }
+    
+    private updateTokenRefId(Sql sql, long tenantId, long boundaryEventId) {
+        //the token ref id used to create the token was the boundary event id
+        sql.executeUpdate("UPDATE flownode_instance SET token_ref_id = $boundaryEventId WHERE tenantId = $tenantId and id = $boundaryEventId");
     }
 
     private insertToken(Sql sql, tenantId, processInstanceId, TokenInfo tokenInfo) {

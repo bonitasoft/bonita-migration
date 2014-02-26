@@ -17,6 +17,7 @@ import groovy.sql.Sql
 import groovy.xml.StreamingMarkupBuilder
 
 import org.bonitasoft.migration.CustomAssertion
+import org.bonitasoft.migration.NamedColumnsAssertion
 import org.dbunit.JdbcDatabaseTester
 import org.dbunit.dataset.xml.FlatXmlDataSet
 
@@ -71,6 +72,9 @@ class BoundaryTokensMigrationTest extends GroovyTestCase {
             flownode_instance tenantid:2, id:50, kind:"boundaryEvent", stateId:65, logicalGroup4:5, interrupting:false, activityInstanceId:49, token_ref_id:800, flownodeDefinitionId: 1234, 
             rootContainerId:5, parentContainerId:5 , name:"go", prev_state_id:0, terminal:false, actorId:0, stateCategory:"NORMAL", logicalGroup1:12345,             
             logicalGroup2:1, tokenCount:0
+            flownode_instance tenantid:2, id:51, kind:"boundaryEvent", stateId:2, logicalGroup4:6, interrupting:false, activityInstanceId:49, token_ref_id:700, flownodeDefinitionId: 1234, 
+            rootContainerId:6, parentContainerId:6 , name:"go", prev_state_id:0, terminal:false, actorId:0, stateCategory:"NORMAL", logicalGroup1:12345,             
+            logicalGroup2:1, tokenCount:0
 
             //related activities
             flownode_instance tenantid:1, id:9, kind:"user", stateId:4, logicalGroup4:2, interrupting:false, token_ref_id:500, flownodeDefinitionId: 9821, 
@@ -105,7 +109,7 @@ class BoundaryTokensMigrationTest extends GroovyTestCase {
         BoundaryTokensMigration tokensMigration = new BoundaryTokensMigration();
         tokensMigration.migrate(sql);
         
-        def updatedTokens = tester.connection.createDataSet("token", "sequence");
+        def updatedTokensAndSequences = tester.connection.createDataSet("token", "sequence");
         
         CustomAssertion.assertEquals dataSet {
             //sequenceid
@@ -119,7 +123,19 @@ class BoundaryTokensMigrationTest extends GroovyTestCase {
             token tenantid:1, id:201, processInstanceId:2, ref_id:501, parent_ref_id:900
             token tenantid:2, id:72, processInstanceId:5, ref_id:800, parent_ref_id:0
             token tenantid:2, id:100, processInstanceId:5, ref_id:50, parent_ref_id:"<skip>"
-        }, updatedTokens
+        }, updatedTokensAndSequences
+    
+        def updatedFlowNodeInstances = tester.connection.createDataSet("flownode_instance");
+        NamedColumnsAssertion.assertEqualsForColumns dataSet{
+            flownode_instance tenantid:1, id:9, stateId:4, token_ref_id:500
+            flownode_instance tenantid:1, id:10, stateId:33, token_ref_id:500
+            flownode_instance tenantid:1, id:14, stateId:4, token_ref_id:501
+            flownode_instance tenantid:1, id:15, stateId:10, token_ref_id:501
+            flownode_instance tenantid:2, id:49, stateId:4, token_ref_id:800
+            flownode_instance tenantid:2, id:50, stateId:65, token_ref_id:800
+            flownode_instance tenantid:2, id:51, stateId:2, token_ref_id:51
+
+        }, updatedFlowNodeInstances, ["tenantid", "id", "stateId", "token_ref_id"]
     }
 
     
