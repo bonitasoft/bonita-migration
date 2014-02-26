@@ -50,7 +50,7 @@ public class BoundaryTokensMigration {
     }
     
     private updateTokenRefIds(Sql sql) {
-        println "Updating token ref id for completed but not archived boundary events..."
+        println "Updating token ref id for completed boundary events not yet archived..."
         def int tokenCountRefCount = 0;
         sql.eachRow("SELECT * FROM flownode_instance WHERE kind = 'boundaryEvent' AND stateId = 2") { row ->
             tokenCountRefCount++;
@@ -59,7 +59,7 @@ public class BoundaryTokensMigration {
                 updateTokenRefId(sql, row.tenantid, row.id)
             } 
         }
-        println "$tokenCountRefCount token ref ids were were updated."
+        println "$tokenCountRefCount token ref ids were updated."
     }
     
     private updateTokenRefId(Sql sql, long tenantId, long boundaryEventId) {
