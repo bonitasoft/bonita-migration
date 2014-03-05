@@ -13,6 +13,7 @@
 		<module>bonita-migration-db-filler-6.2.0</module>
 		<module>bonita-migration-db-filler-6.2.2</module>
 		<module>bonita-migration-db-filler-6.2.3</module>
+		<module>bonita-migration-db-filler-6.3.0</module>
 	</modules>
 	
 	<properties>
@@ -22,22 +23,15 @@
 		<!-- at the same version number that is the version number that will be released                   -->
 		<!--  -->
 		<!-- specify the previous version of that is migrated  -->
-		<previous.bonita.version>6.2.2</previous.bonita.version>
+		<previous.bonita.version>6.2.3</previous.bonita.version>
 		<!-- specify the in developpement version of bonita -->
-		<current.bonita.version>6.2.3-SNAPSHOT</current.bonita.version>
+		<current.bonita.version>6.3.0-SNAPSHOT</current.bonita.version>
 		<!-- specify the name of the release next release of bonita that will be migrated -->
-		<next.bonita.version>6.2.3</next.bonita.version>
+		<next.bonita.version>6.3.0</next.bonita.version>
 	</properties>
 
 	<dependencyManagement>
 		<dependencies>
-			<!-- Bonita web -->
-			<dependency>
-				<groupId>org.bonitasoft.console</groupId>
-				<artifactId>bonita-home</artifactId>
-				<version>6.1.0</version>
-				<type>zip</type>
-			</dependency>
 			<dependency>
 				<groupId>org.codehaus.groovy</groupId>
 				<artifactId>groovy-all</artifactId>

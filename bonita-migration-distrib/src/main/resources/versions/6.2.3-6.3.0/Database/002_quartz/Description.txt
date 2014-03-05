@@ -1,0 +1,1 @@
+Change how quartz store job details and change the misfire instructions of jobs
