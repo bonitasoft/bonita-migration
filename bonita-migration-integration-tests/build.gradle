@@ -33,8 +33,8 @@ sonarRunner {
 
 
 ext{
-    sourceversion = System.getProperty("source.version","6.2.0")
-    targetversion = System.getProperty("target.version","6.2.2")
+    sourceversion = System.getProperty("source.version","6.2.3")
+    targetversion = System.getProperty("target.version","6.2.4")
     dbvendor = System.getProperty("db.vendor", "mysql")
     dburl = System.getProperty("db.url","jdbc:mysql://localhost:3306/bonita_migration?allowMultiQueries=true");
     dbuser=System.getProperty("db.user","root")
