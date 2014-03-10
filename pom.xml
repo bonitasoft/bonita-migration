@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.bonitasoft.migration</groupId>
 	<artifactId>bonita-migration</artifactId>
-	<version>1.3.0-SNAPSHOT</version>
+	<version>1.3.0.rc-01</version>
 	<packaging>pom</packaging>
 
 	<modules>
