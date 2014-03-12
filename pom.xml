@@ -26,7 +26,7 @@
 		<!-- specify the previous version of that is migrated  -->
 		<previous.bonita.version>6.2.4</previous.bonita.version>
 		<!-- specify the in developpement version of bonita -->
-		<current.bonita.version>6.2.4-SNAPSHOT</current.bonita.version>
+		<current.bonita.version>6.2.5-SNAPSHOT</current.bonita.version>
 		<!-- specify the name of the release next release of bonita that will be migrated -->
 		<next.bonita.version>6.2.5</next.bonita.version>
 	</properties>
