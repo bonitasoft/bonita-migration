@@ -1,1 +1,0 @@
-ALTER TABLE user_contactinfo ALTER COLUMN email NVARCHAR(254)
