@@ -1,1 +1,1 @@
-Replace 6.2.2 configuration files with the 6.2.3 files. 
+Replace 6.2.3 configuration files with the 6.2.4 files. 

@@ -13,38 +13,50 @@
  **/
 package org.bonitasoft.migration;
 
-import org.assertj.core.api.Assertions;
-import org.bonitasoft.engine.identity.ContactData;
-import org.bonitasoft.engine.identity.ContactDataUpdater;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.bonitasoft.engine.bpm.flownode.HumanTaskInstance;
+import org.bonitasoft.engine.bpm.process.ProcessInstance;
+import org.bonitasoft.engine.bpm.process.ProcessInstanceSearchDescriptor;
 import org.bonitasoft.engine.identity.User;
-import org.bonitasoft.engine.identity.UserUpdater;
+import org.bonitasoft.engine.search.SearchOptionsBuilder;
+import org.bonitasoft.engine.search.SearchResult;
+import org.bonitasoft.engine.test.APITestUtil;
 import org.junit.Test;
 
 
 /**
- * Check that the migrated database still supports emails
+ *
  * @author Aurelien Pupier
  *
  */
 public class SimpleDatabaseChecker6_2_5 extends DatabaseCheckerInitiliazer {
     
-    @Test
-    public void doesEmailStillPresent() throws Exception {
+	@Test
+    public void can_complete_the_execution_of_previous_started_process_and_start_a_new_one() throws Exception {
+        //given
         User user = identityApi.getUserByUserName("william.jobs");
-        ContactData contactData = identityApi.getUserContactData(user.getId(), true);
-        Assertions.assertThat(contactData.getEmail()).isEqualTo("william.jobs@gmail.com");
-    }
-    
-    @Test
-    public void testCanAssertLongEmail() throws Exception{
-        User user = identityApi.getUserByUserName("william.jobs");
-        final UserUpdater userUpdater = new UserUpdater();
-		final ContactDataUpdater persoContactUpdater = userUpdater.getPersoContactUpdater();
-		final String newLongMailAddress = "azertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiop@gmail.com";
-		persoContactUpdater.setEmail(newLongMailAddress);
-		user = identityApi.updateUser(user.getId(), userUpdater);
-		
-		ContactData contactData = identityApi.getUserContactData(user.getId(), true);
-		Assertions.assertThat(contactData.getEmail()).isEqualTo(newLongMailAddress);
+        long processDefinitionId = processAPI.getProcessDefinitionId(SimpleDatabaseFiller6_0_2.PROCESS_NAME, SimpleDatabaseFiller6_0_2.PROCESS_VERSION);
+        processAPI.startProcess(processDefinitionId);
+
+        //when
+        SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 10);
+        builder.filter(ProcessInstanceSearchDescriptor.PROCESS_DEFINITION_ID, processDefinitionId);
+        SearchResult<ProcessInstance> searchResult = processAPI.searchProcessInstances(builder.done());
+        
+        //then (there are two instance, one created before migration and one created after migration)
+        assertThat(searchResult.getCount()).isEqualTo(2);
+        
+        //when
+        for (ProcessInstance processInstance : searchResult.getResult()) {
+            HumanTaskInstance taskInstance = waitForUserTask(SimpleDatabaseFiller6_0_2.USER_TASK_NAME, processInstance.getId(), APITestUtil.DEFAULT_TIMEOUT);
+            processAPI.assignUserTask(taskInstance.getId(), user.getId());
+            processAPI.executeFlowNode(taskInstance.getId());
+        }
+        
+        //then
+        for (ProcessInstance processInstance : searchResult.getResult()) {
+            waitForProcessToFinish(processInstance.getId(), APITestUtil.DEFAULT_TIMEOUT);
+        }
     }
 }
