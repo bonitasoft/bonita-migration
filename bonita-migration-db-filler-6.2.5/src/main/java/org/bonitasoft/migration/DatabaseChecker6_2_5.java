@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2014 Bonitasoft S.A.
+ * Copyright (C) 2014 BonitaSoft S.A.
  * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
@@ -11,17 +11,19 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
-import org.bonitasoft.migration.core.MigrationUtil;
+package org.bonitasoft.migration;
 
-def currentTime = System.currentTimeMillis()
+import org.junit.runner.JUnitCore;
 
-// Portal
-def zip = new File(feature, "bonita-portal-theme.zip")
-def css = new File(feature, "bonita.css")
 
-def parameters = new HashMap()
-parameters.put(":type", "PORTAL")
-parameters.put(":lastUpdateDate", currentTime)
-MigrationUtil.executeSqlFile(feature, dbVendor, "update", parameters, sql, false)
-sql.executeUpdate(MigrationUtil.getSqlFile(feature, dbVendor, "update-content").text, zip.bytes, css.bytes , "PORTAL")
+/**
+ * @author Aurelien Pupier
+ *
+ */
+public class DatabaseChecker6_2_5 extends SimpleDatabaseChecker6_2_5 {
+    
+    public static void main(final String[] args) throws Exception {
+        JUnitCore.main(DatabaseChecker6_2_5.class.getName());
+    }
 
+}

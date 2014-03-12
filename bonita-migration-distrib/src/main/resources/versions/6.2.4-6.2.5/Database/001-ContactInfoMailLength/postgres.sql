@@ -1,0 +1,2 @@
+
+ALTER TABLE user_contactinfo ALTER COLUMN email TYPE VARCHAR(254);
