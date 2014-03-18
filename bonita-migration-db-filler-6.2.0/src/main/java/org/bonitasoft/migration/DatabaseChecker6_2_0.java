@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2013 BonitaSoft S.A.
+ * Copyright (C) 2013-2014 BonitaSoft S.A.
  * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * accessor program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -116,8 +116,8 @@ public class DatabaseChecker6_2_0 {
 
     @Test
     public void verify() throws Exception {
-        long id = identityApi.getUserByUserName("april.sanchez").getId();
-        WaitForPendingTasks waitForPendingTasks = new WaitForPendingTasks(50, 10000, 10, id, processAPI);
+        final long id = identityApi.getUserByUserName("april.sanchez").getId();
+        final WaitForPendingTasks waitForPendingTasks = new WaitForPendingTasks(50, 10000, 10, id, processAPI);
         if (!waitForPendingTasks.waitUntil()) {
             String message = "Not all task after transitions were created";
             throw new IllegalStateException(message);
@@ -145,12 +145,11 @@ public class DatabaseChecker6_2_0 {
 
     @Test
     public void check_process_with_messages_still_work() throws Exception {
-        long processDefinitionId = processAPI.getProcessDefinitionId("ProcessWithSendMessage", "1.0");
-        long receiveProcess = processAPI.getProcessDefinitionId("ProcessWithIntermediateReceiveMessage", "1.0");
+        final long processDefinitionId = processAPI.getProcessDefinitionId("ProcessWithSendMessage", "1.0");
+        final long receiveProcess = processAPI.getProcessDefinitionId("ProcessWithIntermediateReceiveMessage", "1.0");
 
-        User favio = TenantAPIAccessor.getIdentityAPI(session).getUserByUserName("favio.riviera");
-
-        int pendingTaskOfFavio = Long.valueOf(processAPI.getNumberOfPendingHumanTaskInstances(favio.getId())).intValue();
+        final User favio = TenantAPIAccessor.getIdentityAPI(session).getUserByUserName("favio.riviera");
+        final int pendingTaskOfFavio = Long.valueOf(processAPI.getNumberOfPendingHumanTaskInstances(favio.getId())).intValue();
 
         // there is one intermediate catch waiting + a start message
         processAPI.startProcess(processDefinitionId);
