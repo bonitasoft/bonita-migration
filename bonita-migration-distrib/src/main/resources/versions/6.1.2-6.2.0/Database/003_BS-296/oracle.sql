@@ -2,4 +2,4 @@
 ALTER TABLE data_mapping DISABLE UNIQUE (containerid, containertype, dataname) CASCADE @@
 ALTER TABLE data_mapping DROP UNIQUE (containerid, containertype, dataname) @@
 
-ALTER TABLE data_mapping ADD CONSTRAINT UNIQUE (tenantid,containerid,containertype,dataname)@@
+ALTER TABLE data_mapping ADD UNIQUE (tenantid,containerid,containertype,dataname)@@
