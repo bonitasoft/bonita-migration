@@ -12,4 +12,4 @@ BEGIN
 END
 
 
-ALTER TABLE data_mapping ADD CONSTRAINT UNIQUE (tenantid,containerid,containertype,dataname)@@
+ALTER TABLE data_mapping ADD CONSTRAINT AK_TenantId UNIQUE (tenantid,containerid,containertype,dataname)@@
