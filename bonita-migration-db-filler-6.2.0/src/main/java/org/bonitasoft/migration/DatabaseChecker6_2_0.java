@@ -94,7 +94,7 @@ public class DatabaseChecker6_2_0 {
     }
 
     @BeforeClass
-    public static void beforeAll() throws BonitaException {
+    public static void setup() throws BonitaException {
         setupSpringContext();
         PlatformSession platformSession = APITestUtil.loginPlatform();
         PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(platformSession);
@@ -103,7 +103,7 @@ public class DatabaseChecker6_2_0 {
     }
 
     @AfterClass
-    public static void afterAll() throws BonitaException {
+    public static void teardown() throws BonitaException {
         final PlatformSession pSession = APITestUtil.loginPlatform();
         final PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(pSession);
         APITestUtil.stopPlatformAndTenant(platformAPI, false);
@@ -111,7 +111,7 @@ public class DatabaseChecker6_2_0 {
     }
 
     @Before
-    public void setup() throws BonitaException {
+    public void before() throws BonitaException {
         session = APITestUtil.loginDefaultTenant();
         processAPI = TenantAPIAccessor.getProcessAPI(session);
         identityApi = TenantAPIAccessor.getIdentityAPI(session);
@@ -120,7 +120,7 @@ public class DatabaseChecker6_2_0 {
     }
 
     @After
-    public void teardown() throws BonitaException {
+    public void after() throws BonitaException {
         APITestUtil.logoutTenant(session);
     }
 
