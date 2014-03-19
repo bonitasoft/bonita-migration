@@ -111,7 +111,7 @@ public class DatabaseChecker6_2_0 {
     }
 
     @Before
-    public static void setup() throws BonitaException {
+    public void setup() throws BonitaException {
         session = APITestUtil.loginDefaultTenant();
         processAPI = TenantAPIAccessor.getProcessAPI(session);
         identityApi = TenantAPIAccessor.getIdentityAPI(session);
@@ -120,7 +120,7 @@ public class DatabaseChecker6_2_0 {
     }
 
     @After
-    public static void teardown() throws BonitaException {
+    public void teardown() throws BonitaException {
         APITestUtil.logoutTenant(session);
     }
 
