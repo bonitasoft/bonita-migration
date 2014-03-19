@@ -57,7 +57,9 @@ import org.bonitasoft.engine.theme.exception.SThemeNotFoundException;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
@@ -92,12 +94,24 @@ public class DatabaseChecker6_2_0 {
     }
 
     @BeforeClass
-    public static void setup() throws BonitaException {
+    public static void beforeAll() throws BonitaException {
         setupSpringContext();
         PlatformSession platformSession = APITestUtil.loginPlatform();
         PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(platformSession);
         platformAPI.startNode();
         APITestUtil.logoutPlatform(platformSession);
+    }
+
+    @AfterClass
+    public static void afterAll() throws BonitaException {
+        final PlatformSession pSession = APITestUtil.loginPlatform();
+        final PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(pSession);
+        APITestUtil.stopPlatformAndTenant(platformAPI, false);
+        APITestUtil.logoutPlatform(pSession);
+    }
+
+    @Before
+    public static void setup() throws BonitaException {
         session = APITestUtil.loginDefaultTenant();
         processAPI = TenantAPIAccessor.getProcessAPI(session);
         identityApi = TenantAPIAccessor.getIdentityAPI(session);
@@ -105,13 +119,9 @@ public class DatabaseChecker6_2_0 {
         themeAPI = TenantAPIAccessor.getThemeAPI(session);
     }
 
-    @AfterClass
+    @After
     public static void teardown() throws BonitaException {
         APITestUtil.logoutTenant(session);
-        final PlatformSession pSession = APITestUtil.loginPlatform();
-        final PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(pSession);
-        APITestUtil.stopPlatformAndTenant(platformAPI, false);
-        APITestUtil.logoutPlatform(pSession);
     }
 
     @Test
