@@ -95,6 +95,7 @@ public class DatabaseChecker6_2_0 {
 
     @BeforeClass
     public static void setup() throws BonitaException {
+        System.out.println("Setup spring context");
         setupSpringContext();
         PlatformSession platformSession = APITestUtil.loginPlatform();
         PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(platformSession);
