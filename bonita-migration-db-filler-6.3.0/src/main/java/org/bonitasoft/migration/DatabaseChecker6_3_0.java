@@ -14,7 +14,10 @@
  */
 package org.bonitasoft.migration;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
+
+import java.util.List;
 
 import javax.naming.Context;
 
@@ -28,6 +31,9 @@ import org.bonitasoft.engine.api.TenantAPIAccessor;
 import org.bonitasoft.engine.api.ThemeAPI;
 import org.bonitasoft.engine.bpm.flownode.ActivityInstanceCriterion;
 import org.bonitasoft.engine.exception.BonitaException;
+import org.bonitasoft.engine.identity.CustomUserInfo;
+import org.bonitasoft.engine.identity.CustomUserInfoDefinition;
+import org.bonitasoft.engine.identity.CustomUserInfoDefinitionCreator;
 import org.bonitasoft.engine.identity.User;
 import org.bonitasoft.engine.session.APISession;
 import org.bonitasoft.engine.session.PlatformSession;
@@ -122,6 +128,18 @@ public class DatabaseChecker6_3_0 {
                         + size
                         + ", there was less than 4 task for john, he should have more than 3 because when bonita was shut down it should restart missed timers (the timer is 10 seconds, we had one task ready, we waited 20 secondes ",
                 size > 3);
+    }
+    
+    @Test
+    public void can_create_custom_user_info_definition_and_values() throws Exception {
+        User user = identityApi.createUser("first.user", "bpm");
+        CustomUserInfoDefinition skills = identityApi.createCustomUserInfoDefinition(new CustomUserInfoDefinitionCreator("Skills", "The user skills"));
+        identityApi.setCustomUserInfoValue(skills.getId(), user.getId(), "Java");
+        
+        List<CustomUserInfo> userInfo = identityApi.getCustomUserInfo(user.getId(), 0, 10);
+        assertThat(userInfo.size()).isEqualTo(1);
+        assertThat(userInfo.get(0).getDefinition().getName()).isEqualTo("Skills");
+        assertThat(userInfo.get(0).getValue()).isEqualTo("Java");
     }
 
 }
