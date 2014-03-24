@@ -110,7 +110,7 @@ public class MigrationRunner {
         graph = getMigrationPaths(new File("versions"))
         sourceVersion = checkSourceVersion(bonitaHome,sourceVersion)
         if(sourceVersion == null){
-            return false;
+            return null;
         }
         //all steps from a version to an other
         List<Path> paths = graph.getPaths(sourceVersion)
@@ -171,7 +171,7 @@ public class MigrationRunner {
             return platformVersionInDatabase;
         }else{
             // > 6.2
-            if(platformVersionInBonitaHome != platformVersionInDatabase || (givenSourceVersion != null && platformVersionInDatabase != givenSourceVersion) ){
+            if(platformVersionInBonitaHome != platformVersionInDatabase || (givenSourceVersion != null && !platformVersionInDatabase.startsWith(givenSourceVersion)) ){
                 //invalid case: given source (if any) not the same as version in db and as version in bonita home
                 println "The versions are not consistent:"
                 println "The version of the database is $platformVersionInDatabase"
@@ -182,7 +182,7 @@ public class MigrationRunner {
                 println "Check that you configuration is correct and restart the migration"
                 return null;
             }
-            return platformVersionInBonitaHome
+            return givenSourceVersion != null? givenSourceVersion:platformVersionInBonitaHome
         }
     }
 
