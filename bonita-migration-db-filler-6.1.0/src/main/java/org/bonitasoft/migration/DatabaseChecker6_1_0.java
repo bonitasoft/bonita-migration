@@ -25,19 +25,11 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.naming.Context;
-
-import org.bonitasoft.engine.api.IdentityAPI;
-import org.bonitasoft.engine.api.PlatformAPI;
-import org.bonitasoft.engine.api.PlatformAPIAccessor;
-import org.bonitasoft.engine.api.ProcessAPI;
-import org.bonitasoft.engine.api.ProfileAPI;
 import org.bonitasoft.engine.api.TenantAPIAccessor;
 import org.bonitasoft.engine.bpm.flownode.ActivityInstanceCriterion;
 import org.bonitasoft.engine.bpm.flownode.HumanTaskInstance;
 import org.bonitasoft.engine.bpm.process.ArchivedProcessInstance;
 import org.bonitasoft.engine.bpm.process.ArchivedProcessInstancesSearchDescriptor;
-import org.bonitasoft.engine.exception.BonitaException;
 import org.bonitasoft.engine.exception.SearchException;
 import org.bonitasoft.engine.identity.User;
 import org.bonitasoft.engine.profile.Profile;
@@ -45,19 +37,13 @@ import org.bonitasoft.engine.profile.ProfileEntry;
 import org.bonitasoft.engine.search.Order;
 import org.bonitasoft.engine.search.SearchOptionsBuilder;
 import org.bonitasoft.engine.search.SearchResult;
-import org.bonitasoft.engine.session.APISession;
-import org.bonitasoft.engine.session.PlatformSession;
-import org.bonitasoft.engine.test.APITestUtil;
 import org.bonitasoft.engine.test.wait.WaitForPendingTasks;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * 
@@ -69,42 +55,10 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * 
  */
 @SuppressWarnings("deprecation")
-public class DatabaseChecker6_1_0 {
-
-    private static ClassPathXmlApplicationContext springContext;
-
-    protected static ProcessAPI processAPI;
-
-    protected static ProfileAPI profileAPI;
-
-    protected static IdentityAPI identityApi;
-
-    protected static APISession session;
+public class DatabaseChecker6_1_0 extends DatabaseCheckerInitiliazer {
 
     public static void main(final String[] args) throws Exception {
         JUnitCore.main(DatabaseChecker6_1_0.class.getName());
-    }
-
-    @BeforeClass
-    public static void setup() throws BonitaException {
-        setupSpringContext();
-        PlatformSession platformSession = APITestUtil.loginPlatform();
-        PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(platformSession);
-        platformAPI.startNode();
-        APITestUtil.logoutPlatform(platformSession);
-        session = APITestUtil.loginDefaultTenant();
-        processAPI = TenantAPIAccessor.getProcessAPI(session);
-        identityApi = TenantAPIAccessor.getIdentityAPI(session);
-        profileAPI = TenantAPIAccessor.getProfileAPI(session);
-    }
-
-    @AfterClass
-    public static void teardown() throws BonitaException {
-        APITestUtil.logoutTenant(session);
-        final PlatformSession pSession = APITestUtil.loginPlatform();
-        final PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(pSession);
-        APITestUtil.stopPlatformAndTenant(platformAPI, false);
-        APITestUtil.logoutPlatform(pSession);
     }
 
     @Test
@@ -239,24 +193,6 @@ public class DatabaseChecker6_1_0 {
         assertEquals(profileId, profileEntry.getProfileId());
 
         return profileEntry;
-    }
-
-    private static void setupSpringContext() {
-        setSystemPropertyIfNotSet("sysprop.bonita.db.vendor", "h2");
-
-        // Force these system properties
-        System.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.bonitasoft.engine.local.SimpleMemoryContextFactory");
-        System.setProperty(Context.URL_PKG_PREFIXES, "org.bonitasoft.engine.local");
-
-        springContext = new ClassPathXmlApplicationContext("datasource.xml", "jndi-setup.xml");
-    }
-
-    private static void closeSpringContext() {
-        springContext.close();
-    }
-
-    private static void setSystemPropertyIfNotSet(final String property, final String value) {
-        System.setProperty(property, System.getProperty(property, value));
     }
 
 }

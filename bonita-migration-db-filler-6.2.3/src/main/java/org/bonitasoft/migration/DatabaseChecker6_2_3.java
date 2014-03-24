@@ -50,10 +50,6 @@ public class DatabaseChecker6_2_3 extends DatabaseChecker6_2_2 {
     
     private static int DEFAULT_TIMEOUT = APITestUtil.DEFAULT_TIMEOUT;
     
-    private static final String ADD_HANDLER_COMMAND = "addHandlerCommand";
-
-    private static final String WAIT_SERVER_COMMAND = "waitServerCommand";
-
     public static void main(final String[] args) throws Exception {
         JUnitCore.main(DatabaseChecker6_2_3.class.getName());
     }

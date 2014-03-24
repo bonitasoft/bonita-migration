@@ -143,7 +143,7 @@ public class DatabaseFiller6_0_2 {
             logger.info(entry.getKey() + ": " + entry.getValue());
         }
         shutdown();
-        logger.info("resulting bonita home is " + System.getProperty("bonita.home"));
+        logger.info("Resulting bonita home is " + System.getProperty("bonita.home"));
     }
 
     public void copyBonitaHome() throws Exception {
@@ -151,7 +151,7 @@ public class DatabaseFiller6_0_2 {
         String tmpdir = System.getProperty("java.io.tmpdir");
         final File destDir = new File(tmpdir + File.separatorChar + "home");
         FileUtils.deleteDirectory(destDir);
-        logger.info("copy original bonita home to " + destDir.getAbsolutePath());
+        logger.info("Copy original bonita home to " + destDir.getAbsolutePath());
         destDir.mkdir();
         FileUtils.deleteDirectory(destDir);
         FileUtils.copyDirectory(new File(bonitaHome), destDir);
