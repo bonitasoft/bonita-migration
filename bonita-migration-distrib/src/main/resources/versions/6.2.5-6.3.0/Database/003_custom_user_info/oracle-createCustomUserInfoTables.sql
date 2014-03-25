@@ -7,7 +7,6 @@ CREATE TABLE custom_usr_inf_def (
   PRIMARY KEY (tenantid, id)
 ) @@
 
-CREATE INDEX idx_custom_usr_inf_def_name ON custom_usr_inf_def (tenantid, name) @@
 ALTER TABLE custom_usr_inf_def ADD CONSTRAINT fk_custom_usr_inf_def_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id) @@
 
 CREATE TABLE custom_usr_inf_val (
