@@ -1,2 +1,2 @@
-DROP TABLE p_metadata_val cascade constraints purge;
-DROP TABLE p_metadata_def cascade constraints purge;
+DROP TABLE p_metadata_val CASCADE CONSTRAINTS PURGE;
+DROP TABLE p_metadata_def CASCADE CONSTRAINTS PURGE;
