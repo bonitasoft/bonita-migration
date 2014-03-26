@@ -26,13 +26,15 @@ import org.junit.Test;
 
 
 /**
+ * Check that the migrated database is ok
+ * @author Elias Ricken de Medeiros
  *
  * @author Aurelien Pupier
  *
  */
 public class SimpleDatabaseChecker6_2_5 extends DatabaseCheckerInitiliazer {
     
-	@Test
+    @Test
     public void can_complete_the_execution_of_previous_started_process_and_start_a_new_one() throws Exception {
         //given
         User user = identityApi.getUserByUserName("william.jobs");
@@ -59,4 +61,5 @@ public class SimpleDatabaseChecker6_2_5 extends DatabaseCheckerInitiliazer {
             waitForProcessToFinish(processInstance.getId(), APITestUtil.DEFAULT_TIMEOUT);
         }
     }
+    
 }

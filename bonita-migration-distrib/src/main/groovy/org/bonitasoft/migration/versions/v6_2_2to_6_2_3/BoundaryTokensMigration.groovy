@@ -21,9 +21,9 @@ import org.bonitasoft.migration.core.MigrationUtil
  *
  */
 public class BoundaryTokensMigration {
-    
+
     def Map nextIds;
-    
+
     public migrate(Sql sql) {
         def tokenSequenceId = 10110;
         nextIds = MigrationUtil.getNexIdsForTable(sql, tokenSequenceId);
@@ -48,7 +48,7 @@ public class BoundaryTokensMigration {
         }
         println "$tokenCount tokens were created."
     }
-    
+
     private updateTokenRefIds(Sql sql) {
         println "Updating token ref id for completed boundary events not yet archived..."
         def int tokenCountRefCount = 0;
@@ -57,12 +57,12 @@ public class BoundaryTokensMigration {
             def boolean interrupting = row.interrupting;
             if(!interrupting) {
                 updateTokenRefId(sql, row.tenantid, row.id)
-            } 
+            }
         }
         println "$tokenCountRefCount token ref ids were updated."
     }
-    
-    private updateTokenRefId(Sql sql, long tenantId, long boundaryEventId) {
+
+    private updateTokenRefId(Sql sql, tenantId, boundaryEventId) {
         //the token ref id used to create the token was the boundary event id
         sql.executeUpdate("UPDATE flownode_instance SET token_ref_id = $boundaryEventId WHERE tenantId = $tenantId and id = $boundaryEventId");
     }
@@ -71,15 +71,15 @@ public class BoundaryTokensMigration {
         def id = nextIds.get(tenantId);
         nextIds.put(tenantId, id +1);
         String tokenInsert = """
-            INSERT INTO token (tenantid, id, processInstanceId, ref_id, parent_ref_id) 
+            INSERT INTO token (tenantid, id, processInstanceId, ref_id, parent_ref_id)
             VALUES (
-            $tenantId, 
-            $id, 
-            $processInstanceId, 
-            $tokenInfo.tokenRefId, 
+            $tenantId,
+            $id,
+            $processInstanceId,
+            $tokenInfo.tokenRefId,
             $tokenInfo.parentTokenRefId
-            ) 
-        """ 
+            )
+        """
         sql.executeInsert(tokenInsert);
     }
 

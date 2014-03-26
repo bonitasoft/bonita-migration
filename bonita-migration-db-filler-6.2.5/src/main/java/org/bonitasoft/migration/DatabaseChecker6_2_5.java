@@ -21,7 +21,7 @@ import org.junit.runner.JUnitCore;
  *
  */
 public class DatabaseChecker6_2_5 extends SimpleDatabaseChecker6_2_5 {
-    
+
     public static void main(final String[] args) throws Exception {
         JUnitCore.main(DatabaseChecker6_2_5.class.getName());
     }
