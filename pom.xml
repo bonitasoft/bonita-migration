@@ -8,6 +8,7 @@
 
 	<modules>
 		<module>bonita-migration-distrib</module>
+		<module>bonita-migration-db-filler-archetype</module>
 		<module>bonita-migration-db-filler-6.0.2</module>
 		<module>bonita-migration-db-filler-6.1.0</module>
 		<module>bonita-migration-db-filler-6.2.0</module>
