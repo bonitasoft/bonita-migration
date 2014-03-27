@@ -62,10 +62,20 @@ public class DatabaseFiller6_2_5 extends SimpleDatabaseFiller6_0_2 {
 
         // 6.2.3 specific
         stats.putAll(fillProsessesWithMessageAndTimer(session));
+        stats.putAll(fillOthers(session));
 
         APITestUtil.logoutTenant(session);
         logger.info("Finished to fill the database");
         return stats;
+    }
+
+    /**
+     * @param session
+     * @return
+     * @throws Exception
+     */
+    protected Map<? extends String, ? extends String> fillOthers(final APISession session) throws Exception {
+        return Collections.emptyMap();
     }
 
     /**
