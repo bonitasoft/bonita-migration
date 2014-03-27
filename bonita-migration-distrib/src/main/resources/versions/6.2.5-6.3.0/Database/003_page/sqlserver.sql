@@ -12,10 +12,10 @@ CREATE TABLE page (
   UNIQUE (tenantId, name),
   PRIMARY KEY (tenantId, id)
 )
-@
+@@
 INSERT INTO sequence (tenantid, id, nextid)
 	SELECT id, 10120, 1 FROM tenant
 	ORDER BY id ASC
 @@
 ALTER TABLE profileentry ADD custom BIT DEFAULT 0
-@
+@@
