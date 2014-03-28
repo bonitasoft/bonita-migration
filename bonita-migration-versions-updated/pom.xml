@@ -18,6 +18,7 @@
   	<last.migration.folder.path>${versions.folder}/${last.migration.folder.name}</last.migration.folder.path>
   	<next.migration.folder.path>${versions.folder}/${last.bonita.version}-${next.bonita.version}</next.migration.folder.path>
   	<previous.tag.unpack.dir>${project.build.directory}/previousTag</previous.tag.unpack.dir>
+  	<if.task>net.sf.antcontrib.logic.IfTask</if.task>
   </properties>
   
   <profiles>
@@ -53,6 +54,19 @@
   				<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-antrun-plugin</artifactId>
+						<dependencies>
+							<dependency>
+								<groupId>ant-contrib</groupId>
+								<artifactId>ant-contrib</artifactId>
+								<version>1.0b3</version>
+								<exclusions>
+									<exclusion>
+										<artifactId>ant</artifactId>
+										<groupId>ant</groupId>
+									</exclusion>
+								</exclusions>
+							</dependency>
+						</dependencies>
 						<executions>
 							<execution>
 								<id>copy scripts</id>
@@ -63,14 +77,22 @@
 								<inherited>false</inherited>
 								<configuration>
 									<target>
-										<copy todir="${next.migration.folder.path}/Bonita-home" >
-											<fileset dir="${last.migration.folder.path}/Bonita-home" />
-										</copy>
-										<replace file="${next.migration.folder.path}/Bonita-home/Description.txt" token="${last.bonita.version}" value="${next.bonita.version}" />
-										<replace file="${next.migration.folder.path}/Bonita-home/Description.txt" token="${last.version.to.migrate}" value="${last.bonita.version}" />
-										<copy todir="${next.migration.folder.path}/Database/001_theme">
-											<fileset dir="${last.migration.folder.path}/Database/001_theme" />
-										</copy>
+										<taskdef name="if" classname="${if.task}" classpathref="maven.runtime.classpath" />
+										<if>
+											<not>
+												<isset property="ignore.scripts" />
+											</not>
+											<then>
+												<copy todir="${next.migration.folder.path}/Bonita-home" >
+													<fileset dir="${last.migration.folder.path}/Bonita-home" />
+												</copy>
+												<replace file="${next.migration.folder.path}/Bonita-home/Description.txt" token="${last.bonita.version}" value="${next.bonita.version}" />
+												<replace file="${next.migration.folder.path}/Bonita-home/Description.txt" token="${last.version.to.migrate}" value="${last.bonita.version}" />
+												<copy todir="${next.migration.folder.path}/Database/001_theme">
+													<fileset dir="${last.migration.folder.path}/Database/001_theme" />
+												</copy>
+											</then>
+										</if>
 										
 										<copy todir="${last.migration.folder.path}/Bonita-home/bonita">
 											<fileset dir="${previous.tag.unpack.dir}/versions/${last.migration.folder.name}/Bonita-home/bonita" />
