@@ -29,6 +29,8 @@ import org.junit.Test;
  * Check that the migrated database is ok
  * @author Elias Ricken de Medeiros
  *
+ * @author Aurelien Pupier
+ *
  */
 public class SimpleDatabaseChecker6_2_5 extends DatabaseCheckerInitiliazer {
     
