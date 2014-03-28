@@ -1,0 +1,1 @@
+Add the new profile "Process Manager" in profile table and its profile entries.
