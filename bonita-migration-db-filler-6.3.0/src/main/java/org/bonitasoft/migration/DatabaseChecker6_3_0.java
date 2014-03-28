@@ -119,7 +119,7 @@ public class DatabaseChecker6_3_0 {
 
         assertTrue(
                 "there was less than 4 task for john, he should have more than 3 because when bonita was shut down it should restart missed timers (the timer is 10 seconds, we had one task ready, we waited 60 seconds",
-                new WaitUntil(500, 60000) {
+                new WaitUntil(500, 120000) {
 
                     @Override
                     protected boolean check() throws Exception {
