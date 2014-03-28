@@ -19,3 +19,5 @@ INSERT INTO sequence (tenantid, id, nextid)
 @@
 ALTER TABLE profileentry ADD custom BIT DEFAULT 0
 @@
+UPDATE profileentry SET custom = 0
+@@
