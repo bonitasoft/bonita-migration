@@ -134,7 +134,7 @@ public class DatabaseChecker6_3_0 {
         assertTrue(
                 "size is "
                         + size
-                        + ", there was less than 4 task for john, he should have more than 3 because when bonita was shut down it should restart missed timers (the timer is 10 seconds, we had one task ready, we waited 20 secondes ",
+                        + ", there was less than 4 task for william.jobs, he should have more than 3 because when bonita was shut down it should restart missed timers (the timer is 10 seconds, we had one task ready, we waited 20 secondes ",
                 size > 3);
     }
     
