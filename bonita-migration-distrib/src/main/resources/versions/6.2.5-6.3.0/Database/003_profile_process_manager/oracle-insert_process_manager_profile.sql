@@ -2,8 +2,9 @@ DECLARE profile_entry_id_max INT;
 
 BEGIN
 	SELECT MAX(id) + 1 INTO profile_id_max FROM profile;
-	INSERT INTO profile (id, name, description, isDefault, iconPath, creationDate, createdBy, lastUpdateDate, lastUpdatedBy)
+	INSERT INTO profile (tenantId, id, name, description, isDefault, iconPath, creationDate, createdBy, lastUpdateDate, lastUpdatedBy)
 	VALUES  (
+		:tenantId,
 		profile_id_max,
 		'Process manager', 	
 		'The process manager can manage (not install/delete) his apps, view and export his reports.', 
