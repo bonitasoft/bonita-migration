@@ -1,4 +1,4 @@
-INSERT INTO profile (id, name, description, isDefault, iconPath, creationDate, createdBy, lastUpdateDate, lastUpdatedBy)
+INSERT INTO profile (tenantId, id, name, description, isDefault, iconPath, creationDate, createdBy, lastUpdateDate, lastUpdatedBy)
 VALUES  (
 	:tenantId,
 	(SELECT MAX(id) + 1 FROM profile), 
