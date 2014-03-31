@@ -126,7 +126,7 @@ public class DatabaseChecker6_3_0 {
 
     @Test
     public void check_jobs_work() throws Exception {
-        User user = identityApi.getUserByUserName("john");
+        final User user = identityApi.getUserByUserName("william.jobs");
 
         Thread.sleep(20000);// wait for quartz + bpm eventHandling to have started and restarted missed timers
 

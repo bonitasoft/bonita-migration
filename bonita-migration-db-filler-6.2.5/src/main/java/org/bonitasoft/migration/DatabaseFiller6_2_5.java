@@ -79,16 +79,16 @@ public class DatabaseFiller6_2_5 extends SimpleDatabaseFiller6_0_2 {
      * @throws BonitaHomeNotSetException
      */
     private Map<? extends String, ? extends String> fillProsessesWithMessageAndTimer(final APISession session) throws Exception {
-        IdentityAPI identityAPI = TenantAPIAccessor.getIdentityAPI(session);
-        User john = identityAPI.createUser("john", "bpm");
-        ProcessAPI processAPI = TenantAPIAccessor.getProcessAPI(session);
-        DesignProcessDefinition processWithTimer = new ProcessDefinitionBuilder().createNewInstance("ProcessWithStartTimer", "1.0")
+        final IdentityAPI identityAPI = TenantAPIAccessor.getIdentityAPI(session);
+        final User user = identityAPI.getUserByUserName("william.jobs");
+        final ProcessAPI processAPI = TenantAPIAccessor.getProcessAPI(session);
+        final DesignProcessDefinition processWithTimer = new ProcessDefinitionBuilder().createNewInstance("ProcessWithStartTimer", "1.0")
                 .addStartEvent("start")
                 .addTimerEventTriggerDefinition(TimerType.CYCLE, new ExpressionBuilder().createConstantStringExpression("0/15 * * * * ?"))
                 .addEndEvent("end").addMessageEventTrigger("message1", new ExpressionBuilder().createConstantStringExpression("ProcessWithStartMessage"))
                 .addTransition("start", "end").getProcess();
 
-        DesignProcessDefinition processWithMessage = new ProcessDefinitionBuilder()
+        final DesignProcessDefinition processWithMessage = new ProcessDefinitionBuilder()
                 .createNewInstance("ProcessWithStartMessage", "1.0")
                 .addActor("johnActor")
                 .addStartEvent("start")
@@ -99,19 +99,20 @@ public class DatabaseFiller6_2_5 extends SimpleDatabaseFiller6_0_2 {
                                 String.class.getName()))
                 .addTransition("start", "johnTask").getProcess();
 
-        ProcessDefinition processDefinition = processAPI.deploy(processWithMessage);
-        processAPI.addUserToActor(processAPI.getActors(processDefinition.getId(), 0, 10, ActorCriterion.NAME_ASC).get(0).getId(), john.getId());
+        final ProcessDefinition processDefinition = processAPI.deploy(processWithMessage);
+        processAPI.addUserToActor(processAPI.getActors(processDefinition.getId(), 0, 10, ActorCriterion.NAME_ASC).get(0).getId(), user.getId());
         processAPI.enableProcess(processDefinition.getId());
 
         processAPI.deployAndEnableProcess(processWithTimer);
 
-        if (!new WaitForPendingTasks(100, 40000, 1, john.getId(), processAPI).waitUntil()) {
+        if (!new WaitForPendingTasks(100, 40000, 1, user.getId(), processAPI).waitUntil()) {
             throw new IllegalStateException("process do not work");
         }
 
         return Collections.emptyMap();
     }
-    
+
+    @Override
     protected InputStream getProfilesXMLStream() {
         return getClass().getResourceAsStream("profiles.xml");
     }
