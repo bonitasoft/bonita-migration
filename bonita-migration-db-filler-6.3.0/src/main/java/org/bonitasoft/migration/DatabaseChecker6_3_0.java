@@ -206,7 +206,7 @@ public class DatabaseChecker6_3_0 {
         builder.filter("parentId", parentProfileEntryId);
         builder.filter("profileId", profileId);
         final List<ProfileEntry> profileEntries = profileAPI.searchProfileEntries(builder.done()).getResult();
-        assertEquals("Profile entry " + name + " not found for profile " + profileId + ".",1, profileEntries.size());
+        assertEquals("Profile entry " + name + " not found for profile " + profileId + ", and parent profile entry " + parentProfileEntryId + ".",1, profileEntries.size());
 
         final ProfileEntry profileEntry = profileEntries.get(0);
         assertEquals(parentProfileEntryId, profileEntry.getParentId());
