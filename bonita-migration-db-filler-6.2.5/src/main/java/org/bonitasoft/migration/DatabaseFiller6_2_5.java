@@ -13,6 +13,7 @@
  **/
 package org.bonitasoft.migration;
 
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -109,5 +110,9 @@ public class DatabaseFiller6_2_5 extends SimpleDatabaseFiller6_0_2 {
         }
 
         return Collections.emptyMap();
+    }
+    
+    protected InputStream getProfilesXMLStream() {
+        return getClass().getResourceAsStream("profiles.xml");
     }
 }
