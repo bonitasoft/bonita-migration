@@ -2,10 +2,10 @@
 -- Datas
 --
 
-UPDATE profile 
+UPDATE profileentry 
 	SET name = 'Organization'
 	WHERE name in ('Directory');
 	
-UPDATE profile 
+UPDATE profileentry 
 	SET name = 'Profiles'
 	WHERE name in ('User rights');
