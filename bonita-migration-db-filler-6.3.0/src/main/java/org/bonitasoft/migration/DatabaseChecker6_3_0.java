@@ -175,11 +175,12 @@ public class DatabaseChecker6_3_0 {
     }
 
     private Profile checkProfile(final Element profileElement) throws SearchException {
+        final String name = profileElement.attributeValue("name");
         final SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 10);
         builder.sort("name", Order.DESC);
-        builder.filter("name", profileElement.attributeValue("name"));
+        builder.filter("name", name);
         final List<Profile> resultProfiles = profileAPI.searchProfiles(builder.done()).getResult();
-        assertEquals(1, resultProfiles.size());
+        assertEquals("Profile " + name + " not found.", 1, resultProfiles.size());
 
         final Profile profile = resultProfiles.get(0);
         assertEquals(Boolean.valueOf(profileElement.attributeValue("isDefault")), profile.isDefault());
@@ -198,13 +199,14 @@ public class DatabaseChecker6_3_0 {
     }
 
     private ProfileEntry checkProfileEntry(final Element profileEntryElement, final long profileId, final long parentProfileEntryId) throws SearchException {
+        final String name = profileEntryElement.attributeValue("name");
         final SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 10);
         builder.sort("name", Order.DESC);
-        builder.filter("name", profileEntryElement.attributeValue("name"));
+        builder.filter("name", name);
         builder.filter("parentId", parentProfileEntryId);
         builder.filter("profileId", profileId);
         final List<ProfileEntry> profileEntries = profileAPI.searchProfileEntries(builder.done()).getResult();
-        assertEquals(1, profileEntries.size());
+        assertEquals("Profile entry " + name + " not found for profile " + profileId + ".",1, profileEntries.size());
 
         final ProfileEntry profileEntry = profileEntries.get(0);
         assertEquals(parentProfileEntryId, profileEntry.getParentId());
