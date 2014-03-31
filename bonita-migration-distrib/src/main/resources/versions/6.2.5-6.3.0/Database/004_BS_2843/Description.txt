@@ -1,0 +1,1 @@
+Rename the profile entry "User rights" in "Profiles", and the profile entry "Directory" in "Organization"
