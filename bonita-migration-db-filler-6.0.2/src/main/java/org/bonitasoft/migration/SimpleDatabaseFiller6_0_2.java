@@ -53,6 +53,9 @@ public class SimpleDatabaseFiller6_0_2 extends DatabaseFiller6_0_2 {
         Map<String, String> stats = new HashMap<String, String>();
         stats.putAll(fillOrganization(session));
         stats.putAll(fillSimpleProcess(session, nbProcessInstances));
+        stats.putAll(fillProcesses(session, nbProcessesDefinitions, nbProcessInstances));
+        stats.putAll(fillProcessesWithEvents(session, nbWaitingEvents));
+        stats.putAll(fillCompletedProcess(session));
 
         // 6.2.3 specific
         stats.putAll(fillProsessesWithMessageAndTimer(session));
