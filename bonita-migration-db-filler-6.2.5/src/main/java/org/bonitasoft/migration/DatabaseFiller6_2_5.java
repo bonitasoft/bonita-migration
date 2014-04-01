@@ -23,37 +23,12 @@ import org.bonitasoft.engine.test.APITestUtil;
 
 /**
  * @author Elias Ricken de Medeiros
- * 
  */
 public class DatabaseFiller6_2_5 extends SimpleDatabaseFiller6_0_2 {
 
     public static void main(final String[] args) throws Exception {
         DatabaseFiller6_2_5 databaseFiller = new DatabaseFiller6_2_5();
         databaseFiller.execute(1, 1, 1, 1);
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.migration.DatabaseFiller6_0_2#fillDatabase(int, int, int, int)
-     */
-    @Override
-    public Map<String, String> fillDatabase(final int nbProcessesDefinitions, final int nbProcessInstances, final int nbWaitingEvents, final int nbDocuments)
-            throws BonitaException,
-            Exception {
-        logger.info("Starting to fill the database");
-        APISession session = APITestUtil.loginDefaultTenant();
-        Map<String, String> stats = new HashMap<String, String>();
-        stats.putAll(fillOrganization(session));
-        stats.putAll(fillProcesses(session, nbProcessesDefinitions, nbProcessInstances));
-        stats.putAll(fillProcessesWithEvents(session, nbWaitingEvents));
-        stats.putAll(fillCompletedProcess(session));
-
-        // 6.2.3 specific
-        stats.putAll(fillProsessesWithMessageAndTimer(session));
-
-        APITestUtil.logoutTenant(session);
-        logger.info("Finished to fill the database");
-        return stats;
     }
 
     @Override

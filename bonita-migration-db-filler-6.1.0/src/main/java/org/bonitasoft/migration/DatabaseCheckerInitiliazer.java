@@ -43,15 +43,20 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * @author Elias Ricken de Medeiros
- *
+ * 
  */
 public class DatabaseCheckerInitiliazer {
 
     private static ClassPathXmlApplicationContext springContext;
+
     protected static ProcessAPI processAPI;
+
     protected static ProfileAPI profileAPI;
+
     protected static IdentityAPI identityApi;
+
     protected static CommandAPI commandApi;
+
     protected static APISession session;
 
     @BeforeClass
@@ -80,11 +85,11 @@ public class DatabaseCheckerInitiliazer {
 
     private static void setupSpringContext() {
         setSystemPropertyIfNotSet("sysprop.bonita.db.vendor", "h2");
-    
+
         // Force these system properties
         System.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.bonitasoft.engine.local.SimpleMemoryContextFactory");
         System.setProperty(Context.URL_PKG_PREFIXES, "org.bonitasoft.engine.local");
-    
+
         springContext = new ClassPathXmlApplicationContext("datasource.xml", "jndi-setup.xml");
     }
 
@@ -95,32 +100,31 @@ public class DatabaseCheckerInitiliazer {
     private static void setSystemPropertyIfNotSet(final String property, final String value) {
         System.setProperty(property, System.getProperty(property, value));
     }
-    
-    
+
     protected HumanTaskInstance waitForUserTask(final String taskName, final long processInstanceId, final int timeout) throws Exception {
         long now = System.currentTimeMillis();
         SearchResult<ActivityInstance> searchResult;
         do {
-            SearchOptionsBuilder builder = new SearchOptionsBuilder(0,1);
+            SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 1);
             builder.filter(ActivityInstanceSearchDescriptor.PROCESS_INSTANCE_ID, processInstanceId);
             builder.filter(ActivityInstanceSearchDescriptor.NAME, taskName);
             builder.filter(ActivityInstanceSearchDescriptor.STATE_NAME, "ready");
-           searchResult = processAPI.searchActivities(builder.done());
+            searchResult = processAPI.searchActivities(builder.done());
         } while (searchResult.getCount() == 0 && now + timeout > System.currentTimeMillis());
         assertEquals(1, searchResult.getCount());
         final HumanTaskInstance getHumanTaskInstance = processAPI.getHumanTaskInstance(searchResult.getResult().get(0).getId());
         assertNotNull(getHumanTaskInstance);
         return getHumanTaskInstance;
     }
-    
+
     protected void waitForProcessToFinish(final long processInstanceId, final int timeout) throws Exception {
         long now = System.currentTimeMillis();
         SearchResult<ArchivedProcessInstance> searchResult;
         do {
-            SearchOptionsBuilder builder = new SearchOptionsBuilder(0,1);
+            SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 1);
             builder.filter(ArchivedProcessInstancesSearchDescriptor.SOURCE_OBJECT_ID, processInstanceId);
             builder.filter(ArchivedProcessInstancesSearchDescriptor.STATE_ID, ProcessInstanceState.COMPLETED.getId());
-           searchResult = processAPI.searchArchivedProcessInstances(builder.done());
+            searchResult = processAPI.searchArchivedProcessInstances(builder.done());
         } while (searchResult.getCount() == 0 && now + timeout > System.currentTimeMillis());
         assertEquals(1, searchResult.getCount());
     }
