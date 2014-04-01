@@ -13,6 +13,14 @@
  **/
 package org.bonitasoft.migration;
 
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.bonitasoft.engine.exception.BonitaException;
+import org.bonitasoft.engine.session.APISession;
+import org.bonitasoft.engine.test.APITestUtil;
+
 /**
  * @author Elias Ricken de Medeiros
  */
@@ -23,4 +31,8 @@ public class DatabaseFiller6_2_5 extends SimpleDatabaseFiller6_0_2 {
         databaseFiller.execute(1, 1, 1, 1);
     }
 
+    @Override
+    protected InputStream getProfilesXMLStream() {
+        return getClass().getResourceAsStream("profiles.xml");
+    }
 }

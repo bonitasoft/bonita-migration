@@ -13,6 +13,8 @@
  **/
 package org.bonitasoft.migration;
 
+import java.io.InputStream;
+
 
 /**
  * @author Elias Ricken de Medeiros
@@ -23,6 +25,10 @@ public class DatabaseFiller6_2_4 extends SimpleDatabaseFiller6_0_2 {
     public static void main(final String[] args) throws Exception {
         DatabaseFiller6_2_4 databaseFiller = new DatabaseFiller6_2_4();
         databaseFiller.execute(1, 1, 1, 1);
+    }
+    
+    protected InputStream getProfilesXMLStream() {
+        return getClass().getResourceAsStream("profiles.xml");
     }
 
 }
