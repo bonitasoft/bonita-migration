@@ -31,7 +31,6 @@ import org.bonitasoft.engine.api.PlatformAPIAccessor;
 import org.bonitasoft.engine.api.ProcessAPI;
 import org.bonitasoft.engine.api.ProfileAPI;
 import org.bonitasoft.engine.api.TenantAPIAccessor;
-import org.bonitasoft.engine.api.ThemeAPI;
 import org.bonitasoft.engine.bpm.flownode.ActivityInstanceCriterion;
 import org.bonitasoft.engine.exception.BonitaException;
 import org.bonitasoft.engine.exception.SearchException;
@@ -71,8 +70,6 @@ public class DatabaseChecker6_3_0 {
 
     protected static CommandAPI commandAPI;
 
-    private static ThemeAPI themeAPI;
-
     protected static APISession session;
 
     private static ClassPathXmlApplicationContext springContext;
@@ -93,7 +90,7 @@ public class DatabaseChecker6_3_0 {
         processAPI = TenantAPIAccessor.getProcessAPI(session);
         identityApi = TenantAPIAccessor.getIdentityAPI(session);
         profileAPI = TenantAPIAccessor.getProfileAPI(session);
-        themeAPI = TenantAPIAccessor.getThemeAPI(session);
+        TenantAPIAccessor.getThemeAPI(session);
         commandAPI = TenantAPIAccessor.getCommandAPI(session);
     }
 
@@ -128,17 +125,16 @@ public class DatabaseChecker6_3_0 {
     public void check_jobs_work() throws Exception {
         final User user = identityApi.getUserByUserName("william.jobs");
 
-        Thread.sleep(20000);// wait for quartz + bpm eventHandling to have started and restarted missed timers
+        Thread.sleep(25000);// wait for quartz + bpm eventHandling to have started and restarted missed timers
 
         int size = processAPI.getPendingHumanTaskInstances(user.getId(), 0, 100, ActivityInstanceCriterion.DEFAULT).size();
         assertTrue(
                 "size is "
                         + size
-                        + ", there was less than 4 task for william.jobs, he should have more than 3 because when bonita was shut down it should restart missed timers (the timer is 10 seconds, we had one task ready, we waited 20 secondes ",
+                        + ", there was less than 4 task for william.jobs, he should have more than 3 because when bonita was shut down it should restart missed timers (the timer is 10 seconds, we had one task ready, we waited 25 secondes ",
                 size > 3);
     }
-    
-    
+
     @Test
     public void check_profiles() throws Exception {
         final SAXReader reader = new SAXReader();
@@ -206,7 +202,8 @@ public class DatabaseChecker6_3_0 {
         builder.filter("parentId", parentProfileEntryId);
         builder.filter("profileId", profileId);
         final List<ProfileEntry> profileEntries = profileAPI.searchProfileEntries(builder.done()).getResult();
-        assertEquals("Profile entry " + name + " not found for profile " + profileId + ", and parent profile entry " + parentProfileEntryId + ".",1, profileEntries.size());
+        assertEquals("Profile entry " + name + " not found for profile " + profileId + ", and parent profile entry " + parentProfileEntryId + ".", 1,
+                profileEntries.size());
 
         final ProfileEntry profileEntry = profileEntries.get(0);
         assertEquals(parentProfileEntryId, profileEntry.getParentId());
