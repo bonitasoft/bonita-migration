@@ -15,9 +15,10 @@ package org.bonitasoft.migration;
 
 import org.junit.runner.JUnitCore;
 
+
 /**
- * @author Elias Ricken de Medeiros
- * 
+ * @author Aurelien Pupier
+ *
  */
 public class DatabaseChecker6_2_5 extends SimpleDatabaseChecker6_2_5 {
 

@@ -1,0 +1,12 @@
+<connectorImplementation>
+
+	<definitionId>org.bonitasoft.phoneconnector</definitionId>
+	<definitionVersion>1.0</definitionVersion>
+	<implementationClassname>org.bonitasoft.migration.PhoneConnector</implementationClassname>
+	<implementationId>org.bonitasoft.phoneconnector</implementationId>
+	<implementationVersion>org.bonitasoft.phoneconnector</implementationVersion>
+
+	<jarDependencies>
+		<jarDependency>TestConnectorWithOutput.jar</jarDependency>
+	</jarDependencies>
+</connectorImplementation>
