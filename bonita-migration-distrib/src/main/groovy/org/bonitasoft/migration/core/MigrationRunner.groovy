@@ -52,6 +52,7 @@ public class MigrationRunner {
                 "",
                 "Warning:",
                 "Back up the database AND the bonita home before migrating",
+                "If you have a custom Look & Feel, test and update it, if it's necessary when the migration is finished.",
                 "If you have customized the configuration of your bonita home, reapply the customizations when the migration is finished.","")
         MigrationUtil.askIfWeContinue();
 
