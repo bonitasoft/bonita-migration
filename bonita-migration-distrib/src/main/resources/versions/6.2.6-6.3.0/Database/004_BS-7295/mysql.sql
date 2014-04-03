@@ -1,0 +1,2 @@
+CREATE INDEX idx_waiting_event ON waiting_event (progress, tenantid, kind, locked, active);
+CREATE INDEX idx_message_instance ON message_instance (messageName, targetProcess, correlation1, correlation2, correlation3);
