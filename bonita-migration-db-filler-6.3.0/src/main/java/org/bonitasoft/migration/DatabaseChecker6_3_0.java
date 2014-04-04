@@ -43,6 +43,7 @@ import org.bonitasoft.engine.search.SearchOptionsBuilder;
 import org.bonitasoft.engine.session.APISession;
 import org.bonitasoft.engine.session.PlatformSession;
 import org.bonitasoft.engine.test.APITestUtil;
+import org.bonitasoft.engine.test.WaitUntil;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -128,14 +129,17 @@ public class DatabaseChecker6_3_0 {
     public void check_jobs_work() throws Exception {
         final User user = identityApi.getUserByUserName("william.jobs");
 
-        Thread.sleep(20000);// wait for quartz + bpm eventHandling to have started and restarted missed timers
+        // wait for quartz + bpm eventHandling to have started and restarted missed timers
 
-        int size = processAPI.getPendingHumanTaskInstances(user.getId(), 0, 100, ActivityInstanceCriterion.DEFAULT).size();
         assertTrue(
-                "size is "
-                        + size
-                        + ", there was less than 4 task for william.jobs, he should have more than 3 because when bonita was shut down it should restart missed timers (the timer is 10 seconds, we had one task ready, we waited 20 secondes ",
-                size > 3);
+                "there was less than 4 task for william.jobs, he should have more than 3 because when bonita was shut down it should restart missed timers (the timer is 10 seconds, we had one task ready, we waited 60 seconds",
+                new WaitUntil(500, 120000) {
+
+                    @Override
+                    protected boolean check() throws Exception {
+                        return processAPI.getPendingHumanTaskInstances(user.getId(), 0, 100, ActivityInstanceCriterion.DEFAULT).size() > 3;
+                    }
+                }.waitUntil());
     }
     
     
