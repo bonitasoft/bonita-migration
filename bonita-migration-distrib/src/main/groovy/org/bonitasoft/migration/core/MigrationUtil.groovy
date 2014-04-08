@@ -233,12 +233,12 @@ public class MigrationUtil {
         return id
     }
 
-    public static List<Object> getTenantsId(File feature, String dbVendor, groovy.sql.Sql sql){
+    public static List<Object> getTenantsId(String dbVendor, groovy.sql.Sql sql){
         if (sql == null){
             throw new IllegalArgumentException("Can't execute getTenantsId method with arguments : sql = " + sql);
         }
 
-        def sqlFile = getSqlFile(feature, dbVendor, "tenants")
+        def sqlFile = getSqlFile(new File("commons/tenant"), dbVendor, "getTenantsId")
         def tenants = []
 
         sql.query(getSqlContent(sqlFile.text, null).get(0)) { ResultSet rs ->
