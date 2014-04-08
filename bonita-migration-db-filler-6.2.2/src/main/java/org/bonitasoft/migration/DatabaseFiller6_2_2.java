@@ -198,5 +198,9 @@ public class DatabaseFiller6_2_2 extends DatabaseFiller6_0_2 {
     private static void setSystemPropertyIfNotSet(final String property, final String value) {
         System.setProperty(property, System.getProperty(property, value));
     }
+    
+    protected InputStream getProfilesXMLStream() {
+        return getClass().getResourceAsStream("profiles.xml");
+    }
 
 }
