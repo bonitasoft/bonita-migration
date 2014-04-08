@@ -8,5 +8,3 @@ CREATE TABLE ref_biz_data_inst (
     UNIQUE (tenantid, proc_inst_id, name),
     PRIMARY KEY (tenantid, id)
 );
-
-INSERT INTO sequence VALUES(${tenantid}, 10096, 1);

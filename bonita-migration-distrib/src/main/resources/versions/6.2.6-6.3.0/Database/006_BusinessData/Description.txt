@@ -1,1 +1,1 @@
-Create new table for business data feature 
+Create new table for business data feature and associated sequence
