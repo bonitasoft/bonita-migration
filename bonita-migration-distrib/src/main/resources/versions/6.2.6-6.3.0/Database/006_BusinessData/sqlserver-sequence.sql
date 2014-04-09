@@ -1,0 +1,1 @@
+INSERT INTO sequence VALUES(:tenantId, 10096, 1) @@

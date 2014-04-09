@@ -4,7 +4,7 @@ def parameters = Collections.singletonMap(":creationDate", new Date().getTime())
 MigrationUtil.executeSqlFile(feature, dbVendor, null, parameters, sql, true);
 
 def currentTime = System.currentTimeMillis()
-def tenants = MigrationUtil.getTenantsId(feature, dbVendor, sql)
+def tenants = MigrationUtil.getTenantsId(dbVendor, sql)
 
 println "Executing update for each tenant : " + tenants
 tenants.each {

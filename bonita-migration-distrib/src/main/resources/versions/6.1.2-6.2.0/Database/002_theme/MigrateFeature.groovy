@@ -4,7 +4,7 @@ MigrationUtil.executeDefaultSqlFile(feature, dbVendor, sql)
 
 
 def currentTime = System.currentTimeMillis()
-def tenants = MigrationUtil.getTenantsId(feature, dbVendor, sql)
+def tenants = MigrationUtil.getTenantsId(dbVendor, sql)
 
 println "Executing update for each tenant : " + tenants
 tenants.each {
