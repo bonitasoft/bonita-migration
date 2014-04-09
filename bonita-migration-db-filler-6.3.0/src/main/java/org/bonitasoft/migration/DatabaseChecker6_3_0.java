@@ -14,7 +14,11 @@
  */
 package org.bonitasoft.migration;
 
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Iterator;
 import java.util.List;
@@ -29,10 +33,12 @@ import org.bonitasoft.engine.api.PlatformAPIAccessor;
 import org.bonitasoft.engine.api.ProcessAPI;
 import org.bonitasoft.engine.api.ProfileAPI;
 import org.bonitasoft.engine.api.TenantAPIAccessor;
-import org.bonitasoft.engine.api.ThemeAPI;
 import org.bonitasoft.engine.bpm.flownode.ActivityInstanceCriterion;
 import org.bonitasoft.engine.exception.BonitaException;
 import org.bonitasoft.engine.exception.SearchException;
+import org.bonitasoft.engine.identity.CustomUserInfo;
+import org.bonitasoft.engine.identity.CustomUserInfoDefinition;
+import org.bonitasoft.engine.identity.CustomUserInfoDefinitionCreator;
 import org.bonitasoft.engine.identity.User;
 import org.bonitasoft.engine.profile.Profile;
 import org.bonitasoft.engine.profile.ProfileEntry;
@@ -252,6 +258,18 @@ public class DatabaseChecker6_3_0 {
         assertEquals(profileId, profileEntry.getProfileId());
 
         return profileEntry;
+    }
+
+    @Test
+    public void can_create_custom_user_info_definition_and_values() throws Exception {
+        User user = identityApi.createUser("first.user", "bpm");
+        CustomUserInfoDefinition skills = identityApi.createCustomUserInfoDefinition(new CustomUserInfoDefinitionCreator("Skills", "The user skills"));
+        identityApi.setCustomUserInfoValue(skills.getId(), user.getId(), "Java");
+        
+        List<CustomUserInfo> userInfo = identityApi.getCustomUserInfo(user.getId(), 0, 10);
+        assertThat(userInfo.size()).isEqualTo(1);
+        assertThat(userInfo.get(0).getDefinition().getName()).isEqualTo("Skills");
+        assertThat(userInfo.get(0).getValue()).isEqualTo("Java");
     }
 
 }
