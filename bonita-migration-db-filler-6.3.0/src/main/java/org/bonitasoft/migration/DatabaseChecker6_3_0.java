@@ -14,6 +14,7 @@
  */
 package org.bonitasoft.migration;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -23,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.naming.Context;
+import javax.sql.DataSource;
 
 import org.bonitasoft.engine.api.CommandAPI;
 import org.bonitasoft.engine.api.IdentityAPI;
@@ -35,6 +37,9 @@ import org.bonitasoft.engine.api.ThemeAPI;
 import org.bonitasoft.engine.bpm.flownode.ActivityInstanceCriterion;
 import org.bonitasoft.engine.exception.BonitaException;
 import org.bonitasoft.engine.exception.SearchException;
+import org.bonitasoft.engine.identity.CustomUserInfo;
+import org.bonitasoft.engine.identity.CustomUserInfoDefinition;
+import org.bonitasoft.engine.identity.CustomUserInfoDefinitionCreator;
 import org.bonitasoft.engine.identity.User;
 import org.bonitasoft.engine.profile.Profile;
 import org.bonitasoft.engine.profile.ProfileEntry;
@@ -52,6 +57,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
  * 
@@ -120,6 +126,41 @@ public class DatabaseChecker6_3_0 {
     }
 
     @Test
+    public void ref_business_data_table_has_been_created() throws Exception {
+        DataSource bonitaDatasource = (DataSource) springContext.getBean("bonitaDataSource");
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(bonitaDatasource);
+        
+        jdbcTemplate.update("INSERT INTO ref_biz_data_inst(tenantid, id, name, proc_inst_id, data_id, data_classname) "
+                + "VALUES (?, ?, ?, ?, ?, ?)", new Object[] { 1, 1, "businessdata", 1, 1, "org.bonitasoft.classname"});
+        
+        long numberOfRefBusinessdata = countRefBusinessdata(jdbcTemplate);
+        assertEquals(1, numberOfRefBusinessdata);
+    }
+    
+    private long countRefBusinessdata(JdbcTemplate jdbcTemplate) {
+        return jdbcTemplate.queryForLong("SELECT COUNT(id) FROM ref_biz_data_inst");
+    }
+    
+    @Test
+    public void ref_business_data_sequence_have_been_created() throws Exception {
+        DataSource sequenceDatasource = (DataSource) springContext.getBean("bonitaSequenceManagerDataSource");
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(sequenceDatasource);
+        
+        long numberOfTenants = countTenants(jdbcTemplate);
+        long numberOfNewSequences = countRefBusinessDataSequences(jdbcTemplate);
+        
+        assertEquals(numberOfTenants, numberOfNewSequences);
+    }
+
+    private long countRefBusinessDataSequences(JdbcTemplate jdbcTemplate) {
+        return jdbcTemplate.queryForLong("SELECT COUNT(*) FROM sequence WHERE id = 10096");
+    }
+
+    private long countTenants(JdbcTemplate jdbcTemplate) {
+        return jdbcTemplate.queryForLong("SELECT COUNT(id) FROM tenant");
+    }
+
+    @Test
     public void runIt() throws Exception {
         processAPI.getNumberOfProcessInstances();
 
@@ -127,7 +168,7 @@ public class DatabaseChecker6_3_0 {
 
     @Test
     public void check_jobs_work() throws Exception {
-        final User user = identityApi.getUserByUserName("john");
+        final User user = identityApi.getUserByUserName("william.jobs");
 
         // wait for quartz + bpm eventHandling to have started and restarted missed timers
 
@@ -141,7 +182,6 @@ public class DatabaseChecker6_3_0 {
                     }
                 }.waitUntil());
     }
-
     @Test
     public void check_profiles() throws Exception {
         final SAXReader reader = new SAXReader();
@@ -221,6 +261,18 @@ public class DatabaseChecker6_3_0 {
         assertEquals(profileId, profileEntry.getProfileId());
 
         return profileEntry;
+    }
+
+    @Test
+    public void can_create_custom_user_info_definition_and_values() throws Exception {
+        User user = identityApi.createUser("first.user", "bpm");
+        CustomUserInfoDefinition skills = identityApi.createCustomUserInfoDefinition(new CustomUserInfoDefinitionCreator("Skills", "The user skills"));
+        identityApi.setCustomUserInfoValue(skills.getId(), user.getId(), "Java");
+        
+        List<CustomUserInfo> userInfo = identityApi.getCustomUserInfo(user.getId(), 0, 10);
+        assertThat(userInfo.size()).isEqualTo(1);
+        assertThat(userInfo.get(0).getDefinition().getName()).isEqualTo("Skills");
+        assertThat(userInfo.get(0).getValue()).isEqualTo("Java");
     }
 
 }
