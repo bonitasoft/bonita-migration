@@ -45,9 +45,11 @@ public class ProcessDefinition {
 
     public List<TransientData> getTransientData(){
         def Node[] transientData = processDefinitionXml.depthFirst().grep{
-            it.name().getLocalPart().endsWith("ataDefinition") && it.@transient == "true"
+            it.name().getLocalPart().endsWith("ataDefinition") && it.'@transient' == "true"
         }
-        return transientData.collect{ new TransientData(node:it,containerId:Long.valueOf(it.parent().parent().@id))};
+        return transientData.collect{
+            new TransientData(node:it,containerId:Long.valueOf(it.parent().parent().'@id'), containerName:it.parent().parent().'@name')
+        };
     }
 
     public getName(){
@@ -62,8 +64,12 @@ public class ProcessDefinition {
 
 
     public updateExpressionOf(TransientData data){
-        def container = processDefinitionXml.depthFirst().find{ it.@id == String.valueOf(data.containerId)}
-        def expressionsToUpdate =  container.depthFirst().findAll{ it.content.text() == data.name && it.@expressionType == "TYPE_VARIABLE"}
+        def container = processDefinitionXml.depthFirst().find{
+            it.@id == String.valueOf(data.containerId)
+        }
+        def expressionsToUpdate =  container.depthFirst().findAll{
+            it.content.text() == data.name && it.@expressionType == "TYPE_VARIABLE"
+        }
         expressionsToUpdate.each{ Node expression ->
             println expression.@name
             expression.@expressionType = "TYPE_TRANSIENT_VARIABLE"
@@ -79,7 +85,9 @@ public class ProcessDefinition {
                 transientDataMap.get(it.name).add(it);
             }
         }
-        def operations =  processDefinitionXml.depthFirst().findAll{ it.name().getLocalPart() == "operation"}
+        def operations =  processDefinitionXml.depthFirst().findAll{
+            it.name().getLocalPart() == "operation"
+        }
         operations.each{ Node operation ->
             def leftOperand = operation.leftOperand[0]
             if(operation.@operatorType == "DOCUMENT_CREATE_UPDATE"){

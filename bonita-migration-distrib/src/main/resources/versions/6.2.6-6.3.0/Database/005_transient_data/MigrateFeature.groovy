@@ -14,56 +14,56 @@
 import groovy.sql.Sql;
 
 import org.bonitasoft.migration.core.MigrationUtil;
+import org.bonitasoft.migration.versions.v6_2_6to_6_3_0.Forms;
 import org.bonitasoft.migration.versions.v6_2_6to_6_3_0.ProcessDefinition;
 import org.bonitasoft.migration.versions.v6_2_6to_6_3_0.TransientData;
 
-
+def formsVersion = new File(feature,"FORMS_VERSION").text
 //list process definitions
 sql.eachRow("SELECT * from process_definition",[false], { row ->
-    migrateDefinition(row[0], row[1])
-    
+    migrateDefinition(row[0], row[1], formsVersion)
+
 })
 //delete datamapping of transient data
 sql.executeUpdate("DELETE FROM data_mapping m WHERE datainstanceid NOT IN (SELECT id FROM data_instance d WHERE m.tenantid = d.tenantid)");
 //for each process
-def migrateDefinition(long tenantId, long id){
-    def ProcessDefinition processDefinition = new ProcessDefinition(new File(bonitaHome.getAbsolutePath()+"${s}server${s}tenants${s}${tenantId}${s}work${s}processes${s}${id}${s}server-process-definition.xml").text)
-    
+def migrateDefinition(long tenantId, long id, String formsVersion){
+    def File processFile = new File(bonitaHome.getAbsolutePath()+"${s}server${s}tenants${s}${tenantId}${s}work${s}processes${s}${id}${s}server-process-definition.xml");
+    def ProcessDefinition processDefinition = new ProcessDefinition(processFile.text)
+
     //parse process to get list all transient data
     def transientData = processDefinition.getTransientData()
-    
+
     //warn for each transient data without initial value
     transientData.each { TransientData data ->
         if( !data.haveInitialValue ){
-            println "Transient data < $transientData.name > of process $processDefinition.id $processDefinition.name $processDefinition.version having id $transientData.containerId must have an initial value. Please update it to make sure it will work in further versions"
+            println "Transient data < $transientData.name > of process $processDefinition.id $processDefinition.name -- $processDefinition.version having id $transientData.containerId must have an initial value. Please update it to make sure it will work in further versions"
         }
-        
     }
-    //Update Operations to add left operand type
+    //Update Operations to add left operand type and to convert left operand that update transient data to have the good type
     processDefinition.updateOperatorAndLeftOperandType(transientData)
     transientData.each { TransientData data ->
-    //  Change type of expression that evaluate transient data
+        //  Change type of expression that evaluate transient data
         processDefinition.updateExpressionOf(data)
-        //Convert left operand that update transient data to have the good type
     }
-    
-    
-    
-    
-    
-    def flownode = processDefinition.depthFirst().grep{ it.name.localPart.endsWith("DataDefinition") && it.@transient == "true" }
-    
-    
-    def groovy.xml.QName tag =  flownode.name()
-    def type = tag.localPart
-    def flownodeDef = new FlowNodeDefinition(id:flownode.@id,name:flownode.@name, type:type)
-    if(flownodeDef.isGateway()){
-        flownodeDef.gateType = flownode.@gatewayType
-        flownode.incomingTransitions.each {
-            def idref = it.@idref
-            flownodeDef.addTransition(processDefinition.depthFirst().grep{ it.@id == idref }[0].@name)
-        }
+    processFile.withWriter("UTF-8") { it << processDefinition.getContent() }
+
+    //update forms.xml
+    def File formsxml = new File(bonitaHome.getAbsolutePath()+"${s}server${s}tenants${s}${tenantId}${s}work${s}processes${s}${id}${s}resources${s}forms${s}forms.xml")
+
+    if(formsxml.exists()){
+        def Forms forms = new Forms(formsxml.text, processDefinition.getTransientData(), formsVersion)
+        //update  expressions: each TYPE_VARIABLE that point to a transient data are changed to TYPE_TRANSIENT_VARIABLE
+        forms.updateExpressions()
+        //update operations: add type on left operand and change the operation type
+        forms.updateActions()
+        
+        formsxml.withWriter("UTF-8") { it << forms.getContent() }
+    }else{
+        println "no forms.xml for process $processDefinition.name -- $processDefinition.version ($processDefinition.id)"
     }
+
+
 }
 
 

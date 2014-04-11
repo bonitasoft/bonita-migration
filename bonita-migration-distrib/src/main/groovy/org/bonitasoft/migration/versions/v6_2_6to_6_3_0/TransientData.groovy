@@ -28,6 +28,7 @@ public class TransientData {
 
     Node node;
     long containerId;
+    String containerName;
 
     String getName(){
         node.@name
