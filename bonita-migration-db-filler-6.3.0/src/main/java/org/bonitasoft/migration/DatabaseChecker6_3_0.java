@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2013 BonitaSoft S.A.
+ * Copyright (C) 2013-2014 BonitaSoft S.A.
  * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * accessor program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,12 +55,12 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
- * 
- * 
  * Check that the migrated database is ok
  * 
  * @author Baptiste Mesta
@@ -81,6 +81,8 @@ public class DatabaseChecker6_3_0 {
 
     private static ClassPathXmlApplicationContext springContext;
 
+    private final Logger logger = LoggerFactory.getLogger(DatabaseChecker6_3_0.class);
+
     public static void main(final String[] args) throws Exception {
         JUnitCore.main(DatabaseChecker6_3_0.class.getName());
     }
@@ -97,6 +99,7 @@ public class DatabaseChecker6_3_0 {
         processAPI = TenantAPIAccessor.getProcessAPI(session);
         identityApi = TenantAPIAccessor.getIdentityAPI(session);
         profileAPI = TenantAPIAccessor.getProfileAPI(session);
+        TenantAPIAccessor.getThemeAPI(session);
         commandAPI = TenantAPIAccessor.getCommandAPI(session);
     }
 
@@ -217,7 +220,6 @@ public class DatabaseChecker6_3_0 {
     private Profile checkProfile(final Element profileElement) throws SearchException {
         final String name = profileElement.attributeValue("name");
         final SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 10);
-        builder.sort("name", Order.DESC);
         builder.filter("name", name);
         final List<Profile> resultProfiles = profileAPI.searchProfiles(builder.done()).getResult();
         assertEquals("Profile " + name + " not found.", 1, resultProfiles.size());
@@ -234,6 +236,8 @@ public class DatabaseChecker6_3_0 {
         assertNotEquals(0, profile.getLastUpdateDate());
         assertNotNull(profile.getLastUpdatedBy());
         assertNotEquals(0, profile.getLastUpdatedBy());
+
+        logger.info("The profile " + name + " is the same in database as the XML file.");
 
         return profile;
     }
@@ -256,6 +260,8 @@ public class DatabaseChecker6_3_0 {
         assertEquals(profileEntryElement.elementText("type"), profileEntry.getType());
         assertEquals(profileEntryElement.elementText("page"), profileEntry.getPage());
         assertEquals(profileId, profileEntry.getProfileId());
+
+        logger.info("The profile entry " + name + " is the same in database as the XML file.");
 
         return profileEntry;
     }
