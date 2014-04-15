@@ -458,8 +458,7 @@ public class DatabaseFiller6_0_2 {
         return map;
     }
 
-    protected Map<String, String> fillCompletedProcess(final APISession session)
-            throws Exception {
+    protected Map<String, String> fillCompletedProcess(final APISession session) throws Exception {
         ProcessAPI processAPI = TenantAPIAccessor.getProcessAPI(session);
 
         ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("ProcessThatFinish", "1.0");
@@ -470,8 +469,7 @@ public class DatabaseFiller6_0_2 {
         ProcessDefinition processDefinition = processAPI.deploy(archiveBuilder.done());
         processAPI.enableProcess(processDefinition.getId());
         processAPI.startProcess(processDefinition.getId());
-        Map<String, String> map = new HashMap<String, String>(2);
-        return map;
+        return new HashMap<String, String>(2);
     }
 
     protected Map<String, String> fillOrganization(final APISession session) throws Exception {

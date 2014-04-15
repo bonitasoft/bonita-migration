@@ -3,8 +3,6 @@ import groovy.sql.Sql
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'maven'
-apply plugin: "sonar-runner"
-apply plugin: 'jacoco'
 
 group = 'org.bonitasoft.migration'
 version = '1.5.0-SNAPSHOT'
@@ -12,24 +10,6 @@ version = '1.5.0-SNAPSHOT'
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
-sonarRunner {
-    sonarProperties {
-        property "sonar.host.url", "http://repositories.rd.lan:9000/"
-        property "sonar.jdbc.url", "jdbc:postgresql://repositories.rd.lan/sonarqube"
-        property "sonar.jdbc.driverClassName", "org.postgresql.Driver"
-        property "sonar.jdbc.username", "sonar"
-        property "sonar.jdbc.password", "sa"
-        
-        property "sonar.sourceEncoding", "UTF-8"
-        property "sonar.sources", "src"
-        property "sonar.binaries", "build"
-        property "sonar.projectName", "Bonita Migration Distrib"
-        property "sonar.projectKey", "org.bonitasoft.migration:bonita-migration"
-        property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
-        property "sonar.junit.reportsPath", "${project.buildDir}/test-results"
-        property "sonar.groovy.coveragePlugin", "jacoco"
-    }
-}
 
 
 ext{

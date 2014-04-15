@@ -19,12 +19,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bonitasoft.engine.api.IdentityAPI;
+import org.bonitasoft.engine.api.LoginAPI;
 import org.bonitasoft.engine.api.ProcessAPI;
 import org.bonitasoft.engine.api.TenantAPIAccessor;
+import org.bonitasoft.engine.bpm.bar.BusinessArchiveBuilder;
+import org.bonitasoft.engine.bpm.flownode.ActivityInstance;
 import org.bonitasoft.engine.bpm.actor.ActorCriterion;
 import org.bonitasoft.engine.bpm.flownode.TimerType;
 import org.bonitasoft.engine.bpm.process.DesignProcessDefinition;
 import org.bonitasoft.engine.bpm.process.ProcessDefinition;
+import org.bonitasoft.engine.bpm.process.ProcessInstance;
 import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder;
 import org.bonitasoft.engine.exception.BonitaException;
 import org.bonitasoft.engine.exception.BonitaHomeNotSetException;
@@ -43,8 +47,7 @@ public class DatabaseFiller6_2_6 extends SimpleDatabaseFiller6_0_2 {
 
     @Override
     public Map<String, String> fillDatabase(final int nbProcessesDefinitions, final int nbProcessInstances, final int nbWaitingEvents, final int nbDocuments)
-            throws BonitaException,
-            Exception {
+            throws Exception {
         logger.info("Starting to fill the database");
         APISession session = APITestUtil.loginDefaultTenant();
         Map<String, String> stats = new HashMap<String, String>();
@@ -57,6 +60,8 @@ public class DatabaseFiller6_2_6 extends SimpleDatabaseFiller6_0_2 {
         stats.putAll(fillOthers(session));
 
         APITestUtil.logoutTenant(session);
+
+        stats.putAll(fillProcessStartedFor());
         logger.info("Finished to fill the database");
         return stats;
     }
@@ -117,5 +122,29 @@ public class DatabaseFiller6_2_6 extends SimpleDatabaseFiller6_0_2 {
     @Override
     protected InputStream getProfilesXMLStream() {
         return getClass().getResourceAsStream("profiles.xml");
+    }
+
+    protected Map<? extends String, ? extends String> fillProcessStartedFor() throws Exception {
+        final APITestUtil apiTestUtil = new APITestUtil();
+        final LoginAPI loginAPI = TenantAPIAccessor.getLoginAPI();
+        final APISession session = loginAPI.login("walter.bates", "bpm");
+        final ProcessAPI processAPI = TenantAPIAccessor.getProcessAPI(session);
+        final IdentityAPI identityAPI = TenantAPIAccessor.getIdentityAPI(session);
+
+        final ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("ProcessStartedFor", "1.0");
+        final String actorName = "actorName";
+        builder.addActor(actorName).addUserTask("step1", actorName);
+
+        final BusinessArchiveBuilder archiveBuilder = new BusinessArchiveBuilder().createNewBusinessArchive();
+        archiveBuilder.setProcessDefinition(builder.done());
+        final ProcessDefinition processDefinition = processAPI.deploy(archiveBuilder.done());
+        final User william = identityAPI.getUserByUserName("william.jobs");
+        processAPI.addUserToActor(actorName, processDefinition, william.getId());
+        processAPI.enableProcess(processDefinition.getId());
+        final ProcessInstance processInstance = processAPI.startProcess(william.getId(), processDefinition.getId());
+        final ActivityInstance activityInstance = apiTestUtil.waitForUserTaskAndAssigneIt("step1", processInstance, william.getId());
+        processAPI.executeFlowNode(william.getId(), activityInstance.getId());
+        loginAPI.logout(session);
+        return new HashMap<String, String>(1);
     }
 }

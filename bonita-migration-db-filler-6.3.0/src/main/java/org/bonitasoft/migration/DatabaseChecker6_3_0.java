@@ -33,8 +33,11 @@ import org.bonitasoft.engine.api.PlatformAPIAccessor;
 import org.bonitasoft.engine.api.ProcessAPI;
 import org.bonitasoft.engine.api.ProfileAPI;
 import org.bonitasoft.engine.api.TenantAPIAccessor;
-import org.bonitasoft.engine.api.ThemeAPI;
 import org.bonitasoft.engine.bpm.flownode.ActivityInstanceCriterion;
+import org.bonitasoft.engine.bpm.flownode.HumanTaskInstance;
+import org.bonitasoft.engine.bpm.flownode.HumanTaskInstanceSearchDescriptor;
+import org.bonitasoft.engine.bpm.process.ProcessInstance;
+import org.bonitasoft.engine.bpm.process.ProcessInstanceSearchDescriptor;
 import org.bonitasoft.engine.exception.BonitaException;
 import org.bonitasoft.engine.exception.SearchException;
 import org.bonitasoft.engine.identity.CustomUserInfo;
@@ -74,7 +77,7 @@ public class DatabaseChecker6_3_0 {
 
     protected static ProfileAPI profileAPI;
 
-    protected static IdentityAPI identityApi;
+    protected static IdentityAPI identityAPI;
 
     protected static CommandAPI commandAPI;
 
@@ -100,7 +103,7 @@ public class DatabaseChecker6_3_0 {
         apiTestUtil.logoutPlatform(platformSession);
         session = apiTestUtil.loginDefaultTenant();
         processAPI = TenantAPIAccessor.getProcessAPI(session);
-        identityApi = TenantAPIAccessor.getIdentityAPI(session);
+        identityAPI = TenantAPIAccessor.getIdentityAPI(session);
         profileAPI = TenantAPIAccessor.getProfileAPI(session);
         themeAPI = TenantAPIAccessor.getThemeAPI(session);
         commandAPI = TenantAPIAccessor.getCommandAPI(session);
@@ -170,12 +173,10 @@ public class DatabaseChecker6_3_0 {
 
     @Test
     public void check_jobs_work() throws Exception {
-        final User user = identityApi.getUserByUserName("john");
-
+        final User user = identityAPI.getUserByUserName("william.jobs");
         assertNotNull("user is null", user);
 
         // wait for quartz + bpm eventHandling to have started and restarted missed timers
-
         assertTrue(
                 "there was less than 4 task for "
                         + user.getUserName()
@@ -197,20 +198,20 @@ public class DatabaseChecker6_3_0 {
         final Element profiles = document.getRootElement();
 
         // Iterate through child elements of root with element name "profile"
-        for (final Iterator<Element> rootIterator = profiles.elementIterator("profile"); rootIterator.hasNext();) {
+        for (Iterator<Element> rootIterator = profiles.elementIterator("profile"); rootIterator.hasNext();) {
             final Element profileElement = rootIterator.next();
             final Profile profile = checkProfile(profileElement);
 
             final Element profileEntriesElement = profileElement.element("profileEntries");
             if (profileEntriesElement != null) {
-                for (final Iterator<Element> parentProfileEntryIterator = profileEntriesElement.elementIterator("parentProfileEntry"); parentProfileEntryIterator
+                for (Iterator<Element> parentProfileEntryIterator = profileEntriesElement.elementIterator("parentProfileEntry"); parentProfileEntryIterator
                         .hasNext();) {
                     final Element parentProfileEntryElement = parentProfileEntryIterator.next();
                     final ProfileEntry profileEntry = checkProfileEntry(parentProfileEntryElement, profile.getId(), 0);
 
                     final Element childProfileEntriesElement = profileElement.element("childrenEntries");
                     if (childProfileEntriesElement != null) {
-                        for (final Iterator<Element> childProfileEntryIterator = childProfileEntriesElement.elementIterator("profileEntry"); childProfileEntryIterator
+                        for (Iterator<Element> childProfileEntryIterator = childProfileEntriesElement.elementIterator("profileEntry"); childProfileEntryIterator
                                 .hasNext();) {
                             final Element childProfileEntryElement = childProfileEntryIterator.next();
                             checkProfileEntry(childProfileEntryElement, profile.getId(), profileEntry.getId());
@@ -275,12 +276,37 @@ public class DatabaseChecker6_3_0 {
     }
 
     @Test
-    public void can_create_custom_user_info_definition_and_values() throws Exception {
-        final User user = identityApi.createUser("first.user", "bpm");
-        final CustomUserInfoDefinition skills = identityApi.createCustomUserInfoDefinition(new CustomUserInfoDefinitionCreator("Skills", "The user skills"));
-        identityApi.setCustomUserInfoValue(skills.getId(), user.getId(), "Java");
+    public void check_process_started_for() throws Exception {
+        final User william = identityAPI.getUserByUserName("william.jobs");
+        final User walter = identityAPI.getUserByUserName("walter.bates");
 
-        final List<CustomUserInfo> userInfo = identityApi.getCustomUserInfo(user.getId(), 0, 10);
+        // Check if william is started for, and walter is started by for the process instance
+        final SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 1);
+        builder.filter(ProcessInstanceSearchDescriptor.NAME, "ProcessStartedFor");
+        final List<ProcessInstance> processInstances = processAPI.searchProcessInstances(builder.done()).getResult();
+        assertNotNull(processInstances);
+        final ProcessInstance processInstance = processInstances.get(0);
+        assertEquals(processInstance.getStartedBy(), walter.getId());
+        assertEquals(processInstance.getStartedFor(), william.getId());
+
+        // Check if william is executed for, and walter is executed by for the activity instance
+        final SearchOptionsBuilder builder2 = new SearchOptionsBuilder(0, 1);
+        builder.filter(HumanTaskInstanceSearchDescriptor.NAME, "step1");
+        builder.filter(HumanTaskInstanceSearchDescriptor.PROCESS_INSTANCE_ID, processInstance.getId());
+        final List<HumanTaskInstance> humanTaskInstances = processAPI.searchHumanTaskInstances(builder2.done()).getResult();
+        assertNotNull(humanTaskInstances);
+        final HumanTaskInstance humanTaskInstance = humanTaskInstances.get(0);
+        assertEquals(humanTaskInstance.getExecutedBy(), walter.getId());
+        assertEquals(humanTaskInstance.getExecutedFor(), william.getId());
+    }
+
+    @Test
+    public void can_create_custom_user_info_definition_and_values() throws Exception {
+        User user = identityAPI.createUser("first.user", "bpm");
+        CustomUserInfoDefinition skills = identityAPI.createCustomUserInfoDefinition(new CustomUserInfoDefinitionCreator("Skills", "The user skills"));
+        identityAPI.setCustomUserInfoValue(skills.getId(), user.getId(), "Java");
+
+        List<CustomUserInfo> userInfo = identityAPI.getCustomUserInfo(user.getId(), 0, 10);
         assertThat(userInfo.size()).isEqualTo(1);
         assertThat(userInfo.get(0).getDefinition().getName()).isEqualTo("Skills");
         assertThat(userInfo.get(0).getValue()).isEqualTo("Java");
