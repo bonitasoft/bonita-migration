@@ -91,6 +91,7 @@ dependencies {
     drivers group: 'org.postgresql', name: 'postgresql', version: '9.2-1003-jdbc4'
     drivers name:'ojdbc6'
     drivers name:'sqljdbc-4.0.2206.100'
+    scriptsintegration configurations.drivers
     sourcefiller configurations.drivers
     testCompile group: 'junit', name: 'junit', version: '4.+'
     testCompile configurations.drivers
