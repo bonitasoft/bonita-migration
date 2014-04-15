@@ -98,7 +98,6 @@ class ProcessDefinitionTest {
         def xmlDiff = new Diff(after, content)
         assert xmlDiff.identical()
         //check formatting did not change also
-        println content
         assertThat(content.trim()).isEqualTo(after)
     }
 

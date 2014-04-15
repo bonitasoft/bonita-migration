@@ -15,6 +15,8 @@
  */
 package org.bonitasoft.migration.versions.v6_2_6to_6_3_0;
 
+import org.codehaus.groovy.runtime.InvokerHelper
+
 
 
 /**
@@ -22,6 +24,7 @@ package org.bonitasoft.migration.versions.v6_2_6to_6_3_0;
  *
  */
 public class ProcessDefinition {
+
 
     def groovy.util.Node processDefinitionXml;
 
@@ -34,9 +37,16 @@ public class ProcessDefinition {
 
         def writer = new StringWriter()
         writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
-        def printer = new XmlNodePrinter(new PrintWriter(writer))
+        def printer = new XmlNodePrinter(new PrintWriter(writer) ){
+                    protected void printSimpleItem(Object value) {
+                        if (!preserveWhitespace) printLineBegin();
+                        out.print(InvokerHelper.toString(value));
+                        if (!preserveWhitespace) printLineEnd();
+                    }
+                }
         printer.setPreserveWhitespace(true)
         printer.setExpandEmptyElements(false)
+        printer.setQuote("\"")
         printer.print(processDefinitionXml)
         def result = writer.toString()
         return result;
@@ -95,7 +105,7 @@ public class ProcessDefinition {
                 leftOperand.@type = "DOCUMENT"
             }else if(operation.@operatorType == "STRING_INDEX"){
                 operation.@operatorType = "ASSIGNMENT"
-                leftOperand.@type = "STRING_INDEX"
+                leftOperand.@type = "SEARCH_INDEX"
             }else{
                 def dataName = leftOperand.@name
                 def containerId = getContainerId(operation)
