@@ -15,6 +15,8 @@
  */
 package org.bonitasoft.migration.versions.v6_2_6to_6_3_0;
 
+import org.codehaus.groovy.runtime.InvokerHelper
+
 
 
 
@@ -61,8 +63,14 @@ public class Forms {
 
     public String getContent(){
         def writer = new StringWriter()
-        writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
-        def printer = new XmlNodePrinter(new PrintWriter(writer))
+        writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n")
+        def printer = new XmlNodePrinter(new PrintWriter(writer) ){
+                    protected void printSimpleItem(Object value) {
+                        if (!preserveWhitespace) printLineBegin();
+                        out.print(InvokerHelper.toString(value));
+                        if (!preserveWhitespace) printLineEnd();
+                    }
+                }
         printer.setPreserveWhitespace(true)
         printer.setExpandEmptyElements(false)
         printer.print(formsXml)

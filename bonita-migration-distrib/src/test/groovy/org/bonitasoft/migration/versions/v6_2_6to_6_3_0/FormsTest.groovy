@@ -90,6 +90,8 @@ class FormsTest {
 
         transientData.each { processDefinition.updateExpressionOf(it) }
         processDefinition.updateOperatorAndLeftOperandType(transientData)
+        forms.updateExpressions();
+        forms.updateActions();
 
         //then
         def content = processDefinition.getContent()

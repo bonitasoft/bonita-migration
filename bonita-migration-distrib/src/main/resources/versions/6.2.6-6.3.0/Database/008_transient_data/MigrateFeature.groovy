@@ -20,15 +20,19 @@ import org.bonitasoft.migration.versions.v6_2_6to_6_3_0.TransientData;
 
 def formsVersion = new File(feature,"FORMS_VERSION").text
 //list process definitions
-sql.eachRow("SELECT * from process_definition",[false], { row ->
-    migrateDefinition(row[0], row[1], formsVersion)
+sql.eachRow("SELECT * from process_definition", { row ->
+    migrateDefinition(row[0], row[2], formsVersion)
 
 })
 //delete datamapping of transient data
-sql.executeUpdate("DELETE FROM data_mapping m WHERE datainstanceid NOT IN (SELECT id FROM data_instance d WHERE m.tenantid = d.tenantid)");
+;
+sql.eachRow("SELECT id FROM tenant"){ row ->
+    sql.executeUpdate("DELETE FROM data_mapping WHERE tenantid = ${row[0]} AND datainstanceid NOT IN (SELECT id FROM data_instance WHERE tenantid = ${row[0]})");
+}
 //for each process
 def migrateDefinition(long tenantId, long id, String formsVersion){
-    def File processFile = new File(bonitaHome.getAbsolutePath()+"${s}server${s}tenants${s}${tenantId}${s}work${s}processes${s}${id}${s}server-process-definition.xml");
+    def s = File.separator
+    def File processFile = new File(bonitaHome.getAbsolutePath()+"${s}server${s}tenants${s}${tenantId}${s}work${s}processes${s}${id}${s}server-process-definition.xml")
     def ProcessDefinition processDefinition = new ProcessDefinition(processFile.text)
 
     //parse process to get list all transient data

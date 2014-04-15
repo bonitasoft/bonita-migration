@@ -46,7 +46,6 @@ public class ProcessDefinition {
                 }
         printer.setPreserveWhitespace(true)
         printer.setExpandEmptyElements(false)
-        printer.setQuote("\"")
         printer.print(processDefinitionXml)
         def result = writer.toString()
         return result;

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<forms-definition product-version="6.3-SP">
-  <migration-product-version>6.3-SP</migration-product-version>
+<forms-definition product-version="6.2">
+  <migration-product-version>6.3</migration-product-version>
   <application name="Pool" version="1.0">
     <permissions>process#Pool--1.0</permissions>
     <application-label>
@@ -351,6 +351,7 @@
               <output-operation type="ASSIGNMENT">
                 <variable>transientDataFromConnector</variable>
                 <variable-type>EXTERNAL_DATA</variable-type>
+                <input-type>java.lang.Object</input-type>
                 <expression>
                   <name>result</name>
                   <expression-content>result</expression-content>

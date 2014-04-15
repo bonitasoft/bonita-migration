@@ -14,6 +14,7 @@
 package org.bonitasoft.migration;
 
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,10 +43,20 @@ public class DatabaseFiller6_2_6 extends SimpleDatabaseFiller6_0_2 {
 
         // 6.2.3 specific
         stats.putAll(fillProsessesWithMessageAndTimer(session));
+        stats.putAll(fillExtensions(session));
 
         APITestUtil.logoutTenant(session);
         logger.info("Finished to fill the database");
         return stats;
+    }
+
+    /**
+     * @param session
+     * @return
+     * @throws Exception
+     */
+    protected Map<? extends String, ? extends String> fillExtensions(final APISession session) throws Exception {
+        return Collections.emptyMap();
     }
 
     @Override
