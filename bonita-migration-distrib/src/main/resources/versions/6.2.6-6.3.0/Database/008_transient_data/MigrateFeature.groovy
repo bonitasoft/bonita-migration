@@ -26,8 +26,8 @@ sql.eachRow("SELECT * from process_definition", { row ->
 })
 //delete datamapping of transient data
 ;
-sql.eachRow("SELECT id FROM tenant"){ row ->
-    sql.executeUpdate("DELETE FROM data_mapping WHERE tenantid = ${row[0]} AND datainstanceid NOT IN (SELECT id FROM data_instance WHERE tenantid = ${row[0]})");
+MigrationUtil.getTenantsId(dbVendor, sql).each{ 
+    sql.executeUpdate("DELETE FROM data_mapping WHERE tenantid = $it AND datainstanceid NOT IN (SELECT id FROM data_instance WHERE tenantid = $it)");
 }
 //for each process
 def migrateDefinition(long tenantId, long id, String formsVersion){
