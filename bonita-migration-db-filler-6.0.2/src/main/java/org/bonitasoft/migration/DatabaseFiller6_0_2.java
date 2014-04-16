@@ -367,7 +367,7 @@ public class DatabaseFiller6_0_2 {
     public void shutdown() throws Exception {
         final PlatformSession pSession = APITestUtil.loginPlatform();
         final PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(pSession);
-        APITestUtil.stopPlatformAndTenant(platformAPI, false);
+        APITestUtil.stopPlatformAndTenant(platformAPI, true);
         APITestUtil.logoutPlatform(pSession);
         shutdownWorkService();
     }
@@ -491,7 +491,7 @@ public class DatabaseFiller6_0_2 {
         System.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.bonitasoft.engine.local.SimpleMemoryContextFactory");
         System.setProperty(Context.URL_PKG_PREFIXES, "org.bonitasoft.engine.local");
         springContext = new ClassPathXmlApplicationContext("datasource.xml", "jndi-setup.xml");
-        APITestUtil.createInitializeAndStartPlatformWithDefaultTenant(false);
+        APITestUtil.createInitializeAndStartPlatformWithDefaultTenant(true);
     }
 
 }

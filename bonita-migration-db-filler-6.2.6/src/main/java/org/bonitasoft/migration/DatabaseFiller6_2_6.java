@@ -22,15 +22,14 @@ import org.bonitasoft.engine.api.IdentityAPI;
 import org.bonitasoft.engine.api.LoginAPI;
 import org.bonitasoft.engine.api.ProcessAPI;
 import org.bonitasoft.engine.api.TenantAPIAccessor;
+import org.bonitasoft.engine.bpm.actor.ActorCriterion;
 import org.bonitasoft.engine.bpm.bar.BusinessArchiveBuilder;
 import org.bonitasoft.engine.bpm.flownode.ActivityInstance;
-import org.bonitasoft.engine.bpm.actor.ActorCriterion;
 import org.bonitasoft.engine.bpm.flownode.TimerType;
 import org.bonitasoft.engine.bpm.process.DesignProcessDefinition;
 import org.bonitasoft.engine.bpm.process.ProcessDefinition;
 import org.bonitasoft.engine.bpm.process.ProcessInstance;
 import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder;
-import org.bonitasoft.engine.exception.BonitaException;
 import org.bonitasoft.engine.exception.BonitaHomeNotSetException;
 import org.bonitasoft.engine.expression.ExpressionBuilder;
 import org.bonitasoft.engine.identity.User;
@@ -58,10 +57,10 @@ public class DatabaseFiller6_2_6 extends SimpleDatabaseFiller6_0_2 {
 
         stats.putAll(fillProsessesWithMessageAndTimer(session));
         stats.putAll(fillOthers(session));
-
         APITestUtil.logoutTenant(session);
 
         stats.putAll(fillProcessStartedFor());
+
         logger.info("Finished to fill the database");
         return stats;
     }
@@ -131,14 +130,15 @@ public class DatabaseFiller6_2_6 extends SimpleDatabaseFiller6_0_2 {
         final ProcessAPI processAPI = TenantAPIAccessor.getProcessAPI(session);
         final IdentityAPI identityAPI = TenantAPIAccessor.getIdentityAPI(session);
 
-        final ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("ProcessStartedFor", "1.0");
+        final User william = identityAPI.getUserByUserName("william.jobs");
+
         final String actorName = "actorName";
+        final ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("ProcessStartedFor", "1.0");
         builder.addActor(actorName).addUserTask("step1", actorName);
 
         final BusinessArchiveBuilder archiveBuilder = new BusinessArchiveBuilder().createNewBusinessArchive();
         archiveBuilder.setProcessDefinition(builder.done());
         final ProcessDefinition processDefinition = processAPI.deploy(archiveBuilder.done());
-        final User william = identityAPI.getUserByUserName("william.jobs");
         processAPI.addUserToActor(actorName, processDefinition, william.getId());
         processAPI.enableProcess(processDefinition.getId());
         final ProcessInstance processInstance = processAPI.startProcess(william.getId(), processDefinition.getId());
