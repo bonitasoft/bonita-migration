@@ -33,6 +33,7 @@ import org.bonitasoft.engine.api.PlatformAPIAccessor;
 import org.bonitasoft.engine.api.ProcessAPI;
 import org.bonitasoft.engine.api.ProfileAPI;
 import org.bonitasoft.engine.api.TenantAPIAccessor;
+import org.bonitasoft.engine.api.ThemeAPI;
 import org.bonitasoft.engine.bpm.flownode.ActivityInstanceCriterion;
 import org.bonitasoft.engine.bpm.flownode.HumanTaskInstance;
 import org.bonitasoft.engine.bpm.flownode.HumanTaskInstanceSearchDescriptor;
@@ -286,8 +287,8 @@ public class DatabaseChecker6_3_0 {
         final List<ProcessInstance> processInstances = processAPI.searchProcessInstances(builder.done()).getResult();
         assertNotNull(processInstances);
         final ProcessInstance processInstance = processInstances.get(0);
-        assertEquals(processInstance.getStartedBy(), walter.getId());
-        assertEquals(processInstance.getStartedFor(), william.getId());
+        assertEquals(processInstance.getStartedBy(), william.getId());
+        assertEquals(processInstance.getStartedBySubstitute(), walter.getId());
 
         // Check if william is executed for, and walter is executed by for the activity instance
         final SearchOptionsBuilder builder2 = new SearchOptionsBuilder(0, 1);
@@ -296,8 +297,8 @@ public class DatabaseChecker6_3_0 {
         final List<HumanTaskInstance> humanTaskInstances = processAPI.searchHumanTaskInstances(builder2.done()).getResult();
         assertNotNull(humanTaskInstances);
         final HumanTaskInstance humanTaskInstance = humanTaskInstances.get(0);
-        assertEquals(humanTaskInstance.getExecutedBy(), walter.getId());
-        assertEquals(humanTaskInstance.getExecutedFor(), william.getId());
+        assertEquals(humanTaskInstance.getExecutedBy(), william.getId());
+        assertEquals(humanTaskInstance.getExecutedBySubstitute(), walter.getId());
     }
 
     @Test

@@ -1,5 +1,3 @@
 Rename :
-- In the process instance table, StartedByDelegate in StartedFor
-- In the flow node instance table, ExecutedByDelegate in ExecutedFor
-
-Switch the values for StartedBy and StartedFor; for ExecutedBy and ExecutedFor.
+- In the process instance table, StartedByDelegate in StartedBySubstitute
+- In the flow node instance table, ExecutedByDelegate in ExecutedBySubstitute
