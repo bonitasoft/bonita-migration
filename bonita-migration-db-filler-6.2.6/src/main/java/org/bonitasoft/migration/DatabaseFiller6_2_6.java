@@ -123,8 +123,9 @@ public class DatabaseFiller6_2_6 extends SimpleDatabaseFiller6_0_2 {
 
     protected Map<? extends String, ? extends String> fillProcessStartedFor() throws Exception {
         final APITestUtil apiTestUtil = new APITestUtil();
-        final APISession session = APITestUtil.loginTenant("walter.bates", "bpm");
-        final ProcessAPI processAPI = TenantAPIAccessor.getProcessAPI(session);
+        apiTestUtil.logoutThenloginAs("walter.bates", "bpm");
+        final ProcessAPI processAPI = apiTestUtil.getProcessAPI();
+        final APISession session = apiTestUtil.getSession();
         final IdentityAPI identityAPI = TenantAPIAccessor.getIdentityAPI(session);
         final User william = identityAPI.getUserByUserName("william.jobs");
 
