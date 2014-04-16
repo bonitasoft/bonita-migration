@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bonitasoft.engine.api.IdentityAPI;
-import org.bonitasoft.engine.api.LoginAPI;
 import org.bonitasoft.engine.api.ProcessAPI;
 import org.bonitasoft.engine.api.TenantAPIAccessor;
 import org.bonitasoft.engine.bpm.actor.ActorCriterion;
@@ -60,7 +59,6 @@ public class DatabaseFiller6_2_6 extends SimpleDatabaseFiller6_0_2 {
         APITestUtil.logoutTenant(session);
 
         stats.putAll(fillProcessStartedFor());
-
         logger.info("Finished to fill the database");
         return stats;
     }
@@ -125,11 +123,9 @@ public class DatabaseFiller6_2_6 extends SimpleDatabaseFiller6_0_2 {
 
     protected Map<? extends String, ? extends String> fillProcessStartedFor() throws Exception {
         final APITestUtil apiTestUtil = new APITestUtil();
-        final LoginAPI loginAPI = TenantAPIAccessor.getLoginAPI();
-        final APISession session = loginAPI.login("walter.bates", "bpm");
-        final ProcessAPI processAPI = TenantAPIAccessor.getProcessAPI(session);
+        final APISession session = APITestUtil.loginTenant("walter.bates", "bpm");
+        final ProcessAPI processAPI = apiTestUtil.getProcessAPI();
         final IdentityAPI identityAPI = TenantAPIAccessor.getIdentityAPI(session);
-
         final User william = identityAPI.getUserByUserName("william.jobs");
 
         final String actorName = "actorName";
@@ -142,11 +138,9 @@ public class DatabaseFiller6_2_6 extends SimpleDatabaseFiller6_0_2 {
         processAPI.addUserToActor(actorName, processDefinition, william.getId());
         processAPI.enableProcess(processDefinition.getId());
         final ProcessInstance processInstance = processAPI.startProcess(william.getId(), processDefinition.getId());
-        final ActivityInstance activityInstance = apiTestUtil.waitForStep("step1", processInstance).getResult();
-        processAPI.assignUserTask(activityInstance.getId(), william.getId());
-
+        final ActivityInstance activityInstance = apiTestUtil.waitForUserTaskAndAssigneIt("step1", processInstance, william.getId());
         processAPI.executeFlowNode(william.getId(), activityInstance.getId());
-        loginAPI.logout(session);
+        APITestUtil.logoutTenant(session);
         return new HashMap<String, String>(1);
     }
 }
