@@ -141,7 +141,6 @@ public class DatabaseFiller6_2_6 extends SimpleDatabaseFiller6_0_2 {
         final ProcessInstance processInstance = processAPI.startProcess(william.getId(), processDefinition.getId());
         final ActivityInstance activityInstance = apiTestUtil.waitForUserTaskAndAssigneIt("step1", processInstance, william.getId());
         processAPI.executeFlowNode(william.getId(), activityInstance.getId());
-        APITestUtil.logoutTenant(session);
         return new HashMap<String, String>(1);
     }
 }
