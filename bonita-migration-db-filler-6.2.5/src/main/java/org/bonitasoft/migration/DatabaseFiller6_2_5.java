@@ -32,6 +32,23 @@ public class DatabaseFiller6_2_5 extends SimpleDatabaseFiller6_0_2 {
     }
 
     @Override
+    public Map<String, String> fillDatabase(final int nbProcessesDefinitions, final int nbProcessInstances, final int nbWaitingEvents, final int nbDocuments)
+            throws BonitaException,
+            Exception {
+        logger.info("Starting to fill the database");
+        APISession session = APITestUtil.loginDefaultTenant();
+        Map<String, String> stats = new HashMap<String, String>();
+        stats.putAll(fillOrganization(session));
+        stats.putAll(fillProcesses(session, nbProcessesDefinitions, nbProcessInstances));
+        stats.putAll(fillProcessesWithEvents(session, nbWaitingEvents));
+        stats.putAll(fillCompletedProcess(session));
+
+        APITestUtil.logoutTenant(session);
+        logger.info("Finished to fill the database");
+        return stats;
+    }
+
+    @Override
     protected InputStream getProfilesXMLStream() {
         return getClass().getResourceAsStream("profiles.xml");
     }
