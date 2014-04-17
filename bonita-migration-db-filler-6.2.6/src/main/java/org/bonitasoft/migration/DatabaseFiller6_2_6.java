@@ -13,17 +13,22 @@
  **/
 package org.bonitasoft.migration;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bonitasoft.engine.api.CommandAPI;
 import org.bonitasoft.engine.api.IdentityAPI;
+import org.bonitasoft.engine.api.LoginAPI;
 import org.bonitasoft.engine.api.ProcessAPI;
 import org.bonitasoft.engine.api.TenantAPIAccessor;
 import org.bonitasoft.engine.bpm.actor.ActorCriterion;
 import org.bonitasoft.engine.bpm.bar.BusinessArchiveBuilder;
-import org.bonitasoft.engine.bpm.flownode.ActivityInstance;
+import org.bonitasoft.engine.bpm.flownode.HumanTaskInstance;
 import org.bonitasoft.engine.bpm.flownode.TimerType;
 import org.bonitasoft.engine.bpm.process.DesignProcessDefinition;
 import org.bonitasoft.engine.bpm.process.ProcessDefinition;
@@ -34,6 +39,7 @@ import org.bonitasoft.engine.expression.ExpressionBuilder;
 import org.bonitasoft.engine.identity.User;
 import org.bonitasoft.engine.session.APISession;
 import org.bonitasoft.engine.test.APITestUtil;
+import org.bonitasoft.engine.test.ClientEventUtil;
 import org.bonitasoft.engine.test.wait.WaitForPendingTasks;
 
 public class DatabaseFiller6_2_6 extends SimpleDatabaseFiller6_0_2 {
@@ -122,25 +128,30 @@ public class DatabaseFiller6_2_6 extends SimpleDatabaseFiller6_0_2 {
     }
 
     protected Map<? extends String, ? extends String> fillProcessStartedFor() throws Exception {
-        final APITestUtil apiTestUtil = new APITestUtil();
-        apiTestUtil.logoutThenloginAs("walter.bates", "bpm");
-        final ProcessAPI processAPI = apiTestUtil.getProcessAPI();
-        final APISession session = apiTestUtil.getSession();
+        final LoginAPI loginAPI = TenantAPIAccessor.getLoginAPI();
+        final APISession session = loginAPI.login("walter.bates", "bpm");
+        final ProcessAPI processAPI = TenantAPIAccessor.getProcessAPI(session);
         final IdentityAPI identityAPI = TenantAPIAccessor.getIdentityAPI(session);
-        final User william = identityAPI.getUserByUserName("william.jobs");
+        final CommandAPI commandAPI = TenantAPIAccessor.getCommandAPI(session);
 
-        final String actorName = "actorName";
         final ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("ProcessStartedFor", "1.0");
+        final String actorName = "actorName";
         builder.addActor(actorName).addUserTask("step1", actorName);
 
         final BusinessArchiveBuilder archiveBuilder = new BusinessArchiveBuilder().createNewBusinessArchive();
         archiveBuilder.setProcessDefinition(builder.done());
         final ProcessDefinition processDefinition = processAPI.deploy(archiveBuilder.done());
+        final User william = identityAPI.getUserByUserName("william.jobs");
         processAPI.addUserToActor(actorName, processDefinition, william.getId());
         processAPI.enableProcess(processDefinition.getId());
         final ProcessInstance processInstance = processAPI.startProcess(william.getId(), processDefinition.getId());
-        final ActivityInstance activityInstance = apiTestUtil.waitForUserTaskAndAssigneIt("step1", processInstance, william.getId());
+        final Map<String, Serializable> readyTaskEvent = ClientEventUtil.getReadyTaskEvent(processInstance.getId(), "step1");
+        final Long activityInstanceId = ClientEventUtil.executeWaitServerCommand(commandAPI, readyTaskEvent, APITestUtil.DEFAULT_TIMEOUT);
+        final HumanTaskInstance activityInstance = processAPI.getHumanTaskInstance(activityInstanceId);
+        assertNotNull(activityInstance);
+        processAPI.assignUserTask(activityInstance.getId(), william.getId());
         processAPI.executeFlowNode(william.getId(), activityInstance.getId());
+        loginAPI.logout(session);
         return new HashMap<String, String>(1);
     }
 }
