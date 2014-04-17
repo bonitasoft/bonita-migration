@@ -1,4 +1,4 @@
-SELECT MAX(id) + 1 INTO @profile_id_max FROM profile 
+SELECT MAX(id) + 1 INTO @profile_entry_id_max FROM profileentry 
 WHERE tenantId = :tenantId
 FOR UPDATE;
 
@@ -11,6 +11,6 @@ VALUES  (
 	:dir_profile_entry_id, 
 	6, 'link', 'importexportorganization');
 	
-UPDATE sequence SET nextId = @profile_entry_id_max + 1
+UPDATE sequence SET nextId = @profile_entry_id_max  + 1
 WHERE tenantId = :tenantId
 AND id = 9991;
