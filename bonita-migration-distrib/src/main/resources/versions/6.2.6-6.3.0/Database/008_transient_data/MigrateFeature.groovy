@@ -21,7 +21,9 @@ import org.bonitasoft.migration.versions.v6_2_6to_6_3_0.TransientData;
 def formsVersion = new File(feature,"FORMS_VERSION").text
 //list process definitions
 sql.eachRow("SELECT * from process_definition", { row ->
-    migrateDefinition(row[0], row[2], formsVersion)
+    def tenantId = row[0]
+    def id = row[2]
+    migrateDefinition(tenantId instanceof BigDecimal? tenantId.longValue():tenantId, id instanceof BigDecimal? id.longValue():id, formsVersion)
 
 })
 //delete datamapping of transient data
@@ -31,9 +33,9 @@ MigrationUtil.getTenantsId(dbVendor, sql).each{
 //drop datasource tables
 MigrationUtil.executeDefaultSqlFile(feature, dbVendor, sql)
 
-def migrateDefinition(BigDecimal tenantId, BigDecimal id, String formsVersion){
+def migrateDefinition(long tenantId, long id, String formsVersion){
     def s = File.separator
-    def File processFile = new File(bonitaHome.getAbsolutePath()+"${s}server${s}tenants${s}${tenantId.longValue()}${s}work${s}processes${s}${id.longValue()}${s}server-process-definition.xml")
+    def File processFile = new File(bonitaHome.getAbsolutePath()+"${s}server${s}tenants${s}${tenantId}${s}work${s}processes${s}${id}${s}server-process-definition.xml")
     def ProcessDefinition processDefinition = new ProcessDefinition(processFile.text)
     println "Update operations and expression of process "+processDefinition.getName() + "--"+processDefinition.getVersion()
     //parse process to get list all transient data
@@ -54,7 +56,7 @@ def migrateDefinition(BigDecimal tenantId, BigDecimal id, String formsVersion){
     processFile.withWriter("UTF-8") { it << processDefinition.getContent() }
 
     //update forms.xml
-    def File formsxml = new File(bonitaHome.getAbsolutePath()+"${s}server${s}tenants${s}${tenantId.longValue()}${s}work${s}processes${s}${id.longValue()}${s}resources${s}forms${s}forms.xml")
+    def File formsxml = new File(bonitaHome.getAbsolutePath()+"${s}server${s}tenants${s}${tenantId}${s}work${s}processes${s}${id}${s}resources${s}forms${s}forms.xml")
 
     if(formsxml.exists()){
         println "Update operations and expression of forms "
