@@ -80,7 +80,6 @@ public class ProcessDefinition {
             it.content.text() == data.name && it.@expressionType == "TYPE_VARIABLE"
         }
         expressionsToUpdate.each{ Node expression ->
-            println expression.@name
             expression.@expressionType = "TYPE_TRANSIENT_VARIABLE"
         }
     }
@@ -109,6 +108,7 @@ public class ProcessDefinition {
                 def dataName = leftOperand.@name
                 def containerId = getContainerId(operation)
                 if(isDataTransientInContext(transientDataMap, dataName, containerId)){
+                    println "A transient data named $dataName of container $containerId is updated by an operation, this is not a good design because you might loose the updated value if the server resart, consider changing the design of your process."
                     leftOperand.@type = "TRANSIENT_DATA"
                 }else{
                     leftOperand.@type = "DATA"

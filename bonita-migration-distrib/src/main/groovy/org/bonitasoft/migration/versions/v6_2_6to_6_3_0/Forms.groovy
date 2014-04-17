@@ -130,10 +130,9 @@ public class Forms {
             } else if( external ){
                 variableType = "EXTERNAL_DATA"
             } else if(isDataTransientInContext(it, dataName)){
+                println "A transient data named $dataName is updated by a form action, this is not a good design because you might loose the updated value if the server resart, consider changing the design of your process."
                 variableType = "TRANSIENT_DATA"
             }
-
-            println "replace form action for $dataName type=$originalType external=$external with type=$type leftOp=$variableType "
             //replace the is-external by the variable-type
             isExternalNode.replaceNode { node -> 'variable-type'(variableType) }
             //update the type

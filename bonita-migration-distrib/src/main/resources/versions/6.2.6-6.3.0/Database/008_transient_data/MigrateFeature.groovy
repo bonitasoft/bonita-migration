@@ -25,16 +25,17 @@ sql.eachRow("SELECT * from process_definition", { row ->
 
 })
 //delete datamapping of transient data
-;
 MigrationUtil.getTenantsId(dbVendor, sql).each{ 
     sql.executeUpdate("DELETE FROM data_mapping WHERE tenantid = $it AND datainstanceid NOT IN (SELECT id FROM data_instance WHERE tenantid = $it)");
 }
-//for each process
+//drop datasource tables
+MigrationUtil.executeDefaultSqlFile(feature, dbVendor, sql)
+
 def migrateDefinition(long tenantId, long id, String formsVersion){
     def s = File.separator
     def File processFile = new File(bonitaHome.getAbsolutePath()+"${s}server${s}tenants${s}${tenantId}${s}work${s}processes${s}${id}${s}server-process-definition.xml")
     def ProcessDefinition processDefinition = new ProcessDefinition(processFile.text)
-
+    println "Update operations and expression of process "+processDefinition.getName() + "--"+processDefinition.getVersion()
     //parse process to get list all transient data
     def transientData = processDefinition.getTransientData()
 
@@ -56,6 +57,7 @@ def migrateDefinition(long tenantId, long id, String formsVersion){
     def File formsxml = new File(bonitaHome.getAbsolutePath()+"${s}server${s}tenants${s}${tenantId}${s}work${s}processes${s}${id}${s}resources${s}forms${s}forms.xml")
 
     if(formsxml.exists()){
+        println "Update operations and expression of forms "
         def Forms forms = new Forms(formsxml.text, processDefinition.getTransientData(), formsVersion)
         //update  expressions: each TYPE_VARIABLE that point to a transient data are changed to TYPE_TRANSIENT_VARIABLE
         forms.updateExpressions()
