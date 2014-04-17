@@ -19,7 +19,7 @@ sonarRunner {
         property "sonar.jdbc.driverClassName", "org.postgresql.Driver"
         property "sonar.jdbc.username", "sonar"
         property "sonar.jdbc.password", "sa"
-        
+
         property "sonar.sourceEncoding", "UTF-8"
         property "sonar.sources", "src"
         property "sonar.binaries", "build"
@@ -35,24 +35,26 @@ sonarRunner {
 ext{
     sourceversion = System.getProperty("source.version","6.2.6")
     targetversion = System.getProperty("target.version","6.3.0")
-    dbvendor = System.getProperty("db.vendor", "mysql")
-    dburl = System.getProperty("db.url","jdbc:mysql://localhost:3306/bonita_migration?allowMultiQueries=true");
-    dbuser=System.getProperty("db.user","root")
-    dbpassword=System.getProperty("db.password", "root")
-    dbdriverClass=System.getProperty("db.driverClass","com.mysql.jdbc.Driver")
+    dbvendor = System.getProperty("db.vendor", "postgres")
+    dburl = System.getProperty("db.url","jdbc:postgresql://localhost:5432/migration");
+    dbuser=System.getProperty("db.user","bonita")
+    dbpassword=System.getProperty("db.password", "bpm")
+    dbdriverClass=System.getProperty("db.driverClass","org.postgresql.Driver")
     bonitahome="${buildDir.path}/home"
     distDir="${buildDir.path}/dist"
     //used for oracle: creates table not the same way
-    dbRootUser = System.getProperty("db.root.user")
-    dbRootPassword = System.getProperty("db.root.password")
+    //used for postgres: give a user able to drop and create databases
+    dbRootUser = System.getProperty("db.root.user","bonita")
+    dbRootPassword = System.getProperty("db.root.password","bpm")
 
     //for postgres
-    databaseName = null
-    serverName=null
-    portNumber=null
+    databaseName = "migration"
+    serverName="localhost"
+    portNumber="5432"
 }
 
 configurations {
+    scriptsintegration
     sourcefiller
     migrationdist
     drivers
@@ -81,6 +83,7 @@ repositories {
 
 dependencies {
     sourcefiller "${group}:bonita-migration-db-filler-${sourceversion}:${version}"
+    scriptsintegration "${group}:bonita-migration-scripts-integration-tests:${version}"
     homezip  group: 'org.bonitasoft.engine', name: 'bonita-home', version: sourceversion, ext: 'zip'
     testCompile "${group}:bonita-migration-db-filler-${targetversion}:${version}"
     testCompile group: 'ch.qos.logback', name:'logback-classic', version: '1.0.11'
@@ -89,6 +92,7 @@ dependencies {
     drivers group: 'org.postgresql', name: 'postgresql', version: '9.2-1003-jdbc4'
     drivers name:'ojdbc6'
     drivers name:'sqljdbc-4.0.2206.100'
+    scriptsintegration configurations.drivers
     sourcefiller configurations.drivers
     testCompile group: 'junit', name: 'junit', version: '4.+'
     testCompile configurations.drivers
@@ -141,9 +145,7 @@ task cleardb<<{
         script = script.replace("@sqlserver.db.name@",databaseName)
         script = script.replace("@sqlserver.connection.username@",dbuser)
         script = script.replace("@sqlserver.connection.password@",dbpassword)
-        script.split("GO").each {
-            sql.executeUpdate(it)
-        }
+        script.split("GO").each { sql.executeUpdate(it) }
         sql.close()
     }else{
         println "drop and create: $dburl"
@@ -185,27 +187,7 @@ task unpackhome(dependsOn:cleardb,type: Copy){
     into outputDir
 }
 
-task execfill(dependsOn:unpackhome, type: JavaExec) {
-    doFirst {
-        println "execute fill of the database using classpath of $sourceversion"
-        systemProperties(["sysprop.bonita.db.vendor":dbvendor,
-            "db.vendor":dbvendor,
-            "jdbc.vendor":dbvendor,
-            "jdbc.url":dburl,
-            "jdbc.user":dbuser,
-            "jdbc.password":dbpassword,
-            "jdbc.driverClass":dbdriverClass,
-            "jdbc.serverName":project.serverName,
-            "jdbc.portNumber":project.portNumber,
-            "jdbc.databaseName":project.databaseName,
-            "bonita.home":bonitahome])
-        println systemProperties
-        main = "org.bonitasoft.migration.DatabaseFiller${sourceversion.replace('.','_')}"
-    }
-    classpath configurations.sourcefiller
-
-}
-task unpackdist(dependsOn:execfill, type: Copy){
+task unpackdist(dependsOn:unpackhome, type: Copy){
     def zipFile = configurations.migrationdist.files.iterator().next()
     def outputDir = file(distDir)
 
@@ -233,7 +215,51 @@ task changeproperties(dependsOn:copyDrivers)<<{
     props.put("bonita.home",String.valueOf(bonitahome));
     props.store(new FileWriter(propFile), "config");
 }
-task runmigration(dependsOn:changeproperties, type:JavaExec){
+
+task scriptsintegration(dependsOn:changeproperties, type: JavaExec) {
+    doFirst {
+        println "run scripts integration tests"
+        systemProperties(["sysprop.bonita.db.vendor":dbvendor,
+                          "db.vendor":dbvendor,
+                          "jdbc.vendor":dbvendor,
+                          "jdbc.url":dburl,
+                          "jdbc.user":dbuser,
+                          "jdbc.password":dbpassword,
+                          "jdbc.driverClass":dbdriverClass,
+                          "jdbc.serverName":project.serverName,
+                          "jdbc.portNumber":project.portNumber,
+                          "jdbc.databaseName":project.databaseName,
+                          "bonita.home":bonitahome])
+        println systemProperties
+        main = "org.bonitasoft.migration.DBUnitTestSuite"
+    }
+    classpath configurations.scriptsintegration
+    
+}
+
+task execfill(dependsOn:scriptsintegration, type: JavaExec) {
+    doFirst {
+        println "execute fill of the database using classpath of $sourceversion"
+        systemProperties(["sysprop.bonita.db.vendor":dbvendor,
+            "db.vendor":dbvendor,
+            "jdbc.vendor":dbvendor,
+            "jdbc.url":dburl,
+            "jdbc.user":dbuser,
+            "jdbc.password":dbpassword,
+            "jdbc.driverClass":dbdriverClass,
+            "jdbc.serverName":project.serverName,
+            "jdbc.portNumber":project.portNumber,
+            "jdbc.databaseName":project.databaseName,
+            "bonita.home":bonitahome])
+        println systemProperties
+        main = "org.bonitasoft.migration.DatabaseFiller${sourceversion.replace('.','_')}"
+    }
+    classpath configurations.sourcefiller
+
+}
+
+
+task runmigration(dependsOn:execfill, type:JavaExec){
     workingDir distDir
     main = 'groovy.lang.GroovyShell'
     classpath = files([
