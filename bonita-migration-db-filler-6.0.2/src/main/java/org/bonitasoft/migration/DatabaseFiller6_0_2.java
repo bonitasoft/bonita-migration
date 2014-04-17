@@ -126,7 +126,9 @@ public class DatabaseFiller6_0_2 {
         }
     }
 
-    private static final String BONITA_HOME = "bonita.home";
+    public static final String BONITA_HOME = "bonita.home";
+
+    static ConfigurableApplicationContext springContext;
 
     protected final Logger logger = LoggerFactory.getLogger(DatabaseFiller6_0_2.class);
 
@@ -483,15 +485,13 @@ public class DatabaseFiller6_0_2 {
         return map;
     }
 
-    static ConfigurableApplicationContext springContext;
-
     public void setup() throws BonitaException, IOException, Exception {
         logger.info("Using bonita.home: " + System.getProperty(BONITA_HOME));
         // Force these system properties
         System.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.bonitasoft.engine.local.SimpleMemoryContextFactory");
         System.setProperty(Context.URL_PKG_PREFIXES, "org.bonitasoft.engine.local");
         springContext = new ClassPathXmlApplicationContext("datasource.xml", "jndi-setup.xml");
-        APITestUtil.createInitializeAndStartPlatformWithDefaultTenant(true);
+        APITestUtil.createInitializeAndStartPlatformWithDefaultTenant(false);
     }
 
 }

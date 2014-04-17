@@ -15,11 +15,14 @@ package org.bonitasoft.migration;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.naming.Context;
 
 import org.bonitasoft.engine.api.CommandAPI;
 import org.bonitasoft.engine.api.IdentityAPI;
@@ -34,6 +37,7 @@ import org.bonitasoft.engine.bpm.process.DesignProcessDefinition;
 import org.bonitasoft.engine.bpm.process.ProcessDefinition;
 import org.bonitasoft.engine.bpm.process.ProcessInstance;
 import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder;
+import org.bonitasoft.engine.exception.BonitaException;
 import org.bonitasoft.engine.exception.BonitaHomeNotSetException;
 import org.bonitasoft.engine.expression.ExpressionBuilder;
 import org.bonitasoft.engine.identity.User;
@@ -41,12 +45,23 @@ import org.bonitasoft.engine.session.APISession;
 import org.bonitasoft.engine.test.APITestUtil;
 import org.bonitasoft.engine.test.ClientEventUtil;
 import org.bonitasoft.engine.test.wait.WaitForPendingTasks;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class DatabaseFiller6_2_6 extends SimpleDatabaseFiller6_0_2 {
 
     public static void main(final String[] args) throws Exception {
         DatabaseFiller6_2_6 databaseFiller = new DatabaseFiller6_2_6();
         databaseFiller.execute(1, 1, 1, 1);
+    }
+
+    @Override
+    public void setup() throws BonitaException, IOException, Exception {
+        logger.info("Using bonita.home: " + System.getProperty(BONITA_HOME));
+        // Force these system properties
+        System.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.bonitasoft.engine.local.SimpleMemoryContextFactory");
+        System.setProperty(Context.URL_PKG_PREFIXES, "org.bonitasoft.engine.local");
+        springContext = new ClassPathXmlApplicationContext("datasource.xml", "jndi-setup.xml");
+        APITestUtil.createInitializeAndStartPlatformWithDefaultTenant(true);
     }
 
     @Override
