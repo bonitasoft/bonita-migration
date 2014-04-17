@@ -298,7 +298,6 @@ public class DatabaseChecker6_3_0 {
         assertNotNull(archivedHumanTaskInstances);
         final ArchivedHumanTaskInstance archivedHumanTaskInstance = archivedHumanTaskInstances.get(0);
         assertEquals(archivedHumanTaskInstance.getExecutedBy(), william.getId());
-        assertEquals(archivedHumanTaskInstance.getExecutedBySubstitute(), walter.getId());
     }
 
     @Test
