@@ -1,3 +1,3 @@
-ALTER TABLE process_instance CHANGE startedByDelegate BySubstitute AFTER startedBy;
+ALTER TABLE process_instance CHANGE startedByDelegate startedBySubstitute;
 
-ALTER TABLE flownode_instance CHANGE executedByDelegate BySubstitute AFTER executedBy;
+ALTER TABLE flownode_instance CHANGE executedByDelegate executedBySubstitute;
