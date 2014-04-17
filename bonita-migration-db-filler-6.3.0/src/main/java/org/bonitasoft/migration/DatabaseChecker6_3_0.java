@@ -174,7 +174,7 @@ public class DatabaseChecker6_3_0 {
 
     @Test
     public void check_jobs_work() throws Exception {
-        final User user = identityAPI.getUserByUserName("william.jobs");
+        final User user = identityAPI.getUserByUserName("john");
         assertNotNull("user is null", user);
 
         // wait for quartz + bpm eventHandling to have started and restarted missed timers
