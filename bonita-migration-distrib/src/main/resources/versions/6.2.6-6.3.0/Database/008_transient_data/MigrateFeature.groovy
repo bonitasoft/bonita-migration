@@ -33,7 +33,7 @@ MigrationUtil.executeDefaultSqlFile(feature, dbVendor, sql)
 
 def migrateDefinition(BigDecimal tenantId, BigDecimal id, String formsVersion){
     def s = File.separator
-    def File processFile = new File(bonitaHome.getAbsolutePath()+"${s}server${s}tenants${s}${tenantId}${s}work${s}processes${s}${id}${s}server-process-definition.xml")
+    def File processFile = new File(bonitaHome.getAbsolutePath()+"${s}server${s}tenants${s}${tenantId.longValue()}${s}work${s}processes${s}${id.longValue()}${s}server-process-definition.xml")
     def ProcessDefinition processDefinition = new ProcessDefinition(processFile.text)
     println "Update operations and expression of process "+processDefinition.getName() + "--"+processDefinition.getVersion()
     //parse process to get list all transient data
@@ -54,7 +54,7 @@ def migrateDefinition(BigDecimal tenantId, BigDecimal id, String formsVersion){
     processFile.withWriter("UTF-8") { it << processDefinition.getContent() }
 
     //update forms.xml
-    def File formsxml = new File(bonitaHome.getAbsolutePath()+"${s}server${s}tenants${s}${tenantId}${s}work${s}processes${s}${id}${s}resources${s}forms${s}forms.xml")
+    def File formsxml = new File(bonitaHome.getAbsolutePath()+"${s}server${s}tenants${s}${tenantId.longValue()}${s}work${s}processes${s}${id.longValue()}${s}resources${s}forms${s}forms.xml")
 
     if(formsxml.exists()){
         println "Update operations and expression of forms "
