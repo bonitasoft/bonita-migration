@@ -132,7 +132,6 @@ public class DatabaseFiller6_2_6 extends SimpleDatabaseFiller6_0_2 {
         final APISession session = loginAPI.login("walter.bates", "bpm");
         final ProcessAPI processAPI = TenantAPIAccessor.getProcessAPI(session);
         final IdentityAPI identityAPI = TenantAPIAccessor.getIdentityAPI(session);
-        final CommandAPI commandAPI = TenantAPIAccessor.getCommandAPI(session);
 
         final ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("ProcessStartedFor", "1.0");
         final String actorName = "actorName";
@@ -145,13 +144,22 @@ public class DatabaseFiller6_2_6 extends SimpleDatabaseFiller6_0_2 {
         processAPI.addUserToActor(actorName, processDefinition, william.getId());
         processAPI.enableProcess(processDefinition.getId());
         final ProcessInstance processInstance = processAPI.startProcess(william.getId(), processDefinition.getId());
-        final Map<String, Serializable> readyTaskEvent = ClientEventUtil.getReadyTaskEvent(processInstance.getId(), "step1");
+        final HumanTaskInstance activityInstance = waitForUserTask(session, processInstance, "step1");
+        processAPI.assignUserTask(activityInstance.getId(), william.getId());
+        processAPI.executeFlowNode(william.getId(), activityInstance.getId());
+        waitForUserTask(session, processInstance, "step2");
+        loginAPI.logout(session);
+        return new HashMap<String, String>(1);
+    }
+
+    protected HumanTaskInstance waitForUserTask(final APISession session, final ProcessInstance processInstance, final String taskName) throws Exception {
+        final CommandAPI commandAPI = TenantAPIAccessor.getCommandAPI(session);
+        final ProcessAPI processAPI = TenantAPIAccessor.getProcessAPI(session);
+
+        final Map<String, Serializable> readyTaskEvent = ClientEventUtil.getReadyTaskEvent(processInstance.getId(), taskName);
         final Long activityInstanceId = ClientEventUtil.executeWaitServerCommand(commandAPI, readyTaskEvent, APITestUtil.DEFAULT_TIMEOUT);
         final HumanTaskInstance activityInstance = processAPI.getHumanTaskInstance(activityInstanceId);
         assertNotNull(activityInstance);
-        processAPI.assignUserTask(activityInstance.getId(), william.getId());
-        processAPI.executeFlowNode(william.getId(), activityInstance.getId());
-        loginAPI.logout(session);
-        return new HashMap<String, String>(1);
+        return activityInstance;
     }
 }

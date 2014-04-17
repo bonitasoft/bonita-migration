@@ -35,7 +35,7 @@ import org.bonitasoft.engine.api.ProfileAPI;
 import org.bonitasoft.engine.api.TenantAPIAccessor;
 import org.bonitasoft.engine.api.ThemeAPI;
 import org.bonitasoft.engine.bpm.flownode.ActivityInstanceCriterion;
-import org.bonitasoft.engine.bpm.flownode.HumanTaskInstance;
+import org.bonitasoft.engine.bpm.flownode.ArchivedHumanTaskInstance;
 import org.bonitasoft.engine.bpm.flownode.HumanTaskInstanceSearchDescriptor;
 import org.bonitasoft.engine.bpm.process.ProcessInstance;
 import org.bonitasoft.engine.bpm.process.ProcessInstanceSearchDescriptor;
@@ -294,11 +294,11 @@ public class DatabaseChecker6_3_0 {
         final SearchOptionsBuilder builder2 = new SearchOptionsBuilder(0, 1);
         builder.filter(HumanTaskInstanceSearchDescriptor.NAME, "step1");
         builder.filter(HumanTaskInstanceSearchDescriptor.PROCESS_INSTANCE_ID, processInstance.getId());
-        final List<HumanTaskInstance> humanTaskInstances = processAPI.searchHumanTaskInstances(builder2.done()).getResult();
-        assertNotNull(humanTaskInstances);
-        final HumanTaskInstance humanTaskInstance = humanTaskInstances.get(0);
-        assertEquals(humanTaskInstance.getExecutedBy(), william.getId());
-        assertEquals(humanTaskInstance.getExecutedBySubstitute(), walter.getId());
+        final List<ArchivedHumanTaskInstance> archivedHumanTaskInstances = processAPI.searchArchivedHumanTasks(builder2.done()).getResult();
+        assertNotNull(archivedHumanTaskInstances);
+        final ArchivedHumanTaskInstance archivedHumanTaskInstance = archivedHumanTaskInstances.get(0);
+        assertEquals(archivedHumanTaskInstance.getExecutedBy(), william.getId());
+        assertEquals(archivedHumanTaskInstance.getExecutedBySubstitute(), walter.getId());
     }
 
     @Test
