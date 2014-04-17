@@ -31,7 +31,7 @@ MigrationUtil.getTenantsId(dbVendor, sql).each{
 //drop datasource tables
 MigrationUtil.executeDefaultSqlFile(feature, dbVendor, sql)
 
-def migrateDefinition(long tenantId, long id, String formsVersion){
+def migrateDefinition(BigDecimal tenantId, BigDecimal id, String formsVersion){
     def s = File.separator
     def File processFile = new File(bonitaHome.getAbsolutePath()+"${s}server${s}tenants${s}${tenantId}${s}work${s}processes${s}${id}${s}server-process-definition.xml")
     def ProcessDefinition processDefinition = new ProcessDefinition(processFile.text)
