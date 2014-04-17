@@ -6,3 +6,7 @@ VALUES  (
 	'Import / Export', 'Import / Export an final organization', 
 	:dir_profile_entry_id, 
 	6, 'link', 'importexportorganization');
+	
+UPDATE sequence SET nextId = (SELECT MAX(id) + 1 FROM profileentry WHERE tenantId = :tenantId)
+WHERE tenantId = :tenantId
+AND id = 9991;
