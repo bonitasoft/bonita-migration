@@ -136,7 +136,7 @@ public class DatabaseFiller6_2_6 extends SimpleDatabaseFiller6_0_2 {
 
         final ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("ProcessStartedFor", "1.0");
         final String actorName = "actorName";
-        builder.addActor(actorName).addUserTask("step1", actorName);
+        builder.addActor(actorName).addUserTask("step1", actorName).addUserTask("step2", actorName).addTransition("step1", "step2");
 
         final BusinessArchiveBuilder archiveBuilder = new BusinessArchiveBuilder().createNewBusinessArchive();
         archiveBuilder.setProcessDefinition(builder.done());
