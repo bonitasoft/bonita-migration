@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2013 BonitaSoft S.A.
+ * Copyright (C) 2013-2014 BonitaSoft S.A.
  * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * accessor program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@ import org.bonitasoft.engine.api.PlatformAPIAccessor;
 import org.bonitasoft.engine.api.ProcessAPI;
 import org.bonitasoft.engine.api.ProfileAPI;
 import org.bonitasoft.engine.api.TenantAPIAccessor;
+import org.bonitasoft.engine.api.ThemeAPI;
 import org.bonitasoft.engine.bpm.flownode.ActivityInstanceCriterion;
 import org.bonitasoft.engine.exception.BonitaException;
 import org.bonitasoft.engine.exception.SearchException;
@@ -55,12 +56,12 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
- * 
- * 
  * Check that the migrated database is ok
  * 
  * @author Baptiste Mesta
@@ -77,9 +78,13 @@ public class DatabaseChecker6_3_0 {
 
     protected static CommandAPI commandAPI;
 
+    private static ThemeAPI themeAPI;
+
     protected static APISession session;
 
     private static ClassPathXmlApplicationContext springContext;
+
+    private final Logger logger = LoggerFactory.getLogger(DatabaseChecker6_3_0.class);
 
     public static void main(final String[] args) throws Exception {
         JUnitCore.main(DatabaseChecker6_3_0.class.getName());
@@ -88,21 +93,22 @@ public class DatabaseChecker6_3_0 {
     @BeforeClass
     public static void setup() throws BonitaException {
         setupSpringContext();
-        APITestUtil apiTestUtil = new APITestUtil();
-        PlatformSession platformSession = apiTestUtil.loginPlatform();
-        PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(platformSession);
+        final APITestUtil apiTestUtil = new APITestUtil();
+        final PlatformSession platformSession = apiTestUtil.loginPlatform();
+        final PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(platformSession);
         platformAPI.startNode();
         apiTestUtil.logoutPlatform(platformSession);
         session = apiTestUtil.loginDefaultTenant();
         processAPI = TenantAPIAccessor.getProcessAPI(session);
         identityApi = TenantAPIAccessor.getIdentityAPI(session);
         profileAPI = TenantAPIAccessor.getProfileAPI(session);
+        themeAPI = TenantAPIAccessor.getThemeAPI(session);
         commandAPI = TenantAPIAccessor.getCommandAPI(session);
     }
 
     @AfterClass
     public static void teardown() throws BonitaException {
-        APITestUtil apiTestUtil = new APITestUtil();
+        final APITestUtil apiTestUtil = new APITestUtil();
         apiTestUtil.logoutTenant(session);
         final PlatformSession pSession = apiTestUtil.loginPlatform();
         final PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(pSession);
@@ -123,36 +129,36 @@ public class DatabaseChecker6_3_0 {
 
     @Test
     public void ref_business_data_table_has_been_created() throws Exception {
-        DataSource bonitaDatasource = (DataSource) springContext.getBean("bonitaDataSource");
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(bonitaDatasource);
-        
+        final DataSource bonitaDatasource = (DataSource) springContext.getBean("bonitaDataSource");
+        final JdbcTemplate jdbcTemplate = new JdbcTemplate(bonitaDatasource);
+
         jdbcTemplate.update("INSERT INTO ref_biz_data_inst(tenantid, id, name, proc_inst_id, data_id, data_classname) "
-                + "VALUES (?, ?, ?, ?, ?, ?)", new Object[] { 1, 1, "businessdata", 1, 1, "org.bonitasoft.classname"});
-        
-        long numberOfRefBusinessdata = countRefBusinessdata(jdbcTemplate);
+                + "VALUES (?, ?, ?, ?, ?, ?)", new Object[] { 1, 1, "businessdata", 1, 1, "org.bonitasoft.classname" });
+
+        final long numberOfRefBusinessdata = countRefBusinessdata(jdbcTemplate);
         assertEquals(1, numberOfRefBusinessdata);
     }
-    
-    private long countRefBusinessdata(JdbcTemplate jdbcTemplate) {
+
+    private long countRefBusinessdata(final JdbcTemplate jdbcTemplate) {
         return jdbcTemplate.queryForLong("SELECT COUNT(id) FROM ref_biz_data_inst");
     }
-    
+
     @Test
     public void ref_business_data_sequence_have_been_created() throws Exception {
-        DataSource sequenceDatasource = (DataSource) springContext.getBean("bonitaSequenceManagerDataSource");
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(sequenceDatasource);
-        
-        long numberOfTenants = countTenants(jdbcTemplate);
-        long numberOfNewSequences = countRefBusinessDataSequences(jdbcTemplate);
-        
+        final DataSource sequenceDatasource = (DataSource) springContext.getBean("bonitaSequenceManagerDataSource");
+        final JdbcTemplate jdbcTemplate = new JdbcTemplate(sequenceDatasource);
+
+        final long numberOfTenants = countTenants(jdbcTemplate);
+        final long numberOfNewSequences = countRefBusinessDataSequences(jdbcTemplate);
+
         assertEquals(numberOfTenants, numberOfNewSequences);
     }
 
-    private long countRefBusinessDataSequences(JdbcTemplate jdbcTemplate) {
+    private long countRefBusinessDataSequences(final JdbcTemplate jdbcTemplate) {
         return jdbcTemplate.queryForLong("SELECT COUNT(*) FROM sequence WHERE id = 10096");
     }
 
-    private long countTenants(JdbcTemplate jdbcTemplate) {
+    private long countTenants(final JdbcTemplate jdbcTemplate) {
         return jdbcTemplate.queryForLong("SELECT COUNT(id) FROM tenant");
     }
 
@@ -164,12 +170,17 @@ public class DatabaseChecker6_3_0 {
 
     @Test
     public void check_jobs_work() throws Exception {
-        final User user = identityApi.getUserByUserName("william.jobs");
+        final User user = identityApi.getUserByUserName("john");
+
+        assertNotNull("user is null", user);
 
         // wait for quartz + bpm eventHandling to have started and restarted missed timers
 
         assertTrue(
-                "there was less than 4 task for william.jobs, he should have more than 3 because when bonita was shut down it should restart missed timers (the timer is 10 seconds, we had one task ready, we waited 60 seconds",
+                "there was less than 4 task for "
+                        + user.getUserName()
+                        + ", he should have more than 3 because when bonita was shut down it should restart missed timers (the timer is 10 seconds, we had one task ready, we waited 60 seconds"
+                        + processAPI.getPendingHumanTaskInstances(user.getId(), 0, 100, ActivityInstanceCriterion.DEFAULT).size(),
                 new WaitUntil(500, 120000) {
 
                     @Override
@@ -186,20 +197,20 @@ public class DatabaseChecker6_3_0 {
         final Element profiles = document.getRootElement();
 
         // Iterate through child elements of root with element name "profile"
-        for (Iterator<Element> rootIterator = profiles.elementIterator("profile"); rootIterator.hasNext();) {
+        for (final Iterator<Element> rootIterator = profiles.elementIterator("profile"); rootIterator.hasNext();) {
             final Element profileElement = rootIterator.next();
             final Profile profile = checkProfile(profileElement);
 
             final Element profileEntriesElement = profileElement.element("profileEntries");
             if (profileEntriesElement != null) {
-                for (Iterator<Element> parentProfileEntryIterator = profileEntriesElement.elementIterator("parentProfileEntry"); parentProfileEntryIterator
+                for (final Iterator<Element> parentProfileEntryIterator = profileEntriesElement.elementIterator("parentProfileEntry"); parentProfileEntryIterator
                         .hasNext();) {
                     final Element parentProfileEntryElement = parentProfileEntryIterator.next();
                     final ProfileEntry profileEntry = checkProfileEntry(parentProfileEntryElement, profile.getId(), 0);
 
                     final Element childProfileEntriesElement = profileElement.element("childrenEntries");
                     if (childProfileEntriesElement != null) {
-                        for (Iterator<Element> childProfileEntryIterator = childProfileEntriesElement.elementIterator("profileEntry"); childProfileEntryIterator
+                        for (final Iterator<Element> childProfileEntryIterator = childProfileEntriesElement.elementIterator("profileEntry"); childProfileEntryIterator
                                 .hasNext();) {
                             final Element childProfileEntryElement = childProfileEntryIterator.next();
                             checkProfileEntry(childProfileEntryElement, profile.getId(), profileEntry.getId());
@@ -217,7 +228,6 @@ public class DatabaseChecker6_3_0 {
     private Profile checkProfile(final Element profileElement) throws SearchException {
         final String name = profileElement.attributeValue("name");
         final SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 10);
-        builder.sort("name", Order.DESC);
         builder.filter("name", name);
         final List<Profile> resultProfiles = profileAPI.searchProfiles(builder.done()).getResult();
         assertEquals("Profile " + name + " not found.", 1, resultProfiles.size());
@@ -234,6 +244,8 @@ public class DatabaseChecker6_3_0 {
         assertNotEquals(0, profile.getLastUpdateDate());
         assertNotNull(profile.getLastUpdatedBy());
         assertNotEquals(0, profile.getLastUpdatedBy());
+
+        logger.info("The profile " + name + " is the same in database as the XML file.");
 
         return profile;
     }
@@ -257,16 +269,18 @@ public class DatabaseChecker6_3_0 {
         assertEquals(profileEntryElement.elementText("page"), profileEntry.getPage());
         assertEquals(profileId, profileEntry.getProfileId());
 
+        logger.info("The profile entry " + name + " is the same in database as the XML file.");
+
         return profileEntry;
     }
 
     @Test
     public void can_create_custom_user_info_definition_and_values() throws Exception {
-        User user = identityApi.createUser("first.user", "bpm");
-        CustomUserInfoDefinition skills = identityApi.createCustomUserInfoDefinition(new CustomUserInfoDefinitionCreator("Skills", "The user skills"));
+        final User user = identityApi.createUser("first.user", "bpm");
+        final CustomUserInfoDefinition skills = identityApi.createCustomUserInfoDefinition(new CustomUserInfoDefinitionCreator("Skills", "The user skills"));
         identityApi.setCustomUserInfoValue(skills.getId(), user.getId(), "Java");
-        
-        List<CustomUserInfo> userInfo = identityApi.getCustomUserInfo(user.getId(), 0, 10);
+
+        final List<CustomUserInfo> userInfo = identityApi.getCustomUserInfo(user.getId(), 0, 10);
         assertThat(userInfo.size()).isEqualTo(1);
         assertThat(userInfo.get(0).getDefinition().getName()).isEqualTo("Skills");
         assertThat(userInfo.get(0).getValue()).isEqualTo("Java");
