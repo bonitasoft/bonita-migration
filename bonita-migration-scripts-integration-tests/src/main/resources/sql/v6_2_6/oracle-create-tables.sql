@@ -21,7 +21,7 @@ CREATE TABLE arch_process_instance (
   stringIndex4 VARCHAR2(50),
   stringIndex5 VARCHAR2(50),
   PRIMARY KEY (tenantid, id)
-);
+)
 
 
 
