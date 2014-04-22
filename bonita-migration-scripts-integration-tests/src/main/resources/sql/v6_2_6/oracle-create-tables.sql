@@ -21,9 +21,9 @@ CREATE TABLE arch_process_instance (
   stringIndex4 VARCHAR2(50),
   stringIndex5 VARCHAR2(50),
   PRIMARY KEY (tenantid, id)
-)
+);
 
-/
+
 
 CREATE TABLE arch_flownode_instance (
   tenantid NUMBER(19, 0) NOT NULL,
@@ -73,9 +73,8 @@ CREATE TABLE arch_flownode_instance (
   triggeredByEvent NUMBER(1),
   interrupting NUMBER(1),
   PRIMARY KEY (tenantid, id)
-)
+);
 
-/
 
 CREATE TABLE arch_transition_instance (
   tenantid NUMBER(19, 0) NOT NULL,
@@ -97,9 +96,7 @@ CREATE TABLE arch_transition_instance (
   sourceObjectId NUMBER(19, 0),
   archiveDate NUMBER(19, 0) NOT NULL,
   PRIMARY KEY (tenantid, id)
-)
-
-/
+);
 
 CREATE TABLE arch_connector_instance (
   tenantid NUMBER(19, 0) NOT NULL,
@@ -114,9 +111,7 @@ CREATE TABLE arch_connector_instance (
   sourceObjectId NUMBER(19, 0),
   archiveDate NUMBER(19, 0) NOT NULL,
   PRIMARY KEY (tenantid, id)
-)
-
-/
+);
 
 CREATE TABLE arch_data_instance (
     tenantId NUMBER(19, 0) NOT NULL,
@@ -141,9 +136,7 @@ CREATE TABLE arch_data_instance (
 	archiveDate NUMBER(19, 0) NOT NULL,
 	sourceObjectId NUMBER(19, 0) NOT NULL,
 	PRIMARY KEY (tenantid, id)
-)
-
-/
+);
 
 CREATE TABLE arch_data_mapping (
     tenantid NUMBER(19, 0) NOT NULL,
@@ -155,6 +148,4 @@ CREATE TABLE arch_data_mapping (
 	archiveDate NUMBER(19, 0) NOT NULL,
 	sourceObjectId NUMBER(19, 0) NOT NULL,
 	PRIMARY KEY (tenantid, id)
-)
-
-/
+);
