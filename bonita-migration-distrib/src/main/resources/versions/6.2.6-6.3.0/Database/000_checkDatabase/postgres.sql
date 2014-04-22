@@ -1,7 +1,6 @@
 SELECT
     i.tablename ,
-    i.indexname ,
-    i. *
+    i.indexname
 FROM
     pg_indexes i
 WHERE

@@ -4,7 +4,7 @@ SELECT
 FROM
     INFORMATION_SCHEMA.STATISTICS
 WHERE
-    LOWER(table_name) IN(
+    LOWER( table_name ) IN(
         'arch_process_instance' ,
         'arch_connector_instance' ,
         'arch_flownode_instance' ,
