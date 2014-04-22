@@ -76,27 +76,7 @@ CREATE TABLE arch_flownode_instance (
 );
 
 
-CREATE TABLE arch_transition_instance (
-  tenantid NUMBER(19, 0) NOT NULL,
-  id NUMBER(19, 0) NOT NULL,
-  rootContainerId NUMBER(19, 0) NOT NULL,
-  parentContainerId NUMBER(19, 0) NOT NULL,
-  name VARCHAR2(255) NOT NULL,
-  source NUMBER(19, 0),
-  target NUMBER(19, 0),
-  state VARCHAR2(50),
-  terminal NUMBER(1) NOT NULL,
-  stable NUMBER(1) ,
-  stateCategory VARCHAR2(50) NOT NULL,
-  logicalGroup1 NUMBER(19, 0) NOT NULL,
-  logicalGroup2 NUMBER(19, 0) NOT NULL,
-  logicalGroup3 NUMBER(19, 0),
-  logicalGroup4 NUMBER(19, 0) NOT NULL,
-  description VARCHAR2(255),
-  sourceObjectId NUMBER(19, 0),
-  archiveDate NUMBER(19, 0) NOT NULL,
-  PRIMARY KEY (tenantid, id)
-);
+
 
 CREATE TABLE arch_connector_instance (
   tenantid NUMBER(19, 0) NOT NULL,
