@@ -43,13 +43,13 @@ class IndexExistsCheckerIT extends GroovyTestCase {
         sql = Sql.newInstance(*config, driverClass);
         tester = new JdbcDatabaseTester(driverClass, *config)
 
-        println ("setUp: create tables\n")
+        println ("setUp: create tables")
         sql.execute(CREATE_TABLE_6_2_6.text);
     }
 
     @Override
     void tearDown() {
-        println ("tearDown: drop tables\n")
+        println ("tearDown: drop tables")
         sql.execute(DROP_TABLE_6_2_6.text);
         tester.onTearDown()
     }
@@ -58,13 +58,15 @@ class IndexExistsCheckerIT extends GroovyTestCase {
     void test_can_migrate_a_database_without_index() {
         //given
         def indexFound=false
-        //        sql.execute(CREATE_TABLE_6_2_6.text);
 
         //when
         def feature = new File("build/dist/versions/6.2.6-6.3.0/Database/000_checkDatabase/${DBVENDOR}.sql")
 
         //then
-        sql.eachRow(feature.text) {row -> indexFound=true}
+        sql.eachRow(feature.text) {row ->
+            indexFound=true
+            println "index:${row.indexname} found on table:${row.tablename}"
+        }
         assertThat(indexFound).isFalse();
 
     }
@@ -73,7 +75,7 @@ class IndexExistsCheckerIT extends GroovyTestCase {
     void test_migrate_a_database_with_bad_index_should_fail() {
         //given
         def indexFound=false
-        //        sql.execute(CREATE_TABLE_6_2_6.text);
+
         sql.execute(CREATE_BAD_INDEX.text);
 
         //when
@@ -81,7 +83,10 @@ class IndexExistsCheckerIT extends GroovyTestCase {
 
 
         //then
-        sql.eachRow(feature.text) {row -> indexFound=true }
+        sql.eachRow(feature.text) {row ->
+            indexFound=true
+            println "index:${row.indexname} found on table:${row.tablename}"
+        }
         assertThat(indexFound).isTrue();
     }
 }
