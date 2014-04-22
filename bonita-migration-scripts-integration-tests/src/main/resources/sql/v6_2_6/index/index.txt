@@ -1,9 +1,0 @@
-CREATE INDEX idx_fg_convering ON arch_process_instance (sourceObjectId, rootProcessInstanceId, callerId);
-CREATE INDEX idx_fg_convering ON arch_connector_instance (containerId, containerType);
-CREATE INDEX idx_fg_convering ON arch_flownode_instance (rootContainerId, parentContainerId);
-CREATE INDEX idx_fg_convering ON arch_data_instance (containerId, sourceObjectId);
-CREATE INDEX idx_fg_convering ON arch_data_mapping (containerId, dataInstanceId, sourceObjectId);
-
-
-
-/*+ tenant id*/ 
