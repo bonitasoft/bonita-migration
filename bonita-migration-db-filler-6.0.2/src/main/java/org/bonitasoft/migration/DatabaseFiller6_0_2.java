@@ -126,7 +126,9 @@ public class DatabaseFiller6_0_2 {
         }
     }
 
-    private static final String BONITA_HOME = "bonita.home";
+    public static final String BONITA_HOME = "bonita.home";
+
+    static ConfigurableApplicationContext springContext;
 
     protected final Logger logger = LoggerFactory.getLogger(DatabaseFiller6_0_2.class);
 
@@ -367,7 +369,7 @@ public class DatabaseFiller6_0_2 {
     public void shutdown() throws Exception {
         final PlatformSession pSession = APITestUtil.loginPlatform();
         final PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(pSession);
-        APITestUtil.stopPlatformAndTenant(platformAPI, false);
+        APITestUtil.stopPlatformAndTenant(platformAPI, true);
         APITestUtil.logoutPlatform(pSession);
         shutdownWorkService();
     }
@@ -458,8 +460,7 @@ public class DatabaseFiller6_0_2 {
         return map;
     }
 
-    protected Map<String, String> fillCompletedProcess(final APISession session)
-            throws Exception {
+    protected Map<String, String> fillCompletedProcess(final APISession session) throws Exception {
         ProcessAPI processAPI = TenantAPIAccessor.getProcessAPI(session);
 
         ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("ProcessThatFinish", "1.0");
@@ -470,8 +471,7 @@ public class DatabaseFiller6_0_2 {
         ProcessDefinition processDefinition = processAPI.deploy(archiveBuilder.done());
         processAPI.enableProcess(processDefinition.getId());
         processAPI.startProcess(processDefinition.getId());
-        Map<String, String> map = new HashMap<String, String>(2);
-        return map;
+        return new HashMap<String, String>(2);
     }
 
     protected Map<String, String> fillOrganization(final APISession session) throws Exception {
@@ -484,8 +484,6 @@ public class DatabaseFiller6_0_2 {
         map.put("Roles", String.valueOf(identityAPI.getNumberOfRoles()));
         return map;
     }
-
-    static ConfigurableApplicationContext springContext;
 
     public void setup() throws BonitaException, IOException, Exception {
         logger.info("Using bonita.home: " + System.getProperty(BONITA_HOME));
