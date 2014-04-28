@@ -167,7 +167,10 @@ public class MigrationUtil {
             for (content in contents) {
                 if (!content.trim().empty) {
                     if (toUpdate) {
-                        println sql.executeUpdate(content) + " row(s) updated"
+                        def count = sql.executeUpdate(content)
+                        if(count > 0){
+                            println count + " row(s) updated"
+                        }
                     } else {
                         sql.execute(content)
                     }
@@ -295,16 +298,16 @@ public class MigrationUtil {
             println "Invalid choice, please enter a value between 1 and ${options.size()}"
         }
     }
-    
+
     public static getNexIdsForTable(Sql sql, long sequenceId) {
         def idsByTenants = [:];
         sql.eachRow("SELECT tenantid,nextId from sequence WHERE id = $sequenceId") { row ->
-            idsByTenants.put(row[0],row[1]) 
-            }
+            idsByTenants.put(row[0],row[1])
+        }
         println "next id by tenants "+idsByTenants;
         return idsByTenants;
     }
-    
+
     public static updateNextIdsForTable(Sql sql, long sequenceId, Map nexIdsByTenants){
         nexIdsByTenants.each {
             println "update sequence of tenant $it.key  for flow nodes to $it.value"
