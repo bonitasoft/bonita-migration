@@ -78,6 +78,7 @@ public class DatabaseFiller6_2_6 extends SimpleDatabaseFiller6_0_2 {
         stats.putAll(fillProsessesWithMessageAndTimer(session));
         stats.putAll(fillOthers(session));
         APITestUtil.logoutTenant(session);
+        stats.putAll(fillExtensions(session));
 
         stats.putAll(fillProcessStartedFor());
         logger.info("Finished to fill the database");
@@ -134,6 +135,17 @@ public class DatabaseFiller6_2_6 extends SimpleDatabaseFiller6_0_2 {
             throw new IllegalStateException("process do not work");
         }
 
+        return Collections.emptyMap();
+    }
+
+
+
+    /**
+     * @param session
+     * @return
+     * @throws Exception
+     */
+    protected Map<? extends String, ? extends String> fillExtensions(final APISession session) throws Exception {
         return Collections.emptyMap();
     }
 
