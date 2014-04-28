@@ -50,7 +50,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class DatabaseFiller6_2_6 extends SimpleDatabaseFiller6_0_2 {
 
     public static void main(final String[] args) throws Exception {
-        DatabaseFiller6_2_6 databaseFiller = new DatabaseFiller6_2_6();
+        final DatabaseFiller6_2_6 databaseFiller = new DatabaseFiller6_2_6();
         databaseFiller.execute(1, 1, 1, 1);
     }
 
@@ -68,8 +68,8 @@ public class DatabaseFiller6_2_6 extends SimpleDatabaseFiller6_0_2 {
     public Map<String, String> fillDatabase(final int nbProcessesDefinitions, final int nbProcessInstances, final int nbWaitingEvents, final int nbDocuments)
             throws Exception {
         logger.info("Starting to fill the database");
-        APISession session = APITestUtil.loginDefaultTenant();
-        Map<String, String> stats = new HashMap<String, String>();
+        final APISession session = APITestUtil.loginDefaultTenant();
+        final Map<String, String> stats = new HashMap<String, String>();
         stats.putAll(fillOrganization(session));
         stats.putAll(fillProcesses(session, nbProcessesDefinitions, nbProcessInstances));
         stats.putAll(fillProcessesWithEvents(session, nbWaitingEvents));
@@ -77,9 +77,10 @@ public class DatabaseFiller6_2_6 extends SimpleDatabaseFiller6_0_2 {
 
         stats.putAll(fillProsessesWithMessageAndTimer(session));
         stats.putAll(fillOthers(session));
-        APITestUtil.logoutTenant(session);
         stats.putAll(fillExtensions(session));
+        APITestUtil.logoutTenant(session);
 
+        // fillProcessStartedFor has it owns login-logout
         stats.putAll(fillProcessStartedFor());
         logger.info("Finished to fill the database");
         return stats;
@@ -105,16 +106,16 @@ public class DatabaseFiller6_2_6 extends SimpleDatabaseFiller6_0_2 {
      */
     @Override
     protected Map<? extends String, ? extends String> fillProsessesWithMessageAndTimer(final APISession session) throws Exception {
-        IdentityAPI identityAPI = TenantAPIAccessor.getIdentityAPI(session);
-        User john = identityAPI.createUser("john", "bpm");
-        ProcessAPI processAPI = TenantAPIAccessor.getProcessAPI(session);
-        DesignProcessDefinition processWithTimer = new ProcessDefinitionBuilder().createNewInstance("ProcessWithStartTimer", "1.0")
+        final IdentityAPI identityAPI = TenantAPIAccessor.getIdentityAPI(session);
+        final User john = identityAPI.createUser("john", "bpm");
+        final ProcessAPI processAPI = TenantAPIAccessor.getProcessAPI(session);
+        final DesignProcessDefinition processWithTimer = new ProcessDefinitionBuilder().createNewInstance("ProcessWithStartTimer", "1.0")
                 .addStartEvent("start")
                 .addTimerEventTriggerDefinition(TimerType.CYCLE, new ExpressionBuilder().createConstantStringExpression("0/15 * * * * ?"))
                 .addEndEvent("end").addMessageEventTrigger("message1", new ExpressionBuilder().createConstantStringExpression("ProcessWithStartMessage"))
                 .addTransition("start", "end").getProcess();
 
-        DesignProcessDefinition processWithMessage = new ProcessDefinitionBuilder()
+        final DesignProcessDefinition processWithMessage = new ProcessDefinitionBuilder()
                 .createNewInstance("ProcessWithStartMessage", "1.0")
                 .addActor("johnActor")
                 .addStartEvent("start")
@@ -125,7 +126,7 @@ public class DatabaseFiller6_2_6 extends SimpleDatabaseFiller6_0_2 {
                                 String.class.getName()))
                 .addTransition("start", "johnTask").getProcess();
 
-        ProcessDefinition processDefinition = processAPI.deploy(processWithMessage);
+        final ProcessDefinition processDefinition = processAPI.deploy(processWithMessage);
         processAPI.addUserToActor(processAPI.getActors(processDefinition.getId(), 0, 10, ActorCriterion.NAME_ASC).get(0).getId(), john.getId());
         processAPI.enableProcess(processDefinition.getId());
 
@@ -137,8 +138,6 @@ public class DatabaseFiller6_2_6 extends SimpleDatabaseFiller6_0_2 {
 
         return Collections.emptyMap();
     }
-
-
 
     /**
      * @param session

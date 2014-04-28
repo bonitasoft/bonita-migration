@@ -95,8 +95,6 @@ CREATE TABLE arch_transition_instance (
   PRIMARY KEY (tenantid, id)
 ) ENGINE = INNODB;
 
-
-
 CREATE TABLE arch_connector_instance (
   tenantid BIGINT NOT NULL,
   id BIGINT NOT NULL,
@@ -135,6 +133,7 @@ CREATE TABLE arch_data_instance (
 	sourceObjectId BIGINT NOT NULL,
 	PRIMARY KEY (tenantid, id)
 ) ENGINE = INNODB;
+
 CREATE TABLE arch_data_mapping (
     tenantid BIGINT NOT NULL,
 	id BIGINT NOT NULL,
@@ -145,4 +144,13 @@ CREATE TABLE arch_data_mapping (
 	archiveDate BIGINT NOT NULL,
 	sourceObjectId BIGINT NOT NULL,
 	PRIMARY KEY (tenantid, id)
+) ENGINE = INNODB;
+
+CREATE TABLE token (
+  tenantid BIGINT NOT NULL,
+  id BIGINT NOT NULL,
+  processInstanceId BIGINT NOT NULL,
+  ref_id BIGINT NOT NULL,
+  parent_ref_id BIGINT NULL,
+  PRIMARY KEY (tenantid, id)
 ) ENGINE = INNODB;

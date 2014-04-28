@@ -3,3 +3,4 @@ CREATE INDEX idx1_arch_connector_instance ON arch_connector_instance (tenantId,c
 CREATE INDEX idx1_arch_flownode_instance ON arch_flownode_instance (tenantId,rootContainerId, parentContainerId) @@
 CREATE INDEX idx1_arch_data_instance ON arch_data_instance (tenantId,containerId, sourceObjectId) @@
 CREATE INDEX idx1_arch_data_mapping ON arch_data_mapping (tenantId,containerId, dataInstanceId, sourceObjectId) @@ 
+CREATE INDEX idx1_token ON token(tenantid,processInstanceId) @@

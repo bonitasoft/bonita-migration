@@ -36,6 +36,7 @@ import org.bonitasoft.engine.api.TenantAPIAccessor;
 import org.bonitasoft.engine.api.ThemeAPI;
 import org.bonitasoft.engine.bpm.flownode.ActivityInstanceCriterion;
 import org.bonitasoft.engine.bpm.flownode.ArchivedHumanTaskInstance;
+import org.bonitasoft.engine.bpm.flownode.HumanTaskInstance;
 import org.bonitasoft.engine.bpm.flownode.HumanTaskInstanceSearchDescriptor;
 import org.bonitasoft.engine.bpm.process.ProcessInstance;
 import org.bonitasoft.engine.bpm.process.ProcessInstanceSearchDescriptor;
@@ -187,7 +188,8 @@ public class DatabaseChecker6_3_0 {
 
                     @Override
                     protected boolean check() throws Exception {
-                        return processAPI.getPendingHumanTaskInstances(user.getId(), 0, 100, ActivityInstanceCriterion.DEFAULT).size() > 3;
+                        return processAPI.getPendingHumanTaskInstances(user.getId(), 0, 100,
+                                ActivityInstanceCriterion.DEFAULT).size() > 3;
                     }
                 }.waitUntil());
     }
@@ -199,20 +201,20 @@ public class DatabaseChecker6_3_0 {
         final Element profiles = document.getRootElement();
 
         // Iterate through child elements of root with element name "profile"
-        for (Iterator<Element> rootIterator = profiles.elementIterator("profile"); rootIterator.hasNext();) {
+        for (final Iterator<Element> rootIterator = profiles.elementIterator("profile"); rootIterator.hasNext();) {
             final Element profileElement = rootIterator.next();
             final Profile profile = checkProfile(profileElement);
 
             final Element profileEntriesElement = profileElement.element("profileEntries");
             if (profileEntriesElement != null) {
-                for (Iterator<Element> parentProfileEntryIterator = profileEntriesElement.elementIterator("parentProfileEntry"); parentProfileEntryIterator
+                for (final Iterator<Element> parentProfileEntryIterator = profileEntriesElement.elementIterator("parentProfileEntry"); parentProfileEntryIterator
                         .hasNext();) {
                     final Element parentProfileEntryElement = parentProfileEntryIterator.next();
                     final ProfileEntry profileEntry = checkProfileEntry(parentProfileEntryElement, profile.getId(), 0);
 
                     final Element childProfileEntriesElement = profileElement.element("childrenEntries");
                     if (childProfileEntriesElement != null) {
-                        for (Iterator<Element> childProfileEntryIterator = childProfileEntriesElement.elementIterator("profileEntry"); childProfileEntryIterator
+                        for (final Iterator<Element> childProfileEntryIterator = childProfileEntriesElement.elementIterator("profileEntry"); childProfileEntryIterator
                                 .hasNext();) {
                             final Element childProfileEntryElement = childProfileEntryIterator.next();
                             checkProfileEntry(childProfileEntryElement, profile.getId(), profileEntry.getId());
@@ -293,6 +295,7 @@ public class DatabaseChecker6_3_0 {
         // Check if william is executed for, and walter is executed by for the activity instance
         final SearchOptionsBuilder builder2 = new SearchOptionsBuilder(0, 1);
         builder.filter(HumanTaskInstanceSearchDescriptor.NAME, "step1");
+        builder.filter(HumanTaskInstanceSearchDescriptor.STATE_NAME, "completed");
         builder.filter(HumanTaskInstanceSearchDescriptor.PROCESS_INSTANCE_ID, processInstance.getId());
         final List<ArchivedHumanTaskInstance> archivedHumanTaskInstances = processAPI.searchArchivedHumanTasks(builder2.done()).getResult();
         assertNotNull(archivedHumanTaskInstances);
@@ -302,11 +305,11 @@ public class DatabaseChecker6_3_0 {
 
     @Test
     public void can_create_custom_user_info_definition_and_values() throws Exception {
-        User user = identityAPI.createUser("first.user", "bpm");
-        CustomUserInfoDefinition skills = identityAPI.createCustomUserInfoDefinition(new CustomUserInfoDefinitionCreator("Skills", "The user skills"));
+        final User user = identityAPI.createUser("first.user", "bpm");
+        final CustomUserInfoDefinition skills = identityAPI.createCustomUserInfoDefinition(new CustomUserInfoDefinitionCreator("Skills", "The user skills"));
         identityAPI.setCustomUserInfoValue(skills.getId(), user.getId(), "Java");
 
-        List<CustomUserInfo> userInfo = identityAPI.getCustomUserInfo(user.getId(), 0, 10);
+        final List<CustomUserInfo> userInfo = identityAPI.getCustomUserInfo(user.getId(), 0, 10);
         assertThat(userInfo.size()).isEqualTo(1);
         assertThat(userInfo.get(0).getDefinition().getName()).isEqualTo("Skills");
         assertThat(userInfo.get(0).getValue()).isEqualTo("Java");

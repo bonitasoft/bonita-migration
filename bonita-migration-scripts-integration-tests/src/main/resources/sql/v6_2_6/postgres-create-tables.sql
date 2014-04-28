@@ -95,8 +95,6 @@ CREATE TABLE arch_transition_instance (
   PRIMARY KEY (tenantid, id)
 );
 
-
-
 CREATE TABLE arch_connector_instance (
   tenantid INT8 NOT NULL,
   id INT8 NOT NULL,
@@ -147,5 +145,14 @@ CREATE TABLE arch_data_mapping (
 	archiveDate INT8 NOT NULL,
 	sourceObjectId INT8 NOT NULL,
 	PRIMARY KEY (tenantid, id)
+);
+
+CREATE TABLE token (
+  tenantid INT8 NOT NULL,
+  id INT8 NOT NULL,
+  processInstanceId INT8 NOT NULL,
+  ref_id INT8 NOT NULL,
+  parent_ref_id INT8 NULL,
+  PRIMARY KEY (tenantid, id)
 );
 
