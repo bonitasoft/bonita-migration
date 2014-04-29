@@ -284,20 +284,20 @@ public class DatabaseChecker6_3_0 {
         final User walter = identityAPI.getUserByUserName("walter.bates");
 
         // Check if william is started for, and walter is started by for the process instance
-        final SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 1);
-        builder.filter(ProcessInstanceSearchDescriptor.NAME, "ProcessStartedFor");
-        final List<ProcessInstance> processInstances = processAPI.searchProcessInstances(builder.done()).getResult();
+        final SearchOptionsBuilder builderBefore = new SearchOptionsBuilder(0, 1);
+        builderBefore.filter(ProcessInstanceSearchDescriptor.NAME, "ProcessStartedFor");
+        final List<ProcessInstance> processInstances = processAPI.searchProcessInstances(builderBefore.done()).getResult();
         assertNotNull(processInstances);
         final ProcessInstance processInstance = processInstances.get(0);
         assertEquals(processInstance.getStartedBy(), william.getId());
         assertEquals(processInstance.getStartedBySubstitute(), walter.getId());
 
         // Check if william is executed for, and walter is executed by for the activity instance
-        final SearchOptionsBuilder builder2 = new SearchOptionsBuilder(0, 1);
-        builder.filter(HumanTaskInstanceSearchDescriptor.NAME, "step1");
-        builder.filter(HumanTaskInstanceSearchDescriptor.STATE_NAME, "completed");
-        builder.filter(HumanTaskInstanceSearchDescriptor.PROCESS_INSTANCE_ID, processInstance.getId());
-        final List<ArchivedHumanTaskInstance> archivedHumanTaskInstances = processAPI.searchArchivedHumanTasks(builder2.done()).getResult();
+        final SearchOptionsBuilder builderAfter = new SearchOptionsBuilder(0, 1);
+        builderAfter.filter(HumanTaskInstanceSearchDescriptor.NAME, "step1");
+        builderAfter.filter(HumanTaskInstanceSearchDescriptor.STATE_NAME, "completed");
+        builderAfter.filter(HumanTaskInstanceSearchDescriptor.PROCESS_INSTANCE_ID, processInstance.getId());
+        final List<ArchivedHumanTaskInstance> archivedHumanTaskInstances = processAPI.searchArchivedHumanTasks(builderAfter.done()).getResult();
         assertNotNull(archivedHumanTaskInstances);
         final ArchivedHumanTaskInstance archivedHumanTaskInstance = archivedHumanTaskInstances.get(0);
         assertEquals(archivedHumanTaskInstance.getExecutedBy(), william.getId());
