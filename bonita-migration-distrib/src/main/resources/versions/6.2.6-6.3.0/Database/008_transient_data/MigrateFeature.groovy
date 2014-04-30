@@ -26,6 +26,9 @@ sql.eachRow("SELECT * from process_definition", { row ->
     migrateDefinition(tenantId instanceof BigDecimal? tenantId.longValue():tenantId, id instanceof BigDecimal? id.longValue():id, formsVersion)
 
 })
+
+
+
 //delete datamapping of transient data
 MigrationUtil.getTenantsId(dbVendor, sql).each{ 
     sql.executeUpdate("DELETE FROM data_mapping WHERE tenantid = $it AND datainstanceid NOT IN (SELECT id FROM data_instance WHERE tenantid = $it)");
@@ -70,8 +73,12 @@ def migrateDefinition(long tenantId, long id, String formsVersion){
     }else{
         println "no forms.xml for process $processDefinition.name -- $processDefinition.version ($processDefinition.id)"
     }
-
-
+    
+    //delete cached forms.xml in client bonita home
+    def cacheFile = new File(bonitaHome.getAbsolutePath()+"${s}client${s}tenants${s}${tenantId}${s}work${s}forms${s}${processDefinition.name}--${processDefinition.version}")
+    if(cacheFile.exists()){
+        cacheFile.deleteDir()
+    }
 }
 
 
