@@ -124,3 +124,12 @@ CREATE TABLE arch_data_mapping (
 	sourceObjectId NUMERIC(19, 0) NOT NULL,
 	PRIMARY KEY (tenantid, id)
 );
+
+CREATE TABLE token (
+  tenantid NUMERIC(19, 0) NOT NULL,
+  id NUMERIC(19, 0) NOT NULL,
+  processInstanceId NUMERIC(19, 0) NOT NULL,
+  ref_id NUMERIC(19, 0) NOT NULL,
+  parent_ref_id NUMERIC(19, 0) NULL,
+  PRIMARY KEY (tenantid, id)
+);
