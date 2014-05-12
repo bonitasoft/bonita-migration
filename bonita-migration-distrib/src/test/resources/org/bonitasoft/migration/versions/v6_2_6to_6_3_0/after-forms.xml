@@ -5,7 +5,7 @@
     <permissions>process#Pool--1.0</permissions>
     <application-label>
       <expression>
-        <name>Pool</name>
+        <name>Pool &amp; Swim</name>
         <expression-content>Pool</expression-content>
         <expression-type>TYPE_CONSTANT</expression-type>
         <return-type>java.lang.String</return-type>
@@ -21,7 +21,7 @@
           <page id="Pool">
             <page-label>
               <expression>
-                <name>Pool</name>
+                <name>Pool &gt; &lt;</name>
                 <expression-content>Pool</expression-content>
                 <expression-type>TYPE_CONSTANT</expression-type>
                 <return-type>java.lang.String</return-type>

@@ -67,7 +67,7 @@ public class Forms {
         def printer = new XmlNodePrinter(new PrintWriter(writer) ){
                     protected void printSimpleItem(Object value) {
                         if (!preserveWhitespace) printLineBegin();
-                        out.print(InvokerHelper.toString(value));
+                        out.print(InvokerHelper.toString(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;'));
                         if (!preserveWhitespace) printLineEnd();
                     }
                 }

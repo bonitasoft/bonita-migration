@@ -26,7 +26,7 @@
     <documentDefinitions>
       <documentDefinition mimeType="application/octet-stream" name="document1">
         <fileName>Index.groovy</fileName>
-        <description>plop</description>
+        <description>plop &amp; plop</description>
         <file>Index.groovy</file>
       </documentDefinition>
     </documentDefinitions>
@@ -88,7 +88,7 @@ return new DocumentValue("kikoo".getBytes(), "plain/text", "readme.txt")</conten
     <parameters/>
     <actors>
       <actor name="Employee actor">
-        <description>This is an example of actor that is mapped to any ACME users</description>
+        <description>This is an example of actor that &amp; is mapped to any ACME users &gt; &lt;</description>
       </actor>
     </actors>
   </dependencies>
