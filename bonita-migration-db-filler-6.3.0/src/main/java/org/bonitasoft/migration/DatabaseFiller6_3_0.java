@@ -17,8 +17,10 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import javax.naming.Context;
 
@@ -31,10 +33,12 @@ import org.bonitasoft.engine.api.TenantAPIAccessor;
 import org.bonitasoft.engine.bpm.flownode.HumanTaskInstance;
 import org.bonitasoft.engine.bpm.process.ProcessInstance;
 import org.bonitasoft.engine.exception.BonitaException;
+import org.bonitasoft.engine.service.impl.ServiceAccessorFactory;
 import org.bonitasoft.engine.session.APISession;
 import org.bonitasoft.engine.session.PlatformSession;
 import org.bonitasoft.engine.test.APITestUtil;
 import org.bonitasoft.engine.test.ClientEventUtil;
+import org.bonitasoft.engine.work.WorkService;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class DatabaseFiller6_3_0 extends SimpleDatabaseFiller6_0_2 {
@@ -62,6 +66,18 @@ public class DatabaseFiller6_3_0 extends SimpleDatabaseFiller6_0_2 {
         apiTestUtil.stopPlatformAndTenant(platformAPI, true);
         apiTestUtil.logoutPlatform(pSession);
         shutdownWorkService();
+    }
+
+    private void shutdownWorkService() throws Exception {
+        WorkService workService = ServiceAccessorFactory.getInstance().createTenantServiceAccessor(1).getWorkService();
+        Field[] fields = workService.getClass().getDeclaredFields();
+        for (Field field : fields) {
+            if (field.getName().equals("threadPoolExecutor")) {
+                field.setAccessible(true);
+                ThreadPoolExecutor tpe = (ThreadPoolExecutor) field.get(workService);
+                tpe.shutdown();
+            }
+        }
     }
 
     @Override
