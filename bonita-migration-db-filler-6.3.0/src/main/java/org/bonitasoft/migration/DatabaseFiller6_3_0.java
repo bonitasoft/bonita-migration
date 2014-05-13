@@ -24,12 +24,15 @@ import javax.naming.Context;
 
 import org.bonitasoft.engine.api.CommandAPI;
 import org.bonitasoft.engine.api.IdentityAPI;
+import org.bonitasoft.engine.api.PlatformAPI;
+import org.bonitasoft.engine.api.PlatformAPIAccessor;
 import org.bonitasoft.engine.api.ProcessAPI;
 import org.bonitasoft.engine.api.TenantAPIAccessor;
 import org.bonitasoft.engine.bpm.flownode.HumanTaskInstance;
 import org.bonitasoft.engine.bpm.process.ProcessInstance;
 import org.bonitasoft.engine.exception.BonitaException;
 import org.bonitasoft.engine.session.APISession;
+import org.bonitasoft.engine.session.PlatformSession;
 import org.bonitasoft.engine.test.APITestUtil;
 import org.bonitasoft.engine.test.ClientEventUtil;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -49,6 +52,16 @@ public class DatabaseFiller6_3_0 extends SimpleDatabaseFiller6_0_2 {
         System.setProperty(Context.URL_PKG_PREFIXES, "org.bonitasoft.engine.local");
         springContext = new ClassPathXmlApplicationContext("datasource.xml", "jndi-setup.xml");
         new APITestUtil().createInitializeAndStartPlatformWithDefaultTenant(true);
+    }
+
+    @Override
+    public void shutdown() throws Exception {
+        final APITestUtil apiTestUtil = new APITestUtil();
+        final PlatformSession pSession = apiTestUtil.loginPlatform();
+        final PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(pSession);
+        apiTestUtil.stopPlatformAndTenant(platformAPI, true);
+        apiTestUtil.logoutPlatform(pSession);
+        shutdownWorkService();
     }
 
     @Override

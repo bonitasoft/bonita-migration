@@ -374,7 +374,7 @@ public class DatabaseFiller6_0_2 {
         shutdownWorkService();
     }
 
-    private void shutdownWorkService() throws BonitaHomeNotSetException, InstantiationException, IllegalAccessException, ClassNotFoundException, IOException,
+    protected void shutdownWorkService() throws BonitaHomeNotSetException, InstantiationException, IllegalAccessException, ClassNotFoundException, IOException,
             BonitaHomeConfigurationException {
         WorkService workService = ServiceAccessorFactory.getInstance().createPlatformServiceAccessor().getWorkService();
         Field[] fields = workService.getClass().getDeclaredFields();
