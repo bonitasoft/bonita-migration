@@ -61,14 +61,15 @@ public class DatabaseFiller6_3_0 extends SimpleDatabaseFiller6_0_2 {
         System.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.bonitasoft.engine.local.SimpleMemoryContextFactory");
         System.setProperty(Context.URL_PKG_PREFIXES, "org.bonitasoft.engine.local");
         springContext = new ClassPathXmlApplicationContext("datasource.xml", "jndi-setup.xml");
-        APITestUtil.createInitializeAndStartPlatformWithDefaultTenant(true);
+        new APITestUtil().createInitializeAndStartPlatformWithDefaultTenant(true);
     }
 
     @Override
     public Map<String, String> fillDatabase(final int nbProcessesDefinitions, final int nbProcessInstances, final int nbWaitingEvents, final int nbDocuments)
             throws Exception {
         logger.info("Starting to fill the database");
-        final APISession session = APITestUtil.loginDefaultTenant();
+        APITestUtil apiTestUtil = new APITestUtil();
+        final APISession session = apiTestUtil.loginDefaultTenant();
         final Map<String, String> stats = new HashMap<String, String>();
         stats.putAll(fillOrganization(session));
         stats.putAll(fillProcesses(session, nbProcessesDefinitions, nbProcessInstances));
@@ -78,7 +79,7 @@ public class DatabaseFiller6_3_0 extends SimpleDatabaseFiller6_0_2 {
         stats.putAll(fillProsessesWithMessageAndTimer(session));
         stats.putAll(fillOthers(session));
         stats.putAll(fillExtensions(session));
-        APITestUtil.logoutTenant(session);
+        apiTestUtil.logoutTenant(session);
 
         // fillProcessStartedFor has it owns login-logout
         stats.putAll(fillProcessStartedFor());
