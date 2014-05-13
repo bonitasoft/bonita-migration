@@ -118,7 +118,7 @@ public class Forms {
             //input
             def originalType = it.@type
             def Node isExternalNode = it.find{child->child.name() == "is-external" };
-            def external = isExternalNode.text() == "true"
+            def external = isExternalNode != null && isExternalNode.text() == "true"
             def dataName = it.find{child->child.name() == "variable"}.text();
             //migrated values
             def type = "ASSIGNMENT"
