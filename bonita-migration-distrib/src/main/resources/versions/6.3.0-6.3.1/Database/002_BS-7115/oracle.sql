@@ -4,4 +4,4 @@
 
 UPDATE group_ 
 	SET parentPath = NULL
-	WHERE parentPath = " " @@
+	WHERE parentPath = '' @@
