@@ -135,7 +135,9 @@ public class Forms {
                 variableType = "TRANSIENT_DATA"
             }
             //replace the is-external by the variable-type
-            isExternalNode.replaceNode { node -> 'variable-type'(variableType) }
+            if(isExternalNode != null){
+                isExternalNode.replaceNode { node -> 'variable-type'(variableType) }
+            }
             //update the type
             it.@type = type
 
