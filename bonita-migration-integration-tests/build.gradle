@@ -16,16 +16,16 @@ ext{
     sourceversion = System.getProperty("source.version","6.2.2")
     targetversion = System.getProperty("target.version","6.2.3")
     dbvendor = System.getProperty("db.vendor", "postgres")
-    dburl = System.getProperty("db.url","jdbc:postgresql://localhost:5432/migration_bs_8390");
+    dburl = System.getProperty("db.url","jdbc:postgresql://localhost:5432/migration");
     dbuser=System.getProperty("db.user","bonita")
-    dbpassword=System.getProperty("db.password", "bonita")
+    dbpassword=System.getProperty("db.password", "bpm")
     dbdriverClass=System.getProperty("db.driverClass","org.postgresql.Driver")
     bonitahome="${buildDir.path}/home"
     distDir="${buildDir.path}/dist"
     //used for oracle: creates table not the same way
     //used for postgres: give a user able to drop and create databases
     dbRootUser = System.getProperty("db.root.user","bonita")
-    dbRootPassword = System.getProperty("db.root.password","bonita")
+    dbRootPassword = System.getProperty("db.root.password","bpm")
 
     //for postgres
     databaseName = "migration"
