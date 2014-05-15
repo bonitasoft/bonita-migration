@@ -67,7 +67,7 @@ public class Forms {
         def printer = new XmlNodePrinter(new PrintWriter(writer) ){
                     protected void printSimpleItem(Object value) {
                         if (!preserveWhitespace) printLineBegin();
-                        out.print(InvokerHelper.toString(value));
+                        out.print(InvokerHelper.toString(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('\r', '&#13;'));
                         if (!preserveWhitespace) printLineEnd();
                     }
                 }
@@ -114,12 +114,13 @@ public class Forms {
     }
 
     public void updateActions(){
-        formsXml.breadthFirst().findAll{it.name() == "output-operation" || it.name() == "action" }.each { def Node it ->
+        formsXml.breadthFirst().findAll{it.name() == "output-operation" || (it.name() == "action" && it.@type != "EXECUTE_CONNECTOR") }.each { def Node it ->
             //input
             def originalType = it.@type
             def Node isExternalNode = it.find{child->child.name() == "is-external" };
             def external = isExternalNode.text() == "true"
-            def dataName = it.find{child->child.name() == "variable"}.text();
+            def Node variableNode = it.find{child->child.name() == "variable"}
+            def dataName = (variableNode != null)? variableNode.text() : null
             //migrated values
             def type = "ASSIGNMENT"
             def String variableType = "DATA"
@@ -129,7 +130,7 @@ public class Forms {
                 variableType = "SEARCH_INDEX"
             } else if( external ){
                 variableType = "EXTERNAL_DATA"
-            } else if(isDataTransientInContext(it, dataName)){
+            } else if(dataName != null && isDataTransientInContext(it, dataName)){
                 println "A transient data named $dataName is updated by a form action, this is not a good design because you might loose the updated value if the server resart, consider changing the design of your process."
                 variableType = "TRANSIENT_DATA"
             }

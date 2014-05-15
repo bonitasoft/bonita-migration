@@ -44,7 +44,11 @@ public class BoundaryTokensMigration {
             } else {
                 tokenInfo = new TokenInfo(tokenRefId:row.id);
             }
-            insertToken(sql, row.tenantid, row.logicalGroup4, tokenInfo);
+            if(tokenInfo != null){
+                insertToken(sql, row.tenantid, row.logicalGroup4, tokenInfo)
+            }else{
+                println "WARNING : the interrupting boundary event [id:$row.id] is an orphan and has no token information associated to it..."
+            }
         }
         println "$tokenCount tokens were created."
     }

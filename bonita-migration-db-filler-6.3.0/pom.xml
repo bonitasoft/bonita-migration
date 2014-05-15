@@ -10,7 +10,7 @@
 
 
 	<properties>
-		<bonita.version>6.3.0-SNAPSHOT</bonita.version>
+		<bonita.version>6.3.0</bonita.version>
 		<bonita.home>${project.build.directory}/home</bonita.home>
 	</properties>
 
