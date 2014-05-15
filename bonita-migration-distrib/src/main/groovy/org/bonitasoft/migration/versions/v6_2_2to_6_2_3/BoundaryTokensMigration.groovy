@@ -27,9 +27,23 @@ public class BoundaryTokensMigration {
     public migrate(Sql sql) {
         def tokenSequenceId = 10110;
         nextIds = MigrationUtil.getNexIdsForTable(sql, tokenSequenceId);
+        deleteFlowNodeInstanceOrphans(sql);
         insertTokens(sql);
         MigrationUtil.updateNextIdsForTable(sql, tokenSequenceId, nextIds);
         updateTokenRefIds(sql);
+    }
+
+    private deleteFlowNodeInstanceOrphans(Sql sql){
+        println "Deleting orphans flownodes ..."
+        def List flowNodeIdList = sql.rows("""SELECT fi.id, fi.tenantid FROM flownode_instance fi left outer join process_instance pi on fi.logicalGroup4 = pi.id 
+                WHERE pi.id is null""")
+
+        sql.withBatch("delete from flownode_instance where id = ? and tenantid = ?") {stmt ->
+            flowNodeIdList.each { flowNodeIdRow ->
+                println "deleting flownode instance [id:$flowNodeIdRow.id]"
+                stmt.addBatch(flowNodeIdRow.id, flowNodeIdRow.tenantid)
+            }
+        }
     }
 
     private insertTokens(Sql sql) {

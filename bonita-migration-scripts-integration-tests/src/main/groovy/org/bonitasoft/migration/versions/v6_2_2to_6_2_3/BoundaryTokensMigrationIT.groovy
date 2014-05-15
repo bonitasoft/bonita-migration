@@ -26,24 +26,14 @@ import org.dbunit.dataset.xml.FlatXmlDataSet
  * @author Elias Ricken de Medeiros
  *
  */
-class BoundaryTokensMigrationTest extends GroovyTestCase {
+class BoundaryTokensMigrationIT extends GroovyTestCase {
 
-    final static DB_CONFIG
-    final static DB_DRIVER = 'org.h2.Driver'
-    final static BONITA_HOME_PATH = 'src/test/resources/bonita'
-    final static CREATE_SEQUENCE_TABLE
-    final static CREATE_FLOW_NODE_INSTANCE_TABLE
-    final static CREATE_TOKEN_TABLE
+    final static String DBVENDOR
+    final static CREATE_TABLE_6_2_2
 
     static{
-        CREATE_SEQUENCE_TABLE = new File(BoundaryTokensMigrationTest.class.getResource("/sql/create-sequence-table.sql").getPath())
-        CREATE_FLOW_NODE_INSTANCE_TABLE = new File(BoundaryTokensMigrationTest.class.getResource("/sql/create-flow-node-instance-table.sql").getPath())
-        CREATE_TOKEN_TABLE = new File(BoundaryTokensMigrationTest.class.getResource("/sql/create-token-table.sql").getPath())
-        DB_CONFIG = [
-            'jdbc:h2:'+new File(BoundaryTokensMigrationTest.class.getResource("/sql/create-sequence-table.sql").getPath()).getAbsoluteFile().getParentFile().getParent()+'/db/sample',
-            'sa',
-            ''
-        ];
+        DBVENDOR = System.getProperty("db.vendor");
+        CREATE_TABLE_6_2_2 = BoundaryTokensMigrationIT.class.getClassLoader().getResource("sql/v6_2_2/${DBVENDOR}-createTables.sql");
     }
 
     JdbcDatabaseTester tester
@@ -52,11 +42,18 @@ class BoundaryTokensMigrationTest extends GroovyTestCase {
 
     @Override
     void setUp() {
-        sql = Sql.newInstance(*DB_CONFIG, DB_DRIVER);
-        sql.execute(CREATE_SEQUENCE_TABLE.text);
-        sql.execute(CREATE_FLOW_NODE_INSTANCE_TABLE.text);
-        sql.execute(CREATE_TOKEN_TABLE.text);
-        tester = new JdbcDatabaseTester(DB_DRIVER, *DB_CONFIG)
+        String driverClass =  System.getProperty("jdbc.driverClass")
+
+        def config = [
+            System.getProperty("jdbc.url"),
+            System.getProperty("jdbc.user"),
+            System.getProperty("jdbc.password")
+        ]
+        sql = Sql.newInstance(*config, driverClass);
+        tester = new JdbcDatabaseTester(driverClass, *config)
+
+        println ("setUp: create tables")
+        sql.execute(CREATE_TABLE_6_2_2.text);
 
         tester.dataSet = dataSet {
             sequence tenantid:1, id:10110, nextid:200
@@ -90,6 +87,14 @@ class BoundaryTokensMigrationTest extends GroovyTestCase {
             rootContainerId:5, parentContainerId:5 , name:"step1", prev_state_id:0, terminal:false, actorId:0, stateCategory:"NORMAL", logicalGroup1:12345,
             logicalGroup2:5, tokenCount:0
 
+            //process instance
+            process_instance tenantid: 1, id: 2, name: "process2", processDefinitionId : 1,description: "description", startDate: 0, startedBy: 1,
+            startedByDelegate : 0, endDate : 0, stateId :1, stateCategory :"test", lastUpdate : 0
+            process_instance tenantid: 1, id: 5, name: "process4", processDefinitionId : 1,description: "description", startDate: 0, startedBy: 1,
+            startedByDelegate : 0, endDate : 0, stateId :1, stateCategory :"test", lastUpdate : 0
+            process_instance tenantid: 1, id: 6, name: "process5", processDefinitionId : 1,description: "description", startDate: 0, startedBy: 1,
+            startedByDelegate : 0, endDate : 0, stateId :1, stateCategory :"test", lastUpdate : 0
+
             //tokens
             token tenantid:1, id:70, processInstanceId:2, ref_id:500, parent_ref_id:900
             token tenantid:1, id:71, processInstanceId:2, ref_id:501, parent_ref_id:900
@@ -106,6 +111,7 @@ class BoundaryTokensMigrationTest extends GroovyTestCase {
         sql.execute("drop table sequence")
         sql.execute("drop table flownode_instance")
         sql.execute("drop table token")
+        sql.execute("drop table process_instance")
     }
 
     void test_Migration_can_migrate_a_database() {
@@ -134,7 +140,6 @@ class BoundaryTokensMigrationTest extends GroovyTestCase {
             flownode_instance tenantid:1, id:10, stateId:33, token_ref_id:500
             flownode_instance tenantid:1, id:14, stateId:4, token_ref_id:501
             flownode_instance tenantid:1, id:15, stateId:10, token_ref_id:501
-            flownode_instance tenantid:1, id:16, stateId:33, token_ref_id:666
             flownode_instance tenantid:2, id:49, stateId:4, token_ref_id:800
             flownode_instance tenantid:2, id:50, stateId:65, token_ref_id:800
             flownode_instance tenantid:2, id:51, stateId:2, token_ref_id:51
