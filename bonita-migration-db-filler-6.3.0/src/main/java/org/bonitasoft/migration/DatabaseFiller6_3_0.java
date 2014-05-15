@@ -13,20 +13,6 @@
  **/
 package org.bonitasoft.migration;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.naming.Context;
-
-import org.bonitasoft.engine.api.PlatformAPI;
-import org.bonitasoft.engine.api.PlatformAPIAccessor;
-import org.bonitasoft.engine.exception.BonitaException;
-import org.bonitasoft.engine.session.APISession;
-import org.bonitasoft.engine.session.PlatformSession;
-import org.bonitasoft.engine.test.APITestUtil;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
