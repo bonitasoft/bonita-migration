@@ -19,6 +19,7 @@
 			<groupId>org.codehaus.groovy</groupId>
 			<artifactId>groovy-all</artifactId>
 		</dependency>
+
 		<!-- Tests -->
 		<dependency>
 			<groupId>junit</groupId>
