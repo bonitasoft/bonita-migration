@@ -1,30 +1,3 @@
-CREATE TABLE process_instance (
-  tenantid NUMBER(19, 0) NOT NULL,
-  id NUMBER(19, 0) NOT NULL,
-  name VARCHAR2(75) NOT NULL,
-  processDefinitionId NUMBER(19, 0) NOT NULL,
-  description VARCHAR2(255),
-  startDate NUMBER(19, 0) NOT NULL,
-  startedBy NUMBER(19, 0) NOT NULL,
-  startedByDelegate NUMBER(19, 0) NOT NULL,
-  endDate NUMBER(19, 0) NOT NULL,
-  stateId INT NOT NULL,
-  stateCategory VARCHAR2(50) NOT NULL,
-  lastUpdate NUMBER(19, 0) NOT NULL,
-  containerId NUMBER(19, 0),
-  rootProcessInstanceId NUMBER(19, 0),
-  callerId NUMBER(19, 0),
-  callerType VARCHAR2(50),
-  interruptingEventId NUMBER(19, 0),
-  migration_plan NUMBER(19, 0),
-  stringIndex1 VARCHAR2(50),
-  stringIndex2 VARCHAR2(50),
-  stringIndex3 VARCHAR2(50),
-  stringIndex4 VARCHAR2(50),
-  stringIndex5 VARCHAR2(50),
-  PRIMARY KEY (tenantid, id)
-);
-
 CREATE TABLE token (
   tenantid NUMBER(19, 0) NOT NULL,
   id NUMBER(19, 0) NOT NULL,

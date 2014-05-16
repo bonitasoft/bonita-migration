@@ -27,29 +27,15 @@ public class BoundaryTokensMigration {
     public migrate(Sql sql) {
         def tokenSequenceId = 10110;
         nextIds = MigrationUtil.getNexIdsForTable(sql, tokenSequenceId);
-        deleteFlowNodeInstanceOrphans(sql);
         insertTokens(sql);
         MigrationUtil.updateNextIdsForTable(sql, tokenSequenceId, nextIds);
         updateTokenRefIds(sql);
     }
 
-    private deleteFlowNodeInstanceOrphans(Sql sql){
-        println "Deleting orphans flownodes ..."
-        def List flowNodeIdList = sql.rows("""SELECT fi.id, fi.tenantid FROM flownode_instance fi left outer join process_instance pi on fi.logicalGroup4 = pi.id 
-                WHERE pi.id is null""")
-
-        sql.withBatch("delete from flownode_instance where id = ? and tenantid = ?") {stmt ->
-            flowNodeIdList.each { flowNodeIdRow ->
-                println "deleting flownode instance [id:$flowNodeIdRow.id]"
-                stmt.addBatch(flowNodeIdRow.id, flowNodeIdRow.tenantid)
-            }
-        }
-    }
-
     private insertTokens(Sql sql) {
         println "Creating tokens for boundary events..."
         def int tokenCount = 0;
-        sql.eachRow("SELECT * FROM flownode_instance WHERE kind = 'boundaryEvent' AND stateId IN (33, 10, 65)") { row ->
+        sql.eachRow("SELECT * FROM flownode_instance WHERE kind = 'boundaryEvent' AND stateId IN (33, 10, 65) and deleted = false") { row ->
             tokenCount++;
             def TokenInfo tokenInfo
             def boolean interrupting = row.interrupting;
@@ -58,11 +44,7 @@ public class BoundaryTokensMigration {
             } else {
                 tokenInfo = new TokenInfo(tokenRefId:row.id);
             }
-            if(tokenInfo != null){
-                insertToken(sql, row.tenantid, row.logicalGroup4, tokenInfo)
-            }else{
-                println "WARNING : the interrupting boundary event [id:$row.id] is an orphan and has no token information associated to it..."
-            }
+            insertToken(sql, row.tenantid, row.logicalGroup4, tokenInfo)
         }
         println "$tokenCount tokens were created."
     }

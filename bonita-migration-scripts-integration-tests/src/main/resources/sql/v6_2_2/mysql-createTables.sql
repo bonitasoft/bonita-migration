@@ -1,30 +1,3 @@
-CREATE TABLE process_instance (
-  tenantid BIGINT NOT NULL,
-  id BIGINT NOT NULL,
-  name VARCHAR(75) NOT NULL,
-  processDefinitionId BIGINT NOT NULL,
-  description VARCHAR(255),
-  startDate BIGINT NOT NULL,
-  startedBy BIGINT NOT NULL,
-  startedByDelegate BIGINT NOT NULL,
-  endDate BIGINT NOT NULL,
-  stateId INT NOT NULL,
-  stateCategory VARCHAR(50) NOT NULL,
-  lastUpdate BIGINT NOT NULL,
-  containerId BIGINT,
-  rootProcessInstanceId BIGINT,
-  callerId BIGINT,
-  callerType VARCHAR(50),
-  interruptingEventId BIGINT,
-  migration_plan BIGINT,
-  stringIndex1 VARCHAR(50),
-  stringIndex2 VARCHAR(50),
-  stringIndex3 VARCHAR(50),
-  stringIndex4 VARCHAR(50),
-  stringIndex5 VARCHAR(50),
-  PRIMARY KEY (tenantid, id)
-) ENGINE = INNODB;
-
 CREATE TABLE token (
   tenantid BIGINT NOT NULL,
   id BIGINT NOT NULL,
