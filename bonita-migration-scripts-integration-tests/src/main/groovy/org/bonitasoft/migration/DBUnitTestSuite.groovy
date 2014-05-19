@@ -15,8 +15,9 @@ package org.bonitasoft.migration
 
 import junit.framework.TestSuite
 
-import org.bonitasoft.migration.versions.v6_2_6_to_6_3_0.UpdateDataMappingContraintIT
+import org.bonitasoft.migration.versions.v6_2_2to_6_2_3.BoundaryTokensMigrationIT
 import org.bonitasoft.migration.versions.v6_2_6_to_6_3_0.IndexExistsCheckerIT
+import org.bonitasoft.migration.versions.v6_2_6_to_6_3_0.UpdateDataMappingContraintIT
 import org.junit.runner.JUnitCore
 
 
@@ -35,6 +36,7 @@ class DBUnitTestSuite extends TestSuite {
         GroovyTestSuite gsuite = new GroovyTestSuite();
         suite.addTestSuite(UpdateDataMappingContraintIT.class);
         suite.addTestSuite(IndexExistsCheckerIT.class);
+        suite.addTestSuite(BoundaryTokensMigrationIT.class);
         return suite;
     }
 }
