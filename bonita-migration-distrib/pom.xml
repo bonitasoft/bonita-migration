@@ -146,6 +146,7 @@
 									<groupId>org.bonitasoft.console</groupId>
 									<artifactId>bonita-home</artifactId>
 									<version>${current.bonita.version}</version>
+									<classifier>full</classifier>
 									<type>zip</type>
 									<overWrite>true</overWrite>
 								</artifactItem>
