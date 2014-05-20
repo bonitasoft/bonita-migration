@@ -5,7 +5,7 @@ CREATE TABLE token (
   ref_id NUMBER(19, 0) NOT NULL,
   parent_ref_id NUMBER(19, 0) NULL,
   PRIMARY KEY (tenantid, id)
-);
+)
 @@
 CREATE TABLE flownode_instance (
   tenantid NUMBER(19, 0) NOT NULL,
@@ -59,16 +59,16 @@ CREATE TABLE flownode_instance (
   tokenCount INT NOT NULL,
   token_ref_id NUMBER(19, 0) NULL,
   PRIMARY KEY (tenantid, id)
-);
+)
 @@
 
-CREATE INDEX idx_fni_rootcontid ON flownode_instance (rootContainerId);
+CREATE INDEX idx_fni_rootcontid ON flownode_instance (rootContainerId)
 @@
-CREATE INDEX idx_fni_loggroup4 ON flownode_instance (logicalGroup4);
+CREATE INDEX idx_fni_loggroup4 ON flownode_instance (logicalGroup4)
 @@
 CREATE TABLE sequence (
   tenantid NUMBER(19, 0) NOT NULL,
   id NUMBER(19, 0) NOT NULL,
   nextid NUMBER(19, 0) NOT NULL,
   PRIMARY KEY (tenantid, id)
-);
+)
