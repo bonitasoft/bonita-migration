@@ -7,7 +7,7 @@ CREATE TABLE token (
   PRIMARY KEY (tenantid, id)
 )
 GO
-
+@@
 CREATE TABLE flownode_instance (
   tenantid NUMERIC(19, 0) NOT NULL,
   id NUMERIC(19, 0) NOT NULL,
@@ -62,12 +62,13 @@ CREATE TABLE flownode_instance (
   PRIMARY KEY (tenantid, id)
 )
 GO
-
+@@
 CREATE INDEX idx_fni_rootcontid ON flownode_instance (rootContainerId)
 GO
+@@
 CREATE INDEX idx_fni_loggroup4 ON flownode_instance (logicalGroup4)
 GO
-
+@@
 CREATE TABLE sequence (
   tenantid NUMERIC(19, 0) NOT NULL,
   id NUMERIC(19, 0) NOT NULL,
