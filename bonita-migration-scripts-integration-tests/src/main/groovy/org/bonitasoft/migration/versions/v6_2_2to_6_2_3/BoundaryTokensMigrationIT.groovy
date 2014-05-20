@@ -52,8 +52,12 @@ class BoundaryTokensMigrationIT extends GroovyTestCase {
         sql = Sql.newInstance(*config, driverClass);
         tester = new JdbcDatabaseTester(driverClass, *config)
 
+        def int i = 0
+        CREATE_TABLE_6_2_2.text.split("@@").each({stmt ->
+            println "executing stmt ${i++} for ${DBVENDOR}"
+            sql.execute(stmt)
+        })
         println ("setUp: create tables")
-        sql.execute(CREATE_TABLE_6_2_2.text);
 
         tester.dataSet = dataSet {
             sequence tenantid:1, id:10110, nextid:200
