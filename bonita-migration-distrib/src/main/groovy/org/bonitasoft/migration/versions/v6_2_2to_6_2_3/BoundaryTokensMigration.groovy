@@ -35,7 +35,7 @@ public class BoundaryTokensMigration {
     private insertTokens(Sql sql) {
         println "Creating tokens for boundary events..."
         def int tokenCount = 0;
-        sql.eachRow("SELECT * FROM flownode_instance WHERE kind = 'boundaryEvent' AND stateId IN (33, 10, 65)") { row ->
+        sql.eachRow("SELECT * FROM flownode_instance WHERE kind = 'boundaryEvent' AND stateId IN (33, 10, 65) and deleted = ?", [false]) { row ->
             tokenCount++;
             def TokenInfo tokenInfo
             def boolean interrupting = row.interrupting;
@@ -44,11 +44,7 @@ public class BoundaryTokensMigration {
             } else {
                 tokenInfo = new TokenInfo(tokenRefId:row.id);
             }
-            if(tokenInfo != null){
-                insertToken(sql, row.tenantid, row.logicalGroup4, tokenInfo)
-            }else{
-                println "WARNING : the interrupting boundary event [id:$row.id] is an orphan and has no token information associated to it..."
-            }
+            insertToken(sql, row.tenantid, row.logicalGroup4, tokenInfo)
         }
         println "$tokenCount tokens were created."
     }
