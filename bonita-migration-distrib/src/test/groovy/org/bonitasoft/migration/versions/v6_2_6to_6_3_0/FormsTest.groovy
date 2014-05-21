@@ -53,6 +53,7 @@ class FormsTest {
         //then
         assertThat(forms.formsXml.depthFirst().findAll{it.name() == "variable-type" && it.value() == "DOCUMENT" }.size()).isEqualTo(2)
         assertThat(forms.formsXml.depthFirst().findAll{it.name() == "action" && it.@type == "DOCUMENT_CREATE_UPDATE" }.size()).isEqualTo(0)
+        assertThat(forms.formsXml.depthFirst().findAll{it.name() == "action" && it.@type == "EXECUTE_CONNECTOR" }.size()).isEqualTo(1)
         assertThat(forms.formsXml.depthFirst().findAll{it.name() == "variable-type" && it.value() == "DATA" }.size()).isEqualTo(3)
         assertThat(forms.formsXml.depthFirst().findAll{it.name() == "variable-type" && it.value() == "TRANSIENT_DATA" }.size()).isEqualTo(1)
         assertThat(forms.formsXml.depthFirst().findAll{it.name() == "is-external" }.size()).isEqualTo(0)

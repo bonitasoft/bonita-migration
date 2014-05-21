@@ -37,10 +37,11 @@ public class ProcessDefinition {
 
         def writer = new StringWriter()
         writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
+
         def printer = new XmlNodePrinter(new PrintWriter(writer) ){
                     protected void printSimpleItem(Object value) {
                         if (!preserveWhitespace) printLineBegin();
-                        out.print(InvokerHelper.toString(value));
+                        out.print(InvokerHelper.toString(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;'));
                         if (!preserveWhitespace) printLineEnd();
                     }
                 }
@@ -48,6 +49,7 @@ public class ProcessDefinition {
         printer.setExpandEmptyElements(false)
         printer.print(processDefinitionXml)
         def result = writer.toString()
+
         return result;
     }
 

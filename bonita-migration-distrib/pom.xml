@@ -1,12 +1,11 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>bonita-migration-distrib</artifactId>
 
 	<parent>
 		<groupId>org.bonitasoft.migration</groupId>
 		<artifactId>bonita-migration</artifactId>
-		<version>1.6.0-SNAPSHOT</version>
+		<version>1.6.1-SNAPSHOT</version>
 	</parent>
 
 	<properties>
@@ -147,6 +146,7 @@
 									<groupId>org.bonitasoft.console</groupId>
 									<artifactId>bonita-home</artifactId>
 									<version>${current.bonita.version}</version>
+									<classifier>full</classifier>
 									<type>zip</type>
 									<overWrite>true</overWrite>
 								</artifactItem>
