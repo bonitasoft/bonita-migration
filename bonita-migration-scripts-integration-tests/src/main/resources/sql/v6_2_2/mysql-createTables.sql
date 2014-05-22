@@ -1,3 +1,12 @@
+CREATE TABLE token (
+  tenantid BIGINT NOT NULL,
+  id BIGINT NOT NULL,
+  processInstanceId BIGINT NOT NULL,
+  ref_id BIGINT NOT NULL,
+  parent_ref_id BIGINT NULL,
+  PRIMARY KEY (tenantid, id)
+) ENGINE = INNODB;
+
 CREATE TABLE flownode_instance (
   tenantid BIGINT NOT NULL,
   id BIGINT NOT NULL,
@@ -50,4 +59,14 @@ CREATE TABLE flownode_instance (
   tokenCount INT NOT NULL,
   token_ref_id BIGINT NULL,
   PRIMARY KEY (tenantid, id)
-);
+) ENGINE = INNODB;
+
+CREATE INDEX idx_fni_rootcontid ON flownode_instance (rootContainerId);
+CREATE INDEX idx_fni_loggroup4 ON flownode_instance (logicalGroup4);
+
+CREATE TABLE sequence (
+  tenantid BIGINT NOT NULL,
+  id BIGINT NOT NULL,
+  nextid BIGINT NOT NULL,
+  PRIMARY KEY (tenantid, id)
+) ENGINE = INNODB;

@@ -26,24 +26,14 @@ import org.dbunit.dataset.xml.FlatXmlDataSet
  * @author Elias Ricken de Medeiros
  *
  */
-class BoundaryTokensMigrationTest extends GroovyTestCase {
+class BoundaryTokensMigrationIT extends GroovyTestCase {
 
-    final static DB_CONFIG
-    final static DB_DRIVER = 'org.h2.Driver'
-    final static BONITA_HOME_PATH = 'src/test/resources/bonita'
-    final static CREATE_SEQUENCE_TABLE
-    final static CREATE_FLOW_NODE_INSTANCE_TABLE
-    final static CREATE_TOKEN_TABLE
+    final static String DBVENDOR
+    final static CREATE_TABLE_6_2_2
 
     static{
-        CREATE_SEQUENCE_TABLE = new File(BoundaryTokensMigrationTest.class.getResource("/sql/create-sequence-table.sql").getPath())
-        CREATE_FLOW_NODE_INSTANCE_TABLE = new File(BoundaryTokensMigrationTest.class.getResource("/sql/create-flow-node-instance-table.sql").getPath())
-        CREATE_TOKEN_TABLE = new File(BoundaryTokensMigrationTest.class.getResource("/sql/create-token-table.sql").getPath())
-        DB_CONFIG = [
-            'jdbc:h2:'+new File(BoundaryTokensMigrationTest.class.getResource("/sql/create-sequence-table.sql").getPath()).getAbsoluteFile().getParentFile().getParent()+'/db/sample',
-            'sa',
-            ''
-        ];
+        DBVENDOR = System.getProperty("db.vendor");
+        CREATE_TABLE_6_2_2 = BoundaryTokensMigrationIT.class.getClassLoader().getResource("sql/v6_2_2/${DBVENDOR}-createTables.sql");
     }
 
     JdbcDatabaseTester tester
@@ -52,42 +42,53 @@ class BoundaryTokensMigrationTest extends GroovyTestCase {
 
     @Override
     void setUp() {
-        sql = Sql.newInstance(*DB_CONFIG, DB_DRIVER);
-        sql.execute(CREATE_SEQUENCE_TABLE.text);
-        sql.execute(CREATE_FLOW_NODE_INSTANCE_TABLE.text);
-        sql.execute(CREATE_TOKEN_TABLE.text);
-        tester = new JdbcDatabaseTester(DB_DRIVER, *DB_CONFIG)
+        String driverClass =  System.getProperty("jdbc.driverClass")
+
+        def config = [
+            System.getProperty("jdbc.url"),
+            System.getProperty("jdbc.user"),
+            System.getProperty("jdbc.password")
+        ]
+        sql = Sql.newInstance(*config, driverClass);
+        tester = new JdbcDatabaseTester(driverClass, *config)
+
+        def int i = 0
+        CREATE_TABLE_6_2_2.text.split("@@").each({stmt ->
+            println "executing stmt ${i++} for ${DBVENDOR}"
+            sql.execute(stmt)
+        })
+        println ("setUp: create tables")
 
         tester.dataSet = dataSet {
             sequence tenantid:1, id:10110, nextid:200
             sequence tenantid:2, id:10110, nextid:100
 
             //boundary
-            flownode_instance tenantid:1, id:10, kind:"boundaryEvent", stateId:33, logicalGroup4:2, interrupting:true, activityInstanceId:9, token_ref_id:500, flownodeDefinitionId: 1234,
-            rootContainerId:1, parentContainerId:2 , name:"go", prev_state_id:0, terminal:true, actorId:0, stateCategory:"NORMAL", logicalGroup1:12345,
-            logicalGroup2:1, tokenCount:0
-            flownode_instance tenantid:1, id:15, kind:"boundaryEvent", stateId:10, logicalGroup4:2, interrupting:true, activityInstanceId:14, token_ref_id:501, flownodeDefinitionId: 1234,
-            rootContainerId:1, parentContainerId:2 , name:"go", prev_state_id:0, terminal:false, actorId:0, stateCategory:"NORMAL", logicalGroup1:12345,
-            logicalGroup2:1, tokenCount:0
-            flownode_instance tenantid:1, id:16, kind:"boundaryEvent", stateId:33, logicalGroup4:3, interrupting:true, activityInstanceId:14, token_ref_id:666, flownodeDefinitionId: 1234,
-            rootContainerId:1, parentContainerId:2 , name:"go", prev_state_id:0, terminal:true, actorId:0, stateCategory:"NORMAL", logicalGroup1:12345,
-            logicalGroup2:1, tokenCount:0
-            flownode_instance tenantid:2, id:50, kind:"boundaryEvent", stateId:65, logicalGroup4:5, interrupting:false, activityInstanceId:49, token_ref_id:800, flownodeDefinitionId: 1234,
-            rootContainerId:5, parentContainerId:5 , name:"go", prev_state_id:0, terminal:false, actorId:0, stateCategory:"NORMAL", logicalGroup1:12345,
-            logicalGroup2:1, tokenCount:0
-            flownode_instance tenantid:2, id:51, kind:"boundaryEvent", stateId:2, logicalGroup4:6, interrupting:false, activityInstanceId:49, token_ref_id:700, flownodeDefinitionId: 1234,
-            rootContainerId:6, parentContainerId:6 , name:"go", prev_state_id:0, terminal:false, actorId:0, stateCategory:"NORMAL", logicalGroup1:12345,
-            logicalGroup2:1, tokenCount:0
+            flownode_instance tenantid:1, id:10, kind:"boundaryEvent", stateId:33, logicalGroup4:2, interrupting:1, activityInstanceId:9, token_ref_id:500, flownodeDefinitionId: 1234,
+            rootContainerId:1, parentContainerId:2 , name:"go", prev_state_id:0, terminal:1, actorId:0, stateCategory:"NORMAL", logicalGroup1:12345,
+            logicalGroup2:1, tokenCount:0, deleted: 0
+            flownode_instance tenantid:1, id:15, kind:"boundaryEvent", stateId:10, logicalGroup4:2, interrupting:1, activityInstanceId:14, token_ref_id:501, flownodeDefinitionId: 1234,
+            rootContainerId:1, parentContainerId:2 , name:"go", prev_state_id:0, terminal:0, actorId:0, stateCategory:"NORMAL", logicalGroup1:12345,
+            logicalGroup2:1, tokenCount:0, deleted: 0
+            flownode_instance tenantid:1, id:16, kind:"boundaryEvent", stateId:33, logicalGroup4:3, interrupting:1, activityInstanceId:14, token_ref_id:666, flownodeDefinitionId: 1234,
+            rootContainerId:1, parentContainerId:2 , name:"go", prev_state_id:0, terminal:1, actorId:0, stateCategory:"NORMAL", logicalGroup1:12345,
+            logicalGroup2:1, tokenCount:0, deleted: 1
+            flownode_instance tenantid:2, id:50, kind:"boundaryEvent", stateId:65, logicalGroup4:5, interrupting:0, activityInstanceId:49, token_ref_id:800, flownodeDefinitionId: 1234,
+            rootContainerId:5, parentContainerId:5 , name:"go", prev_state_id:0, terminal:0, actorId:0, stateCategory:"NORMAL", logicalGroup1:12345,
+            logicalGroup2:1, tokenCount:0, deleted: 0
+            flownode_instance tenantid:2, id:51, kind:"boundaryEvent", stateId:2, logicalGroup4:6, interrupting:0, activityInstanceId:49, token_ref_id:700, flownodeDefinitionId: 1234,
+            rootContainerId:6, parentContainerId:6 , name:"go", prev_state_id:0, terminal:0, actorId:0, stateCategory:"NORMAL", logicalGroup1:12345,
+            logicalGroup2:1, tokenCount:0, deleted: 0
 
             //related activities
-            flownode_instance tenantid:1, id:9, kind:"user", stateId:4, logicalGroup4:2, interrupting:false, token_ref_id:500, flownodeDefinitionId: 9821,
-            rootContainerId:1, parentContainerId:2 , name:"step1", prev_state_id:0, terminal:false, actorId:0, stateCategory:"NORMAL", logicalGroup1:12345,
+            flownode_instance tenantid:1, id:9, kind:"user", stateId:4, logicalGroup4:2, interrupting:0, token_ref_id:500, flownodeDefinitionId: 9821,
+            rootContainerId:1, parentContainerId:2 , name:"step1", prev_state_id:0, terminal:0, actorId:0, stateCategory:"NORMAL", logicalGroup1:12345,
             logicalGroup2:1, tokenCount:0
-            flownode_instance tenantid:1, id:14, kind:"user", stateId:4, logicalGroup4:2, interrupting:false, token_ref_id:501, flownodeDefinitionId: 9821,
-            rootContainerId:1, parentContainerId:2 , name:"step1", prev_state_id:0, terminal:false, actorId:0, stateCategory:"NORMAL", logicalGroup1:12345,
+            flownode_instance tenantid:1, id:14, kind:"user", stateId:4, logicalGroup4:2, interrupting:0, token_ref_id:501, flownodeDefinitionId: 9821,
+            rootContainerId:1, parentContainerId:2 , name:"step1", prev_state_id:0, terminal:0, actorId:0, stateCategory:"NORMAL", logicalGroup1:12345,
             logicalGroup2:1, tokenCount:0
-            flownode_instance tenantid:2, id:49, kind:"user", stateId:4, logicalGroup4:5, interrupting:false, token_ref_id:800, flownodeDefinitionId: 9821,
-            rootContainerId:5, parentContainerId:5 , name:"step1", prev_state_id:0, terminal:false, actorId:0, stateCategory:"NORMAL", logicalGroup1:12345,
+            flownode_instance tenantid:2, id:49, kind:"user", stateId:4, logicalGroup4:5, interrupting:0, token_ref_id:800, flownodeDefinitionId: 9821,
+            rootContainerId:5, parentContainerId:5 , name:"step1", prev_state_id:0, terminal:0, actorId:0, stateCategory:"NORMAL", logicalGroup1:12345,
             logicalGroup2:5, tokenCount:0
 
             //tokens
