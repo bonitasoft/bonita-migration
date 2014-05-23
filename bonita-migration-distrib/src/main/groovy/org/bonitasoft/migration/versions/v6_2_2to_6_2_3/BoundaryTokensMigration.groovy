@@ -35,7 +35,7 @@ public class BoundaryTokensMigration {
     private insertTokens(Sql sql) {
         println "Creating tokens for boundary events..."
         def int tokenCount = 0;
-        sql.eachRow("SELECT * FROM flownode_instance WHERE kind = 'boundaryEvent' AND stateId IN (33, 10, 65) and deleted = false") { row ->
+        sql.eachRow("SELECT * FROM flownode_instance WHERE kind = 'boundaryEvent' AND stateId IN (33, 10, 65) and deleted = ?", [false]) { row ->
             tokenCount++;
             def TokenInfo tokenInfo
             def boolean interrupting = row.interrupting;
