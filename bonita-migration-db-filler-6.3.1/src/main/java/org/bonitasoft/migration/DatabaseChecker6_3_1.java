@@ -14,6 +14,7 @@
  */
 package org.bonitasoft.migration;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -39,6 +40,7 @@ import org.bonitasoft.engine.profile.Profile;
 import org.bonitasoft.engine.profile.ProfileEntry;
 import org.bonitasoft.engine.search.Order;
 import org.bonitasoft.engine.search.SearchOptionsBuilder;
+import org.bonitasoft.engine.search.SearchResult;
 import org.bonitasoft.engine.session.APISession;
 import org.bonitasoft.engine.session.PlatformSession;
 import org.bonitasoft.engine.test.APITestUtil;
@@ -60,6 +62,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @author Celine Souchet
  * 
  */
+
 public class DatabaseChecker6_3_1 {
 
     protected static ProcessAPI processAPI;
@@ -98,6 +101,22 @@ public class DatabaseChecker6_3_1 {
         commandAPI = TenantAPIAccessor.getCommandAPI(session);
     }
 
+    private static void setupSpringContext() {
+        System.setProperty("sysprop.bonita.db.vendor", System.getProperty("sysprop.bonita.db.vendor", "h2"));
+
+        // Force these system properties
+        System.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.bonitasoft.engine.local.SimpleMemoryContextFactory");
+        System.setProperty(Context.URL_PKG_PREFIXES, "org.bonitasoft.engine.local");
+
+        springContext = new ClassPathXmlApplicationContext("datasource.xml", "jndi-setup.xml");
+    }
+
+    @Test
+    public void check_engine_works() throws Exception {
+        final SearchResult<Profile> searchProfiles = profileAPI.searchProfiles(new SearchOptionsBuilder(0, 10).done());
+        assertThat(searchProfiles.getResult()).isNotEmpty();
+    }
+
     @AfterClass
     public static void teardown() throws BonitaException {
         final APITestUtil apiTestUtil = new APITestUtil();
@@ -107,16 +126,6 @@ public class DatabaseChecker6_3_1 {
         apiTestUtil.stopPlatformAndTenant(platformAPI, false);
         apiTestUtil.logoutPlatform(pSession);
         springContext.close();
-    }
-
-    private static void setupSpringContext() {
-        System.setProperty("sysprop.bonita.db.vendor", System.getProperty("sysprop.bonita.db.vendor", "h2"));
-
-        // Force these system properties
-        System.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.bonitasoft.engine.local.SimpleMemoryContextFactory");
-        System.setProperty(Context.URL_PKG_PREFIXES, "org.bonitasoft.engine.local");
-
-        springContext = new ClassPathXmlApplicationContext("datasource.xml", "jndi-setup.xml");
     }
 
     @Test
@@ -174,7 +183,6 @@ public class DatabaseChecker6_3_1 {
         assertNotNull(profile.getCreationDate());
         assertNotEquals(0, profile.getCreationDate());
         assertEquals(profileElement.elementText("description"), profile.getDescription());
-        assertEquals(profileElement.elementText("iconPath"), profile.getIconPath());
         assertNotNull(profile.getLastUpdateDate());
         assertNotEquals(0, profile.getLastUpdateDate());
         assertNotNull(profile.getLastUpdatedBy());
