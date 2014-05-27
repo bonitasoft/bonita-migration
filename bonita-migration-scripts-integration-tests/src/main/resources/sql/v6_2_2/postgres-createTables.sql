@@ -6,7 +6,7 @@ CREATE TABLE token (
   parent_ref_id INT8 NULL,
   PRIMARY KEY (tenantid, id)
 );
-
+@@
 CREATE TABLE flownode_instance (
   tenantid INT8 NOT NULL,
   id INT8 NOT NULL,
@@ -60,10 +60,10 @@ CREATE TABLE flownode_instance (
   token_ref_id INT8 NULL,
   PRIMARY KEY (tenantid, id)
 );
-
+@@
 CREATE INDEX idx_fni_rootcontid ON flownode_instance (rootContainerId);
 CREATE INDEX idx_fni_loggroup4 ON flownode_instance (logicalGroup4);
-
+@@
 CREATE TABLE sequence (
   tenantid INT8 NOT NULL,
   id INT8 NOT NULL,
