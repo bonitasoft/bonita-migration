@@ -5,7 +5,7 @@ apply plugin: 'eclipse'
 apply plugin: 'maven'
 
 group = 'org.bonitasoft.migration'
-version = '1.6.1-SNAPSHOT'
+version = '1.7.1-SNAPSHOT'
 
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
@@ -13,8 +13,8 @@ targetCompatibility = 1.6
 
 
 ext{
-    sourceversion = System.getProperty("source.version","6.0.2")
-    targetversion = System.getProperty("target.version","6.2.0")
+    sourceversion = System.getProperty("source.version","6.3.0")
+    targetversion = System.getProperty("target.version","6.3.1")
     dbvendor = System.getProperty("db.vendor", "postgres")
     dburl = System.getProperty("db.url","jdbc:postgresql://localhost:5432/migration");
     dbuser=System.getProperty("db.user","bonita")

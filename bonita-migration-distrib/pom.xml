@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.bonitasoft.migration</groupId>
 		<artifactId>bonita-migration</artifactId>
-		<version>1.6.1-SNAPSHOT</version>
+		<version>1.7.1-SNAPSHOT</version>
 	</parent>
 
 	<properties>
@@ -75,8 +75,8 @@
 	<!-- Compile in order to validate + run tests -->
 	<build>
 		<!-- Limitation of SonarQube. It does not call the gmaven plugin -->
-	 	<sourceDirectory>src/main/groovy</sourceDirectory>
-	 	
+		<sourceDirectory>src/main/groovy</sourceDirectory>
+
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -133,7 +133,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
-					<!-- Unpack Bonita_home and external files for configuration-->
+					<!-- Unpack Bonita_home and external files for configuration -->
 					<execution>
 						<id>unpack-bonita_home</id>
 						<phase>generate-resources</phase>

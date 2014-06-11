@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.bonitasoft.migration</groupId>
 	<artifactId>bonita-migration</artifactId>
-	<version>1.6.1-SNAPSHOT</version>
+	<version>1.7.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<modules>
@@ -21,7 +22,7 @@
 		<module>bonita-migration-db-filler-6.3.1</module>
 		<module>bonita-migration-scripts-integration-tests</module>
 	</modules>
-	
+
 	<properties>
 		<!--  -->
 		<!-- These properties are used to automatically get the last bonita home and put it in the product -->
@@ -31,7 +32,7 @@
 		<!-- specify the previous version of that is migrated  -->
 		<previous.bonita.version>6.3.0</previous.bonita.version>
 		<!-- specify the in developpement version of bonita -->
-		<current.bonita.version>6.3.1-SNAPSHOT</current.bonita.version>
+		<current.bonita.version>6.3.1.RC1</current.bonita.version>
 		<!-- specify the name of the release next release of bonita that will be migrated -->
 		<next.bonita.version>6.3.1</next.bonita.version>
 	</properties>
