@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.bonitasoft.migration</groupId>
 		<artifactId>bonita-migration</artifactId>
-		<version>1.6.1-SNAPSHOT</version>
+		<version>1.7.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>bonita-migration-db-filler-6.3.0</artifactId>
 
