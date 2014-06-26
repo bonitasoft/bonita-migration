@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.bonitasoft.migration</groupId>
 	<artifactId>bonita-migration-db-filler-archetype</artifactId>
-	<version>1.6.1-SNAPSHOT</version>
+	<version>1.7.1-SNAPSHOT</version>
 
 	<build>
 		<extensions>
