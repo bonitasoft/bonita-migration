@@ -9,7 +9,7 @@
 
 
 	<properties>
-		<bonita.version>${current.bonita.version}</bonita.version>
+		<bonita.version>6.3.1</bonita.version>
 		<bonita.home>${project.build.directory}/home</bonita.home>
 	</properties>
 
