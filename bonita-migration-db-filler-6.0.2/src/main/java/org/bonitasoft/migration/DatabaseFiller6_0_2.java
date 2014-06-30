@@ -58,8 +58,6 @@ import org.bonitasoft.engine.events.model.SHandler;
 import org.bonitasoft.engine.events.model.SHandlerExecutionException;
 import org.bonitasoft.engine.exception.AlreadyExistsException;
 import org.bonitasoft.engine.exception.BonitaException;
-import org.bonitasoft.engine.exception.BonitaHomeConfigurationException;
-import org.bonitasoft.engine.exception.BonitaHomeNotSetException;
 import org.bonitasoft.engine.exception.CreationException;
 import org.bonitasoft.engine.expression.ExpressionBuilder;
 import org.bonitasoft.engine.expression.InvalidExpressionException;
@@ -386,9 +384,8 @@ public class DatabaseFiller6_0_2 {
         return APITestUtil.loginPlatform();
     }
 
-    private void shutdownWorkService() throws BonitaHomeNotSetException, InstantiationException, IllegalAccessException, ClassNotFoundException, IOException,
-            BonitaHomeConfigurationException {
-        WorkService workService = ServiceAccessorFactory.getInstance().createPlatformServiceAccessor().getWorkService();
+    private void shutdownWorkService() throws Exception {
+        WorkService workService = getWorkService();
         Field[] fields = workService.getClass().getDeclaredFields();
         for (Field field : fields) {
             if (field.getName().equals("threadPoolExecutor")) {
@@ -397,6 +394,10 @@ public class DatabaseFiller6_0_2 {
                 tpe.shutdown();
             }
         }
+    }
+
+    protected WorkService getWorkService() throws Exception {
+        return ServiceAccessorFactory.getInstance().createPlatformServiceAccessor().getWorkService();
     }
 
     protected Map<String, String> fillProfiles(final APISession session) throws Exception {
