@@ -491,6 +491,10 @@ public class DatabaseFiller6_0_2 {
         System.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.bonitasoft.engine.local.SimpleMemoryContextFactory");
         System.setProperty(Context.URL_PKG_PREFIXES, "org.bonitasoft.engine.local");
         springContext = new ClassPathXmlApplicationContext("datasource.xml", "jndi-setup.xml");
+        initializePlatform();
+    }
+
+    protected void initializePlatform() throws BonitaException {
         APITestUtil.createInitializeAndStartPlatformWithDefaultTenant(false);
     }
 
