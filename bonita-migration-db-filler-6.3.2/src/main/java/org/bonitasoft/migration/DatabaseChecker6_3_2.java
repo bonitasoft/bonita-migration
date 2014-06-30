@@ -16,7 +16,7 @@ package org.bonitasoft.migration;
 import org.junit.runner.JUnitCore;
 
 
-public class DatabaseChecker6_3_2 extends DatabaseChecker6_3_1 {
+public class DatabaseChecker6_3_2 extends SimpleDatabaseFiller6_3_1 {
     
     public static void main(final String[] args) throws Exception {
         JUnitCore.main(DatabaseChecker6_3_2.class.getName());

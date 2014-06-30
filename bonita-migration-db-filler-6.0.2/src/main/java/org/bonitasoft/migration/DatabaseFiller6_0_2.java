@@ -367,11 +367,23 @@ public class DatabaseFiller6_0_2 {
     }
 
     public void shutdown() throws Exception {
-        final PlatformSession pSession = APITestUtil.loginPlatform();
+        final PlatformSession pSession = loginPlatform();
         final PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(pSession);
-        APITestUtil.stopPlatformAndTenant(platformAPI, true);
-        APITestUtil.logoutPlatform(pSession);
+        stopPlatformAndTenant(platformAPI);
+        logoutPlatform(pSession);
         shutdownWorkService();
+    }
+
+    protected void logoutPlatform(final PlatformSession pSession) throws BonitaException {
+        APITestUtil.logoutPlatform(pSession);
+    }
+
+    protected void stopPlatformAndTenant(final PlatformAPI platformAPI) throws BonitaException {
+        APITestUtil.stopPlatformAndTenant(platformAPI, true);
+    }
+
+    protected PlatformSession loginPlatform() throws BonitaException {
+        return APITestUtil.loginPlatform();
     }
 
     private void shutdownWorkService() throws BonitaHomeNotSetException, InstantiationException, IllegalAccessException, ClassNotFoundException, IOException,
