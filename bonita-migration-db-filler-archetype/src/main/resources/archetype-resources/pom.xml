@@ -4,7 +4,7 @@
 	<artifactId>${artifactId}</artifactId>
 
 	<properties>
-		<bonita.version>${bonita-version}</bonita.version>
+		<bonita.version>${current.bonita.version}</bonita.version>
 		<bonita.home>${project.build.directory}/home</bonita.home>
 	</properties>
 

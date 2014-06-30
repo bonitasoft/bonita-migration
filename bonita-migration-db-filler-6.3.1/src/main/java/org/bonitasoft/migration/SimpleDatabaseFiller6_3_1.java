@@ -26,18 +26,17 @@ import org.bonitasoft.engine.test.PlatformTestUtil;
  */
 public class SimpleDatabaseFiller6_3_1 extends SimpleDatabaseFiller6_0_2 {
 
+    private APITestUtil apiTestUtil = new APITestUtil();
     private PlatformTestUtil platformTestUtil = new PlatformTestUtil();
 
     @Override
     protected APISession loginDefaultTenant() throws BonitaException {
-        APITestUtil apiTestUtil = new APITestUtil();
         apiTestUtil.loginOnDefaultTenantWithDefaultTechnicalLogger();
         return apiTestUtil.getSession();
     }
     
     @Override
     protected void logoutTenant(APISession session) throws BonitaException {
-        APITestUtil apiTestUtil = new APITestUtil();
         apiTestUtil.logoutOnTenant();
     }
     
