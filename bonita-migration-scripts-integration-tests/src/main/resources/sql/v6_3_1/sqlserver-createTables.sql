@@ -2,7 +2,7 @@ CREATE TABLE tenant (
   id NUMERIC(19, 0) NOT NULL,
   PRIMARY KEY (id)
 )
-GO
+@@
 
 CREATE TABLE sequence (
   tenantid NUMERIC(19, 0) NOT NULL,
@@ -10,7 +10,7 @@ CREATE TABLE sequence (
   nextid NUMERIC(19, 0) NOT NULL,
   PRIMARY KEY (tenantid, id)
 )
-GO
+@@
 
 CREATE TABLE command (
   tenantid NUMERIC(19, 0) NOT NULL,
@@ -22,4 +22,4 @@ CREATE TABLE command (
   UNIQUE (tenantid, name),
   PRIMARY KEY (tenantid, id)
 )
-GO
+@@

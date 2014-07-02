@@ -1,7 +1,7 @@
 CREATE TABLE tenant (
   id NUMBER(19, 0) NOT NULL,
   PRIMARY KEY (id)
-);
+)@@
 
 
 CREATE TABLE sequence (
@@ -9,7 +9,7 @@ CREATE TABLE sequence (
   id NUMBER(19, 0) NOT NULL,
   nextid NUMBER(19, 0) NOT NULL,
   PRIMARY KEY (tenantid, id)
-);
+)@@
 
 CREATE TABLE command (
   tenantid NUMBER(19, 0) NOT NULL,
@@ -20,4 +20,4 @@ CREATE TABLE command (
   system NUMBER(1) ,
   UNIQUE (tenantid, name),
   PRIMARY KEY (tenantid, id)
-);
+)@@
