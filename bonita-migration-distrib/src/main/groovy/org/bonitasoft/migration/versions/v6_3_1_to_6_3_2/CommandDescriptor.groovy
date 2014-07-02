@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 214 BonitaSoft S.A.
+ * Copyright (C) 2014 BonitaSoft S.A.
  * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
@@ -11,15 +11,20 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
-package org.bonitasoft.migration;
+package org.bonitasoft.migration.versions.v6_3_1_to_6_3_2
 
-import org.junit.runner.JUnitCore;
+import groovy.transform.EqualsAndHashCode
+import groovy.transform.ToString
 
 
-public class DatabaseChecker6_3_2 extends SimpleDatabaseChecker6_3_2 {
-
-    public static void main(final String[] args) throws Exception {
-        JUnitCore.main(DatabaseChecker6_3_2.class.getName());
-    }
-
+/**
+ * @author Elias Ricken de Medeiros
+ *
+ */
+@EqualsAndHashCode
+@ToString
+class CommandDescriptor {
+    def name
+    def implementation
+    def description
 }

@@ -17,8 +17,8 @@ package org.bonitasoft.migration;
 public class DatabaseFiller6_3_2 extends SimpleDatabaseFiller6_3_1 {
 
     public static void main(final String[] args) throws Exception {
-        DatabaseFiller6_3_2 databaseFiller = new DatabaseFiller6_3_2();
+        final DatabaseFiller6_3_2 databaseFiller = new DatabaseFiller6_3_2();
         databaseFiller.execute(1, 1, 1, 1);
     }
-    
+
 }
