@@ -27,6 +27,9 @@ class UpdatedDefaultCommands {
     def Map nextIds;
 
 
+    public migrate(Sql sql, List<CommandDescriptor> commandsToInsert) {
+        migrate(sql, commandsToInsert, [])
+    }
     public migrate(Sql sql, List<CommandDescriptor> commandsToInsert, List<String> commandNamesToDelete) {
         def commandSequenceId = 90;
         nextIds = MigrationUtil.getNexIdsForTable(sql, commandSequenceId);
