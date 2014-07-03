@@ -40,8 +40,22 @@ class UpdatedDefaultCommandsIT extends GroovyTestCase {
     Sql sql
 
     def dataSet(data) {
-        new FlatXmlDataSet(new StringReader(new StreamingMarkupBuilder().bind{dataset data}.toString()))
+        new FlatXmlDataSet(new StringReader(new StreamingMarkupBuilder().bind{ dataset data }.toString()))
     }
+
+    Map trueValue =  [
+        "oracle" : 1,
+        "postgres": true,
+        "mysql": true,
+        "sqlserver" :true
+    ]
+
+    Map falseValue =  [
+        "oracle" : 0,
+        "postgres": false,
+        "mysql": false,
+        "sqlserver" :false
+    ]
 
 
     @Override
@@ -57,7 +71,7 @@ class UpdatedDefaultCommandsIT extends GroovyTestCase {
         tester = new JdbcDatabaseTester(driverClass, *config)
 
         def int i = 0
-        CREATE_TABLE_6_3_1.text.split("@@").each({stmt ->
+        CREATE_TABLE_6_3_1.text.split("@@").each({ stmt ->
             println "executing stmt ${i++} for ${DBVENDOR}"
             sql.execute(stmt)
         })
@@ -73,11 +87,11 @@ class UpdatedDefaultCommandsIT extends GroovyTestCase {
             sequence tenantid:2, id:90, nextid:100
 
             //commands
-            command tenantid:1, id:10, name:"command1", implementation:"org.bonitasoft.engine.Command1", description:"Command1 descr", system:true
-            command tenantid:1, id:11, name:"command2", implementation:"org.bonitasoft.engine.Command2", description:"Command2 descr", system:false
-            command tenantid:1, id:12, name:"command3", implementation:"org.bonitasoft.engine.Command3", description:"Command3 descr", system:true
-            command tenantid:2, id:20, name:"command1", implementation:"org.bonitasoft.engine.Command1", description:"Command1 descr", system:true
-            command tenantid:2, id:30, name:"command2", implementation:"org.bonitasoft.engine.Command1", description:"Command1 descr", system:false
+            command tenantid:1, id:10, name:"command1", implementation:"org.bonitasoft.engine.Command1", description:"Command1 descr", system:trueValue.get(DBVENDOR)
+            command tenantid:1, id:11, name:"command2", implementation:"org.bonitasoft.engine.Command2", description:"Command2 descr", system:falseValue.get(DBVENDOR)
+            command tenantid:1, id:12, name:"command3", implementation:"org.bonitasoft.engine.Command3", description:"Command3 descr", system:trueValue.get(DBVENDOR)
+            command tenantid:2, id:20, name:"command1", implementation:"org.bonitasoft.engine.Command1", description:"Command1 descr", system:trueValue.get(DBVENDOR)
+            command tenantid:2, id:30, name:"command2", implementation:"org.bonitasoft.engine.Command1", description:"Command1 descr", system:falseValue.get(DBVENDOR)
         }
         tester.onSetup();
     }
@@ -85,9 +99,9 @@ class UpdatedDefaultCommandsIT extends GroovyTestCase {
     @Override
     void tearDown() {
         tester.onTearDown()
-        sql.execute("drop table sequence")
-        sql.execute("drop table command")
-        sql.execute("drop table tenant")
+        sql.execute("DROP TABLE sequence")
+        sql.execute("DROP TABLE command")
+        sql.execute("DROP TABLE tenant")
     }
 
     void test_insert_new_system_command_should_add_a_new_line_per_tenant_and_update_sequence_table() {
@@ -107,15 +121,15 @@ class UpdatedDefaultCommandsIT extends GroovyTestCase {
             sequence tenantid:2, id:90, nextid:102
 
             //commands
-            command tenantid:1, id:10, name:"command1", implementation:"org.bonitasoft.engine.Command1", description:"Command1 descr", system:true
-            command tenantid:1, id:11, name:"command2", implementation:"org.bonitasoft.engine.Command2", description:"Command2 descr", system:false
-            command tenantid:1, id:12, name:"command3", implementation:"org.bonitasoft.engine.Command3", description:"Command3 descr", system:true
-            command tenantid:1, id:200, name:"newCommand1", implementation:"org.bonitasoft.engine.NewCommand1", description:"new command 1 description", system:true
-            command tenantid:1, id:201, name:"newCommand2", implementation:"org.bonitasoft.engine.NewCommand2", description:"new command 2 description", system:true
-            command tenantid:2, id:20, name:"command1", implementation:"org.bonitasoft.engine.Command1", description:"Command1 descr", system:true
-            command tenantid:2, id:30, name:"command2", implementation:"org.bonitasoft.engine.Command1", description:"Command1 descr", system:false
-            command tenantid:2, id:100, name:"newCommand1", implementation:"org.bonitasoft.engine.NewCommand1", description:"new command 1 description", system:true
-            command tenantid:2, id:101, name:"newCommand2", implementation:"org.bonitasoft.engine.NewCommand2", description:"new command 2 description", system:true
+            command tenantid:1, id:10, name:"command1", implementation:"org.bonitasoft.engine.Command1", description:"Command1 descr", system:trueValue.get(DBVENDOR)
+            command tenantid:1, id:11, name:"command2", implementation:"org.bonitasoft.engine.Command2", description:"Command2 descr", system:falseValue.get(DBVENDOR)
+            command tenantid:1, id:12, name:"command3", implementation:"org.bonitasoft.engine.Command3", description:"Command3 descr", system:trueValue.get(DBVENDOR)
+            command tenantid:1, id:200, name:"newCommand1", implementation:"org.bonitasoft.engine.NewCommand1", description:"new command 1 description", system:trueValue.get(DBVENDOR)
+            command tenantid:1, id:201, name:"newCommand2", implementation:"org.bonitasoft.engine.NewCommand2", description:"new command 2 description", system:trueValue.get(DBVENDOR)
+            command tenantid:2, id:20, name:"command1", implementation:"org.bonitasoft.engine.Command1", description:"Command1 descr", system:trueValue.get(DBVENDOR)
+            command tenantid:2, id:30, name:"command2", implementation:"org.bonitasoft.engine.Command1", description:"Command1 descr", system:falseValue.get(DBVENDOR)
+            command tenantid:2, id:100, name:"newCommand1", implementation:"org.bonitasoft.engine.NewCommand1", description:"new command 1 description", system:trueValue.get(DBVENDOR)
+            command tenantid:2, id:101, name:"newCommand2", implementation:"org.bonitasoft.engine.NewCommand2", description:"new command 2 description", system:trueValue.get(DBVENDOR)
         }, updatedCommandsAndSequences
     }
 
@@ -133,11 +147,11 @@ class UpdatedDefaultCommandsIT extends GroovyTestCase {
             sequence tenantid:2, id:90, nextid:100
 
             //commands
-            command tenantid:1, id:10, name:"command1", implementation:"org.bonitasoft.engine.Command1", description:"Command1 descr", system:true
-            command tenantid:1, id:11, name:"command2", implementation:"org.bonitasoft.engine.Command2", description:"Command2 descr", system:false
-            command tenantid:1, id:12, name:"command3", implementation:"org.bonitasoft.engine.Command3", description:"Command3 descr", system:true
-            command tenantid:2, id:20, name:"command1", implementation:"org.bonitasoft.engine.Command1", description:"Command1 descr", system:true
-            command tenantid:2, id:30, name:"command2", implementation:"org.bonitasoft.engine.Command1", description:"Command1 descr", system:false
+            command tenantid:1, id:10, name:"command1", implementation:"org.bonitasoft.engine.Command1", description:"Command1 descr", system:trueValue.get(DBVENDOR)
+            command tenantid:1, id:11, name:"command2", implementation:"org.bonitasoft.engine.Command2", description:"Command2 descr", system:falseValue.get(DBVENDOR)
+            command tenantid:1, id:12, name:"command3", implementation:"org.bonitasoft.engine.Command3", description:"Command3 descr", system:trueValue.get(DBVENDOR)
+            command tenantid:2, id:20, name:"command1", implementation:"org.bonitasoft.engine.Command1", description:"Command1 descr", system:trueValue.get(DBVENDOR)
+            command tenantid:2, id:30, name:"command2", implementation:"org.bonitasoft.engine.Command1", description:"Command1 descr", system:falseValue.get(DBVENDOR)
         }, updatedCommandsAndSequences
     }
 
@@ -153,9 +167,9 @@ class UpdatedDefaultCommandsIT extends GroovyTestCase {
             sequence tenantid:2, id:90, nextid:100
 
             //commands
-            command tenantid:1, id:11, name:"command2", implementation:"org.bonitasoft.engine.Command2", description:"Command2 descr", system:false
-            command tenantid:1, id:12, name:"command3", implementation:"org.bonitasoft.engine.Command3", description:"Command3 descr", system:true
-            command tenantid:2, id:30, name:"command2", implementation:"org.bonitasoft.engine.Command1", description:"Command1 descr", system:false
+            command tenantid:1, id:11, name:"command2", implementation:"org.bonitasoft.engine.Command2", description:"Command2 descr", system:falseValue.get(DBVENDOR)
+            command tenantid:1, id:12, name:"command3", implementation:"org.bonitasoft.engine.Command3", description:"Command3 descr", system:trueValue.get(DBVENDOR)
+            command tenantid:2, id:30, name:"command2", implementation:"org.bonitasoft.engine.Command1", description:"Command1 descr", system:falseValue.get(DBVENDOR)
         }, updatedCommandsAndSequences
     }
 }
