@@ -13,7 +13,10 @@
  **/
 package ${package};
 
-public class DatabaseFiller${db-filler-suffix} extends SimpleDatabaseFiller6_0_2 {
+import org.bonitasoft.engine.exception.BonitaException;
+import org.bonitasoft.engine.test.PlatformTestUtil;
+
+public class DatabaseFiller${db-filler-suffix} extends SimpleDatabaseFiller6_3_1 {
 
     public static void main(final String[] args) throws Exception {
         DatabaseFiller${db-filler-suffix} databaseFiller = new DatabaseFiller${db-filler-suffix}();
