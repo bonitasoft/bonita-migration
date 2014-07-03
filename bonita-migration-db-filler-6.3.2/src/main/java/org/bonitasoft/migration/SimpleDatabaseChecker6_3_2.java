@@ -36,7 +36,7 @@ import org.junit.Test;
 public class SimpleDatabaseChecker6_3_2 extends SimpleDatabaseChecker6_3_1 {
 
     @Test
-    public void command_are_up_to_date() throws Exception {
+    public void commands_are_up_to_date() throws Exception {
         //given
         final TenantServiceAccessor serviceAccessor = ServiceAccessorFactory.getInstance().createTenantServiceAccessor(session.getTenantId());
         final DefaultCommandProvider commandProvider = serviceAccessor.getDefaultCommandProvider();
