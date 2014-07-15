@@ -48,9 +48,8 @@ class ArchivedDataInstancesIT extends GroovyTestCase {
         sql = Sql.newInstance(*config, driverClass);
         tester = new JdbcDatabaseTester(driverClass, *config)
 
-        def int i = 0
         CREATE_TABLE_6_3_2.text.split("@@").each({ stmt ->
-            println "executing stmt ${i++} for ${DBVENDOR}"
+            println "executing stmt $stmt for ${DBVENDOR}"
             sql.execute(stmt)
         })
         println ("setUp: create tables")
