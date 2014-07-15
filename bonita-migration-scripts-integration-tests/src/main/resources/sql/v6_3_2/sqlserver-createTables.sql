@@ -15,4 +15,3 @@ CREATE TABLE arch_data_mapping (
 	sourceObjectId NUMERIC(19, 0) NOT NULL,
 	PRIMARY KEY (tenantid, id)
 )
-@@

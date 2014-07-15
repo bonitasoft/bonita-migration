@@ -5,7 +5,6 @@ CREATE TABLE arch_data_instance (
 	sourceObjectId NUMBER(19, 0) NOT NULL,
 	PRIMARY KEY (tenantid, id)
 )@@
-
 CREATE TABLE arch_data_mapping (
     tenantid NUMBER(19, 0) NOT NULL,
 	id NUMBER(19, 0) NOT NULL,
@@ -13,4 +12,4 @@ CREATE TABLE arch_data_mapping (
 	dataInstanceId NUMBER(19, 0) NOT NULL,
 	sourceObjectId NUMBER(19, 0) NOT NULL,
 	PRIMARY KEY (tenantid, id)
-)@@
+)
