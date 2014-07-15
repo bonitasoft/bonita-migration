@@ -23,7 +23,7 @@ class CleanArchivedDataMappingOrphans {
 
     public migrate(Sql sql) {
     	println "Deleting archived data mapping orphans for all tenants";
-		sql.execute("DELETE FROM arch_data_mapping m WHERE NOT EXISTS (SELECT NULL FROM arch_data_instance i WHERE i.sourceObjectId = m.dataInstanceId)");
+		sql.execute("DELETE FROM arch_data_mapping WHERE NOT EXISTS (SELECT NULL FROM arch_data_instance i WHERE i.sourceObjectId = arch_data_mapping.dataInstanceId)");
         println sql.updateCount + " archived data mapping orphans have been deleted";
     }
 
