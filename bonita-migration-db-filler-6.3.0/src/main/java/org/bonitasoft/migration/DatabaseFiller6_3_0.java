@@ -15,14 +15,11 @@ package org.bonitasoft.migration;
 
 import static org.junit.Assert.assertNotNull;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
-
-import javax.naming.Context;
 
 import org.bonitasoft.engine.api.CommandAPI;
 import org.bonitasoft.engine.api.IdentityAPI;
@@ -39,11 +36,8 @@ import org.bonitasoft.engine.session.PlatformSession;
 import org.bonitasoft.engine.test.APITestUtil;
 import org.bonitasoft.engine.test.ClientEventUtil;
 import org.bonitasoft.engine.work.WorkService;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class DatabaseFiller6_3_0 extends SimpleDatabaseFiller6_0_2 {
-
-    private APITestUtil apiTestUtil;
 
     public static void main(final String[] args) throws Exception {
         final DatabaseFiller6_3_0 databaseFiller = new DatabaseFiller6_3_0();
@@ -70,15 +64,9 @@ public class DatabaseFiller6_3_0 extends SimpleDatabaseFiller6_0_2 {
         return stats;
     }
 
-    @Override
-    public void setup() throws BonitaException, IOException, Exception {
-        logger.info("Using bonita.home: " + System.getProperty(BONITA_HOME));
-        // Force these system properties
-        System.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.bonitasoft.engine.local.SimpleMemoryContextFactory");
-        System.setProperty(Context.URL_PKG_PREFIXES, "org.bonitasoft.engine.local");
-        springContext = new ClassPathXmlApplicationContext("datasource.xml", "jndi-setup.xml");
-        apiTestUtil = new APITestUtil();
-        apiTestUtil.createInitializeAndStartPlatformWithDefaultTenant(true);
+    protected void initializePlatform() throws BonitaException {
+        APITestUtil apiTestUtil = new APITestUtil();
+        apiTestUtil.createInitializeAndStartPlatformWithDefaultTenant(false);
     }
 
     @Override

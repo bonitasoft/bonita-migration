@@ -16,7 +16,7 @@ package ${package};
 import org.junit.runner.JUnitCore;
 
 
-public class DatabaseChecker${db-filler-suffix} extends SimpleDatabaseChecker6_2_4 {
+public class DatabaseChecker${db-filler-suffix} extends SimpleDatabaseChecker6_3_2 {
     
     public static void main(final String[] args) throws Exception {
         JUnitCore.main(DatabaseChecker${db-filler-suffix}.class.getName());
