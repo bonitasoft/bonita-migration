@@ -96,7 +96,8 @@ public class ProcessDefinition {
             }
         }
         def operations =  processDefinitionXml.depthFirst().findAll{
-            it.name().getLocalPart() == "operation"
+            // "peration" pattern to match all operation xml tags:
+            it.name().getLocalPart().endsWith("peration")
         }
         operations.each{ Node operation ->
             def leftOperand = operation.leftOperand[0]

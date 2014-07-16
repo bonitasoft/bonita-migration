@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<processDefinition xmlns="http://www.bonitasoft.org/ns/process/server/6.0" bos_version="6.0-SNAPSHOT" description="" id="8409736639875264702" name="dataLeftOperandMigrationTo6.3.2" version="2.0">
+  <stringIndexes>
+    <stringIndex index="1"/>
+    <stringIndex index="2"/>
+    <stringIndex index="3"/>
+    <stringIndex index="4"/>
+    <stringIndex index="5"/>
+  </stringIndexes>
+  <flowElements>
+    <transitions>
+      <transition id="8017154745057653051" name="Début3_-&gt;_Étape3" source="-7203470995234529885" target="-9030894308406211153"/>
+      <transition id="4418147508982167592" name="Étape3_-&gt;_Fin2" source="-9030894308406211153" target="-8658620864767810767"/>
+    </transitions>
+    <connectors/>
+    <dataDefinitions>
+      <textDataDefinition className="java.lang.String" longText="true" name="sourceData" transient="false"/>
+    </dataDefinitions>
+    <documentDefinitions/>
+    <flowNodes>
+      <callActivity callableElementType="PROCESS" id="-9030894308406211153" name="Étape3">
+        <incomingTransition idref="8017154745057653051"/>
+        <outgoingTransition idref="4418147508982167592"/>
+        <dataDefinitions/>
+        <operations/>
+        <boundaryEvents/>
+        <callableElement expressionType="TYPE_CONSTANT" interpreter="NONE" name="subProcessus" returnType="java.lang.String">
+          <content>subProcessus</content>
+        </callableElement>
+        <callableElementVersion expressionType="TYPE_CONSTANT" interpreter="NONE" name="1.0" returnType="java.lang.String">
+          <content>1.0</content>
+        </callableElementVersion>
+        <dataInputOperation operatorType="ASSIGNMENT">
+          <leftOperand name="destinationData"/>
+          <rightOperand expressionType="TYPE_VARIABLE" interpreter="NONE" name="sourceData" returnType="java.lang.String">
+            <content>sourceData</content>
+          </rightOperand>
+        </dataInputOperation>
+        <dataOutputOperation operatorType="ASSIGNMENT">
+          <leftOperand name="sourceData"/>
+          <rightOperand expressionType="TYPE_VARIABLE" interpreter="NONE" name="destinationData" returnType="java.lang.String">
+            <content>destinationData</content>
+          </rightOperand>
+        </dataOutputOperation>
+      </callActivity>
+      <startEvent id="-7203470995234529885" interrupting="true" name="Début3">
+        <outgoingTransition idref="8017154745057653051"/>
+      </startEvent>
+      <endEvent id="-8658620864767810767" name="Fin2">
+        <incomingTransition idref="4418147508982167592"/>
+      </endEvent>
+    </flowNodes>
+  </flowElements>
+  <dependencies>
+    <parameters/>
+    <actors>
+      <actor name="Employee actor">
+        <description>Ceci est un exemple d'acteur associé à tous les utilisateurs d'ACME</description>
+      </actor>
+    </actors>
+  </dependencies>
+  <actorInitiator name="Employee actor"/>
+</processDefinition>
