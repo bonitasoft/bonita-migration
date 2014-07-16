@@ -21,7 +21,6 @@
 		<module>bonita-migration-db-filler-6.3.1</module>
 		<module>bonita-migration-scripts-integration-tests</module>
         <module>bonita-migration-db-filler-6.3.2</module>
-    <module>bonita-migration-db-filler-6.3.3</module>
   </modules>
 
 	<properties>
