@@ -58,8 +58,6 @@ import org.bonitasoft.engine.events.model.SHandler;
 import org.bonitasoft.engine.events.model.SHandlerExecutionException;
 import org.bonitasoft.engine.exception.AlreadyExistsException;
 import org.bonitasoft.engine.exception.BonitaException;
-import org.bonitasoft.engine.exception.BonitaHomeConfigurationException;
-import org.bonitasoft.engine.exception.BonitaHomeNotSetException;
 import org.bonitasoft.engine.exception.CreationException;
 import org.bonitasoft.engine.expression.ExpressionBuilder;
 import org.bonitasoft.engine.expression.InvalidExpressionException;
@@ -367,16 +365,27 @@ public class DatabaseFiller6_0_2 {
     }
 
     public void shutdown() throws Exception {
-        final PlatformSession pSession = APITestUtil.loginPlatform();
+        final PlatformSession pSession = loginPlatform();
         final PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(pSession);
-        APITestUtil.stopPlatformAndTenant(platformAPI, true);
-        APITestUtil.logoutPlatform(pSession);
+        stopPlatformAndTenant(platformAPI);
+        logoutPlatform(pSession);
         shutdownWorkService();
     }
 
-    private void shutdownWorkService() throws BonitaHomeNotSetException, InstantiationException, IllegalAccessException, ClassNotFoundException, IOException,
-            BonitaHomeConfigurationException {
-        WorkService workService = ServiceAccessorFactory.getInstance().createPlatformServiceAccessor().getWorkService();
+    protected void logoutPlatform(final PlatformSession pSession) throws BonitaException {
+        APITestUtil.logoutPlatform(pSession);
+    }
+
+    protected void stopPlatformAndTenant(final PlatformAPI platformAPI) throws BonitaException {
+        APITestUtil.stopPlatformAndTenant(platformAPI, true);
+    }
+
+    protected PlatformSession loginPlatform() throws BonitaException {
+        return APITestUtil.loginPlatform();
+    }
+
+    private void shutdownWorkService() throws Exception {
+        WorkService workService = getWorkService();
         Field[] fields = workService.getClass().getDeclaredFields();
         for (Field field : fields) {
             if (field.getName().equals("threadPoolExecutor")) {
@@ -385,6 +394,10 @@ public class DatabaseFiller6_0_2 {
                 tpe.shutdown();
             }
         }
+    }
+
+    protected WorkService getWorkService() throws Exception {
+        return ServiceAccessorFactory.getInstance().createPlatformServiceAccessor().getWorkService();
     }
 
     protected Map<String, String> fillProfiles(final APISession session) throws Exception {
@@ -491,6 +504,10 @@ public class DatabaseFiller6_0_2 {
         System.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.bonitasoft.engine.local.SimpleMemoryContextFactory");
         System.setProperty(Context.URL_PKG_PREFIXES, "org.bonitasoft.engine.local");
         springContext = new ClassPathXmlApplicationContext("datasource.xml", "jndi-setup.xml");
+        initializePlatform();
+    }
+
+    protected void initializePlatform() throws BonitaException {
         APITestUtil.createInitializeAndStartPlatformWithDefaultTenant(false);
     }
 

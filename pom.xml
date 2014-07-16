@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.bonitasoft.migration</groupId>
 	<artifactId>bonita-migration</artifactId>
-	<version>1.6.1-SNAPSHOT</version>
+	<version>1.9.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<modules>
@@ -20,8 +20,9 @@
 		<module>bonita-migration-db-filler-6.3.0</module>
 		<module>bonita-migration-db-filler-6.3.1</module>
 		<module>bonita-migration-scripts-integration-tests</module>
+        <module>bonita-migration-db-filler-6.3.2</module>
 	</modules>
-	
+
 	<properties>
 		<!--  -->
 		<!-- These properties are used to automatically get the last bonita home and put it in the product -->
@@ -29,11 +30,11 @@
 		<!-- at the same version number that is the version number that will be released                   -->
 		<!--  -->
 		<!-- specify the previous version of that is migrated  -->
-		<previous.bonita.version>6.3.0</previous.bonita.version>
+		<previous.bonita.version>6.3.1</previous.bonita.version>
 		<!-- specify the in developpement version of bonita -->
-		<current.bonita.version>6.3.1-SNAPSHOT</current.bonita.version>
+		<current.bonita.version>6.3.2</current.bonita.version>
 		<!-- specify the name of the release next release of bonita that will be migrated -->
-		<next.bonita.version>6.3.1</next.bonita.version>
+		<next.bonita.version>6.3.2</next.bonita.version>
 	</properties>
 
 	<dependencyManagement>

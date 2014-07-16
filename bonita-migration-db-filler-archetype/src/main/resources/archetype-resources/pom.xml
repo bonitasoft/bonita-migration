@@ -4,13 +4,13 @@
 	<artifactId>${artifactId}</artifactId>
 
 	<properties>
-		<bonita.version>${bonita-version}</bonita.version>
+		<bonita.version>${current.bonita.version}</bonita.version>
 		<bonita.home>${project.build.directory}/home</bonita.home>
 	</properties>
 
 	<dependencies>
 		<dependency>
-			<artifactId>bonita-migration-db-filler-6.2.4</artifactId>
+			<artifactId>bonita-migration-db-filler-6.3.2</artifactId>
 			<groupId>org.bonitasoft.migration</groupId>
 			<version>${project.version}</version>
 		</dependency>
