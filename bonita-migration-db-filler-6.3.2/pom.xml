@@ -9,7 +9,7 @@
 	<artifactId>bonita-migration-db-filler-6.3.2</artifactId>
 
 	<properties>
-		<bonita.version>${current.bonita.version}</bonita.version>
+		<bonita.version>6.3.2</bonita.version>
 		<bonita.home>${project.build.directory}/home</bonita.home>
 	</properties>
 
