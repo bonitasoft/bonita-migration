@@ -13,8 +13,8 @@ targetCompatibility = 1.6
 
 
 ext{
-    sourceversion = System.getProperty("source.version","6.3.1")
-    targetversion = System.getProperty("target.version","6.3.2")
+    sourceversion = System.getProperty("source.version","6.3.2")
+    targetversion = System.getProperty("target.version","6.3.3")
     dbvendor = System.getProperty("db.vendor", "postgres")
     dburl = System.getProperty("db.url","jdbc:postgresql://localhost:5432/migration");
     dbuser=System.getProperty("db.user","bonita")
