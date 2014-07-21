@@ -304,13 +304,13 @@ public class MigrationUtil {
         sql.eachRow("SELECT tenantid,nextId from sequence WHERE id = $sequenceId") { row ->
             idsByTenants.put(row[0],row[1])
         }
-        println "next id by tenants "+idsByTenants;
+        println "next id by tenants for sequence id $sequenceId: $idsByTenants";
         return idsByTenants;
     }
 
     public static updateNextIdsForTable(Sql sql, long sequenceId, Map nexIdsByTenants){
         nexIdsByTenants.each {
-            println "update sequence of tenant $it.key  for flow nodes to $it.value"
+            println "update next id to $it.value for sequence id $sequenceId on tenant $it.key"
             println  sql.executeUpdate("UPDATE sequence SET nextId = $it.value WHERE tenantId = $it.key and id = $sequenceId")+" row(s) updated";
         }
     }

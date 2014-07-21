@@ -15,14 +15,11 @@ package org.bonitasoft.migration;
 
 import static org.junit.Assert.assertNotNull;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
-
-import javax.naming.Context;
 
 import org.bonitasoft.engine.api.CommandAPI;
 import org.bonitasoft.engine.api.IdentityAPI;
@@ -39,45 +36,12 @@ import org.bonitasoft.engine.session.PlatformSession;
 import org.bonitasoft.engine.test.APITestUtil;
 import org.bonitasoft.engine.test.ClientEventUtil;
 import org.bonitasoft.engine.work.WorkService;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class DatabaseFiller6_3_0 extends SimpleDatabaseFiller6_0_2 {
 
     public static void main(final String[] args) throws Exception {
         final DatabaseFiller6_3_0 databaseFiller = new DatabaseFiller6_3_0();
         databaseFiller.execute(1, 1, 1, 1);
-    }
-
-    @Override
-    public void setup() throws BonitaException, IOException, Exception {
-        logger.info("Using bonita.home: " + System.getProperty(BONITA_HOME));
-        // Force these system properties
-        System.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.bonitasoft.engine.local.SimpleMemoryContextFactory");
-        System.setProperty(Context.URL_PKG_PREFIXES, "org.bonitasoft.engine.local");
-        springContext = new ClassPathXmlApplicationContext("datasource.xml", "jndi-setup.xml");
-        new APITestUtil().createInitializeAndStartPlatformWithDefaultTenant(true);
-    }
-
-    @Override
-    public void shutdown() throws Exception {
-        final APITestUtil apiTestUtil = new APITestUtil();
-        final PlatformSession pSession = apiTestUtil.loginPlatform();
-        final PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(pSession);
-        apiTestUtil.stopPlatformAndTenant(platformAPI, true);
-        apiTestUtil.logoutPlatform(pSession);
-        shutdownWorkService();
-    }
-
-    private void shutdownWorkService() throws Exception {
-        WorkService workService = ServiceAccessorFactory.getInstance().createTenantServiceAccessor(1).getWorkService();
-        Field[] fields = workService.getClass().getDeclaredFields();
-        for (Field field : fields) {
-            if (field.getName().equals("threadPoolExecutor")) {
-                field.setAccessible(true);
-                ThreadPoolExecutor tpe = (ThreadPoolExecutor) field.get(workService);
-                tpe.shutdown();
-            }
-        }
     }
 
     @Override
@@ -98,6 +62,33 @@ public class DatabaseFiller6_3_0 extends SimpleDatabaseFiller6_0_2 {
 
         logger.info("Finished to fill the database");
         return stats;
+    }
+
+    protected void initializePlatform() throws BonitaException {
+        APITestUtil apiTestUtil = new APITestUtil();
+        apiTestUtil.createInitializeAndStartPlatformWithDefaultTenant(false);
+    }
+
+    @Override
+    public void shutdown() throws Exception {
+        final APITestUtil apiTestUtil = new APITestUtil();
+        final PlatformSession pSession = apiTestUtil.loginPlatform();
+        final PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(pSession);
+        apiTestUtil.stopPlatformAndTenant(platformAPI, true);
+        apiTestUtil.logoutPlatform(pSession);
+        shutdownWorkService();
+    }
+
+    private void shutdownWorkService() throws Exception {
+        final WorkService workService = ServiceAccessorFactory.getInstance().createTenantServiceAccessor(1).getWorkService();
+        final Field[] fields = workService.getClass().getDeclaredFields();
+        for (final Field field : fields) {
+            if (field.getName().equals("threadPoolExecutor")) {
+                field.setAccessible(true);
+                final ThreadPoolExecutor tpe = (ThreadPoolExecutor) field.get(workService);
+                tpe.shutdown();
+            }
+        }
     }
 
     private Map<? extends String, ? extends String> fillGroupWithEmptyParentPath(final APISession session) throws Exception {

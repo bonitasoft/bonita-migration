@@ -14,6 +14,7 @@
  */
 package org.bonitasoft.migration;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -30,7 +31,6 @@ import org.bonitasoft.engine.api.PlatformAPI;
 import org.bonitasoft.engine.api.PlatformAPIAccessor;
 import org.bonitasoft.engine.api.ProcessAPI;
 import org.bonitasoft.engine.api.ProfileAPI;
-import org.bonitasoft.engine.api.TenantAPIAccessor;
 import org.bonitasoft.engine.api.ThemeAPI;
 import org.bonitasoft.engine.exception.BonitaException;
 import org.bonitasoft.engine.exception.SearchException;
@@ -39,7 +39,7 @@ import org.bonitasoft.engine.profile.Profile;
 import org.bonitasoft.engine.profile.ProfileEntry;
 import org.bonitasoft.engine.search.Order;
 import org.bonitasoft.engine.search.SearchOptionsBuilder;
-import org.bonitasoft.engine.session.APISession;
+import org.bonitasoft.engine.search.SearchResult;
 import org.bonitasoft.engine.session.PlatformSession;
 import org.bonitasoft.engine.test.APITestUtil;
 import org.dom4j.Document;
@@ -60,6 +60,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @author Celine Souchet
  * 
  */
+
 public class DatabaseChecker6_3_1 {
 
     protected static ProcessAPI processAPI;
@@ -72,7 +73,7 @@ public class DatabaseChecker6_3_1 {
 
     private static ThemeAPI themeAPI;
 
-    protected static APISession session;
+    protected static APITestUtil apiTestUtil;
 
     private static ClassPathXmlApplicationContext springContext;
 
@@ -85,28 +86,17 @@ public class DatabaseChecker6_3_1 {
     @BeforeClass
     public static void setup() throws BonitaException {
         setupSpringContext();
-        final APITestUtil apiTestUtil = new APITestUtil();
-        final PlatformSession platformSession = apiTestUtil.loginPlatform();
+        apiTestUtil = new APITestUtil();
+        final PlatformSession platformSession = apiTestUtil.loginOnPlatform();
         final PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(platformSession);
         platformAPI.startNode();
-        apiTestUtil.logoutPlatform(platformSession);
-        session = apiTestUtil.loginDefaultTenant();
-        processAPI = TenantAPIAccessor.getProcessAPI(session);
-        identityAPI = TenantAPIAccessor.getIdentityAPI(session);
-        profileAPI = TenantAPIAccessor.getProfileAPI(session);
-        themeAPI = TenantAPIAccessor.getThemeAPI(session);
-        commandAPI = TenantAPIAccessor.getCommandAPI(session);
-    }
-
-    @AfterClass
-    public static void teardown() throws BonitaException {
-        final APITestUtil apiTestUtil = new APITestUtil();
-        apiTestUtil.logoutTenant(session);
-        final PlatformSession pSession = apiTestUtil.loginPlatform();
-        final PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(pSession);
-        apiTestUtil.stopPlatformAndTenant(platformAPI, false);
-        apiTestUtil.logoutPlatform(pSession);
-        springContext.close();
+        apiTestUtil.logoutOnPlatform(platformSession);
+        apiTestUtil.loginOnDefaultTenantWithDefaultTechnicalLogger();
+        processAPI = apiTestUtil.getProcessAPI();
+        identityAPI = apiTestUtil.getIdentityAPI();
+        profileAPI = apiTestUtil.getProfileAPI();
+        themeAPI = apiTestUtil.getThemeAPI();
+        commandAPI = apiTestUtil.getCommandAPI();
     }
 
     private static void setupSpringContext() {
@@ -117,6 +107,22 @@ public class DatabaseChecker6_3_1 {
         System.setProperty(Context.URL_PKG_PREFIXES, "org.bonitasoft.engine.local");
 
         springContext = new ClassPathXmlApplicationContext("datasource.xml", "jndi-setup.xml");
+    }
+
+    @Test
+    public void check_engine_works() throws Exception {
+        final SearchResult<Profile> searchProfiles = profileAPI.searchProfiles(new SearchOptionsBuilder(0, 10).done());
+        assertThat(searchProfiles.getResult()).isNotEmpty();
+    }
+
+    @AfterClass
+    public static void teardown() throws BonitaException {
+        apiTestUtil.logoutOnTenant();
+        final PlatformSession pSession = apiTestUtil.loginOnPlatform();
+        final PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(pSession);
+        apiTestUtil.stopPlatformAndTenant(platformAPI, false);
+        apiTestUtil.logoutOnPlatform(pSession);
+        springContext.close();
     }
 
     @Test
@@ -174,7 +180,6 @@ public class DatabaseChecker6_3_1 {
         assertNotNull(profile.getCreationDate());
         assertNotEquals(0, profile.getCreationDate());
         assertEquals(profileElement.elementText("description"), profile.getDescription());
-        assertEquals(profileElement.elementText("iconPath"), profile.getIconPath());
         assertNotNull(profile.getLastUpdateDate());
         assertNotEquals(0, profile.getLastUpdateDate());
         assertNotNull(profile.getLastUpdatedBy());

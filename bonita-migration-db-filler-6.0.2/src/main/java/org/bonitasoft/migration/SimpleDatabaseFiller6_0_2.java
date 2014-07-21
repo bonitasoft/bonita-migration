@@ -49,7 +49,7 @@ public class SimpleDatabaseFiller6_0_2 extends DatabaseFiller6_0_2 {
     public Map<String, String> fillDatabase(int nbProcessesDefinitions, int nbProcessInstances, int nbWaitingEvents, int nbDocuments) throws BonitaException,
             Exception {
         logger.info("Starting to fill the database");
-        APISession session = APITestUtil.loginDefaultTenant();
+        APISession session = loginDefaultTenant();
         Map<String, String> stats = new HashMap<String, String>();
         stats.putAll(fillOrganization(session));
         stats.putAll(fillSimpleProcess(session, nbProcessInstances));
@@ -60,9 +60,17 @@ public class SimpleDatabaseFiller6_0_2 extends DatabaseFiller6_0_2 {
         // 6.2.3 specific
         stats.putAll(fillProsessesWithMessageAndTimer(session));
 
-        APITestUtil.logoutTenant(session);
+        logoutTenant(session);
         logger.info("Finished to fill the database");
         return stats;
+    }
+
+    protected void logoutTenant(APISession session) throws BonitaException {
+        APITestUtil.logoutTenant(session);
+    }
+
+    protected APISession loginDefaultTenant() throws BonitaException {
+        return APITestUtil.loginDefaultTenant();
     }
 
     private Map<String, String> fillSimpleProcess(APISession session, int nbProcessInstances) throws Exception {
