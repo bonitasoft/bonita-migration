@@ -1,0 +1,1 @@
+Increase the size of the mime type for the document & the archived document to 255.
