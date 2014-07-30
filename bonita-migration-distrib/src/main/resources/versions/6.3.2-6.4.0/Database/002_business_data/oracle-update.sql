@@ -1,10 +1,10 @@
-ALTER TABLE ref_biz_data_inst ADD COLUMN kind VARCHAR2(10);
+ALTER TABLE ref_biz_data_inst ADD kind VARCHAR2(10);
 @@
 
 UPDATE ref_biz_data_inst SET kind="simple_ref";
 @@
 
-ALTER TABLE ref_biz_data_inst MODIFY COLUMN kind VARCHAR2(10) NOT NULL;
+ALTER TABLE ref_biz_data_inst MODIFY kind NOT NULL;
 @@
 
 CREATE TABLE multi_biz_data (
