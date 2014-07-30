@@ -17,4 +17,4 @@ CREATE TABLE multi_biz_data (
 @@
 
 ALTER TABLE multi_biz_data ADD CONSTRAINT fk_rbdi_mbd FOREIGN KEY (tenantid, id) REFERENCES ref_biz_data_inst(tenantid, id) ON DELETE CASCADE
-GO
+@@
