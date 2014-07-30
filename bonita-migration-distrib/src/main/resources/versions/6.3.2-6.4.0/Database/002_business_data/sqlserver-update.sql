@@ -1,7 +1,7 @@
 ALTER TABLE ref_biz_data_inst ADD kind NVARCHAR(10)
 @@
 
-UPDATE ref_biz_data_inst SET kind="simple_ref"
+UPDATE ref_biz_data_inst SET kind='simple_ref'
 @@
 
 ALTER TABLE ref_biz_data_inst ALTER COLUMN kind NVARCHAR(10) NOT NULL
