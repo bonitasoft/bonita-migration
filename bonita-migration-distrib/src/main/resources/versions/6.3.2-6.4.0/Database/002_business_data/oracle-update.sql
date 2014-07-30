@@ -1,7 +1,7 @@
 ALTER TABLE ref_biz_data_inst ADD kind VARCHAR2(10)
 @@
 
-UPDATE ref_biz_data_inst SET kind="simple_ref"
+UPDATE ref_biz_data_inst SET kind='simple_ref'
 @@
 
 ALTER TABLE ref_biz_data_inst MODIFY kind NOT NULL
