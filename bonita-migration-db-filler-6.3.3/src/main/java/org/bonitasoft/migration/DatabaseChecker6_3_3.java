@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 214 BonitaSoft S.A.
+ * Copyright (C) 2014 BonitaSoft S.A.
  * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
@@ -22,21 +22,29 @@ import org.bonitasoft.engine.bpm.flownode.ArchivedFlowNodeInstance;
 import org.bonitasoft.engine.bpm.flownode.FlowNodeInstanceSearchDescriptor;
 import org.bonitasoft.engine.bpm.process.ProcessInstance;
 import org.bonitasoft.engine.bpm.process.ProcessInstanceSearchDescriptor;
+import org.bonitasoft.engine.exception.BonitaException;
 import org.bonitasoft.engine.search.SearchOptionsBuilder;
 import org.bonitasoft.engine.test.APITestUtil;
+import org.bonitasoft.engine.test.ClientEventUtil;
 import org.bonitasoft.engine.test.TestStates;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
 
-public class DatabaseChecker6_3_3 extends DatabaseCheckerInitiliazer6_3_1 {
+public class DatabaseChecker6_3_3 extends DatabaseCheckerInitilizer6_3_3 {
 
-    private static APITestUtil apiTestUtil;
+    private final APITestUtil apiTestUtil = new APITestUtil();
 
     public static void main(final String[] args) throws Exception {
         JUnitCore.main(DatabaseChecker6_3_3.class.getName());
+    }
 
-        apiTestUtil = new APITestUtil();
+    @Before
+    public void init() throws BonitaException {
         apiTestUtil.loginOnDefaultTenantWithDefaultTechnicalLogger();
+        // new version of class AddHandlerCommand.java in 6.3.3, that is useful for gatewayinstance_created event:
+        ClientEventUtil.undeployCommand(apiTestUtil.getSession());
+        ClientEventUtil.deployCommand(apiTestUtil.getSession());
     }
 
     @Test
