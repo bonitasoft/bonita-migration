@@ -24,8 +24,8 @@ ext{
     distDir="${buildDir.path}/dist"
     //used for oracle: creates table not the same way
     //used for postgres: give a user able to drop and create databases
-    dbRootUser = System.getProperty("db.root.user","postgres")
-    dbRootPassword = System.getProperty("db.root.password","postgres")
+    dbRootUser = System.getProperty("db.root.user","bonita")
+    dbRootPassword = System.getProperty("db.root.password","bpm")
 
     //for postgres
     databaseName = "migration"
@@ -82,7 +82,6 @@ dependencies {
 URLClassLoader loader = GroovyObject.class.classLoader
 configurations.drivers.each {File file ->
     loader.addURL(file.toURI().toURL())
-    println file.toURI().toURL()
 }
 //drop and create the database
 task cleardb<<{
@@ -175,12 +174,9 @@ task unpackdist(dependsOn:unpackhome, type: Copy){
     from zipTree(zipFile)
     into outputDir
 }
-
 task copyDrivers(dependsOn:unpackdist, type: Copy){
-    println "Destination : ${distDir}/lib"
-    println configurations.drivers.findAll()
+    into "$distDir/lib"
     from configurations.drivers
-    into "${distDir}/lib"
 }
 
 task changeproperties(dependsOn:copyDrivers)<<{
@@ -221,7 +217,7 @@ task scriptsintegration(dependsOn:changeproperties, type: JavaExec) {
     
 }
 
-task execfill(dependsOn:changeproperties, type: JavaExec) {
+task execfill(dependsOn:scriptsintegration, type: JavaExec) {
     doFirst {
         println "execute fill of the database using classpath of $sourceversion"
         systemProperties(["sysprop.bonita.db.vendor":dbvendor,
