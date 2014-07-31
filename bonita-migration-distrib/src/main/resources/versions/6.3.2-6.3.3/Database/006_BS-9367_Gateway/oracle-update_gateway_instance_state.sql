@@ -1,5 +1,5 @@
 UPDATE (
-    SELECT f, af
+    SELECT f.*, af.*
     FROM flownode_instance f
         LEFT JOIN arch_flownode_instance af 
         ON f.id = af.sourceObjectId
