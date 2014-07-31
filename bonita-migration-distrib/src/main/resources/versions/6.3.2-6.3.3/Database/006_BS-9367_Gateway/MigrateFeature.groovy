@@ -1,4 +1,5 @@
 import org.bonitasoft.migration.core.MigrationUtil;
+import org.bonitasoft.migration.core.IOUtil;
 
 
 def tenantsId = MigrationUtil.getTenantsId(dbVendor, sql)
