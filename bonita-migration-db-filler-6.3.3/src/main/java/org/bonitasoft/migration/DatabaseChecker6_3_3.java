@@ -41,7 +41,7 @@ public class DatabaseChecker6_3_3 extends DatabaseChecker6_3_2 {
     public void check_migration_of_corrupted_gateways() throws Exception {
         SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 1);
         builder.filter(ProcessInstanceSearchDescriptor.NAME, "Process With Corrupted Gateways");
-        final List<ProcessInstance> processInstances = apiTestUtil.getProcessAPI().searchOpenProcessInstances(builder.done()).getResult();
+        final List<ProcessInstance> processInstances = apiTestUtil.getProcessAPI().searchProcessInstances(builder.done()).getResult();
         assertFalse(processInstances.isEmpty());
 
         apiTestUtil.waitForFlowNodeInState(processInstances.get(0), "OutGateway", "completed", true);
