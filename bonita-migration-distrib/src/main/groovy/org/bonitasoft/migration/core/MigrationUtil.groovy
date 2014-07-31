@@ -235,6 +235,19 @@ public class MigrationUtil {
         }
         return id
     }
+    
+    public static List<Long> getIds(File feature, String dbVendor, String fileExtension, Map<String, String> parameters, groovy.sql.Sql sql){
+        if (sql == null){
+            throw new IllegalArgumentException("Can't execute getId method with arguments : sql = " + sql);
+        }
+        def sqlFile = getSqlFile(feature, dbVendor, fileExtension)
+        
+        def ids = []
+        sql.query(getSqlContent(sqlFile.text, parameters).get(0)) { ResultSet rs ->
+            while (rs.next()) ids.add(rs.getLong(1))
+        }
+        return ids
+    }
 
     public static List<Object> getTenantsId(String dbVendor, groovy.sql.Sql sql){
         if (sql == null){
