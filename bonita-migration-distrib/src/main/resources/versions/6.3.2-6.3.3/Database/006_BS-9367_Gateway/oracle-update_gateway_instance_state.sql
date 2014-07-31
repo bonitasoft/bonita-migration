@@ -1,6 +1,6 @@
 UPDATE (
     SELECT f, af
-    FROM flownode_Instance f
+    FROM flownode_instance f
         LEFT JOIN arch_flownode_instance af 
         ON f.id = af.sourceObjectId
 	WHERE af.sourceObjectId = :flowNodeInstanceId

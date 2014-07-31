@@ -1,14 +1,16 @@
-UPDATE flownode_Instance
+UPDATE flownode_instance
 SET 
-    f.terminal = af.terminal,
-    f.stable = af.stable,
-    f.stateId = af.stateId,
-    f.stateName = af.stateName,
-    f.hitBys = af.hitBys,
-    f.prev_state_id = 0
-FROM flownode_Instance f LEFT JOIN arch_flownode_instance af
-WHERE f.id = af.sourceObjectId
-AND af.sourceObjectId = :flowNodeInstanceId
-AND af.stateName = 'executing'
-AND af.tenantId = :tenantId
-AND af.kind = 'gate'
+    terminal = arch_flownode_instance.terminal,
+    stable = arch_flownode_instance.stable,
+    stateId = arch_flownode_instance.stateId,
+    stateName = arch_flownode_instance.stateName,
+    hitBys = arch_flownode_instance.hitBys,
+    prev_state_id = 0
+FROM
+    arch_flownode_instance
+WHERE
+    flownode_instance.id = arch_flownode_instance.sourceObjectId
+    AND arch_flownode_instance.sourceObjectId = :flowNodeInstanceId
+	AND arch_flownode_instance.stateName = 'executing'
+	AND arch_flownode_instance.tenantId = :tenantId
+	AND arch_flownode_instance.kind = 'gate'

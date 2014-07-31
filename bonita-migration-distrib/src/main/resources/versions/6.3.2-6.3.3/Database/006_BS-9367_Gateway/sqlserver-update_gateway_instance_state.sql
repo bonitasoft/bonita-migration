@@ -1,4 +1,4 @@
-UPDATE flownode_Instance f
+UPDATE flownode_instance f
 SET
     f.terminal = af.terminal,
     f.stable = af.stable,
@@ -6,7 +6,7 @@ SET
     f.stateName = af.stateName,
     f.hitBys = af.hitBys,
     f.prev_state_id = 0
-FROM flownode_Instance f
+FROM flownode_instance f
 	LEFT JOIN arch_flownode_instance af 
 	ON f.id = af.sourceObjectId
 WHERE af.sourceObjectId = :flowNodeInstanceId

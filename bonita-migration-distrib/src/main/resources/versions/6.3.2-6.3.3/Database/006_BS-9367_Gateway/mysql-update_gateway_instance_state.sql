@@ -1,4 +1,4 @@
-UPDATE flownode_Instance f
+UPDATE flownode_instance f
 	LEFT JOIN arch_flownode_instance af 
 	ON f.id = af.sourceObjectId
 SET
