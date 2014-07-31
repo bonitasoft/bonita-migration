@@ -5,7 +5,7 @@ import org.bonitasoft.migration.core.IOUtil;
 def tenantsId = MigrationUtil.getTenantsId(dbVendor, sql)
 
 IOUtil.executeWrappedWithTabs {
-    println "Executing update for each tenant : " + tenants
+    println "Executing update for each tenant : " + tenantsId
     tenantsId.each {
         println "For tenant with id = " + it
         IOUtil.executeWrappedWithTabs {
