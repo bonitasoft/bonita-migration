@@ -11,5 +11,5 @@ FROM flownode_Instance f
 	ON f.id = af.sourceObjectId
 WHERE af.sourceObjectId = :flowNodeInstanceId
 AND af.stateName = 'executing'
-AND tenantId = :tenantId 
-AND kind = 'gate'
+AND f.tenantId = :tenantId
+AND f.kind = 'gate'

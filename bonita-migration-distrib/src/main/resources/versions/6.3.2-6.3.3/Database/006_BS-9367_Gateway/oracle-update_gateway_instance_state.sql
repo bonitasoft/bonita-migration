@@ -1,6 +1,13 @@
-UPDATE flownode_Instance f
-	LEFT JOIN arch_flownode_instance af 
-	ON f.id = af.sourceObjectId
+UPDATE (
+    SELECT f, af
+    FROM flownode_Instance f
+        LEFT JOIN arch_flownode_instance af 
+        ON f.id = af.sourceObjectId
+	WHERE af.sourceObjectId = :flowNodeInstanceId
+	AND af.stateName = 'executing'
+	AND f.tenantId = :tenantId
+	AND f.kind = 'gate'
+)
 SET
     f.terminal = af.terminal,
     f.stable = af.stable,
@@ -8,7 +15,3 @@ SET
     f.stateName = af.stateName,
     f.hitBys = af.hitBys,
     f.prev_state_id = 0
-WHERE af.sourceObjectId = :flowNodeInstanceId
-AND af.stateName = 'executing'
-AND tenantId = :tenantId 
-AND kind = 'gate'

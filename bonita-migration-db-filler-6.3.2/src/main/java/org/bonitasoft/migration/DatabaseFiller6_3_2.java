@@ -58,16 +58,9 @@ public class DatabaseFiller6_3_2 extends SimpleDatabaseFiller6_3_1 {
         final PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(pSession);
         stopPlatformAndTenant(platformAPI);
         logoutPlatform(pSession);
-        // shutdownWorkService();
     }
 
     public void startNode() throws BonitaException, IOException, Exception {
-        // logger.info("Using bonita.home: " + System.getProperty(BONITA_HOME));
-        // // Force these system properties
-        // System.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.bonitasoft.engine.local.SimpleMemoryContextFactory");
-        // System.setProperty(Context.URL_PKG_PREFIXES, "org.bonitasoft.engine.local");
-        // springContext = new ClassPathXmlApplicationContext("datasource.xml", "jndi-setup.xml");
-
         final PlatformSession session = apiTestUtil.loginOnPlatform();
         final PlatformAPI platformAPI = apiTestUtil.getPlatformAPI(session);
         platformAPI.startNode();
@@ -77,7 +70,6 @@ public class DatabaseFiller6_3_2 extends SimpleDatabaseFiller6_3_1 {
     public void stopNode() throws Exception {
         final PlatformSession pSession = loginPlatform();
         final PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(pSession);
-        // platformAPI.stopPlatformAndTenant(platformAPI, true);
         platformAPI.stopNode();
         logoutPlatform(pSession);
     }
@@ -127,12 +119,7 @@ public class DatabaseFiller6_3_2 extends SimpleDatabaseFiller6_3_1 {
         apiTestUtil.loginOnDefaultTenantWithDefaultTechnicalLogger();
         waitForGateway(outGatewayName, processInstance.getId(), "completed");
 
-        try {
-            apiTestUtil.getProcessAPI().executeFlowNode(williamId, humanTaskInstance.getId());
-        } catch (final Exception e) {
-            // Nothing to do
-        }
-
+        apiTestUtil.getProcessAPI().executeFlowNode(williamId, humanTaskInstance.getId());
         waitForGateway(outGatewayName, processInstance.getId(), TestStates.getFailedState());
 
         return Collections.singletonMap("Process definitions", String.valueOf(1));

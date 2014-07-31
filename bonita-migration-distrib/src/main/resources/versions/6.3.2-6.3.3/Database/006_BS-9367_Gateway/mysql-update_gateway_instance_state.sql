@@ -9,6 +9,6 @@ SET
     f.hitBys = af.hitBys,
     f.prev_state_id = 0
 WHERE af.sourceObjectId = :flowNodeInstanceId
-AND af.stateName = "executing"
-AND tenantId = :tenantId 
-AND kind = "gate"
+AND af.stateName = 'executing'
+AND f.tenantId = :tenantId
+AND f.kind = 'gate'

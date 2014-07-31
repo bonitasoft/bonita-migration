@@ -236,15 +236,19 @@ public class MigrationUtil {
         return id
     }
     
+    /**
+     * Return a list of ids. 
+     * The SQL file to execute need to begin by "SELECT id FROM...".
+     */
     public static List<Long> getIds(File feature, String dbVendor, String fileExtension, Map<String, String> parameters, groovy.sql.Sql sql){
         if (sql == null){
             throw new IllegalArgumentException("Can't execute getId method with arguments : sql = " + sql);
         }
         def sqlFile = getSqlFile(feature, dbVendor, fileExtension)
-        
         def ids = []
         sql.query(getSqlContent(sqlFile.text, parameters).get(0)) { ResultSet rs ->
-            while (rs.next()) ids.add(rs.getLong(1))
+            while (rs.next())
+                ids.add(rs.getLong(1))
         }
         return ids
     }

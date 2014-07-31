@@ -6,13 +6,13 @@ def tenantsId = MigrationUtil.getTenantsId(dbVendor, sql)
 
 IOUtil.executeWrappedWithTabs {
     println "Executing update for each tenant : " + tenantsId
-    tenantsId.each {
-        println "For tenant with id = " + it
-        IOUtil.executeWrappedWithTabs {
+    IOUtil.executeWrappedWithTabs {
+        tenantsId.each {
+            println "For tenant with id = " + it
             println "Getting Failed gateways"
             def parameters = Collections.singletonMap(":tenantId", String.valueOf(it))
             def List<Long> failedGatewaysId = MigrationUtil.getIds(feature, dbVendor, "get_failed_gateway_instances_id", parameters, sql)
-            println "Found " + failedGatewaysId.size() + " gateways"
+            println "Found " + failedGatewaysId.size() + " failed gateways"
             
             println "Getting related Archived gateway instances"
             for (Long failedGatewayId : failedGatewaysId) {
