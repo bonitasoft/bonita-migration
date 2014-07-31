@@ -10,13 +10,14 @@ IOUtil.executeWrappedWithTabs {
         println "For tenant with id = " + it
         IOUtil.executeWrappedWithTabs {
             println "Getting Failed gateways"
-            def List<Long> failedGatewaysId = MigrationUtil.getIds(feature, dbVendor, "get_failed_gateway_instances_id", it, sql)
+            def parameters = Collections.singletonMap(":tenantId", String.valueOf(it))
+            def List<Long> failedGatewaysId = MigrationUtil.getIds(feature, dbVendor, "get_failed_gateway_instances_id", parameters, sql)
             println "Found " + failedGateways.size() + " gateways"
             
             println "Getting related Archived gateway instances"
             for (Long failedGatewayId : failedGatewaysId) {
                 // Get the gateways in unknown state
-                def parameters = new HashMap()
+                parameters = new HashMap()
                 parameters.put(":tenantId", String.valueOf(it))
                 parameters.put(":flowNodeInstanceId", String.valueOf(failedGatewayId))
                 def List<Long> archGatesInUnknownState = MigrationUtil.getIds(feature, dbVendor, "get_archived_gateway_instances_in_unknown_state_id", parameters, sql)
