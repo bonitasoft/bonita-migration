@@ -10,6 +10,6 @@ FROM flownode_Instance f
 	LEFT JOIN arch_flownode_instance af 
 	ON f.id = af.sourceObjectId
 WHERE af.sourceObjectId = :flowNodeInstanceId
-AND af.stateName = "executing"
+AND af.stateName = 'executing'
 AND tenantId = :tenantId 
-AND kind = "gate"
+AND kind = 'gate'
