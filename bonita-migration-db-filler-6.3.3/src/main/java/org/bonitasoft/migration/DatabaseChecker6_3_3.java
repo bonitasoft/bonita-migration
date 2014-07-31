@@ -25,9 +25,10 @@ import org.bonitasoft.engine.bpm.process.ProcessInstanceSearchDescriptor;
 import org.bonitasoft.engine.search.SearchOptionsBuilder;
 import org.bonitasoft.engine.test.APITestUtil;
 import org.bonitasoft.engine.test.TestStates;
+import org.junit.Test;
 import org.junit.runner.JUnitCore;
 
-public class DatabaseChecker6_3_3 extends DatabaseChecker6_3_2 {
+public class DatabaseChecker6_3_3 extends DatabaseCheckerInitiliazer6_3_1 {
 
     private static APITestUtil apiTestUtil;
 
@@ -38,6 +39,7 @@ public class DatabaseChecker6_3_3 extends DatabaseChecker6_3_2 {
         apiTestUtil.loginOnDefaultTenantWithDefaultTechnicalLogger();
     }
 
+    @Test
     public void check_migration_of_corrupted_gateways() throws Exception {
         SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 1);
         builder.filter(ProcessInstanceSearchDescriptor.NAME, "Process With Corrupted Gateways");
