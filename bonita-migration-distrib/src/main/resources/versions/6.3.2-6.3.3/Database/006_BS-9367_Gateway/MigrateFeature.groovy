@@ -1,5 +1,9 @@
 import org.bonitasoft.migration.core.MigrationUtil;
 import org.bonitasoft.migration.core.IOUtil;
+import groovy.sql.Sql
+import java.sql.ResultSet
+import groovy.sql.GroovyRowResult
+
 
 
 def tenantsId = MigrationUtil.getTenantsId(dbVendor, sql)
@@ -22,10 +26,10 @@ IOUtil.executeWrappedWithTabs {
              
                 if (archGatesInUnknownState.isEmpty()) {  
                    println "Updating the state of the gateway with the id " + failedGatewayId
-                    MigrationUtil.executeSqlFile(feature, dbVendor, "update_gateway_instance_state", parameters, sql, false)
+                   MigrationUtil.executeSqlFile(feature, dbVendor, "update_gateway_instance_state", parameters, sql, false)
                     
                    println "Deleting the archived gateway related to the gateway with the id " + failedGatewayId
-                    MigrationUtil.executeSqlFile(feature, dbVendor, "delete_archived_gateway_instances", parameters, sql, false)
+                   MigrationUtil.executeSqlFile(feature, dbVendor, "delete_archived_gateway_instances", parameters, sql, false)
                 } else {
                    println "**** Unknown gateway entry found for " + failedGatewayId + ", no database changes made"
                 }

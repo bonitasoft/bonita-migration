@@ -4,7 +4,6 @@ SET
     stable = arch_flownode_instance.stable,
     stateId = arch_flownode_instance.stateId,
     stateName = arch_flownode_instance.stateName,
-    hitBys = arch_flownode_instance.hitBys,
     prev_state_id = 0
 FROM
     arch_flownode_instance
