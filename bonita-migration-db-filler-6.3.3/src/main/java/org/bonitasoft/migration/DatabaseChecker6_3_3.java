@@ -22,43 +22,57 @@ import org.bonitasoft.engine.bpm.flownode.ArchivedFlowNodeInstance;
 import org.bonitasoft.engine.bpm.flownode.FlowNodeInstanceSearchDescriptor;
 import org.bonitasoft.engine.bpm.process.ProcessInstance;
 import org.bonitasoft.engine.bpm.process.ProcessInstanceSearchDescriptor;
-import org.bonitasoft.engine.exception.BonitaException;
+import org.bonitasoft.engine.search.Order;
 import org.bonitasoft.engine.search.SearchOptionsBuilder;
-import org.bonitasoft.engine.test.APITestUtil;
-import org.bonitasoft.engine.test.ClientEventUtil;
 import org.bonitasoft.engine.test.TestStates;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
 
 public class DatabaseChecker6_3_3 extends DatabaseCheckerInitilizer6_3_3 {
 
-    private final APITestUtil apiTestUtil = new APITestUtil();
-
     public static void main(final String[] args) throws Exception {
         JUnitCore.main(DatabaseChecker6_3_3.class.getName());
     }
 
-    @Before
-    public void init() throws BonitaException {
-        apiTestUtil.loginOnDefaultTenantWithDefaultTechnicalLogger();
-        // new version of class AddHandlerCommand.java in 6.3.3, that is useful for gatewayinstance_created event:
-        ClientEventUtil.undeployCommand(apiTestUtil.getSession());
-        ClientEventUtil.deployCommand(apiTestUtil.getSession());
-    }
-
     @Test
-    public void check_migration_of_corrupted_gateways() throws Exception {
+    public void check_migration_of_corrupted_gateways_with_no_waiting_task() throws Exception {
         SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 1);
         builder.filter(ProcessInstanceSearchDescriptor.NAME, "Process With Corrupted Gateways");
+        builder.sort(ProcessInstanceSearchDescriptor.ID, Order.ASC);
         final List<ProcessInstance> processInstances = apiTestUtil.getProcessAPI().searchProcessInstances(builder.done()).getResult();
         assertFalse(processInstances.isEmpty());
 
-        apiTestUtil.waitForFlowNodeInState(processInstances.get(0), "OutGateway", "completed", true);
+        apiTestUtil.waitForFlowNodeInState(processInstances.get(0), "OutGateway", TestStates.getNormalFinalState(), true);
         builder = new SearchOptionsBuilder(0, 1);
         builder.filter(FlowNodeInstanceSearchDescriptor.NAME, "OutGateway");
-        builder.and().filter(FlowNodeInstanceSearchDescriptor.STATE_NAME, TestStates.getFailedState());
+        builder.filter(FlowNodeInstanceSearchDescriptor.STATE_NAME, TestStates.getFailedState());
         final List<ArchivedFlowNodeInstance> archivedFailedGateways = apiTestUtil.getProcessAPI().searchArchivedFlowNodeInstances(builder.done()).getResult();
         assertTrue(archivedFailedGateways.isEmpty());
     }
+
+    // @Test
+    // public void check_migration_of_corrupted_gateways_with_waiting_task() throws Exception {
+    // SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 1);
+    // builder.filter(ProcessInstanceSearchDescriptor.NAME, "Process With Corrupted Gateways");
+    // builder.sort(ProcessInstanceSearchDescriptor.ID, Order.DESC);
+    // final List<ProcessInstance> processInstances = apiTestUtil.getProcessAPI().searchProcessInstances(builder.done()).getResult();
+    // assertFalse(processInstances.isEmpty());
+    //
+    // final ProcessInstance processInstance = processInstances.get(0);
+    // apiTestUtil.waitForFlowNodeInState(processInstance, "OutGateway", TestStates.getExecutingState(), true);
+    // builder = new SearchOptionsBuilder(0, 1);
+    // builder.filter(FlowNodeInstanceSearchDescriptor.NAME, "OutGateway");
+    // builder.filter(FlowNodeInstanceSearchDescriptor.STATE_NAME, TestStates.getNormalFinalState());
+    // final List<ArchivedFlowNodeInstance> archivedFailedGateways = apiTestUtil.getProcessAPI().searchArchivedFlowNodeInstances(builder.done()).getResult();
+    // assertTrue(archivedFailedGateways.isEmpty());
+    //
+    // // Execute the human task & check the gateway is completed
+    // final long williamId = apiTestUtil.getIdentityAPI().getUserByUserName("william.jobs").getId();
+    // builder = new SearchOptionsBuilder(0, 1);
+    // builder.filter(FlowNodeInstanceSearchDescriptor.NAME, "HumanTask");
+    // final List<HumanTaskInstance> humanTasks = apiTestUtil.getProcessAPI().searchHumanTaskInstances(builder.done()).getResult();
+    // assertFalse(humanTasks.isEmpty());
+    // apiTestUtil.getProcessAPI().executeFlowNode(williamId, humanTasks.get(0).getId());
+    // apiTestUtil.waitForFlowNodeInState(processInstance, "OutGateway", TestStates.getNormalFinalState(), true);
+    // }
 }

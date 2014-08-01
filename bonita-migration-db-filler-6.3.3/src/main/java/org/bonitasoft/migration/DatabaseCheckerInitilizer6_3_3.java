@@ -13,30 +13,14 @@
  **/
 package org.bonitasoft.migration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import javax.naming.Context;
 
-import org.bonitasoft.engine.api.CommandAPI;
-import org.bonitasoft.engine.api.IdentityAPI;
 import org.bonitasoft.engine.api.PlatformAPI;
 import org.bonitasoft.engine.api.PlatformAPIAccessor;
-import org.bonitasoft.engine.api.ProcessAPI;
-import org.bonitasoft.engine.api.ProfileAPI;
-import org.bonitasoft.engine.api.TenantAPIAccessor;
-import org.bonitasoft.engine.bpm.flownode.ActivityInstance;
-import org.bonitasoft.engine.bpm.flownode.ActivityInstanceSearchDescriptor;
-import org.bonitasoft.engine.bpm.flownode.HumanTaskInstance;
-import org.bonitasoft.engine.bpm.process.ArchivedProcessInstance;
-import org.bonitasoft.engine.bpm.process.ArchivedProcessInstancesSearchDescriptor;
-import org.bonitasoft.engine.bpm.process.ProcessInstanceState;
 import org.bonitasoft.engine.exception.BonitaException;
-import org.bonitasoft.engine.search.SearchOptionsBuilder;
-import org.bonitasoft.engine.search.SearchResult;
-import org.bonitasoft.engine.session.APISession;
 import org.bonitasoft.engine.session.PlatformSession;
 import org.bonitasoft.engine.test.APITestUtil;
+import org.bonitasoft.engine.test.ClientEventUtil;
 import org.bonitasoft.engine.test.PlatformTestUtil;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -50,19 +34,9 @@ public class DatabaseCheckerInitilizer6_3_3 {
 
     private static ClassPathXmlApplicationContext springContext;
 
-    protected static ProcessAPI processAPI;
-
-    protected static ProfileAPI profileAPI;
-
-    protected static IdentityAPI identityApi;
-
-    protected static CommandAPI commandApi;
-
-    protected static APISession session;
-
     private static PlatformTestUtil platformTestUtil = new PlatformTestUtil();
 
-    private static APITestUtil apiTestUtil = new APITestUtil();
+    protected static APITestUtil apiTestUtil = new APITestUtil();
 
     @BeforeClass
     public static void setup() throws BonitaException {
@@ -71,12 +45,11 @@ public class DatabaseCheckerInitilizer6_3_3 {
         PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(platformSession);
         platformAPI.startNode();
         platformTestUtil.logoutOnPlatform(platformSession);
+
         apiTestUtil.loginOnDefaultTenantWithDefaultTechnicalLogger();
-        session = apiTestUtil.getSession();
-        processAPI = TenantAPIAccessor.getProcessAPI(session);
-        identityApi = TenantAPIAccessor.getIdentityAPI(session);
-        profileAPI = TenantAPIAccessor.getProfileAPI(session);
-        commandApi = TenantAPIAccessor.getCommandAPI(session);
+        // new version of class AddHandlerCommand.java in 6.3.3, that is useful for gatewayinstance_created event:
+        ClientEventUtil.undeployCommand(apiTestUtil.getSession());
+        ClientEventUtil.deployCommand(apiTestUtil.getSession());
     }
 
     @AfterClass
@@ -105,34 +78,6 @@ public class DatabaseCheckerInitilizer6_3_3 {
 
     private static void setSystemPropertyIfNotSet(final String property, final String value) {
         System.setProperty(property, System.getProperty(property, value));
-    }
-
-    protected HumanTaskInstance waitForUserTask(final String taskName, final long processInstanceId, final int timeout) throws Exception {
-        long now = System.currentTimeMillis();
-        SearchResult<ActivityInstance> searchResult;
-        do {
-            SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 1);
-            builder.filter(ActivityInstanceSearchDescriptor.PROCESS_INSTANCE_ID, processInstanceId);
-            builder.filter(ActivityInstanceSearchDescriptor.NAME, taskName);
-            builder.filter(ActivityInstanceSearchDescriptor.STATE_NAME, "ready");
-            searchResult = processAPI.searchActivities(builder.done());
-        } while (searchResult.getCount() == 0 && now + timeout > System.currentTimeMillis());
-        assertEquals(1, searchResult.getCount());
-        final HumanTaskInstance getHumanTaskInstance = processAPI.getHumanTaskInstance(searchResult.getResult().get(0).getId());
-        assertNotNull(getHumanTaskInstance);
-        return getHumanTaskInstance;
-    }
-
-    protected void waitForProcessToFinish(final long processInstanceId, final int timeout) throws Exception {
-        long now = System.currentTimeMillis();
-        SearchResult<ArchivedProcessInstance> searchResult;
-        do {
-            SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 1);
-            builder.filter(ArchivedProcessInstancesSearchDescriptor.SOURCE_OBJECT_ID, processInstanceId);
-            builder.filter(ArchivedProcessInstancesSearchDescriptor.STATE_ID, ProcessInstanceState.COMPLETED.getId());
-            searchResult = processAPI.searchArchivedProcessInstances(builder.done());
-        } while (searchResult.getCount() == 0 && now + timeout > System.currentTimeMillis());
-        assertEquals(1, searchResult.getCount());
     }
 
 }
