@@ -77,17 +77,30 @@ class UpdatedDefaultCommands {
         nextIds.put(tenantId, id +1);
 
         boolean system = true;
-        def insertCommand = """
-            INSERT INTO command (tenantid, id, name, description, IMPLEMENTATION, system)
-            VALUES (
-                $tenantId,
-                $id,
-                $descriptor.name,
-                $descriptor.description,
-                $descriptor.implementation,
-                $system
-            )
-        """
+//        def insertCommand = """
+//            INSERT INTO command (tenantid, id, name, description, IMPLEMENTATION, system)
+//            VALUES (
+//                $tenantId,
+//                $id,
+//                $descriptor.name,
+//                $descriptor.description,
+//                $descriptor.implementation,
+//                $system
+//            )
+//        """
+
+        String insertCommand = "INSERT INTO command (tenantid, id, name, description, IMPLEMENTATION, system) VALUES (";
+        insertCommand = insertCommand + "" + tenantId + ",";
+        insertCommand = insertCommand + "" + id.toString() + ",";
+        insertCommand = insertCommand + "'" + descriptor.name + "',";
+        insertCommand = insertCommand + "'" + descriptor.description + "',";
+        insertCommand = insertCommand + "'" + descriptor.implementation + "',";
+        insertCommand = insertCommand + "" + "1" + "";
+        insertCommand = insertCommand + ")";
+
+        println "INSERTCOMMAND: " + insertCommand;
+
         sql.executeInsert(insertCommand);
+
     }
 }
