@@ -1,17 +1,17 @@
 UPDATE (
-    SELECT f.*, af.*
-    FROM flownode_instance f
-        LEFT JOIN arch_flownode_instance af 
-        ON f.id = af.sourceObjectId
-	WHERE af.sourceObjectId = :flowNodeInstanceId
-	AND af.stateName = 'executing'
-	AND f.tenantId = :tenantId
-	AND f.kind = 'gate'
+    SELECT flownode_instance.*, arch_flownode_instance.*
+    FROM flownode_instance
+        LEFT JOIN arch_flownode_instance
+        ON flownode_instance.id = arch_flownode_instance.sourceObjectId
+	WHERE arch_flownode_instance.sourceObjectId = :flowNodeInstanceId
+	AND arch_flownode_instance.stateName = 'executing'
+	AND flownode_instance.tenantId = :tenantId
+	AND flownode_instance.kind = 'gate'
 )
 SET
-    f.terminal = af.terminal,
-    f.stable = af.stable,
-    f.stateId = af.stateId,
-    f.stateName = af.stateName,
-    f.hitBys = af.hitBys,
-    f.prev_state_id = 0
+    flownode_instance.terminal = arch_flownode_instance.terminal,
+    flownode_instance.stable = arch_flownode_instance.stable,
+    flownode_instance.stateId = arch_flownode_instance.stateId,
+    flownode_instance.stateName = arch_flownode_instance.stateName,
+    flownode_instance.hitBys = arch_flownode_instance.hitBys,
+    flownode_instance.prev_state_id = 0
