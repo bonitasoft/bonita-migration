@@ -104,9 +104,10 @@ public class DatabaseFiller6_3_2 extends SimpleDatabaseFiller6_3_1 {
         final String autoTaskName = "AutoTask";
         final ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("Process With Corrupted Gateways", PROCESS_VERSION);
         builder.addActor(actorName).addAutomaticTask(autoTaskName).addUserTask(humanTaskName, actorName).addStartEvent("Start");
+        builder.addEndEvent("end");
         builder.addGateway(inGatewayName, GatewayType.PARALLEL).addGateway(outGatewayName, GatewayType.INCLUSIVE);
         builder.addTransition("Start", inGatewayName).addTransition(inGatewayName, autoTaskName).addTransition(inGatewayName, humanTaskName)
-                .addTransition(autoTaskName, outGatewayName).addTransition(humanTaskName, outGatewayName);
+                .addTransition(autoTaskName, outGatewayName).addTransition(humanTaskName, outGatewayName).addTransition(outGatewayName,"end");
 
         final ProcessDefinition processDefinition = apiTestUtil.deployAndEnableProcessWithActor(builder.done(), actorName, williamId);
         // Start process with the gateway with the state "failed" & the executed human task

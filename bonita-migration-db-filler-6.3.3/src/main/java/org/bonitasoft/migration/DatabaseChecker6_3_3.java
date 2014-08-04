@@ -18,10 +18,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.bonitasoft.engine.bpm.flownode.ArchivedFlowNodeInstance;
-import org.bonitasoft.engine.bpm.flownode.FlowNodeInstance;
-import org.bonitasoft.engine.bpm.flownode.FlowNodeInstanceSearchDescriptor;
-import org.bonitasoft.engine.bpm.flownode.HumanTaskInstance;
+import org.bonitasoft.engine.bpm.flownode.*;
 import org.bonitasoft.engine.bpm.process.ProcessInstance;
 import org.bonitasoft.engine.bpm.process.ProcessInstanceSearchDescriptor;
 import org.bonitasoft.engine.search.Order;
@@ -83,8 +80,8 @@ public class DatabaseChecker6_3_3 extends DatabaseCheckerInitilizer6_3_3 {
         // Execute the human task & check the gateway is completed
         final long williamId = apiTestUtil.getIdentityAPI().getUserByUserName("william.jobs").getId();
         builder = new SearchOptionsBuilder(0, 1);
-        builder.filter(FlowNodeInstanceSearchDescriptor.NAME, "HumanTask");
-        builder.filter(FlowNodeInstanceSearchDescriptor.PARENT_PROCESS_INSTANCE_ID, processInstance.getId());
+        builder.filter(HumanTaskInstanceSearchDescriptor.NAME, "HumanTask");
+        builder.filter(HumanTaskInstanceSearchDescriptor.PROCESS_INSTANCE_ID, processInstance.getId());
         final List<HumanTaskInstance> humanTasks = apiTestUtil.getProcessAPI().searchHumanTaskInstances(builder.done()).getResult();
         assertFalse(humanTasks.isEmpty());
         apiTestUtil.getProcessAPI().executeFlowNode(williamId, humanTasks.get(0).getId());

@@ -36,7 +36,7 @@ class ResetFailedGateways {
                 //delete arch gateways for completed gateways (it does not delete the arch gateway in executing)
                 sql.execute("DELETE FROM arch_flownode_instance " +
                         "WHERE tenantId = $tenantId " +
-                        "AND stateName = 'completed'" +
+                        "AND (stateName = 'completed' OR stateName = 'failed' )" +
                         "AND sourceObjectId IN " +
                         "(SELECT flownode_instance.id FROM flownode_instance WHERE " +
                         "flownode_instance.tenantId = $tenantId " +
