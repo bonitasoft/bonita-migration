@@ -19,7 +19,9 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import org.bonitasoft.engine.bpm.flownode.ArchivedFlowNodeInstance;
+import org.bonitasoft.engine.bpm.flownode.FlowNodeInstance;
 import org.bonitasoft.engine.bpm.flownode.FlowNodeInstanceSearchDescriptor;
+import org.bonitasoft.engine.bpm.flownode.HumanTaskInstance;
 import org.bonitasoft.engine.bpm.process.ProcessInstance;
 import org.bonitasoft.engine.bpm.process.ProcessInstanceSearchDescriptor;
 import org.bonitasoft.engine.search.Order;
@@ -38,41 +40,54 @@ public class DatabaseChecker6_3_3 extends DatabaseCheckerInitilizer6_3_3 {
     public void check_migration_of_corrupted_gateways_with_no_waiting_task() throws Exception {
         SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 1);
         builder.filter(ProcessInstanceSearchDescriptor.NAME, "Process With Corrupted Gateways");
-        builder.sort(ProcessInstanceSearchDescriptor.ID, Order.ASC);
+        builder.sort(ProcessInstanceSearchDescriptor.START_DATE, Order.ASC);
         final List<ProcessInstance> processInstances = apiTestUtil.getProcessAPI().searchProcessInstances(builder.done()).getResult();
         assertFalse(processInstances.isEmpty());
 
-        apiTestUtil.waitForFlowNodeInState(processInstances.get(0), "OutGateway", TestStates.getNormalFinalState(), true);
+        // Check no failed state for the gateway
+        final ProcessInstance processInstance = processInstances.get(0);
         builder = new SearchOptionsBuilder(0, 1);
         builder.filter(FlowNodeInstanceSearchDescriptor.NAME, "OutGateway");
         builder.filter(FlowNodeInstanceSearchDescriptor.STATE_NAME, TestStates.getFailedState());
-        final List<ArchivedFlowNodeInstance> archivedFailedGateways = apiTestUtil.getProcessAPI().searchArchivedFlowNodeInstances(builder.done()).getResult();
+        builder.filter(FlowNodeInstanceSearchDescriptor.PARENT_PROCESS_INSTANCE_ID, processInstance.getId());
+        List<ArchivedFlowNodeInstance> archivedFailedGateways = apiTestUtil.getProcessAPI().searchArchivedFlowNodeInstances(builder.done()).getResult();
         assertTrue(archivedFailedGateways.isEmpty());
+
+        final List<FlowNodeInstance> failedGateways = apiTestUtil.getProcessAPI().searchFlowNodeInstances(builder.done()).getResult();
+        assertTrue(failedGateways.isEmpty());
+
+        // Check completed state for the gateway
+        builder = new SearchOptionsBuilder(0, 1);
+        builder.filter(FlowNodeInstanceSearchDescriptor.NAME, "OutGateway");
+        builder.filter(FlowNodeInstanceSearchDescriptor.STATE_NAME, TestStates.getNormalFinalState());
+        builder.filter(FlowNodeInstanceSearchDescriptor.PARENT_PROCESS_INSTANCE_ID, processInstance.getId());
+        archivedFailedGateways = apiTestUtil.getProcessAPI().searchArchivedFlowNodeInstances(builder.done()).getResult();
+        assertFalse(archivedFailedGateways.isEmpty());
     }
 
-    // @Test
-    // public void check_migration_of_corrupted_gateways_with_waiting_task() throws Exception {
-    // SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 1);
-    // builder.filter(ProcessInstanceSearchDescriptor.NAME, "Process With Corrupted Gateways");
-    // builder.sort(ProcessInstanceSearchDescriptor.ID, Order.DESC);
-    // final List<ProcessInstance> processInstances = apiTestUtil.getProcessAPI().searchProcessInstances(builder.done()).getResult();
-    // assertFalse(processInstances.isEmpty());
-    //
-    // final ProcessInstance processInstance = processInstances.get(0);
-    // apiTestUtil.waitForFlowNodeInState(processInstance, "OutGateway", TestStates.getExecutingState(), true);
-    // builder = new SearchOptionsBuilder(0, 1);
-    // builder.filter(FlowNodeInstanceSearchDescriptor.NAME, "OutGateway");
-    // builder.filter(FlowNodeInstanceSearchDescriptor.STATE_NAME, TestStates.getNormalFinalState());
-    // final List<ArchivedFlowNodeInstance> archivedFailedGateways = apiTestUtil.getProcessAPI().searchArchivedFlowNodeInstances(builder.done()).getResult();
-    // assertTrue(archivedFailedGateways.isEmpty());
-    //
-    // // Execute the human task & check the gateway is completed
-    // final long williamId = apiTestUtil.getIdentityAPI().getUserByUserName("william.jobs").getId();
-    // builder = new SearchOptionsBuilder(0, 1);
-    // builder.filter(FlowNodeInstanceSearchDescriptor.NAME, "HumanTask");
-    // final List<HumanTaskInstance> humanTasks = apiTestUtil.getProcessAPI().searchHumanTaskInstances(builder.done()).getResult();
-    // assertFalse(humanTasks.isEmpty());
-    // apiTestUtil.getProcessAPI().executeFlowNode(williamId, humanTasks.get(0).getId());
-    // apiTestUtil.waitForFlowNodeInState(processInstance, "OutGateway", TestStates.getNormalFinalState(), true);
-    // }
+    @Test
+    public void check_migration_of_corrupted_gateways_with_waiting_task() throws Exception {
+        SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 1);
+        builder.filter(ProcessInstanceSearchDescriptor.NAME, "Process With Corrupted Gateways");
+        builder.sort(ProcessInstanceSearchDescriptor.START_DATE, Order.DESC);
+        final List<ProcessInstance> processInstances = apiTestUtil.getProcessAPI().searchProcessInstances(builder.done()).getResult();
+        assertFalse(processInstances.isEmpty());
+
+        final ProcessInstance processInstance = processInstances.get(0);
+        builder = new SearchOptionsBuilder(0, 1);
+        builder.filter(FlowNodeInstanceSearchDescriptor.NAME, "OutGateway");
+        builder.filter(FlowNodeInstanceSearchDescriptor.PARENT_PROCESS_INSTANCE_ID, processInstance.getId());
+        final List<ArchivedFlowNodeInstance> archivedFailedGateways = apiTestUtil.getProcessAPI().searchArchivedFlowNodeInstances(builder.done()).getResult();
+        assertTrue(archivedFailedGateways.isEmpty());
+
+        // Execute the human task & check the gateway is completed
+        final long williamId = apiTestUtil.getIdentityAPI().getUserByUserName("william.jobs").getId();
+        builder = new SearchOptionsBuilder(0, 1);
+        builder.filter(FlowNodeInstanceSearchDescriptor.NAME, "HumanTask");
+        builder.filter(FlowNodeInstanceSearchDescriptor.PARENT_PROCESS_INSTANCE_ID, processInstance.getId());
+        final List<HumanTaskInstance> humanTasks = apiTestUtil.getProcessAPI().searchHumanTaskInstances(builder.done()).getResult();
+        assertFalse(humanTasks.isEmpty());
+        apiTestUtil.getProcessAPI().executeFlowNode(williamId, humanTasks.get(0).getId());
+        apiTestUtil.waitForFlowNodeInState(processInstance, "OutGateway", TestStates.getNormalFinalState(), true);
+    }
 }

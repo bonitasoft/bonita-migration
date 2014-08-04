@@ -109,18 +109,25 @@ public class DatabaseFiller6_3_2 extends SimpleDatabaseFiller6_3_1 {
                 .addTransition(autoTaskName, outGatewayName).addTransition(humanTaskName, outGatewayName);
 
         final ProcessDefinition processDefinition = apiTestUtil.deployAndEnableProcessWithActor(builder.done(), actorName, williamId);
+        // Start process with the gateway with the state "failed" & the executed human task
         final ProcessInstance processInstance = apiTestUtil.getProcessAPI().startProcess(processDefinition.getId());
         final ActivityInstance humanTaskInstance = apiTestUtil.waitForUserTaskAndAssigneIt(humanTaskName, processInstance.getId(), williamId);
         waitForGateway(outGatewayName, processInstance.getId(), TestStates.getExecutingState());
 
+        // Start process with the gateway with the state "failed" & the not executed human task
+        final ProcessInstance processInstance2 = apiTestUtil.getProcessAPI().startProcess(processDefinition.getId());
+        apiTestUtil.waitForUserTaskAndAssigneIt(humanTaskName, processInstance2.getId(), williamId);
+        waitForGateway(outGatewayName, processInstance.getId(), TestStates.getExecutingState());
+
+        // Stop & Restart the node
         stopNode();
         startNode();
-
         apiTestUtil.loginOnDefaultTenantWithDefaultTechnicalLogger();
-        waitForGateway(outGatewayName, processInstance.getId(), "completed");
 
         apiTestUtil.getProcessAPI().executeFlowNode(williamId, humanTaskInstance.getId());
         waitForGateway(outGatewayName, processInstance.getId(), TestStates.getFailedState());
+
+        waitForGateway(outGatewayName, processInstance2.getId(), TestStates.getFailedState());
 
         return Collections.singletonMap("Process definitions", String.valueOf(1));
     }
