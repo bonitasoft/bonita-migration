@@ -12,8 +12,7 @@ CREATE TABLE arch_data_mapping (
 	dataInstanceId NUMBER(19, 0) NOT NULL,
 	sourceObjectId NUMBER(19, 0) NOT NULL,
 	PRIMARY KEY (tenantid, id)
-)
-
+)@@
 CREATE TABLE flownode_instance (
   tenantid NUMBER(19, 0) NOT NULL,
   id NUMBER(19, 0) NOT NULL,
@@ -25,8 +24,7 @@ CREATE TABLE flownode_instance (
   stable NUMBER(1) ,
   hitBys VARCHAR2(255),
   PRIMARY KEY (tenantid, id)
-);
-
+)@@
 CREATE TABLE arch_flownode_instance (
   tenantid NUMBER(19, 0) NOT NULL,
   id NUMBER(19, 0) NOT NULL,
@@ -37,8 +35,8 @@ CREATE TABLE arch_flownode_instance (
   stable NUMBER(1) ,
   hitBys VARCHAR2(255),
   PRIMARY KEY (tenantid, id)
-);
+)@@
 CREATE TABLE tenant (
   id NUMBER(19, 0) NOT NULL,
   PRIMARY KEY (id)
-);
+)

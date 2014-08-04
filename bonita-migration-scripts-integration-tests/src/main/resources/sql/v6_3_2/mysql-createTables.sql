@@ -18,7 +18,7 @@ CREATE TABLE arch_data_mapping (
 CREATE TABLE flownode_instance (
   tenantid BIGINT NOT NULL,
   id BIGINT NOT NULL,
-  kind VARCHAR2(25) NOT NULL,
+  kind VARCHAR(25) NOT NULL,
   stateId INT NOT NULL,
   stateName VARCHAR(50),
   prev_state_id INT NOT NULL,

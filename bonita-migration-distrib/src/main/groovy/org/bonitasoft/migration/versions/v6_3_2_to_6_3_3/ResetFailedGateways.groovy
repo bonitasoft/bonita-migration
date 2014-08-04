@@ -67,7 +67,7 @@ WHERE stateName = 'failed'
                         true, true, 2, "completed", 61, tenantId) + " gateway in executing state"
                 //update gateways that are in completing
                 println "Updated " + sql.executeUpdate('''
-UPDATE flownode_instance f
+UPDATE flownode_instance
 SET
     terminal = ?,
     stable = ?,
