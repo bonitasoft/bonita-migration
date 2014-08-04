@@ -1,4 +1,4 @@
-SELECT id 
+SELECT id, hitBys
 FROM flownode_instance
 WHERE (stateName = 'failed'
 	OR (stateName = 'completed' && hitBys LIKE 'FINISH:%')

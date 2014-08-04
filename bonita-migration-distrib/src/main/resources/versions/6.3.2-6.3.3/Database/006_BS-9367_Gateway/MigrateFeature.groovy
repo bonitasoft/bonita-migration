@@ -13,7 +13,7 @@ IOUtil.executeWrappedWithTabs {
         
         // Get failed gateway with id and hitBys 
         def parameters = Collections.singletonMap(":tenantId", String.valueOf(it))
-        def List<Long> failedGatewaysId = MigrationUtil.getIds(feature, dbVendor, "get_failed_gateway_instances_id", parameters, sql)
+        def List<Long> failedGatewaysId = MigrationUtil.getIds(feature, dbVendor, "get_failed_gateway_instances", parameters, sql)
         println "Found " + failedGatewaysId.size() + " failed gateways."
             
         for (Long failedGatewayId : failedGatewaysId) {
