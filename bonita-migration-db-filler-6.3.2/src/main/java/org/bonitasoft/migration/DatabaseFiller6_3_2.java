@@ -118,7 +118,7 @@ public class DatabaseFiller6_3_2 extends SimpleDatabaseFiller6_3_1 {
         // Start process with the gateway with the state "failed" & the not executed human task
         final ProcessInstance processInstance2 = apiTestUtil.getProcessAPI().startProcess(processDefinition.getId());
         apiTestUtil.waitForUserTaskAndAssigneIt(humanTaskName, processInstance2.getId(), williamId);
-        waitForGateway(outGatewayName, processInstance.getId(), TestStates.getExecutingState());
+        waitForGateway(outGatewayName, processInstance2.getId(), TestStates.getExecutingState());
 
         // Stop & Restart the node
         stopNode();

@@ -20,6 +20,8 @@ CREATE TABLE arch_data_mapping (
 CREATE TABLE flownode_instance (
   tenantid NUMERIC(19, 0) NOT NULL,
   id NUMERIC(19, 0) NOT NULL,
+  name NVARCHAR(50) NOT NULL,
+  parentContainerId NUMERIC(19, 0) NOT NULL,
   kind NVARCHAR(25) NOT NULL,
   stateId INT NOT NULL,
   stateName NVARCHAR(50),
@@ -27,6 +29,7 @@ CREATE TABLE flownode_instance (
   terminal BIT NOT NULL,
   stable BIT ,
   hitBys NVARCHAR(255),
+  token_ref_id NUMERIC(19, 0) NULL,
   PRIMARY KEY (tenantid, id)
 )
 @@
@@ -45,4 +48,13 @@ CREATE TABLE arch_flownode_instance (
 CREATE TABLE tenant (
   id NUMERIC(19, 0) NOT NULL,
   PRIMARY KEY (id)
+)
+@@
+CREATE TABLE token (
+  tenantid NUMERIC(19, 0) NOT NULL,
+  id NUMERIC(19, 0) NOT NULL,
+  processInstanceId NUMERIC(19, 0) NOT NULL,
+  ref_id NUMERIC(19, 0) NOT NULL,
+  parent_ref_id NUMERIC(19, 0) NULL,
+  PRIMARY KEY (tenantid, id)
 )

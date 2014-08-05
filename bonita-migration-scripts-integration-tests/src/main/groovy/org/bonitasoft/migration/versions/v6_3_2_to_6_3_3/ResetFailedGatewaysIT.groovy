@@ -32,18 +32,18 @@ class ResetFailedGatewaysIT extends GroovyTestCase {
     Sql sql
 
 
-    Map trueValue =  [
-            "oracle" : 1,
-            "postgres": true,
-            "mysql": true,
-            "sqlserver" :true
+    Map trueValue = [
+            "oracle"   : 1,
+            "postgres" : true,
+            "mysql"    : true,
+            "sqlserver": true
     ]
 
-    Map falseValue =  [
-            "oracle" : 0,
-            "postgres": false,
-            "mysql": false,
-            "sqlserver" :false
+    Map falseValue = [
+            "oracle"   : 0,
+            "postgres" : false,
+            "mysql"    : false,
+            "sqlserver": false
     ]
 
     def dataSet(data) {
@@ -70,28 +70,45 @@ class ResetFailedGatewaysIT extends GroovyTestCase {
         println("setUp: populating tables")
         tester.dataSet = dataSet {
 
-            tenant id:1
-            tenant id:2
+            tenant id: 1
+            tenant id: 2
 
             //gateway that will be reset to executing and will have left no archived
-            flownode_instance tenantid: 1, id:112, kind: 'gate', stateId: 3, stateName:"failed", prev_state_id:61, terminal:falseValue.get(DBVENDOR), stable:falseValue.get(DBVENDOR), hitBys:"1,5,12"
-            arch_flownode_instance tenantid: 1, id:212, sourceObjectId:112, stateId: 0, stateName:"executing", terminal:falseValue.get(DBVENDOR), stable:falseValue.get(DBVENDOR), hitBys:"1,5,12"
+            flownode_instance tenantid: 1, id: 112, name: 'gate', parentContainerId: 130, kind: 'gate', stateId: 3, stateName: "failed", prev_state_id: 61, terminal: falseValue.get(DBVENDOR), stable: falseValue.get(DBVENDOR), hitBys: "1,5,12", token_ref_id: 10
+            arch_flownode_instance tenantid: 1, id: 212, sourceObjectId: 112, stateId: 0, stateName: "executing", terminal: falseValue.get(DBVENDOR), stable: falseValue.get(DBVENDOR), hitBys: "1,5,12"
 
             //gateway that will be reset to completed and will have left one  archived version
-            flownode_instance tenantid: 1, id:113, kind: 'gate',stateId: 3, stateName:"failed", prev_state_id:2, terminal:falseValue.get(DBVENDOR), stable:falseValue.get(DBVENDOR), hitBys:"FINISH:5"
-            arch_flownode_instance tenantid: 1, id:213, sourceObjectId:113, stateId: 0, stateName:"executing", terminal:falseValue.get(DBVENDOR), stable:falseValue.get(DBVENDOR), hitBys:"1,5,12"
-            arch_flownode_instance tenantid: 1, id:214, sourceObjectId:113, stateId: 2, stateName:"completed", terminal:trueValue.get(DBVENDOR), stable:trueValue.get(DBVENDOR), hitBys:"FINISH:5"
+            flownode_instance tenantid: 1, id: 113, name: 'gate', parentContainerId: 131, kind: 'gate', stateId: 3, stateName: "failed", prev_state_id: 2, terminal: falseValue.get(DBVENDOR), stable: falseValue.get(DBVENDOR), hitBys: "FINISH:5", token_ref_id: 11
+            arch_flownode_instance tenantid: 1, id: 213, sourceObjectId: 113, stateId: 0, stateName: "executing", terminal: falseValue.get(DBVENDOR), stable: falseValue.get(DBVENDOR), hitBys: "1,5,12"
+            arch_flownode_instance tenantid: 1, id: 214, sourceObjectId: 113, stateId: 2, stateName: "completed", terminal: trueValue.get(DBVENDOR), stable: trueValue.get(DBVENDOR), hitBys: "FINISH:5"
 
-            flownode_instance tenantid: 1, id:114, kind: 'gate',stateId: 2, stateName:"completed", prev_state_id:61, terminal:trueValue.get(DBVENDOR), stable:trueValue.get(DBVENDOR), hitBys:"FINISH:5"
-            flownode_instance tenantid: 1, id:115, kind: 'gate',stateId: 61, stateName:"executing", prev_state_id:0, terminal:falseValue.get(DBVENDOR), stable:falseValue.get(DBVENDOR), hitBys:"1,5,12"
+            flownode_instance tenantid: 1, id: 114, name: 'gate', parentContainerId: 132, kind: 'gate', stateId: 2, stateName: "completed", prev_state_id: 61, terminal: trueValue.get(DBVENDOR), stable: trueValue.get(DBVENDOR), hitBys: "FINISH:5", token_ref_id: 12
+            flownode_instance tenantid: 1, id: 115, name: 'gate', parentContainerId: 133, kind: 'gate', stateId: 61, stateName: "executing", prev_state_id: 0, terminal: falseValue.get(DBVENDOR), stable: falseValue.get(DBVENDOR), hitBys: "1,5,12", token_ref_id: 13
             //gateway reset because hitBys is inconsistent with the state
-            flownode_instance tenantid: 1, id:116, kind: 'gate', stateId: 3, stateName:"completed", prev_state_id:61, terminal:trueValue.get(DBVENDOR), stable:trueValue.get(DBVENDOR), hitBys:"1,5,12"
+            flownode_instance tenantid: 1, id: 116, name: 'gate', parentContainerId: 134, kind: 'gate', stateId: 3, stateName: "completed", prev_state_id: 61, terminal: trueValue.get(DBVENDOR), stable: trueValue.get(DBVENDOR), hitBys: "1,5,12", token_ref_id: 14
+
+            //gateway was erroneously created because a transition hit the gateway when it was in completed with hitBys not like "FINISH%"
+            //case all transition hit
+            flownode_instance tenantid: 1, id: 117, name: 'gate1', parentContainerId: 125, kind: 'gate', stateId: 3, stateName: "failed", prev_state_id: 2, terminal: falseValue.get(DBVENDOR), stable: trueValue.get(DBVENDOR), hitBys: "1", token_ref_id: 2
+            flownode_instance tenantid: 1, id: 118, name: 'gate1', parentContainerId: 125, kind: 'gate', stateId: 61, stateName: "executing", prev_state_id: 0, terminal: falseValue.get(DBVENDOR), stable: falseValue.get(DBVENDOR), hitBys: "2", token_ref_id: 2
+            //create 2 token
+            token tenantid: 1, id: 1, ref_id: 2, processInstanceId: 125
+            token tenantid: 1, id: 2, ref_id: 2, processInstanceId: 125
+
+            //case not all transition hit
+            flownode_instance tenantid: 1, id: 119, name: 'gate2', parentContainerId: 126, kind: 'gate', stateId: 3, stateName: "failed", prev_state_id: 2, terminal: falseValue.get(DBVENDOR), stable: trueValue.get(DBVENDOR), hitBys: "1", token_ref_id: 3
+            flownode_instance tenantid: 1, id: 120, name: 'gate2', parentContainerId: 126, kind: 'gate', stateId: 61, stateName: "executing", prev_state_id: 0, terminal: falseValue.get(DBVENDOR), stable: falseValue.get(DBVENDOR), hitBys: "2,3", token_ref_id: 3
+            //create 3 token
+            token tenantid: 1, id: 3, ref_id: 3, processInstanceId: 126
+            token tenantid: 1, id: 4, ref_id: 3, processInstanceId: 126
+            token tenantid: 1, id: 5, ref_id: 3, processInstanceId: 126
+            token tenantid: 1, id: 6, ref_id: 3, processInstanceId: 126
 
             //on tenant 2
-            flownode_instance tenantid: 2, id:112, kind: 'gate',stateId: 3, stateName:"failed", prev_state_id:61, terminal:falseValue.get(DBVENDOR), stable:falseValue.get(DBVENDOR), hitBys:"1,5,12"
-            flownode_instance tenantid: 2, id:113, kind: 'gate',stateId: 3, stateName:"failed", prev_state_id:2, terminal:falseValue.get(DBVENDOR), stable:falseValue.get(DBVENDOR), hitBys:"FINISH:5"
-            flownode_instance tenantid: 2, id:114, kind: 'gate',stateId: 2, stateName:"completed", prev_state_id:61, terminal:trueValue.get(DBVENDOR), stable:trueValue.get(DBVENDOR),hitBys:"FINISH:5"
-            flownode_instance tenantid: 2, id:115, kind: 'gate',stateId: 61, stateName:"executing", prev_state_id:0, terminal:falseValue.get(DBVENDOR), stable:falseValue.get(DBVENDOR), hitBys:"1,5,12"
+            flownode_instance tenantid: 2, id: 112, name: 'gate', parentContainerId: 137, kind: 'gate', stateId: 3, stateName: "failed", prev_state_id: 61, terminal: falseValue.get(DBVENDOR), stable: falseValue.get(DBVENDOR), hitBys: "1,5,12", token_ref_id: 1
+            flownode_instance tenantid: 2, id: 113, name: 'gate', parentContainerId: 138, kind: 'gate', stateId: 3, stateName: "failed", prev_state_id: 2, terminal: falseValue.get(DBVENDOR), stable: falseValue.get(DBVENDOR), hitBys: "FINISH:5", token_ref_id: 2
+            flownode_instance tenantid: 2, id: 114, name: 'gate', parentContainerId: 139, kind: 'gate', stateId: 2, stateName: "completed", prev_state_id: 61, terminal: trueValue.get(DBVENDOR), stable: trueValue.get(DBVENDOR), hitBys: "FINISH:5", token_ref_id: 3
+            flownode_instance tenantid: 2, id: 115, name: 'gate', parentContainerId: 140, kind: 'gate', stateId: 61, stateName: "executing", prev_state_id: 0, terminal: falseValue.get(DBVENDOR), stable: falseValue.get(DBVENDOR), hitBys: "1,5,12", token_ref_id: 4
 
         }
         tester.onSetup();
@@ -105,31 +122,39 @@ class ResetFailedGatewaysIT extends GroovyTestCase {
         sql.execute("DROP TABLE flownode_instance")
         sql.execute("DROP TABLE arch_flownode_instance")
         sql.execute("DROP TABLE tenant")
+        sql.execute("DROP TABLE token")
     }
 
     void test_gateways_in_failed_are_reset() {
         def migration = new ResetFailedGateways();
-        migration.migrate(DBVENDOR,sql);
+        migration.migrate(DBVENDOR, sql);
 
         def updatedGateways = tester.connection.createDataSet("flownode_instance", "arch_flownode_instance");
 
         CustomAssertion.assertEquals dataSet {
             //gateway that will be reset to executing and will have left no archived
-            flownode_instance tenantid: 1, id:112, kind: 'gate',stateId: 61, stateName:"executing", prev_state_id:0, terminal:falseValue.get(DBVENDOR),stable: falseValue.get(DBVENDOR), hitBys:    "1,5,12"
+            flownode_instance tenantid: 1, id: 112, name: 'gate', parentContainerId: 130, kind: 'gate', stateId: 61, stateName: "executing", prev_state_id: 0, terminal: falseValue.get(DBVENDOR), stable: falseValue.get(DBVENDOR), hitBys: "1,5,12", token_ref_id: 10
 
             //gateway that will be reset to completed and will have left one  archived version
-            flownode_instance tenantid: 1, id:113, kind: 'gate',stateId: 2, stateName:"completed", prev_state_id:61, terminal:trueValue.get(DBVENDOR), stable:trueValue.get(DBVENDOR), hitBys:"FINISH:5"
-            arch_flownode_instance tenantid: 1, id:213, sourceObjectId:113, stateId: 0, stateName:"executing", terminal:falseValue.get(DBVENDOR), stable:falseValue.get(DBVENDOR), hitBys:"1,5,12"
+            flownode_instance tenantid: 1, id: 113, name: 'gate', parentContainerId: 131, kind: 'gate', stateId: 2, stateName: "completed", prev_state_id: 61, terminal: trueValue.get(DBVENDOR), stable: trueValue.get(DBVENDOR), hitBys: "FINISH:5", token_ref_id: 11
+            arch_flownode_instance tenantid: 1, id: 213, sourceObjectId: 113, stateId: 0, stateName: "executing", terminal: falseValue.get(DBVENDOR), stable: falseValue.get(DBVENDOR), hitBys: "1,5,12"
 
-            flownode_instance tenantid: 1, id:114, kind: 'gate',stateId: 2, stateName:"completed", prev_state_id:61, terminal:trueValue.get(DBVENDOR), stable:trueValue.get(DBVENDOR), hitBys:"FINISH:5"
-            flownode_instance tenantid: 1, id:115, kind: 'gate',stateId: 61, stateName:"executing", prev_state_id:0, terminal:falseValue.get(DBVENDOR), stable:falseValue.get(DBVENDOR), hitBys:"1,5,12"
-            flownode_instance tenantid: 1, id:116, kind: 'gate', stateId: 61, stateName:"executing", prev_state_id:0, terminal:falseValue.get(DBVENDOR), stable:falseValue.get(DBVENDOR), hitBys:"1,5,12"
+            flownode_instance tenantid: 1, id: 114, name: 'gate', parentContainerId: 132, kind: 'gate', stateId: 2, stateName: "completed", prev_state_id: 61, terminal: trueValue.get(DBVENDOR), stable: trueValue.get(DBVENDOR), hitBys: "FINISH:5", token_ref_id: 12
+            flownode_instance tenantid: 1, id: 115, name: 'gate', parentContainerId: 133, kind: 'gate', stateId: 61, stateName: "executing", prev_state_id: 0, terminal: falseValue.get(DBVENDOR), stable: falseValue.get(DBVENDOR), hitBys: "1,5,12", token_ref_id: 13
+            flownode_instance tenantid: 1, id: 116, name: 'gate', parentContainerId: 134, kind: 'gate', stateId: 61, stateName: "executing", prev_state_id: 0, terminal: falseValue.get(DBVENDOR), stable: falseValue.get(DBVENDOR), hitBys: "1,5,12", token_ref_id: 14
+
+            //gateway was erroneously created because a transition hit the gateway when it was in completed with hitBys not like "FINISH%"
+            //case all transition hit
+            flownode_instance tenantid: 1, id: 117, name: 'gate1', parentContainerId: 125, kind: 'gate', stateId: 2, stateName: "completed", prev_state_id: 61, terminal: trueValue.get(DBVENDOR), stable: trueValue.get(DBVENDOR), hitBys: "FINISH:2", token_ref_id: 2
+
+            //case not all transition hit
+            flownode_instance tenantid: 1, id: 119, name: 'gate2', parentContainerId: 126, kind: 'gate', stateId: 61, stateName: "executing", prev_state_id: 0, terminal: falseValue.get(DBVENDOR), stable: falseValue.get(DBVENDOR), hitBys: "1,2,3", token_ref_id: 3
 
             //on tenant 2
-            flownode_instance tenantid: 2, id:112, kind: 'gate',stateId: 61, stateName:"executing", prev_state_id:0, terminal:falseValue.get(DBVENDOR), stable:falseValue.get(DBVENDOR), hitBys:"1,5,12"
-            flownode_instance tenantid: 2, id:113, kind: 'gate',stateId: 2, stateName:"completed", prev_state_id:61, terminal:trueValue.get(DBVENDOR), stable:trueValue.get(DBVENDOR), hitBys:"FINISH:5"
-            flownode_instance tenantid: 2, id:114, kind: 'gate',stateId: 2, stateName:"completed", prev_state_id:61, terminal:trueValue.get(DBVENDOR), stable:trueValue.get(DBVENDOR), hitBys:"FINISH:5"
-            flownode_instance tenantid: 2, id:115, kind: 'gate',stateId: 61, stateName:"executing", prev_state_id:0, terminal:falseValue.get(DBVENDOR), stable:falseValue.get(DBVENDOR), hitBys:"1,5,12"
+            flownode_instance tenantid: 2, id: 112, name: 'gate', parentContainerId: 137, kind: 'gate', stateId: 61, stateName: "executing", prev_state_id: 0, terminal: falseValue.get(DBVENDOR), stable: falseValue.get(DBVENDOR), hitBys: "1,5,12", token_ref_id: 1
+            flownode_instance tenantid: 2, id: 113, name: 'gate', parentContainerId: 138, kind: 'gate', stateId: 2, stateName: "completed", prev_state_id: 61, terminal: trueValue.get(DBVENDOR), stable: trueValue.get(DBVENDOR), hitBys: "FINISH:5", token_ref_id: 2
+            flownode_instance tenantid: 2, id: 114, name: 'gate', parentContainerId: 139, kind: 'gate', stateId: 2, stateName: "completed", prev_state_id: 61, terminal: trueValue.get(DBVENDOR), stable: trueValue.get(DBVENDOR), hitBys: "FINISH:5", token_ref_id: 3
+            flownode_instance tenantid: 2, id: 115, name: 'gate', parentContainerId: 140, kind: 'gate', stateId: 61, stateName: "executing", prev_state_id: 0, terminal: falseValue.get(DBVENDOR), stable: falseValue.get(DBVENDOR), hitBys: "1,5,12", token_ref_id: 4
         }, updatedGateways
     }
 

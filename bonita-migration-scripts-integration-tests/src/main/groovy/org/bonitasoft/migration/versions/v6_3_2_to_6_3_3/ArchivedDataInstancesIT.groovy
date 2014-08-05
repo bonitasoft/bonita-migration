@@ -84,6 +84,7 @@ class ArchivedDataInstancesIT extends GroovyTestCase {
         sql.execute("DROP TABLE flownode_instance")
         sql.execute("DROP TABLE arch_flownode_instance")
         sql.execute("DROP TABLE tenant")
+        sql.execute("DROP TABLE token")
     }
 
     void test_orphan_mappings_are_deleted() {
