@@ -43,7 +43,7 @@ public class DatabaseChecker6_4_0 {
     private static final String SQL_INSERT_PROCESS_INSTANCE = "INSERT INTO process_instance(tenantid, id, name, processdefinitionid, description, startdate, startedby, startedbysubstitute,"
             + " enddate, stateid, statecategory, lastupdate, containerid, rootprocessinstanceid, callerid, callertype, interruptingeventid,"
             + " migration_plan, stringindex1, stringindex2, stringindex3, stringindex4, stringindex5)"
-            + " VALUES(?, ?, '', 0, '', 0, 0, 0, 0, 0, '', 0, 0, 0, 0, '', 0, 0, '', '', '', '', '')";
+            + " VALUES(?, ?, 'name', 0, 'desc', 0, 0, 0, 0, 0, 'a', 0, 0, 0, 0, 'b', 0, 0, 'c', 'd', 'e', 'f', 'g')";
     private static final String KIND = "012345678912345";
     private static final String CLASSNAME = "org.bonitasoft.classname";
     private static final int PROCESS_INSTANCE_ID1 = 10000;
@@ -57,7 +57,7 @@ public class DatabaseChecker6_4_0 {
             + " priority, gatewaytype, hitbys, statecategory, logicalgroup1, logicalgroup2, logicalgroup3, logicalgroup4, loop_counter, loop_max, description, sequential,"
             + " loopdatainputref, loopdataoutputref, datainputitemref, dataoutputitemref, loopcardinality, nbactiveinst, nbcompletedinst, nbterminatedinst, executedby,"
             + " executedbysubstitute, activityinstanceid, state_executing, abortedbyboundary, triggeredbyevent, interrupting, deleted, tokencount, token_ref_id)"
-            + " VALUES(?, ?, 0, ?, 0, 0, '', '', '', 0, '', 0, ?, ?, 0, 0, 0, 0, 0, 0, 0, '', '', '', 0, 0, 0, 0, 0, 0, '', ?, '', '', '', '',"
+            + " VALUES(?, ?, 0, ?, 0, 0, 'name', 'a', 'b', 0, 'c', 0, ?, ?, 0, 0, 0, 0, 0, 0, 0, 'd', 'e', 'f', 0, 0, 0, 0, 0, 0, 'g', ?, 'h', 'i', 'j', 'k',"
             + " 0, 0, 0, 0, 0, 0, 0, ?, 0, ?, ?, ?, 0, 0)";
 
     private static final int TENANT_ID = 1;
@@ -143,10 +143,10 @@ public class DatabaseChecker6_4_0 {
         //when
         final String sqlInsertRefBizData = "INSERT INTO ref_biz_data_inst(tenantid, id, name, proc_inst_id, fn_inst_id, data_id, data_classname, kind) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sqlInsertRefBizData, new Object[] { TENANT_ID, 3, "businessdata", PROCESS_INSTANCE_ID1, null, 1, CLASSNAME,
+        jdbcTemplate.update(sqlInsertRefBizData, new Object[] { TENANT_ID, 38484, "businessdata", PROCESS_INSTANCE_ID1, null, 1, CLASSNAME,
                 KIND });
 
-        jdbcTemplate.update(sqlInsertRefBizData, new Object[] { TENANT_ID, 4, "businessdata", PROCESS_INSTANCE_ID2, null, 1, CLASSNAME,
+        jdbcTemplate.update(sqlInsertRefBizData, new Object[] { TENANT_ID, 4959595, "businessdata", PROCESS_INSTANCE_ID2, null, 1, CLASSNAME,
                 KIND
         });
         //then
