@@ -52,7 +52,7 @@ public class DatabaseChecker6_4_0 {
     private static final int FLOWNODE_INSTANCE_ID1 = 10000;
     private static final int FLOWNODE_INSTANCE_ID2 = 10001;
 
-    private static final String SQL_INSERT_FLOWNODE = "INSERT INTO public.flownode_instance(tenantid, id, flownodedefinitionid, kind, rootcontainerid, parentcontainerid, name, displayname, displaydescription, stateid, statename, prev_state_id, terminal, stable, actorid, assigneeid, reachedstatedate, lastupdatedate, expectedenddate, claimeddate, priority, gatewaytype, hitbys, statecategory, logicalgroup1, logicalgroup2, logicalgroup3, logicalgroup4, loop_counter, loop_max, description, sequential, loopdatainputref, loopdataoutputref, datainputitemref, dataoutputitemref, loopcardinality, nbactiveinst, nbcompletedinst, nbterminatedinst, executedby, executedbysubstitute, activityinstanceid, state_executing, abortedbyboundary, triggeredbyevent, interrupting, deleted, tokencount, token_ref_id)VALUES(?, ?, 0, '', 0, 0, '', '', '', 0, '', 0, false, false, 0, 0, 0, 0, 0, 0, 0, '', '', '', 0, 0, 0, 0, 0, 0, '', false, '', '', '', '', 0, 0, 0, 0, 0, 0, 0, false, 0, false, false, false, 0, 0)";
+    private static final String SQL_INSERT_FLOWNODE = "INSERT INTO flownode_instance(tenantid, id, flownodedefinitionid, kind, rootcontainerid, parentcontainerid, name, displayname, displaydescription, stateid, statename, prev_state_id, terminal, stable, actorid, assigneeid, reachedstatedate, lastupdatedate, expectedenddate, claimeddate, priority, gatewaytype, hitbys, statecategory, logicalgroup1, logicalgroup2, logicalgroup3, logicalgroup4, loop_counter, loop_max, description, sequential, loopdatainputref, loopdataoutputref, datainputitemref, dataoutputitemref, loopcardinality, nbactiveinst, nbcompletedinst, nbterminatedinst, executedby, executedbysubstitute, activityinstanceid, state_executing, abortedbyboundary, triggeredbyevent, interrupting, deleted, tokencount, token_ref_id)VALUES(?, ?, 0, '', 0, 0, '', '', '', 0, '', 0, false, false, 0, 0, 0, 0, 0, 0, 0, '', '', '', 0, 0, 0, 0, 0, 0, '', false, '', '', '', '', 0, 0, 0, 0, 0, 0, 0, false, 0, false, false, false, 0, 0)";
 
     private static final int TENANT_ID = 1;
 
@@ -112,7 +112,7 @@ public class DatabaseChecker6_4_0 {
 
         //when
         jdbcTemplate.update("INSERT INTO ref_biz_data_inst(tenantid, id, name, data_id, data_classname, kind) "
-                + "VALUES (?, ?, ?, ?, ?, ?)", new Object[] { TENANT_ID, 12020, "businessdata", 1, CLASSNAME, KIND });
+                + " VALUES (?, ?, ?, ?, ?, ?) ", new Object[] { TENANT_ID, 12020, "businessdata", 1, CLASSNAME, KIND });
 
         //then
         assertEquals(countRefBusinessdata + 1, countRefBusinessdata(jdbcTemplate));

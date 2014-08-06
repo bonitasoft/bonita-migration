@@ -1,4 +1,4 @@
-ALTER TABLE ref_biz_data_inst ADD kind NVARCHAR(10)
+ALTER TABLE ref_biz_data_inst ADD kind NVARCHAR(15)
 @@
 
 ALTER TABLE ref_biz_data_inst ADD fn_inst_id NUMERIC(19, 0)

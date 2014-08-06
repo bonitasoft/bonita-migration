@@ -13,8 +13,9 @@ ALTER TABLE ref_biz_data_inst MODIFY kind NOT NULL
 ALTER TABLE ref_biz_data_inst MODIFY proc_inst_id NULL
 @@
 
-CREATE UNIQUE INDEX uniq_ref_biz_data_proc ON ref_biz_data_inst (tenantid, proc_inst_id, name)
-@@
+-- index already exists 
+--CREATE UNIQUE INDEX uniq_ref_biz_data_proc ON ref_biz_data_inst (tenantid, proc_inst_id, name)
+
 
 CREATE UNIQUE INDEX uniq_ref_biz_data_fn ON ref_biz_data_inst (tenantid, fn_inst_id, name)
 @@
