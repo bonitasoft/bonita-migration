@@ -171,20 +171,20 @@ public class DatabaseChecker6_4_0 {
 
         jdbcTemplate
         .update(SQL_INSERT_FLOWNODE
-                        , new Object[] { TENANT_ID, FLOWNODE_INSTANCE_ID1, "kind", false, false, false, false, false, false, false });
+                , new Object[] { TENANT_ID, FLOWNODE_INSTANCE_ID1, "kind", false, false, false, false, false, false, false });
 
         jdbcTemplate
         .update(SQL_INSERT_FLOWNODE
-                        , new Object[] { TENANT_ID, FLOWNODE_INSTANCE_ID2, "kind", false, false, false, false, false, false, false });
+                , new Object[] { TENANT_ID, FLOWNODE_INSTANCE_ID2, "kind", false, false, false, false, false, false, false });
 
         //when
 
         final String sqlInsertRefBizzData = "INSERT INTO ref_biz_data_inst(tenantid, id, name, proc_inst_id, fn_inst_id, data_id, data_classname, kind) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sqlInsertRefBizzData, new Object[] { TENANT_ID, 1, "businessdata", null, FLOWNODE_INSTANCE_ID1, 1, CLASSNAME,
+        jdbcTemplate.update(sqlInsertRefBizzData, new Object[] { TENANT_ID, 45678, "businessdata", null, FLOWNODE_INSTANCE_ID1, 1, CLASSNAME,
                 KIND });
 
-        jdbcTemplate.update(sqlInsertRefBizzData, new Object[] { TENANT_ID, 2, "businessdata", null, FLOWNODE_INSTANCE_ID2, 1, CLASSNAME,
+        jdbcTemplate.update(sqlInsertRefBizzData, new Object[] { TENANT_ID, 8754, "businessdata", null, FLOWNODE_INSTANCE_ID2, 1, CLASSNAME,
                 KIND });
 
         //then
@@ -208,13 +208,13 @@ public class DatabaseChecker6_4_0 {
 
         //when
         jdbcTemplate.update("INSERT INTO ref_biz_data_inst(tenantid, id, name,  data_id, data_classname, kind) "
-                + "VALUES (?, ?, ?, ?, ?, ?)", new Object[] { TENANT_ID, 2, "businessdata", 1, CLASSNAME, "multi_ref" });
+                + "VALUES (?, ?, ?, ?, ?, ?)", new Object[] { TENANT_ID, 298989, "businessdata", 1, CLASSNAME, "multi_ref" });
         logger.info("insert first multiple data");
         jdbcTemplate.update("INSERT INTO multi_biz_data(tenantid, id, idx, data_id) "
-                + "VALUES (?, ?, ?, ?)", new Object[] { TENANT_ID, 2, 1, 1 });
+                + "VALUES (?, ?, ?, ?)", new Object[] { TENANT_ID, 298989, 1, 1 });
         logger.info("insert second multiple data");
         jdbcTemplate.update("INSERT INTO multi_biz_data(tenantid, id, idx, data_id) "
-                + "VALUES (?, ?, ?, ?)", new Object[] { TENANT_ID, 2, 2, 2 });
+                + "VALUES (?, ?, ?, ?)", new Object[] { TENANT_ID, 298989, 2, 2 });
 
         //then
         assertEquals(countRefBusinessdata + 1, countRefBusinessdata(jdbcTemplate));
