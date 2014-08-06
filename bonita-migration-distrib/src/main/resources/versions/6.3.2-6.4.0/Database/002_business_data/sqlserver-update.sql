@@ -10,7 +10,7 @@ UPDATE ref_biz_data_inst SET kind='simple_ref'
 ALTER TABLE ref_biz_data_inst ALTER COLUMN kind NVARCHAR(10) NOT NULL
 @@
 
-ALTER TABLE ref_biz_data_inst ALTER COLUMN proc_inst_id NULL
+ALTER TABLE ref_biz_data_inst ALTER COLUMN proc_inst_id NUMERIC(19, 0) NULL
 @@
 
 CREATE UNIQUE INDEX uniq_ref_biz_data_proc ON ref_biz_data_inst(tenantid, proc_inst_id, name)

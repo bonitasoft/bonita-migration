@@ -1,7 +1,7 @@
 ALTER TABLE ref_biz_data_inst ADD kind VARCHAR2(15)
 @@
 
-ALTER TABLE ref_biz_data_inst ADD COLUMN fn_inst_id NUMBER(19, 0)
+ALTER TABLE ref_biz_data_inst ADD fn_inst_id NUMBER(19, 0)
 @@
 
 UPDATE ref_biz_data_inst SET kind='simple_ref'

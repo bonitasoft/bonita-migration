@@ -10,7 +10,7 @@ UPDATE ref_biz_data_inst SET kind="simple_ref";
 ALTER TABLE ref_biz_data_inst MODIFY COLUMN kind VARCHAR(15) NOT NULL;
 @@
 
-ALTER TABLE ref_biz_data_inst MODIFY COLUMN proc_inst_id NULL;
+ALTER TABLE ref_biz_data_inst MODIFY COLUMN proc_inst_id BIGINT NULL;
 @@
 
 ALTER TABLE ref_biz_data_inst ADD CONSTRAINT uniq_ref_biz_data_proc UNIQUE (tenantid, proc_inst_id, name);
