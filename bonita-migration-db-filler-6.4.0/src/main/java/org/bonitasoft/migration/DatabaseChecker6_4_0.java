@@ -57,7 +57,7 @@ public class DatabaseChecker6_4_0 {
             + " priority, gatewaytype, hitbys, statecategory, logicalgroup1, logicalgroup2, logicalgroup3, logicalgroup4, loop_counter, loop_max, description, sequential,"
             + " loopdatainputref, loopdataoutputref, datainputitemref, dataoutputitemref, loopcardinality, nbactiveinst, nbcompletedinst, nbterminatedinst, executedby,"
             + " executedbysubstitute, activityinstanceid, state_executing, abortedbyboundary, triggeredbyevent, interrupting, deleted, tokencount, token_ref_id)"
-            + " VALUES(?, ?, 0, '', 0, 0, '', '', '', 0, '', 0, ?, ?, 0, 0, 0, 0, 0, 0, 0, '', '', '', 0, 0, 0, 0, 0, 0, '', ?, '', '', '', '',"
+            + " VALUES(?, ?, 0, ?, 0, 0, '', '', '', 0, '', 0, ?, ?, 0, 0, 0, 0, 0, 0, 0, '', '', '', 0, 0, 0, 0, 0, 0, '', ?, '', '', '', '',"
             + " 0, 0, 0, 0, 0, 0, 0, ?, 0, ?, ?, ?, 0, 0)";
 
     private static final int TENANT_ID = 1;
@@ -171,11 +171,11 @@ public class DatabaseChecker6_4_0 {
 
         jdbcTemplate
         .update(SQL_INSERT_FLOWNODE
-                        , new Object[] { TENANT_ID, FLOWNODE_INSTANCE_ID1, false, false, false, false, false, false, false });
+                        , new Object[] { TENANT_ID, FLOWNODE_INSTANCE_ID1, "kind", false, false, false, false, false, false, false });
 
         jdbcTemplate
         .update(SQL_INSERT_FLOWNODE
-                        , new Object[] { TENANT_ID, FLOWNODE_INSTANCE_ID2, false, false, false, false, false, false, false });
+                        , new Object[] { TENANT_ID, FLOWNODE_INSTANCE_ID2, "kind", false, false, false, false, false, false, false });
 
         //when
 
