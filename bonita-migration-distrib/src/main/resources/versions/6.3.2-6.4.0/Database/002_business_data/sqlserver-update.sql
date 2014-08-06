@@ -7,7 +7,7 @@ ALTER TABLE ref_biz_data_inst ADD fn_inst_id NUMERIC(19, 0)
 UPDATE ref_biz_data_inst SET kind='simple_ref'
 @@
 
-ALTER TABLE ref_biz_data_inst ALTER COLUMN kind NVARCHAR(10) NOT NULL
+ALTER TABLE ref_biz_data_inst ALTER COLUMN kind NVARCHAR(15) NOT NULL
 @@
 
 ALTER TABLE ref_biz_data_inst ALTER COLUMN proc_inst_id NUMERIC(19, 0) NULL
