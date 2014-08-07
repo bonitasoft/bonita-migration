@@ -138,7 +138,7 @@ public class DatabaseChecker6_4_0 {
         //then
         assertEquals(countRefBusinessdata + 1, countRefBusinessdata(jdbcTemplate, TENANT_ID));
         emptyRefBizDataTable(jdbcTemplate);
-        assertEquals(0, countRefBusinessdata(jdbcTemplate, TENANT_ID));
+        assertEquals(countRefBusinessdata, countRefBusinessdata(jdbcTemplate, TENANT_ID));
     }
 
     @Test
@@ -149,9 +149,6 @@ public class DatabaseChecker6_4_0 {
 
         //given
         final long countRefBusinessdata = countRefBusinessdata(jdbcTemplate, TENANT_ID);
-        final long countProcessInstance = countProcessInstance(jdbcTemplate);
-
-        assertEquals(0, countMultiBusinessdata(jdbcTemplate));
 
         createTenantIfNotExists(jdbcTemplate, TENANT_ID);
         jdbcTemplate.update(SQL_INSERT_PROCESS_INSTANCE, new Object[] { TENANT_ID, PROCESS_INSTANCE_ID1 });
@@ -166,12 +163,11 @@ public class DatabaseChecker6_4_0 {
         jdbcTemplate.update(sqlInsertRefBizData, new Object[] { TENANT_ID, 4959595, "businessdata", PROCESS_INSTANCE_ID2, null, 1, CLASSNAME,
                 KIND
         });
-        //then
 
-        assertEquals(countProcessInstance + 2, countProcessInstance(jdbcTemplate));
+        //then
         assertEquals(countRefBusinessdata + 2, countRefBusinessdata(jdbcTemplate, TENANT_ID));
         emptyProcessTable(jdbcTemplate);
-        assertEquals(0, countRefBusinessdata(jdbcTemplate, TENANT_ID));
+        assertEquals(countRefBusinessdata, countRefBusinessdata(jdbcTemplate, TENANT_ID));
 
     }
 
@@ -182,9 +178,7 @@ public class DatabaseChecker6_4_0 {
         final JdbcTemplate jdbcTemplate = new JdbcTemplate(bonitaDatasource);
 
         //given
-        final long countFlowNodeInstance = countFlowNodeInstance(jdbcTemplate);
         final long countRefBusinessdata = countRefBusinessdata(jdbcTemplate, TENANT_ID);
-        assertEquals(0, countMultiBusinessdata(jdbcTemplate));
 
         createTenantIfNotExists(jdbcTemplate, TENANT_ID);
         jdbcTemplate
@@ -206,12 +200,11 @@ public class DatabaseChecker6_4_0 {
                 KIND });
 
         //then
-        assertEquals(countFlowNodeInstance + 2, countFlowNodeInstance(jdbcTemplate));
         assertEquals(countRefBusinessdata + 2, countRefBusinessdata(jdbcTemplate, TENANT_ID));
 
         //cleanup
         emptyFlowNodeTable(jdbcTemplate);
-        assertEquals(0, countRefBusinessdata(jdbcTemplate, TENANT_ID));
+        assertEquals(countRefBusinessdata, countRefBusinessdata(jdbcTemplate, TENANT_ID));
 
     }
 
@@ -239,7 +232,7 @@ public class DatabaseChecker6_4_0 {
         assertEquals(2, countMultiBusinessdata(jdbcTemplate));
         logger.info("check delete cascade works");
         emptyRefBizDataTable(jdbcTemplate);
-        assertEquals(0, countRefBusinessdata(jdbcTemplate, TENANT_ID));
+        assertEquals(countRefBusinessdata, countRefBusinessdata(jdbcTemplate, TENANT_ID));
         assertEquals(0, countMultiBusinessdata(jdbcTemplate));
     }
 
@@ -264,14 +257,6 @@ public class DatabaseChecker6_4_0 {
 
     private long countTenant(final JdbcTemplate jdbcTemplate, final long tenantId) {
         return getCount(jdbcTemplate, "SELECT COUNT(id) FROM tenant where id=" + tenantId);
-    }
-
-    private long countFlowNodeInstance(final JdbcTemplate jdbcTemplate) {
-        return getCount(jdbcTemplate, "SELECT COUNT(id) FROM flownode_instance");
-    }
-
-    private long countProcessInstance(final JdbcTemplate jdbcTemplate) {
-        return getCount(jdbcTemplate, "SELECT COUNT(id) FROM process_instance");
     }
 
     private long countMultiBusinessdata(final JdbcTemplate jdbcTemplate) {
