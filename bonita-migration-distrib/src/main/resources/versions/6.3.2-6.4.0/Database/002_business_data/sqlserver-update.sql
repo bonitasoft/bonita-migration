@@ -1,22 +1,30 @@
-ALTER TABLE ref_biz_data_inst ADD kind NVARCHAR(15)
+CREATE TABLE ref_biz_data_inst2 (
+	tenantid NUMERIC(19, 0) NOT NULL,
+  	id NUMERIC(19, 0) NOT NULL,
+  	kind NVARCHAR(15) NOT NULL,
+  	name NVARCHAR(255) NOT NULL,
+  	proc_inst_id NUMERIC(19, 0),
+  	fn_inst_id NUMERIC(19, 0),
+  	data_id  NUMERIC(19, 0),
+  	data_classname NVARCHAR(255) NOT NULL
+)
 @@
 
-ALTER TABLE ref_biz_data_inst ADD fn_inst_id NUMERIC(19, 0)
+INSERT INTO ref_biz_data_inst2(tenantid, id, name, data_id, fn_inst_id, data_classname, kind) 
+SELECT tenantid, id, name, data_id, NULL, data_classname, 'simple_ref' 
+FROM ref_biz_data_inst
 @@
 
-UPDATE ref_biz_data_inst SET kind='simple_ref'
+DROP TABLE ref_biz_data_inst
 @@
 
-ALTER TABLE ref_biz_data_inst ALTER COLUMN kind NVARCHAR(15) NOT NULL
+sp_rename ref_biz_data_inst2 , ref_biz_data_inst
 @@
 
-ALTER TABLE ref_biz_data_inst ALTER COLUMN proc_inst_id NUMERIC(19, 0) NULL
+ALTER TABLE ref_biz_data_inst ADD CONSTRAINT pk_ref_biz_data PRIMARY KEY (tenantid, id)
 @@
 
-CREATE UNIQUE INDEX uniq_ref_biz_data_proc ON ref_biz_data_inst(tenantid, proc_inst_id, name)
-@@
-
-CREATE UNIQUE INDEX uniq_ref_biz_data_fn ON ref_biz_data_inst(tenantid, fn_inst_id, name)
+CREATE UNIQUE INDEX uniq_ref_biz_data ON ref_biz_data_inst(tenantid, proc_inst_id, fn_inst_id, name)
 @@
 
 ALTER TABLE ref_biz_data_inst ADD CONSTRAINT fk_ref_biz_data_proc FOREIGN KEY (tenantid, proc_inst_id) REFERENCES process_instance(tenantid, id) ON DELETE CASCADE
