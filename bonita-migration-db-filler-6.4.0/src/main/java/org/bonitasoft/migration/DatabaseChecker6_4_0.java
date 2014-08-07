@@ -62,7 +62,7 @@ public class DatabaseChecker6_4_0 {
             + " 0, 0, 0, 0, 0, 0, 0, ?, 0, ?, ?, ?, 0, 0)";
 
     private static final String SQL_INSERT_TENANT = " INSERT INTO tenant(id, created, createdby, description, defaulttenant, iconname, iconpath, name, status)"
-            + " VALUES(?, 0, 'a', 'b', false, 'c', 'd', 'e', 'f')";
+            + " VALUES(?, 0, 'a', 'b', ?, 'c', 'd', 'e', 'f')";
 
     private static final int TENANT_ID = 4567;
 
@@ -287,7 +287,7 @@ public class DatabaseChecker6_4_0 {
     private void createTenantIfNotExists(final JdbcTemplate jdbcTemplate, final long tenantId) {
         if (countTenant(jdbcTemplate, tenantId) == 0)
         {
-            jdbcTemplate.update(SQL_INSERT_TENANT, new Object[] { tenantId });
+            jdbcTemplate.update(SQL_INSERT_TENANT, new Object[] { tenantId, false });
         }
     }
 
