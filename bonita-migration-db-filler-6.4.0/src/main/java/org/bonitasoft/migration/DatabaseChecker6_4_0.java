@@ -40,10 +40,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 public class DatabaseChecker6_4_0 {
 
-    private static final String SQL_INSERT_PROCESS_INSTANCE = "INSERT INTO process_instance(tenantid, id, name, processdefinitionid, description, startdate, startedby, startedbysubstitute,"
-            + " enddate, stateid, statecategory, lastupdate, containerid, rootprocessinstanceid, callerid, callertype, interruptingeventid,"
-            + " migration_plan, stringindex1, stringindex2, stringindex3, stringindex4, stringindex5)"
-            + " VALUES(?, ?, 'name', 0, 'desc', 0, 0, 0, 0, 0, 'a', 0, 0, 0, 0, 'b', 0, 0, 'c', 'd', 'e', 'f', 'g')";
     private static final String KIND = "012345678912345";
     private static final String CLASSNAME = "org.bonitasoft.classname";
     private static final int PROCESS_INSTANCE_ID1 = 10000;
@@ -51,6 +47,11 @@ public class DatabaseChecker6_4_0 {
 
     private static final int FLOWNODE_INSTANCE_ID1 = 10000;
     private static final int FLOWNODE_INSTANCE_ID2 = 10001;
+
+    private static final String SQL_INSERT_PROCESS_INSTANCE = "INSERT INTO process_instance(tenantid, id, name, processdefinitionid, description, startdate, startedby, startedbysubstitute,"
+            + " enddate, stateid, statecategory, lastupdate, containerid, rootprocessinstanceid, callerid, callertype, interruptingeventid,"
+            + " migration_plan, stringindex1, stringindex2, stringindex3, stringindex4, stringindex5)"
+            + " VALUES(?, ?, 'name', 0, 'desc', 0, 0, 0, 0, 0, 'a', 0, 0, 0, 0, 'b', 0, 0, 'c', 'd', 'e', 'f', 'g')";
 
     private static final String SQL_INSERT_FLOWNODE = "INSERT INTO flownode_instance(tenantid, id, flownodedefinitionid, kind, rootcontainerid, parentcontainerid, name, displayname,"
             + " displaydescription, stateid, statename, prev_state_id, terminal, stable, actorid, assigneeid, reachedstatedate, lastupdatedate, expectedenddate, claimeddate,"
@@ -60,7 +61,10 @@ public class DatabaseChecker6_4_0 {
             + " VALUES(?, ?, 0, ?, 0, 0, 'name', 'a', 'b', 0, 'c', 0, ?, ?, 0, 0, 0, 0, 0, 0, 0, 'd', 'e', 'f', 0, 0, 0, 0, 0, 0, 'g', ?, 'h', 'i', 'j', 'k',"
             + " 0, 0, 0, 0, 0, 0, 0, ?, 0, ?, ?, ?, 0, 0)";
 
-    private static final int TENANT_ID = 1;
+    private static final String SQL_INSERT_TENANT = " INSERT INTO tenant(id, created, createdby, description, defaulttenant, iconname, iconpath, name, status)"
+            + " VALUES(?, 0, 'a', 'b', false, 'c', 'd', 'e', 'f')";
+
+    private static final int TENANT_ID = 4567;
 
     protected static ProcessAPI processAPI;
 
@@ -98,6 +102,16 @@ public class DatabaseChecker6_4_0 {
 
     @AfterClass
     public static void teardown() throws BonitaException {
+        final DataSource bonitaDatasource = (DataSource) springContext.getBean("bonitaDataSource");
+        final JdbcTemplate jdbcTemplate = new JdbcTemplate(bonitaDatasource);
+
+        //clean up
+        jdbcTemplate.update("DELETE FROM multi_biz_data where tenantid = ?", new Object[] { TENANT_ID });
+        jdbcTemplate.update("DELETE FROM ref_biz_data_inst where tenantid = ?", new Object[] { TENANT_ID });
+        jdbcTemplate.update("DELETE FROM flownode_instance where tenantid = ?", new Object[] { TENANT_ID });
+        jdbcTemplate.update("DELETE FROM process_instance where tenantid = ?", new Object[] { TENANT_ID });
+        jdbcTemplate.update("DELETE FROM tenant where id = ?", new Object[] { TENANT_ID });
+
         final APITestUtil apiTestUtil = new APITestUtil();
         final PlatformSession pSession = apiTestUtil.loginOnPlatform();
         final PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(pSession);
@@ -113,7 +127,8 @@ public class DatabaseChecker6_4_0 {
         final JdbcTemplate jdbcTemplate = new JdbcTemplate(bonitaDatasource);
 
         //given
-        final long countRefBusinessdata = countRefBusinessdata(jdbcTemplate);
+        createTenantIfNotExists(jdbcTemplate, TENANT_ID);
+        final long countRefBusinessdata = countRefBusinessdata(jdbcTemplate, TENANT_ID);
         assertEquals(0, countMultiBusinessdata(jdbcTemplate));
 
         //when
@@ -121,9 +136,9 @@ public class DatabaseChecker6_4_0 {
                 + " VALUES (?, ?, ?, ?, ?, ?) ", new Object[] { TENANT_ID, 12020, "businessdata", 1, CLASSNAME, KIND });
 
         //then
-        assertEquals(countRefBusinessdata + 1, countRefBusinessdata(jdbcTemplate));
+        assertEquals(countRefBusinessdata + 1, countRefBusinessdata(jdbcTemplate, TENANT_ID));
         emptyRefBizDataTable(jdbcTemplate);
-        assertEquals(0, countRefBusinessdata(jdbcTemplate));
+        assertEquals(0, countRefBusinessdata(jdbcTemplate, TENANT_ID));
     }
 
     @Test
@@ -133,10 +148,12 @@ public class DatabaseChecker6_4_0 {
         final JdbcTemplate jdbcTemplate = new JdbcTemplate(bonitaDatasource);
 
         //given
-        final long countRefBusinessdata = countRefBusinessdata(jdbcTemplate);
+        final long countRefBusinessdata = countRefBusinessdata(jdbcTemplate, TENANT_ID);
         final long countProcessInstance = countProcessInstance(jdbcTemplate);
 
         assertEquals(0, countMultiBusinessdata(jdbcTemplate));
+
+        createTenantIfNotExists(jdbcTemplate, TENANT_ID);
         jdbcTemplate.update(SQL_INSERT_PROCESS_INSTANCE, new Object[] { TENANT_ID, PROCESS_INSTANCE_ID1 });
         jdbcTemplate.update(SQL_INSERT_PROCESS_INSTANCE, new Object[] { TENANT_ID, PROCESS_INSTANCE_ID2 });
 
@@ -152,9 +169,9 @@ public class DatabaseChecker6_4_0 {
         //then
 
         assertEquals(countProcessInstance + 2, countProcessInstance(jdbcTemplate));
-        assertEquals(countRefBusinessdata + 2, countRefBusinessdata(jdbcTemplate));
+        assertEquals(countRefBusinessdata + 2, countRefBusinessdata(jdbcTemplate, TENANT_ID));
         emptyProcessTable(jdbcTemplate);
-        assertEquals(0, countRefBusinessdata(jdbcTemplate));
+        assertEquals(0, countRefBusinessdata(jdbcTemplate, TENANT_ID));
 
     }
 
@@ -166,9 +183,10 @@ public class DatabaseChecker6_4_0 {
 
         //given
         final long countFlowNodeInstance = countFlowNodeInstance(jdbcTemplate);
-        final long countRefBusinessdata = countRefBusinessdata(jdbcTemplate);
+        final long countRefBusinessdata = countRefBusinessdata(jdbcTemplate, TENANT_ID);
         assertEquals(0, countMultiBusinessdata(jdbcTemplate));
 
+        createTenantIfNotExists(jdbcTemplate, TENANT_ID);
         jdbcTemplate
         .update(SQL_INSERT_FLOWNODE
                 , new Object[] { TENANT_ID, FLOWNODE_INSTANCE_ID1, "kind", false, false, false, false, false, false, false });
@@ -189,11 +207,11 @@ public class DatabaseChecker6_4_0 {
 
         //then
         assertEquals(countFlowNodeInstance + 2, countFlowNodeInstance(jdbcTemplate));
-        assertEquals(countRefBusinessdata + 2, countRefBusinessdata(jdbcTemplate));
+        assertEquals(countRefBusinessdata + 2, countRefBusinessdata(jdbcTemplate, TENANT_ID));
 
         //cleanup
         emptyFlowNodeTable(jdbcTemplate);
-        assertEquals(0, countRefBusinessdata(jdbcTemplate));
+        assertEquals(0, countRefBusinessdata(jdbcTemplate, TENANT_ID));
 
     }
 
@@ -203,10 +221,10 @@ public class DatabaseChecker6_4_0 {
         final DataSource bonitaDatasource = (DataSource) springContext.getBean("bonitaDataSource");
         final JdbcTemplate jdbcTemplate = new JdbcTemplate(bonitaDatasource);
 
-        final long countRefBusinessdata = countRefBusinessdata(jdbcTemplate);
+        final long countRefBusinessdata = countRefBusinessdata(jdbcTemplate, TENANT_ID);
         assertEquals(0, countMultiBusinessdata(jdbcTemplate));
 
-        //when
+        createTenantIfNotExists(jdbcTemplate, TENANT_ID);
         jdbcTemplate.update("INSERT INTO ref_biz_data_inst(tenantid, id, name,  data_id, data_classname, kind) "
                 + "VALUES (?, ?, ?, ?, ?, ?)", new Object[] { TENANT_ID, 298989, "businessdata", 1, CLASSNAME, "multi_ref" });
         logger.info("insert first multiple data");
@@ -217,11 +235,11 @@ public class DatabaseChecker6_4_0 {
                 + "VALUES (?, ?, ?, ?)", new Object[] { TENANT_ID, 298989, 2, 2 });
 
         //then
-        assertEquals(countRefBusinessdata + 1, countRefBusinessdata(jdbcTemplate));
+        assertEquals(countRefBusinessdata + 1, countRefBusinessdata(jdbcTemplate, TENANT_ID));
         assertEquals(2, countMultiBusinessdata(jdbcTemplate));
         logger.info("check delete cascade works");
         emptyRefBizDataTable(jdbcTemplate);
-        assertEquals(0, countRefBusinessdata(jdbcTemplate));
+        assertEquals(0, countRefBusinessdata(jdbcTemplate, TENANT_ID));
         assertEquals(0, countMultiBusinessdata(jdbcTemplate));
     }
 
@@ -240,8 +258,12 @@ public class DatabaseChecker6_4_0 {
         jdbcTemplate.update("DELETE FROM flownode_instance where tenantid = ?", new Object[] { TENANT_ID });
     }
 
-    private long countRefBusinessdata(final JdbcTemplate jdbcTemplate) {
-        return getCount(jdbcTemplate, "SELECT COUNT(id) FROM ref_biz_data_inst");
+    private long countRefBusinessdata(final JdbcTemplate jdbcTemplate, final long tenantId) {
+        return getCount(jdbcTemplate, "SELECT COUNT(id) FROM ref_biz_data_inst where tenantid=" + tenantId);
+    }
+
+    private long countTenant(final JdbcTemplate jdbcTemplate, final long tenantId) {
+        return getCount(jdbcTemplate, "SELECT COUNT(id) FROM tenant where id=" + tenantId);
     }
 
     private long countFlowNodeInstance(final JdbcTemplate jdbcTemplate) {
@@ -260,6 +282,13 @@ public class DatabaseChecker6_4_0 {
         final long count = jdbcTemplate.queryForLong(sql);
         logger.info("getCount:" + sql + ":" + count);
         return count;
+    }
+
+    private void createTenantIfNotExists(final JdbcTemplate jdbcTemplate, final long tenantId) {
+        if (countTenant(jdbcTemplate, tenantId) == 0)
+        {
+            jdbcTemplate.update(SQL_INSERT_TENANT, new Object[] { tenantId });
+        }
     }
 
     private static void setupSpringContext() {
