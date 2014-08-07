@@ -159,8 +159,7 @@ public class DatabaseFiller6_0_2 {
     }
 
     public Map<String, String> fillDatabase(final int nbProcessesDefinitions, final int nbProcessInstances, final int nbWaitingEvents, final int nbDocuments)
-            throws BonitaException,
-            Exception {
+            throws BonitaException, Exception {
         logger.info("Starting to fill the database");
         APISession session = APITestUtil.loginDefaultTenant();
         Map<String, String> stats = new HashMap<String, String>();
