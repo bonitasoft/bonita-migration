@@ -2514,6 +2514,10 @@ form.success .formentries .formentry .input div.alert_message.ERROR {
 .filters_panel .resource_filters .body a img.empty {
   background: url("themeResource?theme=portal&location=skin/images/filters-resource-default.png") transparent no-repeat center center !important;
 }
+.filters_panel .resource_filters .body a > span {
+  margin-left: 10px;
+  font-size: 80%;
+}
 .filters_panel .resource_filters .body a.current img.empty {
   background: url("themeResource?theme=portal&location=skin/images/filters-resource-default-current.png") transparent no-repeat center center !important;
 }
@@ -5208,20 +5212,26 @@ form.success .formentries .formentry .input div.alert_message.ERROR {
 .page_tasklistingadmin .section_history .table .tr .th.th_reached_state_date,
 .page_tasklistingpm .section_history .table .tr .th.th_reached_state_date,
 .page_tasklistingadmin .section_all .table .tr .th.th_reached_state_date,
-.page_tasklistingpm .section_all .table .tr .th.th_reached_state_date {
+.page_tasklistingpm .section_all .table .tr .th.th_reached_state_date,
+.page_tasklistingadmin .section_failed .table .tr .th.th_reached_state_date,
+.page_tasklistingpm .section_failed .table .tr .th.th_reached_state_date {
   float: right;
   width: 130px;
 }
 .page_tasklistingadmin .section_history .table .tr .td.td_priority,
 .page_tasklistingpm .section_history .table .tr .td.td_priority,
 .page_tasklistingadmin .section_all .table .tr .td.td_priority,
-.page_tasklistingpm .section_all .table .tr .td.td_priority {
+.page_tasklistingpm .section_all .table .tr .td.td_priority,
+.page_tasklistingadmin .section_failed .table .tr .td.td_priority,
+.page_tasklistingpm .section_failed .table .tr .td.td_priority {
   padding: 0;
 }
 .page_tasklistingadmin .section_history .table .tr .td.td_reached_state_date,
 .page_tasklistingpm .section_history .table .tr .td.td_reached_state_date,
 .page_tasklistingadmin .section_all .table .tr .td.td_reached_state_date,
-.page_tasklistingpm .section_all .table .tr .td.td_reached_state_date {
+.page_tasklistingpm .section_all .table .tr .td.td_reached_state_date,
+.page_tasklistingadmin .section_failed .table .tr .td.td_reached_state_date,
+.page_tasklistingpm .section_failed .table .tr .td.td_reached_state_date {
   background: url("themeResource?theme=portal&location=skin/images/transparent.gif") transparent no-repeat left center !important;
   width: 130px;
   min-height: 15px;
@@ -5232,20 +5242,26 @@ form.success .formentries .formentry .input div.alert_message.ERROR {
 .page_tasklistingadmin .section_history .table .tr .td.td_reached_state_date.empty,
 .page_tasklistingpm .section_history .table .tr .td.td_reached_state_date.empty,
 .page_tasklistingadmin .section_all .table .tr .td.td_reached_state_date.empty,
-.page_tasklistingpm .section_all .table .tr .td.td_reached_state_date.empty {
+.page_tasklistingpm .section_all .table .tr .td.td_reached_state_date.empty,
+.page_tasklistingadmin .section_failed .table .tr .td.td_reached_state_date.empty,
+.page_tasklistingpm .section_failed .table .tr .td.td_reached_state_date.empty {
   background: none !important;
 }
 .page_tasklistingadmin .section_history .table .tr .td.td_assigned_id_icon img,
 .page_tasklistingpm .section_history .table .tr .td.td_assigned_id_icon img,
 .page_tasklistingadmin .section_all .table .tr .td.td_assigned_id_icon img,
-.page_tasklistingpm .section_all .table .tr .td.td_assigned_id_icon img {
+.page_tasklistingpm .section_all .table .tr .td.td_assigned_id_icon img,
+.page_tasklistingadmin .section_failed .table .tr .td.td_assigned_id_icon img,
+.page_tasklistingpm .section_failed .table .tr .td.td_assigned_id_icon img {
   max-height: 25px;
   max-width: 25px;
 }
 .page_tasklistingadmin .section_history .table .tr .td.td_displayname,
 .page_tasklistingpm .section_history .table .tr .td.td_displayname,
 .page_tasklistingadmin .section_all .table .tr .td.td_displayname,
-.page_tasklistingpm .section_all .table .tr .td.td_displayname {
+.page_tasklistingpm .section_all .table .tr .td.td_displayname,
+.page_tasklistingadmin .section_failed .table .tr .td.td_displayname,
+.page_tasklistingpm .section_failed .table .tr .td.td_displayname {
   width: 180px;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -5254,10 +5270,14 @@ form.success .formentries .formentry .input div.alert_message.ERROR {
 .page_tasklistingpm .section_history .table .tr .td.td_processId_displayName,
 .page_tasklistingadmin .section_all .table .tr .td.td_processId_displayName,
 .page_tasklistingpm .section_all .table .tr .td.td_processId_displayName,
+.page_tasklistingadmin .section_failed .table .tr .td.td_processId_displayName,
+.page_tasklistingpm .section_failed .table .tr .td.td_processId_displayName,
 .page_tasklistingadmin .section_history .table .tr .td.td_rootContainerId_displayName,
 .page_tasklistingpm .section_history .table .tr .td.td_rootContainerId_displayName,
 .page_tasklistingadmin .section_all .table .tr .td.td_rootContainerId_displayName,
-.page_tasklistingpm .section_all .table .tr .td.td_rootContainerId_displayName {
+.page_tasklistingpm .section_all .table .tr .td.td_rootContainerId_displayName,
+.page_tasklistingadmin .section_failed .table .tr .td.td_rootContainerId_displayName,
+.page_tasklistingpm .section_failed .table .tr .td.td_rootContainerId_displayName {
   width: 180px;
   text-overflow: ellipsis;
   white-space: nowrap;

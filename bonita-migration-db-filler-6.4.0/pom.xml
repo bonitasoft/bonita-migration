@@ -15,7 +15,7 @@
 
 	<dependencies>
 		<dependency>
-			<artifactId>bonita-migration-db-filler-6.3.2</artifactId>
+			<artifactId>bonita-migration-db-filler-6.3.3</artifactId>
 			<groupId>org.bonitasoft.migration</groupId>
 			<version>${project.version}</version>
 		</dependency>
