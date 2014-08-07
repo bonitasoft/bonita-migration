@@ -16,7 +16,7 @@ package org.bonitasoft.migration;
 import org.bonitasoft.engine.exception.BonitaException;
 import org.bonitasoft.engine.test.APITestUtil;
 
-public class DatabaseFiller6_3_3 extends DatabaseFiller6_3_2 {
+public class DatabaseFiller6_3_3 extends SimpleDatabaseFiller6_3_1 {
 
     private final APITestUtil apiTestUtil = new APITestUtil();
 
