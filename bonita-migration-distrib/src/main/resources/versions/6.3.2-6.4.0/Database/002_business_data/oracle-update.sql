@@ -18,7 +18,7 @@ FROM ref_biz_data_inst
 DROP TABLE ref_biz_data_inst
 @@
 
-RENAME TABLE ref_biz_data_inst2 TO ref_biz_data_inst
+RENAME ref_biz_data_inst2 TO ref_biz_data_inst
 @@
 
 ALTER TABLE ref_biz_data_inst ADD CONSTRAINT pk_ref_biz_data_inst PRIMARY KEY (tenantid, id)
