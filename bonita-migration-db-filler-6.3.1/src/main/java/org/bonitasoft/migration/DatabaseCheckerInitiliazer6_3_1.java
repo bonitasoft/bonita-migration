@@ -59,9 +59,9 @@ public class DatabaseCheckerInitiliazer6_3_1 {
     protected static CommandAPI commandApi;
 
     protected static APISession session;
-    
+
     private static PlatformTestUtil platformTestUtil = new PlatformTestUtil();
-    
+
     private static APITestUtil apiTestUtil = new APITestUtil();
 
     @BeforeClass
