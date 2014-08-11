@@ -68,14 +68,14 @@ class CreateApplicationTablesIT  extends GroovyTestCase {
     def bussinessAppTable = [
         "mysql" : "business_app",
         "oracle" : "BUSINESS_APP",
-        "posgres" : "business_app",
+        "postgres" : "business_app",
         "sqlserver" : "business_app"
     ];
 
     def busAppPageTable = [
         "mysql" : "business_app_page",
         "oracle" : "BUSINESS_APP_PAGE",
-        "posgres" : "business_app_page",
+        "postgres" : "business_app_page",
         "sqlserver" : "business_app_page"];
 
     Sql sql
