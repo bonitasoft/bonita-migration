@@ -44,7 +44,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * @author Elias Ricken de Medeiros
- * 
+ *
  */
 public class DatabaseCheckerInitiliazer6_3_1 {
 
@@ -67,8 +67,8 @@ public class DatabaseCheckerInitiliazer6_3_1 {
     @BeforeClass
     public static void setup() throws BonitaException {
         setupSpringContext();
-        PlatformSession platformSession = platformTestUtil.loginOnPlatform();
-        PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(platformSession);
+        final PlatformSession platformSession = platformTestUtil.loginOnPlatform();
+        final PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(platformSession);
         platformAPI.startNode();
         platformTestUtil.logoutOnPlatform(platformSession);
         apiTestUtil.loginOnDefaultTenantWithDefaultTechnicalLogger();
@@ -103,15 +103,19 @@ public class DatabaseCheckerInitiliazer6_3_1 {
         springContext.close();
     }
 
+    protected ClassPathXmlApplicationContext getSpringContext() {
+        return springContext;
+    }
+
     private static void setSystemPropertyIfNotSet(final String property, final String value) {
         System.setProperty(property, System.getProperty(property, value));
     }
 
     protected HumanTaskInstance waitForUserTask(final String taskName, final long processInstanceId, final int timeout) throws Exception {
-        long now = System.currentTimeMillis();
+        final long now = System.currentTimeMillis();
         SearchResult<ActivityInstance> searchResult;
         do {
-            SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 1);
+            final SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 1);
             builder.filter(ActivityInstanceSearchDescriptor.PROCESS_INSTANCE_ID, processInstanceId);
             builder.filter(ActivityInstanceSearchDescriptor.NAME, taskName);
             builder.filter(ActivityInstanceSearchDescriptor.STATE_NAME, "ready");
@@ -124,10 +128,10 @@ public class DatabaseCheckerInitiliazer6_3_1 {
     }
 
     protected void waitForProcessToFinish(final long processInstanceId, final int timeout) throws Exception {
-        long now = System.currentTimeMillis();
+        final long now = System.currentTimeMillis();
         SearchResult<ArchivedProcessInstance> searchResult;
         do {
-            SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 1);
+            final SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 1);
             builder.filter(ArchivedProcessInstancesSearchDescriptor.SOURCE_OBJECT_ID, processInstanceId);
             builder.filter(ArchivedProcessInstancesSearchDescriptor.STATE_ID, ProcessInstanceState.COMPLETED.getId());
             searchResult = processAPI.searchArchivedProcessInstances(builder.done());
