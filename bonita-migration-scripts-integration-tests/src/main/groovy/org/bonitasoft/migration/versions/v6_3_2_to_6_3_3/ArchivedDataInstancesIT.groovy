@@ -21,6 +21,7 @@ import org.dbunit.JdbcDatabaseTester
 import org.dbunit.dataset.xml.FlatXmlDataSet
 
 class ArchivedDataInstancesIT extends GroovyTestCase {
+
     final static String DBVENDOR
     final static CREATE_TABLE_6_3_2
 
@@ -80,6 +81,10 @@ class ArchivedDataInstancesIT extends GroovyTestCase {
         tester.onTearDown()
         sql.execute("DROP TABLE arch_data_mapping")
         sql.execute("DROP TABLE arch_data_instance")
+        sql.execute("DROP TABLE flownode_instance")
+        sql.execute("DROP TABLE arch_flownode_instance")
+        sql.execute("DROP TABLE tenant")
+        sql.execute("DROP TABLE token")
     }
 
     void test_orphan_mappings_are_deleted() {
