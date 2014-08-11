@@ -14,13 +14,20 @@
 package org.bonitasoft.migration;
 
 import org.bonitasoft.engine.exception.BonitaException;
-import org.bonitasoft.engine.test.PlatformTestUtil;
+import org.bonitasoft.engine.test.APITestUtil;
 
 public class DatabaseFiller6_3_3 extends SimpleDatabaseFiller6_3_1 {
+
+    private final APITestUtil apiTestUtil = new APITestUtil();
 
     public static void main(final String[] args) throws Exception {
         DatabaseFiller6_3_3 databaseFiller = new DatabaseFiller6_3_3();
         databaseFiller.execute(1, 1, 1, 1);
     }
-    
+
+    @Override
+    protected void initializePlatform() throws BonitaException {
+        apiTestUtil.createInitializeAndStartPlatformWithDefaultTenant(true);
+    }
+
 }
