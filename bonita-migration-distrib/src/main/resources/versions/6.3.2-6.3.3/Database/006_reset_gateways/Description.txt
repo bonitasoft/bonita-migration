@@ -1,0 +1,1 @@
+Fix a corrupted database due to a bug on the gateways.
