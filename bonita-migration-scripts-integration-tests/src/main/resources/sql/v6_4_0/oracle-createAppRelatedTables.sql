@@ -26,5 +26,4 @@ CREATE TABLE page (
   content BLOB,
   UNIQUE (tenantId, name),
   PRIMARY KEY (tenantId, id)
-)@@
-
+);
