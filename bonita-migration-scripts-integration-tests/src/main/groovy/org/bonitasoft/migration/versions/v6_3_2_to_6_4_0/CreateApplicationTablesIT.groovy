@@ -48,22 +48,35 @@ class CreateApplicationTablesIT  extends GroovyTestCase {
             WHERE TABLE_SCHEMA = DATABASE()
             AND TABLE_NAME = $tableName
         """ },
-        "oracle" : {tableName -> """
+        "oracle" : { tableName -> """
             SELECT *
             FROM all_tables
             WHERE TABLE_NAME = $tableName
-        """},
+        """ },
         "postgres" : { tableName ->  """
                 SELECT *
                 FROM information_schema.tables
                 WHERE table_name = $tableName
-            """   },
+            """ },
         "sqlserver" : { tableName ->  """
                 SELECT *
                 FROM INFORMATION_SCHEMA.TABLES
                 WHERE TABLE_NAME = $tableName
-            """  }
+            """ }
     ]
+
+    def bussinessAppTable = [
+        "mysql" : "business_app",
+        "oracle" : "BUSINESS_APP",
+        "posgres" : "business_app",
+        "sqlserver" : "business_app"
+    ];
+
+    def busAppPageTable = [
+        "mysql" : "business_app_page",
+        "oracle" : "BUSINESS_APP_PAGE",
+        "posgres" : "business_app_page",
+        "sqlserver" : "business_app_page"];
 
     Sql sql
     JdbcDatabaseTester tester
@@ -76,11 +89,7 @@ class CreateApplicationTablesIT  extends GroovyTestCase {
     void setUp() {
         String driverClass =  System.getProperty("jdbc.driverClass")
 
-        def config = [
-            System.getProperty("jdbc.url"),
-            System.getProperty("jdbc.user"),
-            System.getProperty("jdbc.password")
-        ]
+        def config = [System.getProperty("jdbc.url"), System.getProperty("jdbc.user"), System.getProperty("jdbc.password")]
         sql = Sql.newInstance(*config, driverClass);
         tester = new JdbcDatabaseTester(driverClass, *config)
 
@@ -112,8 +121,8 @@ class CreateApplicationTablesIT  extends GroovyTestCase {
         def feature = new File("build/dist/versions/6.3.3-6.4.0/Database/003_living_applications")
         new CreateApplicationTables().migrate(feature, DBVENDOR, sql);
 
-        def appTable = sql.firstRow(checkSql[DBVENDOR]("business_app"));
-        def appPageTable = sql.firstRow(checkSql[DBVENDOR]("business_app_page"));
+        def appTable = sql.firstRow(checkSql[DBVENDOR](bussinessAppTable[DBVENDOR]));
+        def appPageTable = sql.firstRow(checkSql[DBVENDOR](busAppPageTable[DBVENDOR]));
         assertThat(appTable).isNotNull();
         assertThat(appPageTable).isNotNull();
 
