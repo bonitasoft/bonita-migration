@@ -12,14 +12,17 @@ CREATE TABLE business_app (
   updatedBy NUMBER(19, 0) NOT NULL,
   state VARCHAR2(30) NOT NULL,
   homePageId NUMBER(19, 0),
-  displayName VARCHAR2(255),
-  UNIQUE (tenantId, name, version),
-  PRIMARY KEY (tenantId, id)
+  displayName VARCHAR2(255)
 )
 @@
 
+ALTER TABLE business_app ADD CONSTRAINT pk_business_app PRIMARY KEY (tenantid, id)
+@@
+ALTER TABLE business_app ADD CONSTRAINT uk_app_name_version UNIQUE (tenantId, name, version)
+@@
 ALTER TABLE business_app ADD CONSTRAINT fk_app_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id)
 @@
+
 CREATE INDEX idx_app_name ON business_app (name, tenantid)
 @@
 
@@ -28,19 +31,24 @@ CREATE TABLE business_app_page (
   id NUMBER(19, 0) NOT NULL,
   applicationId NUMBER(19, 0) NOT NULL,
   pageId NUMBER(19, 0) NOT NULL,
-  name VARCHAR2(255),
-  UNIQUE (tenantId, applicationId, name),
-  PRIMARY KEY (tenantId, id)
+  name VARCHAR2(255)
 )
 @@
 
-CREATE INDEX idx_app_page_name ON business_app_page (applicationId, name, tenantid)
+ALTER TABLE business_app_page ADD CONSTRAINT pk_business_app_page PRIMARY KEY (tenantid, id)
+@@
+ALTER TABLE business_app_page ADD CONSTRAINT uk_app_page_appId_name UNIQUE (tenantId, applicationId, name)
 @@
 ALTER TABLE business_app_page ADD CONSTRAINT fk_app_page_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id)
 @@
 ALTER TABLE business_app_page ADD CONSTRAINT fk_bus_app_id FOREIGN KEY (tenantid, applicationId) REFERENCES business_app (tenantid, id) ON DELETE CASCADE
 @@
 ALTER TABLE business_app_page ADD CONSTRAINT fk_page_id FOREIGN KEY (tenantid, pageId) REFERENCES page (tenantid, id)
+@@
+
+CREATE INDEX idx_app_page_name ON business_app_page (applicationId, name, tenantid)
+@@
+CREATE INDEX idx_app_page_pageId ON business_app_page (pageId, tenantid)
 @@
 
 INSERT INTO "SEQUENCE" ("TENANTID", "ID", "NEXTID")
