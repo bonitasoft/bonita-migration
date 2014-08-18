@@ -48,7 +48,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  */
 public class DatabaseCheckerInitiliazer6_3_1 {
 
-    private static ClassPathXmlApplicationContext springContext;
+    protected static ClassPathXmlApplicationContext springContext;
 
     protected static ProcessAPI processAPI;
 
