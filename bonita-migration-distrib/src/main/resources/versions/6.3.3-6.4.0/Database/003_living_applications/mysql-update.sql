@@ -12,7 +12,7 @@ CREATE TABLE business_app (
   updatedBy BIGINT NOT NULL,
   state VARCHAR(30) NOT NULL,
   homePageId BIGINT,
-  displayName VARCHAR(255)
+  displayName VARCHAR(255) NOT NULL
 ) ENGINE = INNODB;
 @@
 
@@ -31,7 +31,7 @@ CREATE TABLE business_app_page (
   id BIGINT NOT NULL,
   applicationId BIGINT NOT NULL,
   pageId BIGINT NOT NULL,
-  name VARCHAR(255)
+  name VARCHAR(255) NOT NULL
 ) ENGINE = INNODB;
 @@
 

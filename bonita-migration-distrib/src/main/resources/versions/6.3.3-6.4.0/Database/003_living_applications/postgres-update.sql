@@ -12,7 +12,7 @@ CREATE TABLE business_app (
   updatedBy INT8 NOT NULL,
   state VARCHAR(30) NOT NULL,
   homePageId INT8,
-  displayName VARCHAR(255)
+  displayName VARCHAR(255) NOT NULL
 );
 @@
 
@@ -31,7 +31,7 @@ CREATE TABLE business_app_page (
   id INT8 NOT NULL,
   applicationId INT8 NOT NULL,
   pageId INT8 NOT NULL,
-  name VARCHAR(255)
+  name VARCHAR(255) NOT NULL
 );
 @@
 
