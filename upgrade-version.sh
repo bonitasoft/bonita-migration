@@ -1,7 +1,4 @@
-#!/bin/zsh
-#BONITA_PREVIOUS_VERSION=6.3.3
-#BONITA_CURRENT_VERSION=6.3.4
-#BONITA_NEXT_VERSION=6.3.5
+#!/bin/bash
 
 VERSIONS_FOLDER_NAME="bonita-migration-distrib/src/main/resources/versions"
 MIGRATION_DB_FILLER_PREFIX="bonita-migration-db-filler-"
@@ -37,27 +34,31 @@ findCurrentAndPreviousVersion(){
 updatePomVersion(){
     sed -e 's:<previous.bonita.version>.*</previous.bonita.version>:<previous.bonita.version>'"$BONITA_CURRENT_VERSION"'-SNAPSHOT</previous.bonita.version>:g' pom.xml > tmp.out
     sed -e 's:<current.bonita.version>.*</current.bonita.version>:<current.bonita.version>'"$BONITA_NEXT_VERSION"'-SNAPSHOT</current.bonita.version>:g' tmp.out > tmp2.out
-    sed -e 's:<next.bonita.version>.*</next.bonita.version>:<next.bonita.version>'"$BONITA_NEXT_VERSION"'</next.bonita.version>:g' tmp2.out > tmp3.xml
+    sed -e 's:<next.bonita.version>.*</next.bonita.version>:<next.bonita.version>'"$BONITA_NEXT_VERSION"'</next.bonita.version>:g' tmp2.out > pom.xml
     rm -f tmp.out
     rm -f tmp2.out
 }
 
 createNewMigrationFolder(){
     cd bonita-migration-versions-updated
-    echo "mvn clean install -Pupdate -Dlast.version.to.migrate=$BONITA_PREVIOUS_VERSION -Dlast.bonita.version=$BONITA_CURRENT_VERSION -Dnext.bonita.version=$BONITA_NEXT_VERSION -Dlast.migration.tag=$LAST_MIGRATION_TAG"
+    mvn clean install -Pupdate -Dlast.version.to.migrate=$BONITA_PREVIOUS_VERSION -Dlast.bonita.version=$BONITA_CURRENT_VERSION -Dnext.bonita.version=$BONITA_NEXT_VERSION -Dlast.migration.tag=$LAST_MIGRATION_TAG
     cd ..
 }
 
 createNewDBFiller(){
     cd bonita-migration-versions-updated
     CURRENT_MIGRATION_VERSION=$(grep '<version>.*-SNAPSHOT<' pom.xml | sed -r 's:</?version>::g' | tr -d ' ')
-    echo "mvn archetype:generate -DarchetypeArtifactId=bonita-migration-db-filler-archetype -DarchetypeGroupId=org.bonitasoft.migration -DarchetypeVersion=$CURRENT_MIGRATION_VERSION -Dbonita-version=$BONITA_NEXT_VERSION -Ddb-filler-suffix=${BONITA_NEXT_VERSION//./_}"
+    mvn archetype:generate -DarchetypeArtifactId=bonita-migration-db-filler-archetype -DarchetypeGroupId=org.bonitasoft.migration -DarchetypeVersion=$CURRENT_MIGRATION_VERSION -Dbonita-version=$BONITA_NEXT_VERSION -Ddb-filler-suffix=${BONITA_NEXT_VERSION//./_}
     cd ..
 }
 
 updateGAVersionInCurrentDistrib(){
     sed -e 's:<bonita.version>.*</bonita.version>:<bonita.version>'"$BONITA_CURRENT_VERSION"'</bonita.version>:g' $MIGRATION_DB_FILLER_PREFIX$BONITA_CURRENT_VERSION/pom.xml > $MIGRATION_DB_FILLER_PREFIX$BONITA_CURRENT_VERSION/tmp.out
+    mv $MIGRATION_DB_FILLER_PREFIX$BONITA_CURRENT_VERSION/tmp.out $MIGRATION_DB_FILLER_PREFIX$BONITA_CURRENT_VERSION/pom.xml
+    rm -f $MIGRATION_DB_FILLER_PREFIX$BONITA_CURRENT_VERSION/tmp.out
     sed -e 's:<bonita.version>.*</bonita.version>:<bonita.version>'"$BONITA_NEXT_VERSION"'-SNAPSHOT</bonita.version>:g' $MIGRATION_DB_FILLER_PREFIX$BONITA_NEXT_VERSION/pom.xml > $MIGRATION_DB_FILLER_PREFIX$BONITA_NEXT_VERSION/tmp.out
+    mv $MIGRATION_DB_FILLER_PREFIX$BONITA_NEXT_VERSION/tmp.out $MIGRATION_DB_FILLER_PREFIX$BONITA_NEXT_VERSION/pom.xml
+    rm -f $MIGRATION_DB_FILLER_PREFIX$BONITA_NEXT_VERSION/tmp.out
 }
 
 OPTS=$(getopt -o p:n:c:m:h -l previous:,current:,next:,migration: -- "$@")
