@@ -24,11 +24,10 @@ EOF
 }
 
 findCurrentAndPreviousVersion(){
-    VERSIONS_FOLDER=($(ls $VERSIONS_FOLDER_NAME | tr -d ' '))
-    LAST_VERSION_FOLDER=${VERSIONS_FOLDER[${VERSIONS_FOLDER[#]}-1]}
-    echo "cut -d '-' <<< $LAST_VERSION_FOLDER"
-    echo "${BONITA_PREVIOUS_VERSION:=$(cut -d '-' -f 1 <<< $LAST_VERSION_FOLDER)}"
-    echo "${BONITA_CURRENT_VERSION:=$(cut -d '-' -f 2 <<< $LAST_VERSION_FOLDER)}"
+    VERSIONS_FOLDER=($(ls -t $VERSIONS_FOLDER_NAME | tr -d ' '))
+    LAST_VERSION_FOLDER=${VERSIONS_FOLDER[1]}
+    echo "Previous Bonita Version : ${BONITA_PREVIOUS_VERSION:=$(cut -d '-' -f 1 <<< $LAST_VERSION_FOLDER)}"
+    echo "Current Bonita Version : ${BONITA_CURRENT_VERSION:=$(cut -d '-' -f 2 <<< $LAST_VERSION_FOLDER)}"
 }
 
 updatePomVersion(){
@@ -46,10 +45,8 @@ createNewMigrationFolder(){
 }
 
 createNewDBFiller(){
-    cd bonita-migration-versions-updated
     CURRENT_MIGRATION_VERSION=$(grep '<version>.*-SNAPSHOT<' pom.xml | sed -r 's:</?version>::g' | tr -d ' ')
-    mvn archetype:generate -DarchetypeArtifactId=bonita-migration-db-filler-archetype -DarchetypeGroupId=org.bonitasoft.migration -DarchetypeVersion=$CURRENT_MIGRATION_VERSION -Dbonita-version=$BONITA_NEXT_VERSION -Ddb-filler-suffix=${BONITA_NEXT_VERSION//./_}
-    cd ..
+    mvn archetype:generate -B -DarchetypeArtifactId=bonita-migration-db-filler-archetype -DarchetypeGroupId=org.bonitasoft.migration -DarchetypeVersion=$CURRENT_MIGRATION_VERSION -Dbonita-version=$BONITA_NEXT_VERSION -Ddb-filler-suffix=${BONITA_NEXT_VERSION//./_}
 }
 
 updateGAVersionInCurrentDistrib(){
@@ -95,14 +92,11 @@ while true ; do
     esac
 done
 findCurrentAndPreviousVersion
-echo $BONITA_PREVIOUS_VERSION
-echo $BONITA_CURRENT_VERSION
-echo "$BONITA_NEXT_VERSION ${BONITA_NEXT_VERSION//./_}"
+echo "Next Bonita Version : $BONITA_NEXT_VERSION ${BONITA_NEXT_VERSION//./_}"
 if [[ -z $BONITA_PREVIOUS_VERSION || -z $BONITA_CURRENT_VERSION || -z $BONITA_NEXT_VERSION || -z $LAST_MIGRATION_TAG ]]; then
   usage
   exit
 fi
-echo "Great!"
 updatePomVersion
 createNewMigrationFolder
 createNewDBFiller
