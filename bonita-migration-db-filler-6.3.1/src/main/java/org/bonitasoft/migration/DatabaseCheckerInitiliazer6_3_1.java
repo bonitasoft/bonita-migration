@@ -71,13 +71,14 @@ public class DatabaseCheckerInitiliazer6_3_1 {
         final PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(platformSession);
         platformAPI.startNode();
         platformTestUtil.logoutOnPlatform(platformSession);
-        apiTestUtil.loginOnDefaultTenantWithDefaultTechnicalLogger();
+        apiTestUtil.loginOnDefaultTenantWith(APITestUtil.DEFAULT_TECHNICAL_LOGGER_USERNAME, APITestUtil.DEFAULT_TECHNICAL_LOGGER_PASSWORD);
         session = apiTestUtil.getSession();
         processAPI = TenantAPIAccessor.getProcessAPI(session);
         identityApi = TenantAPIAccessor.getIdentityAPI(session);
         profileAPI = TenantAPIAccessor.getProfileAPI(session);
         commandApi = TenantAPIAccessor.getCommandAPI(session);
     }
+
 
     @AfterClass
     public static void teardown() throws BonitaException {
