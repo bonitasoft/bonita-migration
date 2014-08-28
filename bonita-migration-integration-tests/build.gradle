@@ -14,7 +14,7 @@ targetCompatibility = 1.6
 
 ext{
     migrationDistribClasses='../bonita-migration-distrib/target/classes'
-    migrationScritptsClasses='../bonita-migration-scripts-integration-tests/target/classes'
+    migrationScriptsClasses='../bonita-migration-scripts-integration-tests/target/classes'
     sourceversion = System.getProperty("source.version","6.3.3")
     targetversion = System.getProperty("target.version","6.3.4")
     dbvendor = System.getProperty("db.vendor", "postgres")
@@ -187,14 +187,14 @@ task overwritedist(dependsOn:unpackdist, type: Copy){
 ************** DEV MODE ***************
 ** overwriting files of distrib with :*
  - $migrationDistribClasses
- - $migrationScritptsClasses
+ - $migrationScriptsClasses
 ***************************************
 ***************************************
 """
         def outputDir = file(distDir)
     
         from files(migrationDistribClasses)
-        from files(migrationScritptsClasses)
+        from files(migrationScriptsClasses)
         into outputDir
     }
 }
