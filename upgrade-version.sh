@@ -24,8 +24,8 @@ EOF
 }
 
 findCurrentAndPreviousVersion(){
-    VERSIONS_FOLDER=($(ls -t $VERSIONS_FOLDER_NAME | tr -d ' '))
-    LAST_VERSION_FOLDER=${VERSIONS_FOLDER[1]}
+    VERSIONS_FOLDER=($(ls -l $VERSIONS_FOLDER_NAME | grep ^d | awk '{ print $9 }' | tr -d ' '))
+    LAST_VERSION_FOLDER=${VERSIONS_FOLDER[${#VERSIONS_FOLDER[@]}-1]}
     echo "Previous Bonita Version : ${BONITA_PREVIOUS_VERSION:=$(cut -d '-' -f 1 <<< $LAST_VERSION_FOLDER)}"
     echo "Current Bonita Version : ${BONITA_CURRENT_VERSION:=$(cut -d '-' -f 2 <<< $LAST_VERSION_FOLDER)}"
 }
@@ -46,7 +46,7 @@ createNewMigrationFolder(){
 
 createNewDBFiller(){
     CURRENT_MIGRATION_VERSION=$(grep '<version>.*-SNAPSHOT<' pom.xml | sed -r 's:</?version>::g' | tr -d ' ')
-    mvn archetype:generate -B -DarchetypeArtifactId=bonita-migration-db-filler-archetype -DarchetypeGroupId=org.bonitasoft.migration -DarchetypeVersion=$CURRENT_MIGRATION_VERSION -Dbonita-version=$BONITA_NEXT_VERSION -Ddb-filler-suffix=${BONITA_NEXT_VERSION//./_}
+    mvn archetype:generate -B -DarchetypeArtifactId=bonita-migration-db-filler-archetype -DarchetypeGroupId=org.bonitasoft.migration -DarchetypeVersion=1.5.0 -Dbonita-version=$BONITA_NEXT_VERSION -Ddb-filler-suffix=${BONITA_NEXT_VERSION//./_}  -DartifactId=bonita-migration-db-filler-$BONITA_NEXT_VERSION
 }
 
 updateGAVersionInCurrentDistrib(){
