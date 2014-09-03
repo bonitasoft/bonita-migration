@@ -30,8 +30,8 @@
 			<version>${bonita.version}</version>
 		</dependency>
 		<dependency>
-			<artifactId>bonita-integration-client-tests</artifactId>
-			<groupId>org.bonitasoft.engine</groupId>
+			<groupId>org.bonitasoft.engine.test</groupId>
+			<artifactId>bonita-integration-tests-client</artifactId>
 			<version>${bonita.version}</version>
 		</dependency>
 		<dependency>
