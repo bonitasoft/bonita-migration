@@ -88,14 +88,16 @@ class ChangeDocumentsStructureIT extends GroovyTestCase {
     @Override
     void setUp() {
         String driverClass = System.getProperty("jdbc.driverClass")
-
-        def config = [System.getProperty("jdbc.url"), System.getProperty("jdbc.user"), System.getProperty("jdbc.password")]
-        sql = Sql.newInstance(*config, driverClass);
-        tester = new JdbcDatabaseTester(driverClass, *config) {
+        def url = System.getProperty("jdbc.url")
+        def user = System.getProperty("jdbc.user")
+        def password = System.getProperty("jdbc.password")
+        def config = [url, user, password]
+        sql = Sql.newInstance(url,user,password, driverClass);
+        tester = new JdbcDatabaseTester(driverClass, url,user,password){
             public IDatabaseConnection getConnection() {
                 if (DBVENDOR == "oracle") {
                     def conn = DriverManager.getConnection(connectionUrl, username, password);
-                    return new OracleConnection(conn, null)
+                    return new OracleConnection(conn, null);
                 } else {
                     return super.getConnection();
                 }
