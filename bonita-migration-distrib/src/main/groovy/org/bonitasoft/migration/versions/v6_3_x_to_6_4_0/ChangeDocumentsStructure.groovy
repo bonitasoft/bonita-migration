@@ -38,7 +38,8 @@ class ChangeDocumentsStructure {
             /*
              *     remove foreign key
              */
-            sql.execute("ALTER TABLE document_content DROP CONSTRAINT fk_document_content_tenantId")
+            sql.execute("ALTER TABLE document_content DROP " + (dbVendor == "mysql"?"FOREIGN KEY":"CONSTRAINT") +
+                    " fk_document_content_tenantId")
 
             /*
              *     rename table
