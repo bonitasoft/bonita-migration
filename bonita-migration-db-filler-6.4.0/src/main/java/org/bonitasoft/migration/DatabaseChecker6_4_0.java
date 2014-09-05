@@ -13,11 +13,35 @@
  **/
 package org.bonitasoft.migration;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import javax.sql.DataSource;
 
+import org.assertj.core.api.Assertions;
+import org.bonitasoft.engine.bpm.document.ArchivedDocument;
+import org.bonitasoft.engine.bpm.document.ArchivedDocumentsSearchDescriptor;
+import org.bonitasoft.engine.bpm.document.Document;
+import org.bonitasoft.engine.bpm.document.DocumentsSearchDescriptor;
+import org.bonitasoft.engine.bpm.process.ArchivedProcessInstance;
+import org.bonitasoft.engine.bpm.process.ArchivedProcessInstancesSearchDescriptor;
+import org.bonitasoft.engine.bpm.process.ProcessInstance;
+import org.bonitasoft.engine.bpm.process.ProcessInstanceSearchDescriptor;
 import org.bonitasoft.engine.exception.BonitaException;
+import org.bonitasoft.engine.exception.SearchException;
+import org.bonitasoft.engine.search.Order;
+import org.bonitasoft.engine.search.SearchOptionsBuilder;
+import org.bonitasoft.engine.search.SearchResult;
+import org.bonitasoft.engine.search.descriptor.SearchArchivedDocumentDescriptor;
+import org.bonitasoft.engine.search.document.SearchArchivedDocuments;
 import org.junit.AfterClass;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
@@ -25,7 +49,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-public class DatabaseChecker6_4_0 extends SimpleDatabaseChecker6_3_2 {
+public class DatabaseChecker6_4_0 extends DatabaseCheckerInitiliazer6_3_1 {
 
     private static final String KIND = "012345678912345";
     private static final String CLASSNAME = "org.bonitasoft.classname";
@@ -226,6 +250,88 @@ public class DatabaseChecker6_4_0 extends SimpleDatabaseChecker6_3_2 {
         {
             jdbcTemplate.update(SQL_INSERT_TENANT, new Object[] { tenantId, false });
         }
+    }
+
+
+    @Test
+    public void checkDocumentsAreMigrated() throws Exception {
+        SearchResult<ArchivedProcessInstance> archivedProcessInstances = processAPI.searchArchivedProcessInstances(new SearchOptionsBuilder(0, 100).filter(ArchivedProcessInstancesSearchDescriptor.NAME, "ProcessWithDocuments").sort(ArchivedProcessInstancesSearchDescriptor.SOURCE_OBJECT_ID, Order.ASC).done());
+        SearchResult<ProcessInstance> processInstances = processAPI.searchProcessInstances(new SearchOptionsBuilder(0, 100).filter(ProcessInstanceSearchDescriptor.NAME, "ProcessWithDocuments").sort(ProcessInstanceSearchDescriptor.ID, Order.ASC).done());
+        Set<Long> ids = new HashSet<Long>();
+        for (ArchivedProcessInstance archivedProcessInstance : archivedProcessInstances.getResult()) {
+            ids.add(archivedProcessInstance.getSourceObjectId());
+        }
+        for (ProcessInstance processInstance : processInstances.getResult()) {
+            ids.add(processInstance.getId());
+        }
+        ArrayList<Long> sortedIds = new ArrayList<Long>(ids);
+        Collections.sort(sortedIds);
+        assertThat(sortedIds).hasSize(4).describedAs("Can't find all processes");
+
+        Long inst1 = sortedIds.get(0);
+        Long inst2 = sortedIds.get(1);
+        Long inst3 = sortedIds.get(2);
+        Long inst4 = sortedIds.get(3);
+
+        //check on finished instance that we have 3 archived document with expected values
+        SearchResult<ArchivedDocument> archivedDocumentsOfInstance1 = processAPI.searchArchivedDocuments(new SearchOptionsBuilder(0, 100).filter(ArchivedDocumentsSearchDescriptor.PROCESSINSTANCE_ID, inst1).sort(ArchivedDocumentsSearchDescriptor.ARCHIVE_DATE,Order.ASC).done());
+        SearchResult<Document> documentsOfInstance1 = processAPI.searchDocuments(new SearchOptionsBuilder(0, 100).filter(DocumentsSearchDescriptor.PROCESSINSTANCE_ID, inst1).done());
+
+        List<ArchivedDocument> archivedDocuments1 = archivedDocumentsOfInstance1.getResult();
+        assertThat(archivedDocuments1).hasSize(3).describedAs("should have this number of archived documents for " + inst1);
+        assertThat(archivedDocuments1.get(0).getName()).isEqualTo("doc1");
+        assertThat(processAPI.getDocumentContent(archivedDocuments1.get(0).getContentStorageId())).isEqualTo("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.".getBytes());
+        assertThat(archivedDocuments1.get(1).getName()).isEqualTo("doc1");
+        assertThat(processAPI.getDocumentContent(archivedDocuments1.get(1).getContentStorageId())).isEqualTo("newContent1".getBytes());
+        assertThat(archivedDocuments1.get(2).getName()).isEqualTo("doc2");
+        assertThat(processAPI.getDocumentContent(archivedDocuments1.get(2).getContentStorageId())).isEqualTo("newContent2".getBytes());
+        List<Document> documents1 = documentsOfInstance1.getResult();
+        assertThat(documents1).hasSize(0);
+
+        //check on instance with step1 executed that we have 1 archived document and 2 documents with expected values
+        SearchResult<ArchivedDocument> archivedDocumentsOfInstance2 = processAPI.searchArchivedDocuments(new SearchOptionsBuilder(0,100).filter(ArchivedDocumentsSearchDescriptor.PROCESSINSTANCE_ID,inst2).done());
+        SearchResult<Document> documentsOfInstance2 = processAPI.searchDocuments(new SearchOptionsBuilder(0, 100).filter(DocumentsSearchDescriptor.PROCESSINSTANCE_ID, inst2).sort(DocumentsSearchDescriptor.DOCUMENT_CREATIONDATE, Order.ASC).done());
+
+        List<ArchivedDocument> archivedDocuments2 = archivedDocumentsOfInstance2.getResult();
+        assertThat(archivedDocuments2).hasSize(1).describedAs("should have this number of archived documents for "+inst2);
+        List<Document> documents2 = documentsOfInstance2.getResult();
+        assertThat(documents2).hasSize(2);
+
+        assertThat(archivedDocuments2.get(0).getName()).isEqualTo("doc1");
+        assertThat(processAPI.getDocumentContent(archivedDocuments2.get(0).getContentStorageId())).isEqualTo("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.".getBytes());
+        assertThat(documents2.get(0).getName()).isEqualTo("doc1");
+        assertThat(processAPI.getDocumentContent(documents2.get(0).getContentStorageId())).isEqualTo("newContent1".getBytes());
+        assertThat(documents2.get(1).getName()).isEqualTo("doc2");
+        assertThat(processAPI.getDocumentContent(documents2.get(1).getContentStorageId())).isEqualTo("newContent2".getBytes());
+
+
+
+        //check on instance with document added using api that we have 3 documents and 2 archived document with expected values
+        SearchResult<ArchivedDocument> archivedDocumentsOfInstance3 = processAPI.searchArchivedDocuments(new SearchOptionsBuilder(0,100).filter(ArchivedDocumentsSearchDescriptor.PROCESSINSTANCE_ID,inst3).sort(ArchivedDocumentsSearchDescriptor.ARCHIVE_DATE, Order.ASC).done());
+        SearchResult<Document> documentsOfInstance3 = processAPI.searchDocuments(new SearchOptionsBuilder(0, 100).filter(DocumentsSearchDescriptor.PROCESSINSTANCE_ID, inst3).sort(DocumentsSearchDescriptor.DOCUMENT_CREATIONDATE, Order.ASC).done());
+
+        List<ArchivedDocument> archivedDocuments3 = archivedDocumentsOfInstance3.getResult();
+        assertThat(archivedDocuments3).hasSize(2);
+        List<Document> documents3 = documentsOfInstance3.getResult();
+        assertThat(documents3).hasSize(3);
+
+        assertThat(archivedDocuments3.get(0).getName()).isEqualTo("documentAttachedUsingAPI");
+        assertThat(processAPI.getDocumentContent(archivedDocuments3.get(0).getContentStorageId())).isEqualTo("The content of the file attached using the api".getBytes());
+        assertThat(archivedDocuments3.get(1).getName()).isEqualTo("urlDocumentAttachedUsingAPI");
+        assertThat(archivedDocuments3.get(1).getDocumentURL()).isEqualTo("http://MyWebSite.com/file.txt");
+        assertThat(documents3.get(0).getName()).isEqualTo("doc1");
+        assertThat(processAPI.getDocumentContent(documents3.get(0).getContentStorageId())).isEqualTo("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.".getBytes());
+        assertThat(documents3.get(1).getName()).isEqualTo("documentAttachedUsingAPI");
+        assertThat(processAPI.getDocumentContent(documents3.get(1).getContentStorageId())).isEqualTo("The content of the file attached using the api2".getBytes());
+        assertThat(documents3.get(2).getName()).isEqualTo("urlDocumentAttachedUsingAPI");
+        assertThat(documents3.get(2).getUrl()).isEqualTo("http://MyWebSite.com/file2.txt");
+
+        //check on just started instance that we have only one document and that we have 3 archived document after execution
+        SearchResult<Document> documentsOfInstance4 = processAPI.searchDocuments(new SearchOptionsBuilder(0, 100).filter(DocumentsSearchDescriptor.PROCESSINSTANCE_ID, inst4).done());
+
+        List<Document> documents4 = documentsOfInstance4.getResult();
+        assertThat(documents4).hasSize(1);
+
     }
 
 }
