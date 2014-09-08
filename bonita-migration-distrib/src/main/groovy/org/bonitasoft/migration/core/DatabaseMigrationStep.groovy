@@ -34,6 +34,11 @@ abstract class DatabaseMigrationStep {
         this.sql = sql
     }
 
+    /**
+     * execute a postgres script converted to the database specified by dbVendor
+     * @param statement
+     * @return
+     */
     def boolean execute(GString statement) {
         return sql.execute(adaptFor(statement))
     }
@@ -60,6 +65,12 @@ abstract class DatabaseMigrationStep {
             case "oracle":
                 return adaptForOracle(statement)
                 break;
+            case "mysql":
+                return adaptForMysql(statement)
+                break;
+            case "sqlserver":
+                return adaptForSqlServer(statement)
+                break;
             default:
                 return statement
         }
@@ -82,20 +93,59 @@ abstract class DatabaseMigrationStep {
         return oracleStatement;
     }
 
-    def renameColumn(String table, String oldName, String newName) {
+    def static String adaptForMysql(String statement) {
+        def oracleStatement = statement;
+        oracleStatement = oracleStatement.replaceAll("BYTEA", "BLOB")
+        oracleStatement = oracleStatement.replaceAll("INT8", "BIGINT")
+        return oracleStatement;
+    }
+
+    def static String adaptForSqlServer(String statement) {
+        def oracleStatement = statement;
+        oracleStatement = oracleStatement.replaceAll("BYTEA", "VARBINARY(MAX)")
+        oracleStatement = oracleStatement.replaceAll("BLOB", "VARBINARY(MAX)")
+        oracleStatement = oracleStatement.replaceAll("BIGINT", "NUMERIC(19, 0)")
+        oracleStatement = oracleStatement.replaceAll("INT8", "NUMERIC(19, 0)")
+        oracleStatement = oracleStatement.replaceAll("VARCHAR", "NVARCHAR")
+        oracleStatement = oracleStatement.replaceAll("TEXT", "NVARCHAR(MAX)")
+        oracleStatement = oracleStatement.replaceAll("LONGVARBINARY", "BLOB")
+        oracleStatement = oracleStatement.replaceAll(";", "\nGO")
+        return oracleStatement;
+    }
+
+    def renameColumn(String table, String oldName, String newName, String newType) {
         switch (dbVendor) {
             case "oracle":
                 execute("ALTER TABLE $table RENAME COLUMN $oldName TO $newName")
+                break;
+            case "mysql":
+                execute("ALTER TABLE $table CHANGE COLUMN $oldName $newName $newType")
                 break;
             default:
                 execute("ALTER TABLE $table RENAME $oldName TO $newName")
         }
     }
 
-    def dropNotNull(String table, String column) {
+    def renameTable(String table, String newName){
+        switch (dbVendor) {
+            case "mysql":
+                execute("RENAME TABLE $table TO $newName")
+                break;
+            case "sqlserver":
+                execute("sp_rename $table , $newName")
+                break;
+            default:
+                execute("ALTER TABLE $table RENAME TO $newName")
+        }
+    }
+
+    def dropNotNull(String table, String column, String type) {
         switch (dbVendor) {
             case "oracle":
                 execute("ALTER TABLE $table MODIFY $column NULL")
+                break;
+            case "mysql":
+                execute("ALTER TABLE $table MODIFY $column $type NULL")
                 break;
             default:
                 execute("ALTER TABLE $table ALTER COLUMN $column DROP NOT NULL")

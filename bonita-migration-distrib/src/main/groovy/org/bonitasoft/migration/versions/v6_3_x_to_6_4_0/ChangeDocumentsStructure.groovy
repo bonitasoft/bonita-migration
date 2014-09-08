@@ -50,7 +50,7 @@ class ChangeDocumentsStructure extends DatabaseMigrationStep {
             /*
              *     rename table
              */
-            execute("ALTER TABLE document_content RENAME TO document")
+            renameTable("document_content","document")
 
             /*
              *     add columns
@@ -59,12 +59,12 @@ class ChangeDocumentsStructure extends DatabaseMigrationStep {
             execute("ALTER TABLE document_mapping ADD documentid BIGINT DEFAULT 0 NOT NULL")
             execute("ALTER TABLE document_mapping ADD description TEXT")
             execute("ALTER TABLE document_mapping ADD version VARCHAR(10) DEFAULT '1' NOT NULL")
-            renameColumn("document_mapping", "documentName", "name")
+            renameColumn("document_mapping", "documentName", "name","VARCHAR(50) NOT NULL")
             //arch_document_mapping
             execute("ALTER TABLE arch_document_mapping ADD documentid BIGINT DEFAULT 0 NOT NULL")
             execute("ALTER TABLE arch_document_mapping ADD description TEXT")
             execute("ALTER TABLE arch_document_mapping ADD version VARCHAR(10) DEFAULT '1' NOT NULL")
-            renameColumn("arch_document_mapping", "documentName", "name")
+            renameColumn("arch_document_mapping", "documentName", "name", "VARCHAR(50) NOT NULL")
             //document
             execute("ALTER TABLE document ADD author BIGINT")
             execute("ALTER TABLE document ADD creationdate BIGINT DEFAULT 0 NOT NULL")
@@ -72,7 +72,7 @@ class ChangeDocumentsStructure extends DatabaseMigrationStep {
             execute("ALTER TABLE document ADD filename VARCHAR(255)")
             execute("ALTER TABLE document ADD mimetype VARCHAR(255)")
             execute("ALTER TABLE document ADD url VARCHAR(1024) NULL")
-            dropNotNull("document", "content")
+            dropNotNull("document", "content", "BYTEA")
 
             /*
              *     move data
@@ -151,6 +151,8 @@ class ChangeDocumentsStructure extends DatabaseMigrationStep {
 
     private GString getUpdateDocumentQuery(tableName) {
         switch (dbVendor) {
+            case "mysql":
+                return "UPDATE document INNER JOIN $tableName ON ${tableName}.contentStorageId = document.documentId AND ${tableName}.tenantid = document.tenantid  SET document.author = ${tableName}.documentAuthor, document.creationdate = ${tableName}.documentCreationDate, document.hascontent = ${tableName}.documentHasContent, document.filename = ${tableName}.documentContentFileName, document.mimetype = ${tableName}.documentContentMimeType, document.url = ${tableName}.documentURL"
             case "oracle":
                 return "UPDATE document SET (author, creationdate, hascontent, filename, mimetype, url) = (SELECT ${tableName}.documentAuthor, ${tableName}.documentCreationDate, ${tableName}.documentHasContent, ${tableName}.documentContentFileName, ${tableName}.documentContentMimeType, ${tableName}.documentURL FROM ${tableName} WHERE ${tableName}.contentStorageId = document.documentId AND ${tableName}.tenantid = document.tenantid) WHERE EXISTS (SELECT ${tableName}.id FROM ${tableName} WHERE ${tableName}.contentStorageId = document.documentId AND ${tableName}.tenantid = document.tenantid)"
             default:
@@ -160,6 +162,8 @@ class ChangeDocumentsStructure extends DatabaseMigrationStep {
 
     private GString getUpdateDocumentMappingQuery(tableName) {
         switch (dbVendor) {
+            case "mysql":
+                return "UPDATE ${tableName} INNER JOIN document ON ${tableName}.contentStorageId = document.documentId AND ${tableName}.tenantid = document.tenantid SET ${tableName}.documentid = document.id"
             case "oracle":
                 return "UPDATE ${tableName} SET documentid = ( SELECT document.id FROM document WHERE ${tableName}.contentStorageId = document.documentId AND ${tableName}.tenantid = document.tenantid )   WHERE EXISTS (SELECT document.id FROM document WHERE ${tableName}.contentStorageId = document.documentId AND ${tableName}.tenantid = document.tenantid)"
             default:
