@@ -45,4 +45,3 @@ CREATE TABLE document_content (
   content BLOB NOT NULL,
   PRIMARY KEY (tenantid, id)
 )@@
-ALTER TABLE document_content ADD CONSTRAINT fk_document_content_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id)@@

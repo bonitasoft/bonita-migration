@@ -17,6 +17,7 @@
 package org.bonitasoft.migration.versions.v6_3_x_to_6_4_0
 
 import groovy.sql.Sql
+import org.bonitasoft.migration.core.DatabaseMigrationStep
 import org.bonitasoft.migration.core.IOUtil
 import org.bonitasoft.migration.core.MigrationUtil
 
@@ -27,10 +28,14 @@ import org.bonitasoft.migration.core.MigrationUtil
  *
  * @author Baptiste Mesta
  */
-class ChangeDocumentsStructure {
+class ChangeDocumentsStructure extends DatabaseMigrationStep {
 
+    ChangeDocumentsStructure(Sql sql, String dbVendor) {
+        super(sql, dbVendor)
+    }
 
-    public migrate(Sql sql, String dbVendor) {
+    @Override
+    public migrate() {
 
         def tenantsId = MigrationUtil.getTenantsId(dbVendor, sql)
         IOUtil.executeWrappedWithTabs {
@@ -38,50 +43,45 @@ class ChangeDocumentsStructure {
             /*
              *     remove foreign key
              */
-            sql.execute("ALTER TABLE document_content DROP " + (dbVendor == "mysql"?"FOREIGN KEY":"CONSTRAINT") +
-                    " fk_document_content_tenantId")
+            if(!dbVendor.equals("oracle")){//not on oracle
+                dropForeignKey("document_content","fk_document_content_tenantId")
+            }
 
             /*
              *     rename table
              */
-            sql.execute("ALTER TABLE document_content RENAME TO document")
+            execute("ALTER TABLE document_content RENAME TO document")
 
             /*
              *     add columns
              */
             //document_mapping
-            sql.execute("ALTER TABLE document_mapping ADD documentid BIGINT DEFAULT 0 NOT NULL")
-            sql.execute("ALTER TABLE document_mapping ADD description TEXT")
-            sql.execute("ALTER TABLE document_mapping ADD version VARCHAR(10) DEFAULT '1' NOT NULL")
-            sql.execute("ALTER TABLE document_mapping RENAME documentName TO name")
+            execute("ALTER TABLE document_mapping ADD documentid BIGINT DEFAULT 0 NOT NULL")
+            execute("ALTER TABLE document_mapping ADD description TEXT")
+            execute("ALTER TABLE document_mapping ADD version VARCHAR(10) DEFAULT '1' NOT NULL")
+            renameColumn("document_mapping", "documentName", "name")
             //arch_document_mapping
-            sql.execute("ALTER TABLE arch_document_mapping ADD documentid BIGINT DEFAULT 0 NOT NULL")
-            sql.execute("ALTER TABLE arch_document_mapping ADD description TEXT")
-            sql.execute("ALTER TABLE arch_document_mapping ADD version VARCHAR(10) DEFAULT '1' NOT NULL")
-            sql.execute("ALTER TABLE arch_document_mapping RENAME documentName TO name")
+            execute("ALTER TABLE arch_document_mapping ADD documentid BIGINT DEFAULT 0 NOT NULL")
+            execute("ALTER TABLE arch_document_mapping ADD description TEXT")
+            execute("ALTER TABLE arch_document_mapping ADD version VARCHAR(10) DEFAULT '1' NOT NULL")
+            renameColumn("arch_document_mapping", "documentName", "name")
             //document
-            sql.execute("ALTER TABLE document ADD author BIGINT")
-            sql.execute("ALTER TABLE document ADD creationdate BIGINT DEFAULT 0 NOT NULL")
-            sql.execute("ALTER TABLE document ADD hascontent BOOLEAN DEFAULT true NOT NULL")
-            sql.execute("ALTER TABLE document ADD filename VARCHAR(255)")
-            sql.execute("ALTER TABLE document ADD mimetype VARCHAR(255)")
-            sql.execute("ALTER TABLE document ADD url VARCHAR(1024) NULL")
-            sql.execute("ALTER TABLE document ALTER COLUMN content DROP NOT NULL")
+            execute("ALTER TABLE document ADD author BIGINT")
+            execute("ALTER TABLE document ADD creationdate BIGINT DEFAULT 0 NOT NULL")
+            execute("ALTER TABLE document ADD hascontent BOOLEAN DEFAULT true NOT NULL")
+            execute("ALTER TABLE document ADD filename VARCHAR(255)")
+            execute("ALTER TABLE document ADD mimetype VARCHAR(255)")
+            execute("ALTER TABLE document ADD url VARCHAR(1024) NULL")
+            dropNotNull("document", "content")
 
             /*
              *     move data
              */
-            sql.executeUpdate('''UPDATE document SET (author, creationdate, hascontent, filename, mimetype, url)
-= (document_mapping.documentAuthor, document_mapping.documentCreationDate, document_mapping.documentHasContent, document_mapping.documentContentFileName, document_mapping.documentContentMimeType, document_mapping.documentURL)
-FROM document_mapping WHERE document_mapping.contentStorageId = document.documentId AND document_mapping.tenantid = document.tenantid''')
-            sql.executeUpdate('''UPDATE document SET (author, creationdate, hascontent, filename, mimetype, url)
-= (arch_document_mapping.documentAuthor, arch_document_mapping.documentCreationDate, arch_document_mapping.documentHasContent, arch_document_mapping.documentContentFileName, arch_document_mapping.documentContentMimeType, arch_document_mapping.documentURL)
-FROM arch_document_mapping WHERE arch_document_mapping.contentStorageId = document.documentId AND arch_document_mapping.tenantid = document.tenantid''')
+            executeUpdate(getUpdateDocumentQuery("document_mapping"))
+            executeUpdate(getUpdateDocumentQuery("arch_document_mapping"))
             //for archive
-            sql.executeUpdate('''UPDATE document_mapping SET documentid = document.id
-FROM document WHERE document_mapping.contentStorageId = document.documentId AND document_mapping.tenantid = document.tenantid''')
-            sql.executeUpdate('''UPDATE arch_document_mapping SET documentid = document.id
-FROM document WHERE arch_document_mapping.contentStorageId = document.documentId AND arch_document_mapping.tenantid = document.tenantid''')
+            executeUpdate(getUpdateDocumentMappingQuery("document_mapping"))
+            executeUpdate(getUpdateDocumentMappingQuery("arch_document_mapping"))
 
             tenantsId.each { tenantId ->
                 //get max id for document (=10090)
@@ -89,15 +89,15 @@ FROM document WHERE arch_document_mapping.contentStorageId = document.documentId
                 //create new document when mapping is an url
                 sql.eachRow("SELECT * FROM document_mapping WHERE tenantid = $tenantId AND documentURL IS NOT NULL") { row ->
                     sql.executeInsert("INSERT INTO document (tenantid,id,author,creationdate,hascontent,filename,mimetype,url,documentid) VALUES ($tenantId,$nextId,$row.documentAuthor,$row.documentCreationDate,$row.documentHasContent,$row.documentContentFileName,$row.documentContentMimeType,$row.documentURL,'temp')")
-                    sql.executeUpdate("UPDATE document_mapping SET documentid = $nextId WHERE document_mapping.id = $row.id AND document_mapping.tenantid = $tenantId")
+                    executeUpdate("UPDATE document_mapping SET documentid = $nextId WHERE document_mapping.id = $row.id AND document_mapping.tenantid = $tenantId")
                     nextId++
                 }
                 sql.eachRow("SELECT * FROM arch_document_mapping WHERE tenantid = $tenantId AND documentURL IS NOT NULL") { row ->
                     sql.executeInsert("INSERT INTO document (tenantid,id,author,creationdate,hascontent,filename,mimetype,url,documentid) VALUES ($tenantId,$nextId,$row.documentAuthor,$row.documentCreationDate,$row.documentHasContent,$row.documentContentFileName,$row.documentContentMimeType,$row.documentURL,'temp')")
-                    sql.executeUpdate("UPDATE arch_document_mapping SET documentid = $nextId WHERE arch_document_mapping.id = $row.id AND arch_document_mapping.tenantid = $tenantId")
+                    executeUpdate("UPDATE arch_document_mapping SET documentid = $nextId WHERE arch_document_mapping.id = $row.id AND arch_document_mapping.tenantid = $tenantId")
                     nextId++
                 }
-                sql.executeUpdate("UPDATE sequence SET nextid = $nextId WHERE tenantid=$tenantId AND id = 10090")
+                executeUpdate("UPDATE sequence SET nextid = $nextId WHERE tenantid=$tenantId AND id = 10090")
                 sql.eachRow("SELECT DISTINCT sourceobjectid FROM arch_document_mapping WHERE tenantid = $tenantId") { row ->
                     def version = "1";
                     sql.eachRow("SELECT id from arch_document_mapping WHERE tenantid = $tenantId AND sourceobjectid = $row.sourceobjectid ORDER BY documentCreationDate ASC") { archmapping ->
@@ -105,11 +105,11 @@ FROM document WHERE arch_document_mapping.contentStorageId = document.documentId
                             version++
                             return
                         }
-                        sql.executeUpdate("UPDATE arch_document_mapping SET version = $version WHERE tenantid = $tenantId AND id = $archmapping.id ")
+                        executeUpdate("UPDATE arch_document_mapping SET version = $version WHERE tenantid = $tenantId AND id = $archmapping.id ")
                         version++
                     }
                     if (version != "1") {
-                        sql.executeUpdate("UPDATE document_mapping SET version = $version WHERE tenantid = $tenantId AND id = $row.sourceobjectid ")
+                        executeUpdate("UPDATE document_mapping SET version = $version WHERE tenantid = $tenantId AND id = $row.sourceobjectid ")
                     }
                 }
             }
@@ -118,30 +118,52 @@ FROM document WHERE arch_document_mapping.contentStorageId = document.documentId
              *     remove old columns
              */
             //document
-            sql.execute("ALTER TABLE document DROP documentId")
+            dropColumn("document","documentId")
+
             //document_mapping
-            sql.execute("ALTER TABLE document_mapping DROP documentAuthor")
-            sql.execute("ALTER TABLE document_mapping DROP documentCreationDate")
-            sql.execute("ALTER TABLE document_mapping DROP documentHasContent")
-            sql.execute("ALTER TABLE document_mapping DROP documentContentFileName")
-            sql.execute("ALTER TABLE document_mapping DROP documentContentMimeType")
-            sql.execute("ALTER TABLE document_mapping DROP contentStorageId")
-            sql.execute("ALTER TABLE document_mapping DROP documentURL")
+            dropColumn("document_mapping","documentAuthor")
+            dropColumn("document_mapping","documentCreationDate")
+            dropColumn("document_mapping","documentHasContent")
+            dropColumn("document_mapping","documentContentFileName")
+            dropColumn("document_mapping","documentContentMimeType")
+            dropColumn("document_mapping","contentStorageId")
+            dropColumn("document_mapping","documentURL")
             //arch_document_mapping
-            sql.execute("ALTER TABLE arch_document_mapping DROP documentAuthor")
-            sql.execute("ALTER TABLE arch_document_mapping DROP documentCreationDate")
-            sql.execute("ALTER TABLE arch_document_mapping DROP documentHasContent")
-            sql.execute("ALTER TABLE arch_document_mapping DROP documentContentFileName")
-            sql.execute("ALTER TABLE arch_document_mapping DROP documentContentMimeType")
-            sql.execute("ALTER TABLE arch_document_mapping DROP contentStorageId")
-            sql.execute("ALTER TABLE arch_document_mapping DROP documentURL")
+            dropColumn("arch_document_mapping","documentAuthor")
+            dropColumn("arch_document_mapping","documentCreationDate")
+            dropColumn("arch_document_mapping","documentHasContent")
+            dropColumn("arch_document_mapping","documentContentFileName")
+            dropColumn("arch_document_mapping","documentContentMimeType")
+            dropColumn("arch_document_mapping","contentStorageId")
+            dropColumn("arch_document_mapping","documentURL")
 
             /*
              *     add new foreign keys
              */
-            sql.execute("ALTER TABLE document_mapping ADD CONSTRAINT fk_docmap_docid FOREIGN KEY (tenantid, documentid) REFERENCES document(tenantid, id) ON DELETE CASCADE;")
-            sql.execute("ALTER TABLE arch_document_mapping ADD CONSTRAINT fk_archdocmap_docid FOREIGN KEY (tenantid, documentid) REFERENCES document(tenantid, id) ON DELETE CASCADE;")
+            execute("ALTER TABLE document_mapping ADD CONSTRAINT fk_docmap_docid FOREIGN KEY (tenantid, documentid) REFERENCES document(tenantid, id) ON DELETE CASCADE")
+            execute("ALTER TABLE arch_document_mapping ADD CONSTRAINT fk_archdocmap_docid FOREIGN KEY (tenantid, documentid) REFERENCES document(tenantid, id) ON DELETE CASCADE")
+            if(!dbVendor.equals("oracle")) {//not on oracle
+                execute("ALTER TABLE document ADD CONSTRAINT fk_document_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id)")
+            }
 
+        }
+    }
+
+    private GString getUpdateDocumentQuery(tableName) {
+        switch (dbVendor) {
+            case "oracle":
+                return "UPDATE document SET (author, creationdate, hascontent, filename, mimetype, url) = (SELECT ${tableName}.documentAuthor, ${tableName}.documentCreationDate, ${tableName}.documentHasContent, ${tableName}.documentContentFileName, ${tableName}.documentContentMimeType, ${tableName}.documentURL FROM ${tableName} WHERE ${tableName}.contentStorageId = document.documentId AND ${tableName}.tenantid = document.tenantid) WHERE EXISTS (SELECT ${tableName}.id FROM ${tableName} WHERE ${tableName}.contentStorageId = document.documentId AND ${tableName}.tenantid = document.tenantid)"
+            default:
+                return "UPDATE document SET (author, creationdate, hascontent, filename, mimetype, url) = (${tableName}.documentAuthor, ${tableName}.documentCreationDate, ${tableName}.documentHasContent, ${tableName}.documentContentFileName, ${tableName}.documentContentMimeType, ${tableName}.documentURL) FROM ${tableName} WHERE ${tableName}.contentStorageId = document.documentId AND ${tableName}.tenantid = document.tenantid"
+        }
+    }
+
+    private GString getUpdateDocumentMappingQuery(tableName) {
+        switch (dbVendor) {
+            case "oracle":
+                return "UPDATE ${tableName} SET documentid = ( SELECT document.id FROM document WHERE ${tableName}.contentStorageId = document.documentId AND ${tableName}.tenantid = document.tenantid )   WHERE EXISTS (SELECT document.id FROM document WHERE ${tableName}.contentStorageId = document.documentId AND ${tableName}.tenantid = document.tenantid)"
+            default:
+                return "UPDATE ${tableName} SET documentid = document.id FROM document WHERE ${tableName}.contentStorageId = document.documentId AND ${tableName}.tenantid = document.tenantid"
         }
     }
 
