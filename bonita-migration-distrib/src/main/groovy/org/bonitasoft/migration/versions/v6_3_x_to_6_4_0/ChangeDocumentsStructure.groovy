@@ -153,6 +153,8 @@ class ChangeDocumentsStructure extends DatabaseMigrationStep {
         switch (dbVendor) {
             case "mysql":
                 return "UPDATE document INNER JOIN $tableName ON ${tableName}.contentStorageId = document.documentId AND ${tableName}.tenantid = document.tenantid  SET document.author = ${tableName}.documentAuthor, document.creationdate = ${tableName}.documentCreationDate, document.hascontent = ${tableName}.documentHasContent, document.filename = ${tableName}.documentContentFileName, document.mimetype = ${tableName}.documentContentMimeType, document.url = ${tableName}.documentURL"
+            case "sqlserver":
+                return "UPDATE document SET document.author = ${tableName}.documentAuthor, document.creationdate = ${tableName}.documentCreationDate, document.hascontent = ${tableName}.documentHasContent, document.filename = ${tableName}.documentContentFileName, document.mimetype = ${tableName}.documentContentMimeType, document.url = ${tableName}.documentURL FROM $tableName, document WHERE ${tableName}.contentStorageId = document.documentId AND ${tableName}.tenantid = document.tenantid"
             case "oracle":
                 return "UPDATE document SET (author, creationdate, hascontent, filename, mimetype, url) = (SELECT ${tableName}.documentAuthor, ${tableName}.documentCreationDate, ${tableName}.documentHasContent, ${tableName}.documentContentFileName, ${tableName}.documentContentMimeType, ${tableName}.documentURL FROM ${tableName} WHERE ${tableName}.contentStorageId = document.documentId AND ${tableName}.tenantid = document.tenantid) WHERE EXISTS (SELECT ${tableName}.id FROM ${tableName} WHERE ${tableName}.contentStorageId = document.documentId AND ${tableName}.tenantid = document.tenantid)"
             default:
@@ -164,11 +166,12 @@ class ChangeDocumentsStructure extends DatabaseMigrationStep {
         switch (dbVendor) {
             case "mysql":
                 return "UPDATE ${tableName} INNER JOIN document ON ${tableName}.contentStorageId = document.documentId AND ${tableName}.tenantid = document.tenantid SET ${tableName}.documentid = document.id"
+            case "sqlserver":
+                return "UPDATE ${tableName} SET ${tableName}.documentid = document.id FROM ${tableName}, document WHERE ${tableName}.contentStorageId = document.documentId AND ${tableName}.tenantid = document.tenantid "
             case "oracle":
                 return "UPDATE ${tableName} SET documentid = ( SELECT document.id FROM document WHERE ${tableName}.contentStorageId = document.documentId AND ${tableName}.tenantid = document.tenantid )   WHERE EXISTS (SELECT document.id FROM document WHERE ${tableName}.contentStorageId = document.documentId AND ${tableName}.tenantid = document.tenantid)"
             default:
                 return "UPDATE ${tableName} SET documentid = document.id FROM document WHERE ${tableName}.contentStorageId = document.documentId AND ${tableName}.tenantid = document.tenantid"
         }
     }
-
 }

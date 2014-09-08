@@ -109,6 +109,11 @@ abstract class DatabaseMigrationStep {
         oracleStatement = oracleStatement.replaceAll("VARCHAR", "NVARCHAR")
         oracleStatement = oracleStatement.replaceAll("TEXT", "NVARCHAR(MAX)")
         oracleStatement = oracleStatement.replaceAll("LONGVARBINARY", "BLOB")
+        oracleStatement = oracleStatement.replaceAll("DEFAULT true", "DEFAULT 1")
+        oracleStatement = oracleStatement.replaceAll("DEFAULT TRUE", "DEFAULT 1")
+        oracleStatement = oracleStatement.replaceAll("DEFAULT false", "DEFAULT 0")
+        oracleStatement = oracleStatement.replaceAll("DEFAULT FALSE", "DEFAULT 0")
+        oracleStatement = oracleStatement.replaceAll("BOOLEAN", " BIT")
         oracleStatement = oracleStatement.replaceAll(";", "\nGO")
         return oracleStatement;
     }
@@ -120,6 +125,11 @@ abstract class DatabaseMigrationStep {
                 break;
             case "mysql":
                 execute("ALTER TABLE $table CHANGE COLUMN $oldName $newName $newType")
+                break;
+            case "sqlserver":
+                execute("""BEGIN
+EXEC sp_rename '${table}.$oldName', '$newName', 'COLUMN'
+END""")
                 break;
             default:
                 execute("ALTER TABLE $table RENAME $oldName TO $newName")
@@ -147,6 +157,9 @@ abstract class DatabaseMigrationStep {
             case "mysql":
                 execute("ALTER TABLE $table MODIFY $column $type NULL")
                 break;
+            case "sqlserver":
+                execute("ALTER TABLE $table ALTER COLUMN $column $type NULL")
+                break;
             default:
                 execute("ALTER TABLE $table ALTER COLUMN $column DROP NOT NULL")
         }
@@ -154,6 +167,9 @@ abstract class DatabaseMigrationStep {
     def dropColumn(String table, String column) {
         switch (dbVendor) {
             case "oracle":
+                execute("ALTER TABLE $table DROP COLUMN $column")
+                break;
+            case "sqlserver":
                 execute("ALTER TABLE $table DROP COLUMN $column")
                 break;
             default:
