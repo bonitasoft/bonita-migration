@@ -31,7 +31,7 @@ findCurrentAndPreviousVersion(){
 }
 
 updatePomVersion(){
-    sed -e 's:<previous.bonita.version>.*</previous.bonita.version>:<previous.bonita.version>'"$BONITA_CURRENT_VERSION"'-SNAPSHOT</previous.bonita.version>:g' pom.xml > tmp.out
+    sed -e 's:<previous.bonita.version>.*</previous.bonita.version>:<previous.bonita.version>'"$BONITA_CURRENT_VERSION"'</previous.bonita.version>:g' pom.xml > tmp.out
     sed -e 's:<current.bonita.version>.*</current.bonita.version>:<current.bonita.version>'"$BONITA_NEXT_VERSION"'-SNAPSHOT</current.bonita.version>:g' tmp.out > tmp2.out
     sed -e 's:<next.bonita.version>.*</next.bonita.version>:<next.bonita.version>'"$BONITA_NEXT_VERSION"'</next.bonita.version>:g' tmp2.out > pom.xml
     rm -f tmp.out
