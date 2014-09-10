@@ -17,7 +17,7 @@ import org.junit.Test;
 import org.junit.runner.JUnitCore;
 
 
-public class DatabaseChecker6_3_6 extends DatabaseCheckerInitiliazer6_3_6 {
+public class DatabaseChecker6_3_6 extends SimpleDatabaseChecker6_3_2 {
     
     public static void main(final String[] args) throws Exception {
         JUnitCore.main(DatabaseChecker6_3_6.class.getName());
