@@ -31,7 +31,7 @@ import groovy.io.FileType
  *  bonita.home=<path to bonita home>
  *  source.version=<the current version of your installation>     -> not used yet
  *  target.version=<the version your installation will be in>     -> not used yet
- *  db.vendor=<the kind on you database, can be [mysql,postgres,sqlserver,oracle]
+ *  db.vendor=<the kind on you database, can be [mysql,postgres,sqlserver,oracle]>
  *  db.url=<the url of the database>
  *  db.driverclass=<the class of the jdbc driver>
  *  db.user=<the username to connect to the database>
