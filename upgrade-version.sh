@@ -15,7 +15,7 @@ OPTIONS:
    -n<next_version>, --next=<next_version>              next bonita version 
    -m<migration_tag>, --migration=<migration_tag>       last migration tag
 Example:
-./upgrade-version.sh --previous=6.3.4 --current=6.3.3 --next=6.3.5 -m1.10.0
+./upgrade-version.sh --previous=6.3.3 --current=6.3.4 --next=6.3.5 -m1.10.0
 
 Warning: If current version or previous version are not provided, they will be 
          detected with the content of the $VERSIONS_FOLDER_NAME folder
