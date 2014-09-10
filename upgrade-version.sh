@@ -46,7 +46,7 @@ createNewMigrationFolder(){
 
 createNewDBFiller(){
     CURRENT_MIGRATION_VERSION=$(grep '<version>.*-SNAPSHOT<' pom.xml | sed -r 's:</?version>::g' | tr -d ' ')
-    mvn archetype:generate -B -DarchetypeArtifactId=bonita-migration-db-filler-archetype -DarchetypeGroupId=org.bonitasoft.migration -DarchetypeVersion=1.5.0 -Dbonita-version=$BONITA_NEXT_VERSION -Ddb-filler-suffix=${BONITA_NEXT_VERSION//./_}  -DartifactId=bonita-migration-db-filler-$BONITA_NEXT_VERSION
+    mvn archetype:generate -B -DarchetypeArtifactId=bonita-migration-db-filler-archetype -DarchetypeGroupId=org.bonitasoft.migration -DarchetypeVersion=$LAST_MIGRATION_TAG -Dbonita-version=$BONITA_NEXT_VERSION -Ddb-filler-suffix=${BONITA_NEXT_VERSION//./_}  -DartifactId=bonita-migration-db-filler-$BONITA_NEXT_VERSION
 }
 
 updateGAVersionInCurrentDistrib(){
