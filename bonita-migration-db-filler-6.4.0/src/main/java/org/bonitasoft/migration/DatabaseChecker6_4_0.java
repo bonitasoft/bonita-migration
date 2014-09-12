@@ -15,30 +15,17 @@ package org.bonitasoft.migration;
 
 import static org.junit.Assert.assertEquals;
 
-import javax.naming.Context;
 import javax.sql.DataSource;
 
-import org.bonitasoft.engine.api.CommandAPI;
-import org.bonitasoft.engine.api.IdentityAPI;
-import org.bonitasoft.engine.api.PlatformAPI;
-import org.bonitasoft.engine.api.PlatformAPIAccessor;
-import org.bonitasoft.engine.api.ProcessAPI;
-import org.bonitasoft.engine.api.ProfileAPI;
-import org.bonitasoft.engine.api.TenantAPIAccessor;
 import org.bonitasoft.engine.exception.BonitaException;
-import org.bonitasoft.engine.session.APISession;
-import org.bonitasoft.engine.session.PlatformSession;
-import org.bonitasoft.engine.test.APITestUtil;
 import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-public class DatabaseChecker6_4_0 {
+public class DatabaseChecker6_4_0 extends SimpleDatabaseChecker6_3_2 {
 
     private static final String KIND = "012345678912345";
     private static final String CLASSNAME = "org.bonitasoft.classname";
@@ -66,38 +53,10 @@ public class DatabaseChecker6_4_0 {
 
     private static final int TENANT_ID = 4567;
 
-    protected static ProcessAPI processAPI;
-
-    protected static ProfileAPI profileAPI;
-
-    protected static IdentityAPI identityAPI;
-
-    protected static CommandAPI commandAPI;
-
-    //    private static ThemeAPI themeAPI;
-
-    protected static APISession session;
-
-    private static ClassPathXmlApplicationContext springContext;
-
     private static Logger logger = LoggerFactory.getLogger(DatabaseChecker6_4_0.class);
 
     public static void main(final String[] args) throws Exception {
         JUnitCore.main(DatabaseChecker6_4_0.class.getName());
-    }
-
-    @BeforeClass
-    public static void setup() throws BonitaException {
-        setupSpringContext();
-        final APITestUtil apiTestUtil = new APITestUtil();
-        final PlatformSession platformSession = apiTestUtil.loginOnPlatform();
-        final PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(platformSession);
-        platformAPI.startNode();
-        apiTestUtil.logoutOnPlatform(platformSession);
-        processAPI = TenantAPIAccessor.getProcessAPI(session);
-        identityAPI = TenantAPIAccessor.getIdentityAPI(session);
-        profileAPI = TenantAPIAccessor.getProfileAPI(session);
-        commandAPI = TenantAPIAccessor.getCommandAPI(session);
     }
 
     @AfterClass
@@ -111,19 +70,12 @@ public class DatabaseChecker6_4_0 {
         jdbcTemplate.update("DELETE FROM flownode_instance where tenantid = ?", new Object[] { TENANT_ID });
         jdbcTemplate.update("DELETE FROM process_instance where tenantid = ?", new Object[] { TENANT_ID });
         jdbcTemplate.update("DELETE FROM tenant where id = ?", new Object[] { TENANT_ID });
-
-        final APITestUtil apiTestUtil = new APITestUtil();
-        final PlatformSession pSession = apiTestUtil.loginOnPlatform();
-        final PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(pSession);
-        apiTestUtil.stopPlatformAndTenant(platformAPI, false);
-        apiTestUtil.logoutOnPlatform(pSession);
-        springContext.close();
     }
 
     @Test
     public void kind_field_has_been_created() throws Exception {
         logger.info("check field kind is present in table ref_biz_data_inst");
-        final DataSource bonitaDatasource = (DataSource) springContext.getBean("bonitaDataSource");
+        final DataSource bonitaDatasource = (DataSource) getSpringContext().getBean("bonitaDataSource");
         final JdbcTemplate jdbcTemplate = new JdbcTemplate(bonitaDatasource);
 
         //given
@@ -144,7 +96,7 @@ public class DatabaseChecker6_4_0 {
     @Test
     public void ref_biz_data_inst_flownode_id_check() throws Exception {
         logger.info("check nullable fields on table ref_biz_data_inst");
-        final DataSource bonitaDatasource = (DataSource) springContext.getBean("bonitaDataSource");
+        final DataSource bonitaDatasource = (DataSource) getSpringContext().getBean("bonitaDataSource");
         final JdbcTemplate jdbcTemplate = new JdbcTemplate(bonitaDatasource);
 
         //given
@@ -211,7 +163,7 @@ public class DatabaseChecker6_4_0 {
     @Test
     public void new_table_has_been_created() throws Exception {
         logger.info("check table multi_biz_data");
-        final DataSource bonitaDatasource = (DataSource) springContext.getBean("bonitaDataSource");
+        final DataSource bonitaDatasource = (DataSource) getSpringContext().getBean("bonitaDataSource");
         final JdbcTemplate jdbcTemplate = new JdbcTemplate(bonitaDatasource);
 
         final long countRefBusinessdata = countRefBusinessdata(jdbcTemplate, TENANT_ID);
@@ -276,13 +228,4 @@ public class DatabaseChecker6_4_0 {
         }
     }
 
-    private static void setupSpringContext() {
-        System.setProperty("sysprop.bonita.db.vendor", System.getProperty("sysprop.bonita.db.vendor", "h2"));
-
-        // Force these system properties
-        System.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.bonitasoft.engine.local.SimpleMemoryContextFactory");
-        System.setProperty(Context.URL_PKG_PREFIXES, "org.bonitasoft.engine.local");
-
-        springContext = new ClassPathXmlApplicationContext("datasource.xml", "jndi-setup.xml");
-    }
 }

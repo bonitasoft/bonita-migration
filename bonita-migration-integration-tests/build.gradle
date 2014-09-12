@@ -13,19 +13,22 @@ targetCompatibility = 1.6
 
 
 ext{
+    migrationDistribClasses='../bonita-migration-distrib/target/classes'
+    migrationScriptsClasses='../bonita-migration-scripts-integration-tests/target/classes'
     sourceversion = System.getProperty("source.version","6.3.3")
     targetversion = System.getProperty("target.version","6.4.0")
     dbvendor = System.getProperty("db.vendor", "postgres")
     dburl = System.getProperty("db.url","jdbc:postgresql://localhost:5432/migration");
     dbuser=System.getProperty("db.user","bonita")
-    dbpassword=System.getProperty("db.password", "bpm")
+    dbpassword=System.getProperty("db.password", "bonita")
     dbdriverClass=System.getProperty("db.driverClass","org.postgresql.Driver")
     bonitahome="${buildDir.path}/home"
     distDir="${buildDir.path}/dist"
+    devMode = project.hasProperty('devMode')
     //used for oracle: creates table not the same way
     //used for postgres: give a user able to drop and create databases
     dbRootUser = System.getProperty("db.root.user","bonita")
-    dbRootPassword = System.getProperty("db.root.password","bpm")
+    dbRootPassword = System.getProperty("db.root.password","bonita")
 
     //for postgres
     databaseName = "migration"
@@ -174,7 +177,28 @@ task unpackdist(dependsOn:unpackhome, type: Copy){
     from zipTree(zipFile)
     into outputDir
 }
-task copyDrivers(dependsOn:unpackdist, type: Copy){
+
+task overwritedist(dependsOn:unpackdist, type: Copy){
+//    def zipFile = configurations.migrationdist.files.iterator().next()
+    //devMode = hasProperty('devMode')
+    if(project.hasProperty('devMode') && devMode){
+        println """
+***************************************
+************** DEV MODE ***************
+** overwriting files of distrib with :*
+ - $migrationDistribClasses
+ - $migrationScriptsClasses
+***************************************
+***************************************
+"""
+        def outputDir = file(distDir)
+    
+        from files(migrationDistribClasses)
+        from files(migrationScriptsClasses)
+        into outputDir
+    }
+}
+task copyDrivers(dependsOn:overwritedist, type: Copy){
     into "$distDir/lib"
     from configurations.drivers
 }

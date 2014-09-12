@@ -125,10 +125,11 @@ public class DatabaseFiller6_3_2 extends SimpleDatabaseFiller6_3_1 {
         startNode();
         apiTestUtil.loginOnDefaultTenantWithDefaultTechnicalLogger();
 
-        apiTestUtil.getProcessAPI().executeFlowNode(williamId, humanTaskInstance.getId());
         waitForGateway(outGatewayName, processInstance.getId(), TestStates.getFailedState());
 
         waitForGateway(outGatewayName, processInstance2.getId(), TestStates.getFailedState());
+        
+        apiTestUtil.getProcessAPI().executeFlowNode(williamId, humanTaskInstance.getId());
 
         return Collections.singletonMap("Process definitions", String.valueOf(1));
     }
