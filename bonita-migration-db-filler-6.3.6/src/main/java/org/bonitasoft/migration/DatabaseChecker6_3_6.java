@@ -15,6 +15,8 @@ package org.bonitasoft.migration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.bonitasoft.engine.bpm.document.Document;
+import org.bonitasoft.engine.bpm.process.ProcessInstance;
 import org.bonitasoft.engine.identity.ContactDataCreator;
 import org.bonitasoft.engine.identity.User;
 import org.bonitasoft.engine.identity.UserCreator;
@@ -59,6 +61,24 @@ public class DatabaseChecker6_3_6 extends SimpleDatabaseChecker6_3_2 {
         assertThat(userWithContactData).isNotNull();
         assertThat(userWithContactData.getContactData().getAddress()).hasSize(255);
 
+    }
+
+    @Test
+    public void should_allow_documents_with_null_content() throws Exception {
+        ProcessInstance instance = processAPI.startProcess(processAPI.getProcessDefinitionId(
+                SimpleDatabaseFiller6_0_2.PROCESS_NAME,
+                SimpleDatabaseFiller6_0_2.PROCESS_VERSION));
+
+        Document document = processAPI.attachDocument(
+                instance.getId(),
+                "Document Name",
+                "File Name",
+                "Mime",
+                (byte[]) null);
+
+        assertThat(processAPI.getDocumentContent(document.getContentStorageId())).isEqualTo(new byte[0]);
+
+        processAPI.deleteProcessInstance(instance.getId());
     }
 
     private String completeWithZeros(final String prefix) {
