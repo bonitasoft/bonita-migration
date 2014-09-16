@@ -6,10 +6,10 @@
     <groupId>org.bonitasoft.migration</groupId>
     <version>1.13.0-SNAPSHOT</version>
   </parent>
-	<artifactId>bonita-migration-db-filler-6.3.6</artifactId>
+	<artifactId>bonita-migration-db-filler-6.3.7</artifactId>
 
 	<properties>
-		<bonita.version>6.3.6</bonita.version>
+		<bonita.version>6.3.7-SNAPSHOT</bonita.version>
 		<bonita.home>${project.build.directory}/home</bonita.home>
 	</properties>
 
