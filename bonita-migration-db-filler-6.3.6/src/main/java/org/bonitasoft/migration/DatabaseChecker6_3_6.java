@@ -63,6 +63,7 @@ public class DatabaseChecker6_3_6 extends SimpleDatabaseChecker6_3_2 {
 
     }
 
+    // TODO: Move to 6.3.7
     @Test
     public void should_allow_documents_with_null_content() throws Exception {
         ProcessInstance instance = processAPI.startProcess(processAPI.getProcessDefinitionId(
