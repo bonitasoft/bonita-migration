@@ -1,1 +1,1 @@
-ALTER TABLE document_content MODIFY ('content' null);
+ALTER TABLE document_content MODIFY (content NULL)
