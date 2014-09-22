@@ -15,12 +15,14 @@ package org.bonitasoft.migration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.bonitasoft.engine.api.TenantAPIAccessor;
 import org.bonitasoft.engine.bpm.document.Document;
 import org.bonitasoft.engine.bpm.process.ProcessInstance;
 import org.bonitasoft.engine.identity.ContactDataCreator;
 import org.bonitasoft.engine.identity.User;
 import org.bonitasoft.engine.identity.UserCreator;
 import org.bonitasoft.engine.identity.UserWithContactData;
+import org.bonitasoft.engine.session.APISession;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
 
@@ -36,7 +38,8 @@ public class DatabaseChecker6_3_7 extends SimpleDatabaseChecker6_3_2 {
     @Test
     public void can_create_user_with_255_char_in_fields() throws Exception {
         //given
-        final UserCreator creator = new UserCreator(completeWithZeros("user"), "bpm");
+        String username = completeWithZeros("user");
+        final UserCreator creator = new UserCreator(username, "bpm");
         creator.setJobTitle(completeWithZeros("Engineer"));
         creator.setFirstName(completeWithZeros("First"));
         creator.setLastName(completeWithZeros("Last"));
@@ -47,6 +50,9 @@ public class DatabaseChecker6_3_7 extends SimpleDatabaseChecker6_3_2 {
 
         //when
         final User user = identityApi.createUser(creator);
+        //should be able to login using this user
+        APISession session2 = TenantAPIAccessor.getLoginAPI().login(username, "bpm");
+        TenantAPIAccessor.getLoginAPI().logout(session2);
 
         //then
         assertThat(user).isNotNull();
@@ -57,6 +63,7 @@ public class DatabaseChecker6_3_7 extends SimpleDatabaseChecker6_3_2 {
 
         //when
         final UserWithContactData userWithContactData = identityApi.getUserWithProfessionalDetails(user.getId());
+
 
         //then
         assertThat(userWithContactData).isNotNull();
