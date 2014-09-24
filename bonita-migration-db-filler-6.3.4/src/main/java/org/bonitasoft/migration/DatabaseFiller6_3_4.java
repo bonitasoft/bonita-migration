@@ -13,13 +13,11 @@
  **/
 package org.bonitasoft.migration;
 
-import org.bonitasoft.engine.exception.BonitaException;
-import org.bonitasoft.engine.test.PlatformTestUtil;
 
 public class DatabaseFiller6_3_4 extends SimpleDatabaseFiller6_3_1 {
 
     public static void main(final String[] args) throws Exception {
-        DatabaseFiller6_3_4 databaseFiller = new DatabaseFiller6_3_4();
+        final DatabaseFiller6_3_4 databaseFiller = new DatabaseFiller6_3_4();
         databaseFiller.execute(1, 1, 1, 1);
     }
     
