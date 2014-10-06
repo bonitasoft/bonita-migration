@@ -100,15 +100,15 @@ class ChangeDocumentsStructureIT extends GroovyTestCase {
             document tenantid: 1, id: 302, author: 901, creationdate: 4567890002, hascontent: falseValue(), filename: "oldfile2.txt", mimetype: "plain/text", content: "[NULL]", url: 'http//myurl.com/myfile2.txt'
             document tenantid: 1, id: 303, author: 901, creationdate: 4567892325, hascontent: falseValue(), filename: "archedDoc.txt", mimetype: "plain/text", content: "[NULL]", url: 'http//myurl.com/myfile.txt'
 
-            document_mapping tenantid: 1, id: 300, processinstanceid: 800, documentid: 100, name: "mydoc1", description: "[NULL]", version: "3"
-            document_mapping tenantid: 1, id: 301, processinstanceid: 800, documentid: 101, name: "mydoc2", description: "[NULL]", version: "1"
-            document_mapping tenantid: 1, id: 302, processinstanceid: 801, documentid: 102, name: "mydoc3", description: "[NULL]", version: "1"
-            document_mapping tenantid: 1, id: 303, processinstanceid: 802, documentid: 201, name: "mydoc4", description: "[NULL]", version: "1"
-            document_mapping tenantid: 1, id: 304, processinstanceid: 803, documentid: 301, name: "mydoc5", description: "[NULL]", version: "1"
+            document_mapping tenantid: 1, id: 300, processinstanceid: 800, documentid: 100, name: "mydoc1", description: "[NULL]", version: "3", index_: -1
+            document_mapping tenantid: 1, id: 301, processinstanceid: 800, documentid: 101, name: "mydoc2", description: "[NULL]", version: "1", index_: -1
+            document_mapping tenantid: 1, id: 302, processinstanceid: 801, documentid: 102, name: "mydoc3", description: "[NULL]", version: "1", index_: -1
+            document_mapping tenantid: 1, id: 303, processinstanceid: 802, documentid: 201, name: "mydoc4", description: "[NULL]", version: "1", index_: -1
+            document_mapping tenantid: 1, id: 304, processinstanceid: 803, documentid: 301, name: "mydoc5", description: "[NULL]", version: "1", index_: -1
 
-            arch_document_mapping tenantid: 1, id: 1300, sourceobjectid: 300, processinstanceid: 800, documentid: 99, name: "oldmydoc1", description: "[NULL]", version: "1", archivedate: 4567892314
-            arch_document_mapping tenantid: 1, id: 1301, sourceobjectid: 300, processinstanceid: 800, documentid: 302, name: "oldmydoc1", description: "[NULL]", version: "2", archivedate: 4567892314
-            arch_document_mapping tenantid: 1, id: 1302, sourceobjectid: 299, processinstanceid: 804, documentid: 303, name: "archedDoc", description: "[NULL]", version: "1", archivedate: 4567892315
+            arch_document_mapping tenantid: 1, id: 1300, sourceobjectid: 300, processinstanceid: 800, documentid: 99, name: "oldmydoc1", description: "[NULL]", version: "1", archivedate: 4567892314, index_: -1
+            arch_document_mapping tenantid: 1, id: 1301, sourceobjectid: 300, processinstanceid: 800, documentid: 302, name: "oldmydoc1", description: "[NULL]", version: "2", archivedate: 4567892314, index_: -1
+            arch_document_mapping tenantid: 1, id: 1302, sourceobjectid: 299, processinstanceid: 804, documentid: 303, name: "archedDoc", description: "[NULL]", version: "1", archivedate: 4567892315, index_: -1
 
 
         }, updatedDocuments

@@ -136,7 +136,7 @@ END""")
         }
     }
 
-    def renameTable(String table, String newName){
+    def renameTable(String table, String newName) {
         switch (dbVendor) {
             case "mysql":
                 execute("RENAME TABLE $table TO $newName")
@@ -164,6 +164,7 @@ END""")
                 execute("ALTER TABLE $table ALTER COLUMN $column DROP NOT NULL")
         }
     }
+
     def dropColumn(String table, String column) {
         switch (dbVendor) {
             case "oracle":
@@ -175,6 +176,10 @@ END""")
             default:
                 execute("ALTER TABLE $table DROP $column")
         }
+    }
+
+    def addColumn(String table, String column, String type, String defaultValue, String constraint) {
+        execute("ALTER TABLE $table ADD $column $type ${defaultValue != null ? "DEFAULT $defaultValue" : ""} ${constraint != null ? constraint : ""}")
     }
 
     def dropForeignKey(String table, String name) {
@@ -209,5 +214,6 @@ END""")
         return res + ")"
     }*/
 
-    public abstract migrate()
+    public abstract migrate();
+
 }

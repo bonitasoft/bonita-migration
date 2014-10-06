@@ -56,22 +56,22 @@ class ChangeDocumentsStructure extends DatabaseMigrationStep {
              *     add columns
              */
             //document_mapping
-            execute("ALTER TABLE document_mapping ADD documentid BIGINT DEFAULT 0 NOT NULL")
-            execute("ALTER TABLE document_mapping ADD description TEXT")
-            execute("ALTER TABLE document_mapping ADD version VARCHAR(10) DEFAULT '1' NOT NULL")
+            addColumn("document_mapping","documentid","BIGINT","0","NOT NULL")
+            addColumn("document_mapping","description","TEXT",null,null)
+            addColumn("document_mapping","version","VARCHAR(10)","'1'","NOT NULL")
             renameColumn("document_mapping", "documentName", "name","VARCHAR(50) NOT NULL")
             //arch_document_mapping
-            execute("ALTER TABLE arch_document_mapping ADD documentid BIGINT DEFAULT 0 NOT NULL")
-            execute("ALTER TABLE arch_document_mapping ADD description TEXT")
-            execute("ALTER TABLE arch_document_mapping ADD version VARCHAR(10) DEFAULT '1' NOT NULL")
+            addColumn("arch_document_mapping","documentid","BIGINT","0","NOT NULL")
+            addColumn("arch_document_mapping","description","TEXT",null,null)
+            addColumn("arch_document_mapping","version","VARCHAR(10)","'1'","NOT NULL")
             renameColumn("arch_document_mapping", "documentName", "name", "VARCHAR(50) NOT NULL")
             //document
-            execute("ALTER TABLE document ADD author BIGINT")
-            execute("ALTER TABLE document ADD creationdate BIGINT DEFAULT 0 NOT NULL")
-            execute("ALTER TABLE document ADD hascontent BOOLEAN DEFAULT true NOT NULL")
-            execute("ALTER TABLE document ADD filename VARCHAR(255)")
-            execute("ALTER TABLE document ADD mimetype VARCHAR(255)")
-            execute("ALTER TABLE document ADD url VARCHAR(1024) NULL")
+            addColumn("document","author","BIGINT",null,null)
+            addColumn("document","creationdate","BIGINT","0","NOT NULL")
+            addColumn("document","hascontent","BOOLEAN","true","NOT NULL")
+            addColumn("document","filename","VARCHAR(255)",null,null)
+            addColumn("document","mimetype","VARCHAR(255)",null,null)
+            addColumn("document","url","VARCHAR(1024)",null,"NULL")
             dropNotNull("document", "content", "BYTEA")
 
             /*
@@ -146,7 +146,15 @@ class ChangeDocumentsStructure extends DatabaseMigrationStep {
                 execute("ALTER TABLE document ADD CONSTRAINT fk_document_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id)")
             }
 
+            addColumn("document_mapping","index_","INT","'-1'","NOT NULL")
+            addColumn("arch_document_mapping","index_","INT","'-1'","NOT NULL")
+
         }
+
+        /*
+         *  Add column to support list of documents
+         */
+
     }
 
     private GString getUpdateDocumentQuery(tableName) {

@@ -15,33 +15,36 @@ package org.bonitasoft.migration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+
 import javax.sql.DataSource;
 
-import org.assertj.core.api.Assertions;
 import org.bonitasoft.engine.bpm.document.ArchivedDocument;
 import org.bonitasoft.engine.bpm.document.ArchivedDocumentsSearchDescriptor;
 import org.bonitasoft.engine.bpm.document.Document;
 import org.bonitasoft.engine.bpm.document.DocumentsSearchDescriptor;
+import org.bonitasoft.engine.bpm.flownode.HumanTaskInstance;
 import org.bonitasoft.engine.bpm.process.ArchivedProcessInstance;
 import org.bonitasoft.engine.bpm.process.ArchivedProcessInstancesSearchDescriptor;
+import org.bonitasoft.engine.bpm.process.ProcessDefinition;
 import org.bonitasoft.engine.bpm.process.ProcessInstance;
 import org.bonitasoft.engine.bpm.process.ProcessInstanceSearchDescriptor;
+import org.bonitasoft.engine.bpm.process.impl.DocumentListDefinitionBuilder;
+import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder;
+import org.bonitasoft.engine.bpm.process.impl.UserTaskDefinitionBuilder;
 import org.bonitasoft.engine.exception.BonitaException;
-import org.bonitasoft.engine.exception.SearchException;
+import org.bonitasoft.engine.expression.Expression;
+import org.bonitasoft.engine.expression.ExpressionBuilder;
+import org.bonitasoft.engine.identity.User;
+import org.bonitasoft.engine.operation.OperationBuilder;
 import org.bonitasoft.engine.search.Order;
 import org.bonitasoft.engine.search.SearchOptionsBuilder;
 import org.bonitasoft.engine.search.SearchResult;
-import org.bonitasoft.engine.search.descriptor.SearchArchivedDocumentDescriptor;
-import org.bonitasoft.engine.search.document.SearchArchivedDocuments;
 import org.junit.AfterClass;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
@@ -332,6 +335,79 @@ public class DatabaseChecker6_4_0 extends DatabaseCheckerInitiliazer6_3_1 {
         List<Document> documents4 = documentsOfInstance4.getResult();
         assertThat(documents4).hasSize(1);
 
+        long processWithDocuments = processAPI.getProcessDefinitionId("ProcessWithDocuments", "1.0");
+        processAPI.startProcess(processWithDocuments);
+
+        //check we can read the process-design.xml
+        processAPI.getDesignProcessDefinition(processWithDocuments);
+
+    }
+
+    @Test
+    public void checkListsWorks() throws Exception {
+
+        ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("processWithListOfDoc", "1.0");
+        builder.addActor("john");
+        builder.addLongData("doc1Id", null);
+        builder.addLongData("doc2Id", null);
+        builder.addUserTask("step1", "john");
+        Expression scriptExpression1 = new ExpressionBuilder()
+                .createGroovyScriptExpression(
+                        "updateDocs",
+                        "[new org.bonitasoft.engine.bpm.document.DocumentValue(doc2Id), " +
+                                "new org.bonitasoft.engine.bpm.document.DocumentValue(\"newFile\".getBytes(),\"plain/text\",\"file.txt\")," +
+                                "new org.bonitasoft.engine.bpm.document.DocumentValue(doc1Id,\"updatedDocFromUrl\".getBytes(),\"plain/text\",\"file.txt\")]",
+                        List.class.getName(),
+                        new ExpressionBuilder().createDataExpression("doc1Id", Long.class.getName()),
+                        new ExpressionBuilder().createDataExpression("doc2Id", Long.class.getName()));
+        Expression scriptExpression2 = new ExpressionBuilder()
+                .createGroovyScriptExpression(
+                        "updateDocs",
+                        "[new org.bonitasoft.engine.bpm.document.DocumentValue(\"updatedDoc\".getBytes(),\"plain/text\",\"file.txt\")]",
+                        List.class.getName(),
+                        new ExpressionBuilder().createDataExpression("doc2Id", Long.class.getName()));
+        UserTaskDefinitionBuilder userTaskDefinitionBuilder = builder.addUserTask("updateStep", "john");
+        userTaskDefinitionBuilder.addOperation(new OperationBuilder().createSetDocumentList("invoices", scriptExpression1));
+        userTaskDefinitionBuilder.addOperation(new OperationBuilder().createSetDocumentList("emptyList", scriptExpression2));
+        //        userTaskDefinitionBuilder.addOperation(new OperationBuilder().createSetDocumentList("unknown", scriptExpression2));
+        UserTaskDefinitionBuilder verifyStepBuilder = builder.addUserTask("verifyStep", "john");
+        verifyStepBuilder.addDisplayDescription(new ExpressionBuilder().createGroovyScriptExpression("getInvoicesListSize",
+                "String.valueOf(invoices.size())",
+                String.class.getName(),
+                new ExpressionBuilder().createDocumentListExpression("invoices")));
+        builder.addTransition("step1", "updateStep");
+        builder.addTransition("updateStep", "verifyStep");
+        DocumentListDefinitionBuilder invoices = builder.addDocumentListDefinition("invoices");
+        invoices.addDescription("My invoices");
+        String script = "[new org.bonitasoft.engine.bpm.document.DocumentValue(\"http://www.myrul.com/mydoc.txt\"), " +
+                "new org.bonitasoft.engine.bpm.document.DocumentValue(\"hello1\".getBytes(),\"plain/text\",\"file.txt\")," +
+                "new org.bonitasoft.engine.bpm.document.DocumentValue(\"hello2\".getBytes(),\"plain/text\",\"file.txt\")," +
+                "new org.bonitasoft.engine.bpm.document.DocumentValue(\"hello3\".getBytes(),\"plain/text\",\"file.txt\")" +
+                "]";
+        invoices.addInitialValue(new ExpressionBuilder().createGroovyScriptExpression("initialDocs",
+                script,
+                List.class.getName()));
+        builder.addDocumentListDefinition("emptyList");
+        User john = identityApi.getUserByUserName("userForDocuments");
+        ProcessDefinition processDefinition = processAPI.deploy(builder.done());
+        processAPI.addUserToActor(processAPI.getActors(processDefinition.getId(),0,1,null).get(0).getId(),john.getId());
+        processAPI.enableProcess(processDefinition.getId());
+        ProcessInstance processInstance = processAPI.startProcess(processDefinition.getId());
+
+
+        //we have a process with an initialized list and a non initialized list
+
+        //check with api methods
+        List<Document> invoices1 = processAPI.getDocumentList(processInstance.getId(), "invoices", 0, 100);
+        assertThat(invoices1).hasSize(4);
+        Document urlDocument = invoices1.get(0);
+        assertThat(urlDocument.getUrl()).isEqualTo("http://www.myrul.com/mydoc.txt");
+        Document fileDocument = invoices1.get(1);
+        assertThat(fileDocument.hasContent()).isTrue();
+        assertThat(fileDocument.getContentFileName()).isEqualTo("file.txt");
+        assertThat(processAPI.getDocumentContent(fileDocument.getContentStorageId())).isEqualTo("hello1".getBytes());
+        List<Document> emptyList = processAPI.getDocumentList(processInstance.getId(), "emptyList", 0, 100);
+        assertThat(emptyList).isEmpty();
     }
 
 }
