@@ -1,0 +1,1 @@
+ALTER TABLE document_content MODIFY (content NULL)
