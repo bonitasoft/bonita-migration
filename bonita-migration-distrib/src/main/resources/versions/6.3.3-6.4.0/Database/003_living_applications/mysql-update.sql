@@ -32,13 +32,13 @@ CREATE TABLE business_app_page (
   id BIGINT NOT NULL,
   applicationId BIGINT NOT NULL,
   pageId BIGINT NOT NULL,
-  name VARCHAR(255) NOT NULL
+  token VARCHAR(255) NOT NULL
 ) ENGINE = INNODB;
 @@
 
 ALTER TABLE business_app_page ADD CONSTRAINT pk_business_app_page PRIMARY KEY (tenantid, id);
 @@
-ALTER TABLE business_app_page ADD CONSTRAINT uk_app_page_appId_name UNIQUE (tenantId, applicationId, name);
+ALTER TABLE business_app_page ADD CONSTRAINT uk_app_page_appId_token UNIQUE (tenantId, applicationId, token);
 @@
 ALTER TABLE business_app_page ADD CONSTRAINT fk_app_page_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
 @@
@@ -46,7 +46,7 @@ ALTER TABLE business_app_page ADD CONSTRAINT fk_bus_app_id FOREIGN KEY (tenantid
 @@
 ALTER TABLE business_app_page ADD CONSTRAINT fk_page_id FOREIGN KEY (tenantid, pageId) REFERENCES page (tenantid, id);
 @@
-CREATE INDEX idx_app_page_name ON business_app_page (applicationId, name, tenantid);
+CREATE INDEX idx_app_page_token ON business_app_page (applicationId, token, tenantid);
 @@
 CREATE INDEX idx_app_page_pageId ON business_app_page (pageId, tenantid);
 @@
