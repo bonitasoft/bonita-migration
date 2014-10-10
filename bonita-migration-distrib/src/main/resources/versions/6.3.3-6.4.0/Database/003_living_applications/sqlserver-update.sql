@@ -23,6 +23,8 @@ ALTER TABLE business_app ADD CONSTRAINT uk_app_name_version UNIQUE (tenantId, na
 @@
 ALTER TABLE business_app ADD CONSTRAINT fk_app_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id)
 @@
+ALTER TABLE business_app ADD CONSTRAINT fk_app_profileId FOREIGN KEY (tenantid, profileId) REFERENCES profile (tenantid, id)
+@@
 
 CREATE INDEX idx_app_name ON business_app (name, tenantid)
 @@

@@ -10,6 +10,20 @@ CREATE TABLE sequence (
   PRIMARY KEY (tenantid, id)
 ) ENGINE = INNODB;
 
+CREATE TABLE profile (
+  tenantId BIGINT NOT NULL,
+  id BIGINT NOT NULL,
+  isDefault BOOLEAN NOT NULL,
+  name VARCHAR(50) NOT NULL,
+  description TEXT,
+  creationDate BIGINT NOT NULL,
+  createdBy BIGINT NOT NULL,
+  lastUpdateDate BIGINT NOT NULL,
+  lastUpdatedBy BIGINT NOT NULL,
+  UNIQUE (tenantId, name),
+  PRIMARY KEY (tenantId, id)
+) ENGINE = INNODB;
+
 CREATE TABLE page (
   tenantId BIGINT NOT NULL,
   id BIGINT NOT NULL,

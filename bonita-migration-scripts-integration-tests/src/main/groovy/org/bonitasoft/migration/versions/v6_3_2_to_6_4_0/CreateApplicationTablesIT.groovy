@@ -113,6 +113,7 @@ class CreateApplicationTablesIT  extends GroovyTestCase {
         sql.execute("DROP TABLE business_app_page")
         sql.execute("DROP TABLE page")
         sql.execute("DROP TABLE business_app")
+        sql.execute("DROP TABLE profile")
         sql.execute("DROP TABLE sequence")
         sql.execute("DROP TABLE tenant")
     }
