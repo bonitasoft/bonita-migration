@@ -4,7 +4,6 @@ CREATE TABLE business_app (
   name VARCHAR(50) NOT NULL,
   version VARCHAR(50) NOT NULL,
   profileId INT8,
-  path VARCHAR(255) NOT NULL,
   description TEXT,
   iconPath VARCHAR(255),
   creationDate INT8 NOT NULL,
