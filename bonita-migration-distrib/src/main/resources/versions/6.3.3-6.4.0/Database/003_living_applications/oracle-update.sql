@@ -53,6 +53,37 @@ CREATE INDEX idx_app_page_token ON business_app_page (applicationId, token, tena
 CREATE INDEX idx_app_page_pageId ON business_app_page (pageId, tenantid)
 @@
 
+CREATE TABLE business_app_menu (
+  tenantId NUMBER(19, 0) NOT NULL,
+  id NUMBER(19, 0) NOT NULL,
+  displayName VARCHAR2(255) NOT NULL,
+  applicationId NUMBER(19, 0) NOT NULL,
+  applicationPageId NUMBER(19, 0),
+  parentId NUMBER(19, 0),
+  index_ NUMBER(19, 0)
+)
+@@
+
+
+ALTER TABLE business_app_menu ADD CONSTRAINT pk_business_app_menu PRIMARY KEY (tenantid, id)
+@@
+
+ALTER TABLE business_app_menu ADD CONSTRAINT fk_app_menu_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id)
+@@
+ALTER TABLE business_app_menu ADD CONSTRAINT fk_app_menu_appId FOREIGN KEY (tenantid, applicationId) REFERENCES business_app (tenantid, id) ON DELETE CASCADE
+@@
+ALTER TABLE business_app_menu ADD CONSTRAINT fk_app_menu_pageId FOREIGN KEY (tenantid, applicationPageId) REFERENCES business_app_page (tenantid, id) ON DELETE CASCADE
+@@
+ALTER TABLE business_app_menu ADD CONSTRAINT fk_app_menu_parentId FOREIGN KEY (tenantid, parentId) REFERENCES business_app_menu (tenantid, id)
+@@
+
+CREATE INDEX idx_app_menu_app ON business_app_menu (applicationId, tenantid)
+@@
+CREATE INDEX idx_app_menu_page ON business_app_menu (applicationPageId, tenantid)
+@@
+CREATE INDEX idx_app_menu_parent ON business_app_menu (parentId, tenantid)
+@@
+
 INSERT INTO "SEQUENCE" ("TENANTID", "ID", "NEXTID")
 	SELECT "ID", 10200, 1 FROM "TENANT"
 	ORDER BY "ID" ASC 
@@ -61,4 +92,9 @@ INSERT INTO "SEQUENCE" ("TENANTID", "ID", "NEXTID")
 INSERT INTO "SEQUENCE" ("TENANTID", "ID", "NEXTID")
 	SELECT "ID", 10201, 1 FROM "TENANT"
 	ORDER BY "ID" ASC 
+@@
+
+INSERT INTO "SEQUENCE" ("TENANTID", "ID", "NEXTID")
+	SELECT "ID", 10202, 1 FROM "TENANT"
+	ORDER BY "ID" ASC
 @@

@@ -11,14 +11,13 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
-package org.bonitasoft.migration.versions.v6_3_2_to_6_4_0
+package org.bonitasoft.migration.versions.v6_3_x_to_6_4_0
 
 import static org.assertj.core.api.Assertions.assertThat
 import groovy.sql.Sql
 import groovy.xml.StreamingMarkupBuilder
 
 import org.bonitasoft.migration.CustomAssertion
-import org.bonitasoft.migration.versions.v6_3_x_to_6_4_0.CreateApplicationTables
 import org.dbunit.JdbcDatabaseTester
 import org.dbunit.dataset.xml.FlatXmlDataSet
 
@@ -78,6 +77,12 @@ class CreateApplicationTablesIT  extends GroovyTestCase {
         "postgres" : "business_app_page",
         "sqlserver" : "business_app_page"];
 
+    def busAppMenuTable = [
+        "mysql" : "business_app_menu",
+        "oracle" : "BUSINESS_APP_MENU",
+        "postgres" : "business_app_menu",
+        "sqlserver" : "business_app_menu"];
+
     Sql sql
     JdbcDatabaseTester tester
 
@@ -110,6 +115,7 @@ class CreateApplicationTablesIT  extends GroovyTestCase {
     @Override
     void tearDown() {
         tester.onTearDown();
+        sql.execute("DROP TABLE business_app_menu")
         sql.execute("DROP TABLE business_app_page")
         sql.execute("DROP TABLE page")
         sql.execute("DROP TABLE business_app")
@@ -124,8 +130,10 @@ class CreateApplicationTablesIT  extends GroovyTestCase {
 
         def appTable = sql.firstRow(checkSql[DBVENDOR](bussinessAppTable[DBVENDOR]));
         def appPageTable = sql.firstRow(checkSql[DBVENDOR](busAppPageTable[DBVENDOR]));
+        def appMenuTable = sql.firstRow(checkSql[DBVENDOR](busAppMenuTable[DBVENDOR]));
         assertThat(appTable).isNotNull();
         assertThat(appPageTable).isNotNull();
+        assertThat(appMenuTable).isNotNull();
 
         def updatedCommandsAndSequences = tester.connection.createDataSet("sequence");
 
@@ -133,10 +141,13 @@ class CreateApplicationTablesIT  extends GroovyTestCase {
             //sequences
             sequence tenantid:1, id:10200, nextid:1
             sequence tenantid:1, id:10201, nextid:1
+            sequence tenantid:1, id:10202, nextid:1
             sequence tenantid:2, id:10200, nextid:1
             sequence tenantid:2, id:10201, nextid:1
+            sequence tenantid:2, id:10202, nextid:1
             sequence tenantid:3, id:10200, nextid:1
             sequence tenantid:3, id:10201, nextid:1
+            sequence tenantid:3, id:10202, nextid:1
         }, updatedCommandsAndSequences
     }
 }
