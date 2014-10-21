@@ -238,7 +238,8 @@ task scriptsintegration(dependsOn:changeproperties, type: JavaExec) {
         main = "org.bonitasoft.migration.DBUnitTestSuite"
     }
     classpath configurations.scriptsintegration
-    
+
+
 }
 
 task execfill(dependsOn:scriptsintegration, type: JavaExec) {
