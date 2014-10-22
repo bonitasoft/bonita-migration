@@ -1,7 +1,6 @@
-package org.bonitasoft.migration.versions.v6_2_6to_6_3_0;
+package org.bonitasoft.migration.versions.v6_2_6_to_6_3_0
 
 import static org.assertj.core.api.Assertions.*
-import static org.junit.Assert.*
 
 import org.custommonkey.xmlunit.Diff
 import org.custommonkey.xmlunit.XMLUnit

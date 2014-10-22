@@ -1,7 +1,6 @@
-package org.bonitasoft.migration.versions.v6_2_6to_6_3_0;
+package org.bonitasoft.migration.versions.v6_2_6_to_6_3_0
 
 import static org.assertj.core.api.Assertions.*
-import static org.junit.Assert.*
 
 import org.custommonkey.xmlunit.Diff
 import org.custommonkey.xmlunit.XMLUnit
@@ -11,6 +10,7 @@ import org.junit.Test
 class ProcessDefinitionTest {
     private static final def after = ProcessDefinitionTest.class.getResourceAsStream("after.xml").text
     private static final def before = ProcessDefinitionTest.class.getResourceAsStream("before.xml").text
+    private static final def beforeWithProcessOperation = ProcessDefinitionTest.class.getResourceAsStream("before-with-process-operation.xml").text
 
     @Test
     public void testGetTransientData() throws Exception {
@@ -89,6 +89,23 @@ class ProcessDefinitionTest {
         assertThat(pdp.processDefinitionXml.depthFirst().findAll{ it.@operatorType =="DOCUMENT_CREATE_UPDATE" && it.name().getLocalPart() == "operation" }.size).isEqualTo(0)
         assertThat(pdp.processDefinitionXml.depthFirst().findAll{ it.@type == "DATA" && it.name().getLocalPart() == "leftOperand" }.size).isEqualTo(6)
         assertThat(pdp.processDefinitionXml.depthFirst().findAll{ it.@type == "TRANSIENT_DATA" && it.name().getLocalPart() == "leftOperand" }.size).isEqualTo(2)
+    }
+
+    @Test //BS-10959
+    public void can_migrate_process_with_operation_at_process_level() throws Exception {
+        //given
+        def ProcessDefinition pdp = new ProcessDefinition(beforeWithProcessOperation, true)
+
+        //when
+        pdp.updateOperatorAndLeftOperandType(pdp.getTransientData());
+        pdp.getTransientData().each { TransientData data ->
+            //  Change type of expression that evaluate transient data
+            pdp.updateExpressionOf(data)
+        }
+
+
+        //then
+        assertThat(pdp.processDefinitionXml.depthFirst().findAll{ it.@type == "DATA" && it.name().getLocalPart() == "leftOperand" }.size).isEqualTo(29)
     }
 
     @Test
