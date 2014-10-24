@@ -17,6 +17,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bonitasoft.engine.api.PlatformAPI;
+import org.bonitasoft.engine.api.PlatformAPIAccessor;
 import org.bonitasoft.engine.bpm.bar.BarResource;
 import org.bonitasoft.engine.bpm.bar.BusinessArchiveBuilder;
 import org.bonitasoft.engine.bpm.document.DocumentValue;
@@ -29,6 +31,7 @@ import org.bonitasoft.engine.expression.ExpressionBuilder;
 import org.bonitasoft.engine.identity.User;
 import org.bonitasoft.engine.operation.OperationBuilder;
 import org.bonitasoft.engine.session.APISession;
+import org.bonitasoft.engine.session.PlatformSession;
 import org.bonitasoft.engine.test.APITestUtil;
 
 public class DatabaseFiller6_3_6 extends SimpleDatabaseFiller6_3_1 {
@@ -43,6 +46,14 @@ public class DatabaseFiller6_3_6 extends SimpleDatabaseFiller6_3_1 {
     @Override
     protected void initializePlatform() throws BonitaException {
         apiTestUtil.createInitializeAndStartPlatformWithDefaultTenant(true);
+    }
+
+
+    public void shutdown() throws Exception {
+        final PlatformSession pSession = loginPlatform();
+        final PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(pSession);
+        stopPlatformAndTenant(platformAPI);
+        logoutPlatform(pSession);
     }
 
     @Override
