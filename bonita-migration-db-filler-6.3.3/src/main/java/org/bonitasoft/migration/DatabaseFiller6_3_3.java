@@ -31,7 +31,7 @@ import org.bonitasoft.engine.operation.OperationBuilder;
 import org.bonitasoft.engine.session.APISession;
 import org.bonitasoft.engine.test.APITestUtil;
 
-public class DatabaseFiller6_3_3 extends DatabaseFiller6_3_2 {
+public class DatabaseFiller6_3_3 extends SimpleDatabaseFiller6_3_1 {
 
     public static void main(final String[] args) throws Exception {
         DatabaseFiller6_3_3 databaseFiller = new DatabaseFiller6_3_3();
