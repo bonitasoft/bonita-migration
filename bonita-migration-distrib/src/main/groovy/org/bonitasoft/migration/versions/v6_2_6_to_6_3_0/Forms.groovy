@@ -13,7 +13,7 @@
  **
  * @since 6.2
  */
-package org.bonitasoft.migration.versions.v6_2_6to_6_3_0;
+package org.bonitasoft.migration.versions.v6_2_6_to_6_3_0;
 
 import org.codehaus.groovy.runtime.InvokerHelper
 

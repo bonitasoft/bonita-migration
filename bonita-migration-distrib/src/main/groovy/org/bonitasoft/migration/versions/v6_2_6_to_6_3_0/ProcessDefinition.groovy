@@ -13,7 +13,7 @@
  **
  * @since 6.2
  */
-package org.bonitasoft.migration.versions.v6_2_6to_6_3_0
+package org.bonitasoft.migration.versions.v6_2_6_to_6_3_0
 
 import groovy.transform.ToString;
 import org.codehaus.groovy.runtime.InvokerHelper
@@ -118,7 +118,7 @@ public class ProcessDefinition {
             } else {
                 def dataName = leftOperand.@name
                 def containerId = getContainerId(operation)
-                if (isDataTransientInContext(transientDataMap, dataName, containerId)) {
+                if (containerId != null /* container is null means we are at process level */ && isDataTransientInContext(transientDataMap, dataName, containerId)) {
                     println "A transient data named $dataName of container $containerId is updated by an operation, this is not a good design because you might loose the updated value if the server resart, consider changing the design of your process."
                     leftOperand.@type = "TRANSIENT_DATA"
                 } else {
@@ -130,7 +130,8 @@ public class ProcessDefinition {
 
     public Long getContainerId(Node node) {
         if (node == null) {
-            throw new IllegalStateException("the node is not inside a container ")
+            // process level
+            return null;
         }
         if (node.@id != null) {
             return Long.valueOf(node.@id)
