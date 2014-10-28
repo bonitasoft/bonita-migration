@@ -361,7 +361,6 @@ public class DatabaseChecker6_4_0 extends DatabaseCheckerInitiliazer6_3_1 {
 
     @Test
     public void checkListsWorks() throws Exception {
-
         ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("processWithListOfDoc", "1.0");
         builder.addActor("john");
         builder.addLongData("doc1Id", null);
