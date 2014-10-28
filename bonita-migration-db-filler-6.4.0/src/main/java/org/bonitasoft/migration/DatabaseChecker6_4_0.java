@@ -51,7 +51,6 @@ import org.junit.runner.JUnitCore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
-dbc.core.JdbcTemplate;
 
 public class DatabaseChecker6_4_0 extends DatabaseCheckerInitiliazer6_3_1 {
 
