@@ -15,7 +15,7 @@ OPTIONS:
    -n<next_version>, --next=<next_version>              next bonita version 
    -m<migration_tag>, --migration=<migration_tag>       last migration tag
 Example:
-./upgrade-version.sh --previous=6.3.4 --current=6.3.3 --next=6.3.5 -m1.10.0
+./upgrade-version.sh --previous=6.3.3 --current=6.3.4 --next=6.3.5 -m1.10.0
 
 Warning: If current version or previous version are not provided, they will be 
          detected with the content of the $VERSIONS_FOLDER_NAME folder
@@ -31,7 +31,7 @@ findCurrentAndPreviousVersion(){
 }
 
 updatePomVersion(){
-    sed -e 's:<previous.bonita.version>.*</previous.bonita.version>:<previous.bonita.version>'"$BONITA_CURRENT_VERSION"'-SNAPSHOT</previous.bonita.version>:g' pom.xml > tmp.out
+    sed -e 's:<previous.bonita.version>.*</previous.bonita.version>:<previous.bonita.version>'"$BONITA_CURRENT_VERSION"'</previous.bonita.version>:g' pom.xml > tmp.out
     sed -e 's:<current.bonita.version>.*</current.bonita.version>:<current.bonita.version>'"$BONITA_NEXT_VERSION"'-SNAPSHOT</current.bonita.version>:g' tmp.out > tmp2.out
     sed -e 's:<next.bonita.version>.*</next.bonita.version>:<next.bonita.version>'"$BONITA_NEXT_VERSION"'</next.bonita.version>:g' tmp2.out > pom.xml
     rm -f tmp.out
@@ -46,7 +46,7 @@ createNewMigrationFolder(){
 
 createNewDBFiller(){
     CURRENT_MIGRATION_VERSION=$(grep '<version>.*-SNAPSHOT<' pom.xml | sed -r 's:</?version>::g' | tr -d ' ')
-    mvn archetype:generate -B -DarchetypeArtifactId=bonita-migration-db-filler-archetype -DarchetypeGroupId=org.bonitasoft.migration -DarchetypeVersion=1.5.0 -Dbonita-version=$BONITA_NEXT_VERSION -Ddb-filler-suffix=${BONITA_NEXT_VERSION//./_}  -DartifactId=bonita-migration-db-filler-$BONITA_NEXT_VERSION
+    mvn archetype:generate -B -DarchetypeArtifactId=bonita-migration-db-filler-archetype -DarchetypeGroupId=org.bonitasoft.migration -DarchetypeVersion=$LAST_MIGRATION_TAG -Dbonita-version=$BONITA_NEXT_VERSION -Ddb-filler-suffix=${BONITA_NEXT_VERSION//./_}  -DartifactId=bonita-migration-db-filler-$BONITA_NEXT_VERSION
 }
 
 updateGAVersionInCurrentDistrib(){
