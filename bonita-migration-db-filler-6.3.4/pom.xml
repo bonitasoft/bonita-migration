@@ -4,7 +4,7 @@
 	<parent>
     <artifactId>bonita-migration</artifactId>
     <groupId>org.bonitasoft.migration</groupId>
-    <version>1.14.0-SNAPSHOT</version>
+    <version>1.15.0-SNAPSHOT</version>
   </parent>
 	<artifactId>bonita-migration-db-filler-6.3.4</artifactId>
 
@@ -29,16 +29,16 @@
 			<groupId>org.bonitasoft.engine</groupId>
 			<version>${bonita.version}</version>
 		</dependency>
-        <dependency>
-            <artifactId>bonita-integration-client-tests</artifactId>
-            <groupId>org.bonitasoft.engine</groupId>
-            <version>${bonita.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.bonitasoft.engine.jndi</groupId>
-            <artifactId>bonita-jndi-memory</artifactId>
-            <version>${bonita.version}</version>
-        </dependency>
+		<dependency>
+			<artifactId>bonita-integration-client-tests</artifactId>
+			<groupId>org.bonitasoft.engine</groupId>
+			<version>${bonita.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.bonitasoft.engine.jndi</groupId>
+			<artifactId>bonita-jndi-memory</artifactId>
+			<version>${bonita.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
