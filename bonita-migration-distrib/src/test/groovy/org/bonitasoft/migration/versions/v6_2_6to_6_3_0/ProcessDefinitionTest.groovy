@@ -15,7 +15,7 @@ class ProcessDefinitionTest {
     @Test
     public void testGetTransientData() throws Exception {
         //given
-        def pdp = new ProcessDefinition(before)
+        def pdp = new ProcessDefinition(before,true)
 
         //when
         def List<TransientData> transientData = pdp.getTransientData()
@@ -35,7 +35,7 @@ class ProcessDefinitionTest {
     @Test
     public void getAttributes() throws Exception {
         //when
-        def pdp = new ProcessDefinition(before)
+        def pdp = new ProcessDefinition(before, true)
 
         //then
         assertThat(pdp.id).isEqualTo(4725507608188665945)
@@ -46,17 +46,27 @@ class ProcessDefinitionTest {
     public void should_updateNameSpace_update_the_ns() throws Exception {
 
         //when
-        def pdp = new ProcessDefinition(before)
+        def pdp = new ProcessDefinition(before, true)
 
         //then
         assertThat(pdp.processDefinitionXml.name().namespaceURI).isEqualTo('''http://www.bonitasoft.org/ns/process/server/6.3''')
+    }
+
+    @Test
+    public void should_updateNameSpace_update_the_ns_on_client() throws Exception {
+
+        //when
+        def pdp = new ProcessDefinition(before.replace("http://www.bonitasoft.org/ns/process/server/6.0","http://www.bonitasoft.org/ns/process/client/6.0"), false)
+
+        //then
+        assertThat(pdp.processDefinitionXml.name().namespaceURI).isEqualTo('''http://www.bonitasoft.org/ns/process/client/6.3''')
     }
 
 
     @Test
     public void should_updateExpressionOf_update_the_type() throws Exception {
         //given
-        def ProcessDefinition pdp = new ProcessDefinition(before)
+        def ProcessDefinition pdp = new ProcessDefinition(before, true)
         def data = pdp.getTransientData()[0]
 
         //when
@@ -69,7 +79,7 @@ class ProcessDefinitionTest {
     @Test
     public void should_updateOperatorAndLeftOperandType_update_the_type() throws Exception {
         //given
-        def ProcessDefinition pdp = new ProcessDefinition(before)
+        def ProcessDefinition pdp = new ProcessDefinition(before, true)
 
         //when
         pdp.updateOperatorAndLeftOperandType(pdp.getTransientData())
@@ -84,7 +94,7 @@ class ProcessDefinitionTest {
     @Test
     public void should_update_full_xml_is_equal_after(){
 
-        def ProcessDefinition processDefinition = new ProcessDefinition(before)
+        def ProcessDefinition processDefinition = new ProcessDefinition(before, true)
 
         //parse process to get list all transient data
         def transientData = processDefinition.getTransientData()
@@ -106,7 +116,7 @@ class ProcessDefinitionTest {
         def before = ProcessDefinitionTest.class.getResourceAsStream("1-before-server-process-definition.xml").text
         def after = ProcessDefinitionTest.class.getResourceAsStream("2-after-server-process-definition.xml").text
         
-        def processDef = new ProcessDefinition(before)
+        def processDef = new ProcessDefinition(before, true)
         
         def transientData = processDef.getTransientData()
 

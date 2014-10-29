@@ -76,7 +76,7 @@ public class MigrationRunner {
             def bonitaHomeMigrationFolder = new File(migrationVersionFolder + "Bonita-home")
             def newBonitaHome = bonitaHomeMigrationFolder.listFiles().findAll { it.isDirectory() && it.exists() && it.getName().startsWith("bonita")}[0]
             if(newBonitaHome == null){
-                println "Error there is no bonita home in for the target version $targetStepVersion"
+                println "Error there is no bonita home for the target version $targetStepVersion"
                 throw new GroovyRuntimeException("inconsistent migration tool");
             }
             migrateDatabase(gse, migrationVersionFolder, newBonitaHome, sql)
