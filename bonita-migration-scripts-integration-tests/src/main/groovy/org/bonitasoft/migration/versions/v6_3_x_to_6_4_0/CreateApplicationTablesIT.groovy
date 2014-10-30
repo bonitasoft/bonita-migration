@@ -115,6 +115,13 @@ class CreateApplicationTablesIT  extends GroovyTestCase {
     @Override
     void tearDown() {
         tester.onTearDown();
+        def dropHomePageFK = [
+                "mysql" : "ALTER TABLE business_app DROP FOREIGN KEY fk_app_homepageId",
+                "oracle" : "ALTER TABLE business_app DROP CONSTRAINT fk_app_homepageId",
+                "postgres" : "ALTER TABLE business_app DROP CONSTRAINT fk_app_homepageId",
+                "sqlserver" : "ALTER TABLE business_app DROP CONSTRAINT fk_app_homepageId"];
+        sql.execute(dropHomePageFK[DBVENDOR]);
+
         sql.execute("DROP TABLE business_app_menu")
         sql.execute("DROP TABLE business_app_page")
         sql.execute("DROP TABLE page")
