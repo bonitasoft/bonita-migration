@@ -13,21 +13,29 @@
  **/
 package org.bonitasoft.migration;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.bonitasoft.engine.bpm.bar.BarResource;
+import org.bonitasoft.engine.bpm.bar.BusinessArchiveBuilder;
+import org.bonitasoft.engine.bpm.document.DocumentValue;
+import org.bonitasoft.engine.bpm.flownode.HumanTaskInstance;
+import org.bonitasoft.engine.bpm.process.ProcessDefinition;
+import org.bonitasoft.engine.bpm.process.ProcessInstance;
+import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder;
 import org.bonitasoft.engine.exception.BonitaException;
+import org.bonitasoft.engine.expression.ExpressionBuilder;
+import org.bonitasoft.engine.identity.User;
+import org.bonitasoft.engine.operation.OperationBuilder;
+import org.bonitasoft.engine.session.APISession;
 import org.bonitasoft.engine.test.APITestUtil;
 
 public class DatabaseFiller6_3_3 extends SimpleDatabaseFiller6_3_1 {
 
-    private final APITestUtil apiTestUtil = new APITestUtil();
-
     public static void main(final String[] args) throws Exception {
         DatabaseFiller6_3_3 databaseFiller = new DatabaseFiller6_3_3();
         databaseFiller.execute(1, 1, 1, 1);
-    }
-
-    @Override
-    protected void initializePlatform() throws BonitaException {
-        apiTestUtil.createInitializeAndStartPlatformWithDefaultTenant(true);
     }
 
 }

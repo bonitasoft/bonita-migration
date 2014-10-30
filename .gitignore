@@ -9,3 +9,5 @@ bin
 .gradle
 build
 *.iml
+*.orig
+*.mine
