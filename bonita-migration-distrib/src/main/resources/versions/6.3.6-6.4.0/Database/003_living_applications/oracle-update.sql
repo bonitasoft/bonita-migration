@@ -24,8 +24,14 @@ ALTER TABLE business_app ADD CONSTRAINT fk_app_tenantId FOREIGN KEY (tenantid) R
 @@
 ALTER TABLE business_app ADD CONSTRAINT fk_app_profileId FOREIGN KEY (tenantid, profileId) REFERENCES profile (tenantid, id)
 @@
+ALTER TABLE business_app ADD CONSTRAINT fk_app_homepageId FOREIGN KEY (tenantid, homePageId) REFERENCES business_app_page (tenantid, id)
+@@
 
 CREATE INDEX idx_app_token ON business_app (token, tenantid)
+@@
+CREATE INDEX idx_app_profile ON business_app (profileId, tenantid)
+@@
+CREATE INDEX idx_app_homepage ON business_app (homePageId, tenantid)
 @@
 
 CREATE TABLE business_app_page (
