@@ -11,14 +11,13 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
-package org.bonitasoft.migration.versions.v6_3_6_to_6_4_0
+package org.bonitasoft.migration.versions.v6_3_8_to_6_4_0
 
 import static org.assertj.core.api.Assertions.assertThat
 import groovy.sql.Sql
 import groovy.xml.StreamingMarkupBuilder
 
 import org.bonitasoft.migration.CustomAssertion
-import org.bonitasoft.migration.versions.v6_3_x_to_6_4_0.CreateApplicationTables
 import org.dbunit.JdbcDatabaseTester
 import org.dbunit.dataset.xml.FlatXmlDataSet
 
