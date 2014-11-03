@@ -6,6 +6,30 @@ def currentDir = ""
 def File newClientBonitaHome = new File(newBonitaHome, "/client/")
 def File oldClientBonitaHome = new File(bonitaHome, "/client/")
 
+
+//deactivate the security if it was not active
+
+def oldSecurityFile = new File(oldClientBonitaHome.path + "/platform/tenant-template/conf/security-config.properties")
+def newSecurityFile = new File(newClientBonitaHome.path + "/platform/tenant-template/conf/security-config.properties")
+def deactivateSecurity = false;
+if(oldSecurityFile.exists()){
+    def props = new Properties()
+    props.load(oldSecurityFile.newDataInputStream())
+    def secuEnabled = props.getProperty("security.rest.api.authorizations.check.enabled")
+    deactivateSecurity = "true".equals(secuEnabled)
+} else {
+    deactivateSecurity = true
+}
+if(deactivateSecurity){
+    def props = new Properties()
+    props.load(newSecurityFile.newDataInputStream())
+    props.setProperty("security.rest.api.authorizations.check.enabled","false")
+    props.store(newSecurityFile.newWriter(),null);
+}
+
+
+
+
 currentDir = "/platform/conf"
 MigrationUtil.migrateDirectory(newClientBonitaHome.path + currentDir, oldClientBonitaHome.path + currentDir, true)
 
@@ -28,6 +52,7 @@ if (tenantsClientDir.exists()) {
             PrintStream stdout = IOUtil.executeWrappedWithTabs {
                 currentDir = "/conf"
                 MigrationUtil.migrateDirectory(newClientBonitaHome.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir, true)
+
 
                 currentDir = "/work/icons/default"
                 MigrationUtil.migrateDirectory(newClientBonitaHome.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir, true)
