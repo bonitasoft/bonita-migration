@@ -67,8 +67,6 @@ ALTER TABLE business_app ADD CONSTRAINT fk_app_tenantId FOREIGN KEY (tenantid) R
 @@
 ALTER TABLE business_app ADD CONSTRAINT fk_app_profileId FOREIGN KEY (tenantid, profileId) REFERENCES profile (tenantid, id)
 @@
-ALTER TABLE business_app ADD CONSTRAINT fk_app_homepageId FOREIGN KEY (tenantid, homePageId) REFERENCES business_app_page (tenantid, id)
-@@
 
 ALTER TABLE business_app_page ADD CONSTRAINT uk_app_page_appId_token UNIQUE (tenantId, applicationId, token);
 @@
