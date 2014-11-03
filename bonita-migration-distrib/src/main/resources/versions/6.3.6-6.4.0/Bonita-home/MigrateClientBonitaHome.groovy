@@ -8,25 +8,21 @@ def File oldClientBonitaHome = new File(bonitaHome, "/client/")
 
 
 //deactivate the security if it was not active
-
+println "Check if security was enabled"
 def oldSecurityFile = new File(oldClientBonitaHome.path + "/platform/tenant-template/conf/security-config.properties")
 def newSecurityFile = new File(newClientBonitaHome.path + "/platform/tenant-template/conf/security-config.properties")
-def deactivateSecurity = false;
-if(oldSecurityFile.exists()){
-    def props = new Properties()
-    props.load(oldSecurityFile.newDataInputStream())
-    def secuEnabled = props.getProperty("security.rest.api.authorizations.check.enabled")
-    deactivateSecurity = "true".equals(secuEnabled)
-} else {
-    deactivateSecurity = true
+def props = new Properties()
+props.load(oldSecurityFile.newDataInputStream())
+def secuEnabled = props.getProperty("security.rest.api.authorizations.check.enabled")
+if(!"true".equals(secuEnabled)){
+    if(secuEnabled == null){
+        println "Security of REST APIs is disabled, to enable it modify the file security-config.properties in the client tenant configuration folder of the bonita home"
+    }
+    def newProps = new Properties()
+    newProps.load(newSecurityFile.newDataInputStream())
+    newProps.setProperty("security.rest.api.authorizations.check.enabled", "false")
+    newProps.store(newSecurityFile.newWriter(), null);
 }
-if(deactivateSecurity){
-    def props = new Properties()
-    props.load(newSecurityFile.newDataInputStream())
-    props.setProperty("security.rest.api.authorizations.check.enabled","false")
-    props.store(newSecurityFile.newWriter(),null);
-}
-
 
 
 
@@ -66,5 +62,5 @@ if (tenantsClientDir.exists()) {
         }
     }
 } else {
-    println "Not found any tenants."
+    println "Not tenant found"
 }
