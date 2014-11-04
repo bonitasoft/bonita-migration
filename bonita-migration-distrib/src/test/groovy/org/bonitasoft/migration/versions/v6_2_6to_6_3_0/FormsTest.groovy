@@ -17,7 +17,7 @@ class FormsTest {
 
 
     private Forms createForms() {
-        def transientData = new ProcessDefinition(beforeProcessDef).getTransientData()
+        def transientData = new ProcessDefinition(beforeProcessDef,true).getTransientData()
         def forms = new Forms(beforeForms, transientData, "6.3")
         return forms
     }
@@ -82,7 +82,7 @@ class FormsTest {
     @Test
     public void should_migrate_give_same_content() throws Exception {
         //given
-        def processDefinition = new ProcessDefinition(beforeProcessDef)
+        def processDefinition = new ProcessDefinition(beforeProcessDef,true)
         def transientData = processDefinition.getTransientData()
         def forms = new Forms(beforeForms, transientData, "6.3")
 
