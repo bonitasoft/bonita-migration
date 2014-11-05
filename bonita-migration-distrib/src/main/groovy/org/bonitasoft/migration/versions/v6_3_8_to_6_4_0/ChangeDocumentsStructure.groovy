@@ -72,7 +72,6 @@ class ChangeDocumentsStructure extends DatabaseMigrationStep {
             addColumn("document","filename","VARCHAR(255)",null,null)
             addColumn("document","mimetype","VARCHAR(255)",null,null)
             addColumn("document","url","VARCHAR(1024)",null,"NULL")
-            dropNotNull("document", "content", "BYTEA")
 
             /*
              *     move data
