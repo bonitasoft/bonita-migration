@@ -33,8 +33,6 @@ public class ProcessDefinition {
         if (isServer) {
             content = content.replace("http://www.bonitasoft.org/ns/process/server/6.0", "http://www.bonitasoft.org/ns/process/server/6.3");
         } else {
-            println("read content is")
-            println(content)
             content = content.replace("http://www.bonitasoft.org/ns/process/client/6.0", "http://www.bonitasoft.org/ns/process/client/6.3");
 
         }
@@ -57,8 +55,6 @@ public class ProcessDefinition {
         printer.setExpandEmptyElements(false)
         printer.print(processDefinitionXml)
 
-        println("process is")
-        println(this)
         def result = writer.toString()
         return result;
     }
