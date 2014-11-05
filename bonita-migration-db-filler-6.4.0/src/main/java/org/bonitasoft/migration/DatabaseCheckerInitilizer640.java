@@ -72,7 +72,7 @@ public class DatabaseCheckerInitilizer640 {
         platformAPI.startNode();
         platformTestUtil.logoutOnPlatform(platformSession);
 
-        apiTestUtil.loginOnDefaultTenantWithDefaultTechnicalLogger();
+        apiTestUtil.loginOnDefaultTenantWithDefaultTechnicalUser();
         session = apiTestUtil.getSession();
         processAPI = TenantAPIAccessor.getProcessAPI(session);
         identityApi = TenantAPIAccessor.getIdentityAPI(session);
