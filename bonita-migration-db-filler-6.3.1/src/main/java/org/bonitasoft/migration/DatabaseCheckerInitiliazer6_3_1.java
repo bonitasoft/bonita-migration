@@ -62,7 +62,7 @@ public class DatabaseCheckerInitiliazer6_3_1 {
 
     private static PlatformTestUtil platformTestUtil = new PlatformTestUtil();
 
-    private static APITestUtil apiTestUtil = new APITestUtil();
+    public static APITestUtil apiTestUtil = new APITestUtil();
 
     @BeforeClass
     public static void setup() throws BonitaException {
