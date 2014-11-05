@@ -11,7 +11,7 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
-package org.bonitasoft.migration.versions.v6_3_6_to_6_4_0
+package org.bonitasoft.migration.versions.v6_3_7_to_6_4_0
 
 import static org.assertj.core.api.Assertions.assertThat
 import groovy.sql.Sql
@@ -118,7 +118,7 @@ class CreateApplicationTablesIT  extends GroovyTestCase {
     }
 
     void test_createApplicationTables_should_create_application_tables_and_update_sequence_table() {
-        def feature = new File("build/dist/versions/6.3.6-6.4.0/Database/003_living_applications")
+        def feature = new File("build/dist/versions/6.3.7-6.4.0/Database/003_living_applications")
         new CreateApplicationTables().migrate(feature, DBVENDOR, sql);
 
         def appTable = sql.firstRow(checkSql[DBVENDOR](bussinessAppTable[DBVENDOR]));

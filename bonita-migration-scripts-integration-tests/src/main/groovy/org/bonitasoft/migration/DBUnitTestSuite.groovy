@@ -21,7 +21,7 @@ import org.bonitasoft.migration.versions.v6_2_6_to_6_3_0.UpdateDataMappingContra
 import org.bonitasoft.migration.versions.v6_3_1_to_6_3_2.UpdatedDefaultCommandsIT
 import org.bonitasoft.migration.versions.v6_3_2_to_6_3_3.ArchivedDataInstancesIT
 import org.bonitasoft.migration.versions.v6_3_2_to_6_3_3.ResetFailedGatewaysIT
-import org.bonitasoft.migration.versions.v6_3_6_to_6_4_0.CreateApplicationTablesIT
+import org.bonitasoft.migration.versions.v6_3_7_to_6_4_0.CreateApplicationTablesIT
 import org.bonitasoft.migration.versions.v6_3_x_to_6_4_0.ChangeDocumentsStructureIT
 import org.junit.runner.JUnitCore
 
