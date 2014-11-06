@@ -12,7 +12,9 @@ println "Check if security was enabled"
 def oldSecurityFile = new File(oldClientBonitaHome.path + "/platform/tenant-template/conf/security-config.properties")
 def newSecurityFile = new File(newClientBonitaHome.path + "/platform/tenant-template/conf/security-config.properties")
 def props = new Properties()
-props.load(oldSecurityFile.newDataInputStream())
+if(oldSecurityFile.exists()){
+    props.load(oldSecurityFile.newDataInputStream())
+}
 def secuEnabled = props.getProperty("security.rest.api.authorizations.check.enabled")
 if(!"true".equals(secuEnabled)){
     if(secuEnabled == null){
