@@ -35,10 +35,11 @@
 			<version>${bonita.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.bonitasoft.engine.jndi</groupId>
-			<artifactId>bonita-jndi-memory</artifactId>
+			<groupId>org.bonitasoft.engine.test</groupId>
+			<artifactId>bonita-test-util</artifactId>
 			<version>${bonita.version}</version>
 		</dependency>
+		<dependency>
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
