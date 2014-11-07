@@ -42,7 +42,7 @@ CREATE TABLE document_content (
   tenantid BIGINT NOT NULL,
   id BIGINT NOT NULL,
   documentId VARCHAR(50) NOT NULL,
-  content LONGBLOB NOT NULL,
+  content LONGBLOB NULL,
   PRIMARY KEY (tenantid, id)
 ) ENGINE = INNODB;
 ALTER TABLE document_content ADD CONSTRAINT fk_document_content_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);

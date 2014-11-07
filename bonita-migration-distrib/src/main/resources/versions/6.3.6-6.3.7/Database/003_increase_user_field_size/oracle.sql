@@ -3,3 +3,4 @@ ALTER TABLE user_ MODIFY firstName VARCHAR2(255)@@
 ALTER TABLE user_ MODIFY lastName VARCHAR2(255)@@
 ALTER TABLE user_ MODIFY jobTitle VARCHAR2(255)@@
 ALTER TABLE user_contactinfo MODIFY address VARCHAR2(255)@@
+ALTER TABLE queriable_log MODIFY userId VARCHAR2(255)@@

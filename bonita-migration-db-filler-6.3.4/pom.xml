@@ -29,12 +29,17 @@
 			<groupId>org.bonitasoft.engine</groupId>
 			<version>${bonita.version}</version>
 		</dependency>
-        <dependency>
-            <artifactId>bonita-integration-client-tests</artifactId>
-            <groupId>org.bonitasoft.engine</groupId>
-            <version>${bonita.version}</version>
-        </dependency>
-        <dependency>
+		<dependency>
+			<artifactId>bonita-integration-client-tests</artifactId>
+			<groupId>org.bonitasoft.engine</groupId>
+			<version>${bonita.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.bonitasoft.engine.test</groupId>
+			<artifactId>bonita-test-util</artifactId>
+			<version>${bonita.version}</version>
+		</dependency>
+		<dependency>
             <groupId>org.bonitasoft.engine.jndi</groupId>
             <artifactId>bonita-jndi-memory</artifactId>
             <version>${bonita.version}</version>
