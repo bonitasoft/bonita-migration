@@ -16,11 +16,13 @@ package org.bonitasoft.migration;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.sql.DataSource;
@@ -41,6 +43,7 @@ import org.bonitasoft.engine.bpm.process.impl.UserTaskDefinitionBuilder;
 import org.bonitasoft.engine.exception.BonitaException;
 import org.bonitasoft.engine.expression.Expression;
 import org.bonitasoft.engine.expression.ExpressionBuilder;
+import org.bonitasoft.engine.home.BonitaHomeClient;
 import org.bonitasoft.engine.identity.User;
 import org.bonitasoft.engine.operation.OperationBuilder;
 import org.bonitasoft.engine.search.Order;
@@ -103,6 +106,16 @@ public class DatabaseChecker6_4_0 extends DatabaseCheckerInitiliazer6_3_1 {
         jdbcTemplate.update("DELETE FROM process_instance where tenantid = ?", new Object[] { TENANT_ID });
         jdbcTemplate.update("DELETE FROM event_trigger_instance where tenantid = ?", new Object[] { TENANT_ID });
         jdbcTemplate.update("DELETE FROM tenant where id = ?", new Object[] { TENANT_ID });
+    }
+
+    @Test
+    public void check_security_is_off() throws Exception {
+        String path = BonitaHomeClient.getInstance().getBonitaHomeClientFolder() + "/platform/tenant-template/conf/security-config.properties";
+        Properties properties = new Properties();
+        FileInputStream inStream = new FileInputStream(path);
+        properties.load(inStream);
+        inStream.close();
+        assertThat(properties.getProperty("security.rest.api.authorizations.check.enabled")).isEqualTo("false");
     }
 
     @Test
