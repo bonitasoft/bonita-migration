@@ -79,7 +79,8 @@ public class DatabaseFiller6_3_0 extends SimpleDatabaseFiller6_0_2 {
         shutdownWorkService();
     }
 
-    private void shutdownWorkService() throws Exception {
+    @Override
+    protected void shutdownWorkService() throws Exception {
         final WorkService workService = ServiceAccessorFactory.getInstance().createTenantServiceAccessor(1).getWorkService();
         final Field[] fields = workService.getClass().getDeclaredFields();
         for (final Field field : fields) {

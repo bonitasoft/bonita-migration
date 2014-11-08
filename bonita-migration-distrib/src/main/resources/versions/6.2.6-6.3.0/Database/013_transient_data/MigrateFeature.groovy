@@ -12,9 +12,9 @@
  * Floor, Boston, MA 02110-1301, USA.
  **/
 import org.bonitasoft.migration.core.MigrationUtil;
-import org.bonitasoft.migration.versions.v6_2_6to_6_3_0.Forms;
-import org.bonitasoft.migration.versions.v6_2_6to_6_3_0.ProcessDefinition;
-import org.bonitasoft.migration.versions.v6_2_6to_6_3_0.TransientData;
+import org.bonitasoft.migration.versions.v6_2_6_to_6_3_0.Forms;
+import org.bonitasoft.migration.versions.v6_2_6_to_6_3_0.ProcessDefinition;
+import org.bonitasoft.migration.versions.v6_2_6_to_6_3_0.TransientData;
 
 def formsVersion = new File(feature,"FORMS_VERSION").text
 //list process definitions

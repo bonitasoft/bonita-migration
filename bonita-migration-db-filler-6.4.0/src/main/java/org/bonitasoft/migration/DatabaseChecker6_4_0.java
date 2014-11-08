@@ -56,7 +56,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-public class DatabaseChecker6_4_0 extends DatabaseCheckerInitiliazer6_3_1 {
+public class DatabaseChecker6_4_0 extends DatabaseCheckerInitilizer640  {
 
     private static final String KIND = "012345678912345";
 
@@ -96,7 +96,7 @@ public class DatabaseChecker6_4_0 extends DatabaseCheckerInitiliazer6_3_1 {
 
     @AfterClass
     public static void teardown() throws BonitaException {
-        final DataSource bonitaDatasource = (DataSource) springContext.getBean("bonitaDataSource");
+        final DataSource bonitaDatasource = (DataSource) getSpringContext().getBean("bonitaDataSource");
         final JdbcTemplate jdbcTemplate = new JdbcTemplate(bonitaDatasource);
 
         // clean up
@@ -172,7 +172,7 @@ public class DatabaseChecker6_4_0 extends DatabaseCheckerInitiliazer6_3_1 {
     @Test
     public void flownode_fk_constraint_check() throws Exception {
         logger.info("check nullable fields on table ref_biz_data_inst");
-        final DataSource bonitaDatasource = (DataSource) springContext.getBean("bonitaDataSource");
+        final DataSource bonitaDatasource = (DataSource) getSpringContext().getBean("bonitaDataSource");
         final JdbcTemplate jdbcTemplate = new JdbcTemplate(bonitaDatasource);
 
         // given
@@ -245,7 +245,7 @@ public class DatabaseChecker6_4_0 extends DatabaseCheckerInitiliazer6_3_1 {
     }
 
     private void emptyFlowNodeTable(final JdbcTemplate jdbcTemplate) {
-        logger.info("clean table ref_biz_data_inst");
+        logger.info("clean table flownode_instance");
         jdbcTemplate.update("DELETE FROM flownode_instance where tenantid = ?", new Object[] { TENANT_ID });
     }
 
