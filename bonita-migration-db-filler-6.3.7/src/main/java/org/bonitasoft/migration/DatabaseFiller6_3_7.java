@@ -69,14 +69,9 @@ public class DatabaseFiller6_3_7 extends SimpleDatabaseFiller6_3_1 {
         stats.putAll(fillOrganization(session));
         stats.putAll(fillProfiles(session));
         stats.putAll(fillDocuments());
-        fillOthers(session);
         apiTestUtil.loginOnDefaultTenantWithDefaultTechnicalLogger();
         logger.info("Finished to fill the database");
         return stats;
-    }
-
-    protected void fillOthers(APISession session) throws Exception, ServerAPIException, UnknownAPITypeException {
-
     }
 
 

@@ -11,8 +11,8 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
-import org.bonitasoft.migration.versions.v6_2_6to_6_3_0.ProcessDefinition
-import org.bonitasoft.migration.versions.v6_2_6to_6_3_0.TransientData
+import org.bonitasoft.migration.versions.v6_2_6_to_6_3_0.ProcessDefinition
+import org.bonitasoft.migration.versions.v6_2_6_to_6_3_0.TransientData
 
 //list process definitions
 sql.eachRow("SELECT * from process_definition", { row ->
