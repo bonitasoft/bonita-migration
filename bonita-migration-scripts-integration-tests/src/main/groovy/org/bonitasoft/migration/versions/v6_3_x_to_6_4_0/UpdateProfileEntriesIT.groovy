@@ -2,6 +2,7 @@ package org.bonitasoft.migration.versions.v6_3_x_to_6_4_0
 
 import groovy.sql.Sql
 import org.bonitasoft.migration.CustomAssertion
+import org.bonitasoft.migration.versions.v6_3_8_to_6_4_0.UpdateProfileEntries
 import org.dbunit.JdbcDatabaseTester
 
 import static org.bonitasoft.migration.DBUnitHelper.*

@@ -1,4 +1,4 @@
-package org.bonitasoft.migration.versions.v6_3_x_to_6_4_0
+package org.bonitasoft.migration.versions.v6_3_8_to_6_4_0
 
 import groovy.sql.Sql
 import org.bonitasoft.migration.core.MigrationUtil
