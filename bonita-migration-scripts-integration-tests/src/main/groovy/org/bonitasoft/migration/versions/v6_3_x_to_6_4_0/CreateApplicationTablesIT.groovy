@@ -13,6 +13,8 @@
  **/
 package org.bonitasoft.migration.versions.v6_3_x_to_6_4_0
 
+import org.bonitasoft.migration.versions.v6_3_8_to_6_4_0.CreateApplicationTables
+
 import static org.assertj.core.api.Assertions.assertThat
 import groovy.sql.Sql
 import groovy.xml.StreamingMarkupBuilder
