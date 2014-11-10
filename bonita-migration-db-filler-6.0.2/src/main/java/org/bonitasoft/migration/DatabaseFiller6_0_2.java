@@ -383,7 +383,7 @@ public class DatabaseFiller6_0_2 {
         return APITestUtil.loginPlatform();
     }
 
-    private void shutdownWorkService() throws Exception {
+    protected void shutdownWorkService() throws Exception {
         WorkService workService = getWorkService();
         Field[] fields = workService.getClass().getDeclaredFields();
         for (Field field : fields) {
