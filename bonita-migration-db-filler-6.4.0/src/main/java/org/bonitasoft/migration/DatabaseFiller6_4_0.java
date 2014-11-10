@@ -13,7 +13,7 @@
  **/
 package org.bonitasoft.migration;
 
-public class DatabaseFiller6_4_0 extends DatabaseFiller6_3_3 {
+public class DatabaseFiller6_4_0 extends DatabaseFiller6_3_8 {
 
     public static void main(final String[] args) throws Exception {
         DatabaseFiller6_4_0 databaseFiller = new DatabaseFiller6_4_0();
