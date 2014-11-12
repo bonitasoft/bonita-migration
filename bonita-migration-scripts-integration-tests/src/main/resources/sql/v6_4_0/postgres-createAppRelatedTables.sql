@@ -10,6 +10,20 @@ CREATE TABLE sequence (
   PRIMARY KEY (tenantid, id)
 );
 
+CREATE TABLE profile (
+  tenantId INT8 NOT NULL,
+  id INT8 NOT NULL,
+  isDefault BOOLEAN NOT NULL,
+  name VARCHAR(50) NOT NULL,
+  description TEXT,
+  creationDate INT8 NOT NULL,
+  createdBy INT8 NOT NULL,
+  lastUpdateDate INT8 NOT NULL,
+  lastUpdatedBy INT8 NOT NULL,
+  UNIQUE (tenantId, name),
+  PRIMARY KEY (tenantId, id)
+);
+
 CREATE TABLE page (
   tenantId INT8 NOT NULL,
   id INT8 NOT NULL,
