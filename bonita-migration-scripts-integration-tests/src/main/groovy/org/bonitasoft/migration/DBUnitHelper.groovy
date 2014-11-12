@@ -68,8 +68,8 @@ class DBUnitHelper {
         DBUnitHelper.class.getClassLoader().getResource("sql/v${version}/${dbVendor()}-${feature}.sql");
     }
 
-    def static String[] createTables(sql) {
-        getCreateTables("6_4_0", "documents").text.split("@@").each({ stmt ->
+    def static String[] createTables(sql, String feature) {
+        getCreateTables("6_4_0", feature).text.split("@@").each({ stmt ->
             println "executing stmt $stmt"
             sql.execute(stmt)
         })
