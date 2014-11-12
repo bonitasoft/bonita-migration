@@ -46,7 +46,13 @@ import org.bonitasoft.engine.expression.ExpressionBuilder;
 import org.bonitasoft.engine.home.BonitaHomeClient;
 import org.bonitasoft.engine.identity.User;
 import org.bonitasoft.engine.operation.OperationBuilder;
+import org.bonitasoft.engine.persistence.QueryOptions;
+import org.bonitasoft.engine.profile.Profile;
+import org.bonitasoft.engine.profile.ProfileEntry;
+import org.bonitasoft.engine.profile.ProfileEntrySearchDescriptor;
+import org.bonitasoft.engine.profile.ProfileSearchDescriptor;
 import org.bonitasoft.engine.search.Order;
+import org.bonitasoft.engine.search.SearchOptions;
 import org.bonitasoft.engine.search.SearchOptionsBuilder;
 import org.bonitasoft.engine.search.SearchResult;
 import org.junit.AfterClass;
@@ -105,7 +111,7 @@ public class DatabaseChecker6_4_0 extends DatabaseCheckerInitilizer640  {
         jdbcTemplate.update("DELETE FROM flownode_instance where tenantid = ?", new Object[] { TENANT_ID });
         jdbcTemplate.update("DELETE FROM process_instance where tenantid = ?", new Object[] { TENANT_ID });
         jdbcTemplate.update("DELETE FROM event_trigger_instance where tenantid = ?", new Object[] { TENANT_ID });
-        jdbcTemplate.update("DELETE FROM tenant where id = ?", new Object[] { TENANT_ID });
+        jdbcTemplate.update("DELETE FROM tenant where id = ?", new Object[]{TENANT_ID});
     }
 
     @Test
@@ -149,16 +155,16 @@ public class DatabaseChecker6_4_0 extends DatabaseCheckerInitilizer640  {
         final long countRefBusinessdata = countRefBusinessdata(jdbcTemplate, TENANT_ID);
 
         createTenantIfNotExists(jdbcTemplate, TENANT_ID);
-        jdbcTemplate.update(SQL_INSERT_PROCESS_INSTANCE, new Object[] { TENANT_ID, PROCESS_INSTANCE_ID1 });
+        jdbcTemplate.update(SQL_INSERT_PROCESS_INSTANCE, new Object[]{TENANT_ID, PROCESS_INSTANCE_ID1});
         jdbcTemplate.update(SQL_INSERT_PROCESS_INSTANCE, new Object[] { TENANT_ID, PROCESS_INSTANCE_ID2 });
 
         // when
         final String sqlInsertRefBizData = "INSERT INTO ref_biz_data_inst(tenantid, id, name, proc_inst_id, fn_inst_id, data_id, data_classname, kind) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sqlInsertRefBizData, new Object[] { TENANT_ID, 38484, "businessdata", PROCESS_INSTANCE_ID1, null, 1, CLASSNAME,
-                KIND });
+        jdbcTemplate.update(sqlInsertRefBizData, new Object[]{TENANT_ID, 38484, "businessdata", PROCESS_INSTANCE_ID1, null, 1, CLASSNAME,
+                KIND});
 
-        jdbcTemplate.update(sqlInsertRefBizData, new Object[] { TENANT_ID, 4959595, "businessdata", PROCESS_INSTANCE_ID2, null, 1, CLASSNAME,
+        jdbcTemplate.update(sqlInsertRefBizData, new Object[]{TENANT_ID, 4959595, "businessdata", PROCESS_INSTANCE_ID2, null, 1, CLASSNAME,
                 KIND
         });
 
@@ -181,11 +187,11 @@ public class DatabaseChecker6_4_0 extends DatabaseCheckerInitilizer640  {
         createTenantIfNotExists(jdbcTemplate, TENANT_ID);
         jdbcTemplate
                 .update(SQL_INSERT_FLOWNODE
-                        , new Object[] { TENANT_ID, FLOWNODE_INSTANCE_ID1, "kind", false, false, false, false, false, false, false });
+                        , new Object[]{TENANT_ID, FLOWNODE_INSTANCE_ID1, "kind", false, false, false, false, false, false, false});
 
         jdbcTemplate
                 .update(SQL_INSERT_FLOWNODE
-                        , new Object[] { TENANT_ID, FLOWNODE_INSTANCE_ID2, "kind", false, false, false, false, false, false, false });
+                        , new Object[]{TENANT_ID, FLOWNODE_INSTANCE_ID2, "kind", false, false, false, false, false, false, false});
 
         // when
 
@@ -217,7 +223,7 @@ public class DatabaseChecker6_4_0 extends DatabaseCheckerInitilizer640  {
 
         createTenantIfNotExists(jdbcTemplate, TENANT_ID);
         jdbcTemplate.update("INSERT INTO ref_biz_data_inst(tenantid, id, name,  data_id, data_classname, kind) "
-                + "VALUES (?, ?, ?, ?, ?, ?)", new Object[] { TENANT_ID, 298989, "businessdata", 1, CLASSNAME, "multi_ref" });
+                + "VALUES (?, ?, ?, ?, ?, ?)", new Object[]{TENANT_ID, 298989, "businessdata", 1, CLASSNAME, "multi_ref"});
         logger.info("insert first multiple data");
         jdbcTemplate.update("INSERT INTO multi_biz_data(tenantid, id, idx, data_id) "
                 + "VALUES (?, ?, ?, ?)", new Object[] { TENANT_ID, 298989, 1, 1 });
@@ -439,4 +445,37 @@ public class DatabaseChecker6_4_0 extends DatabaseCheckerInitilizer640  {
         assertThat(emptyList).isEmpty();
     }
 
+    @Test
+    public void profile_entry_should_be_renamed_from_apps_to_processes() throws Exception {
+        //when
+        SearchResult<ProfileEntry> appsEntries = profileAPI.searchProfileEntries(buildSearchOptions("Apps"));
+        SearchResult<ProfileEntry> processEntries = profileAPI.searchProfileEntries(buildSearchOptions("Process"));
+
+        SearchResult<Profile> profilesSearchResult = profileAPI.searchProfiles(buildSearchOptionsForProfile("Administrator"));
+        Profile admin = profilesSearchResult.getResult().get(0);
+
+        profilesSearchResult = profileAPI.searchProfiles(buildSearchOptionsForProfile("User"));
+        Profile user = profilesSearchResult.getResult().get(0);
+
+        //then
+        assertThat(appsEntries.getCount()).isEqualTo(0);
+        assertThat(processEntries.getCount()).isEqualTo(3);
+        assertThat(admin.getDescription()).isEqualTo("The administrator can install a process, manage the organization, and handle some errors (for example, by replaying a task).");
+        assertThat(user.getDescription()).isEqualTo("The user can view and perform tasks and can start a new case of a process.");
+    }
+
+    protected SearchOptions buildSearchOptionsForProfile(final String profileName) {
+        SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 100);
+        builder.filter(ProfileSearchDescriptor.NAME, profileName);
+        SearchOptions options = builder.done();
+        return options;
+    }
+
+    protected SearchOptions buildSearchOptions(final String name) {
+        SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 10);
+        builder.searchTerm(name);
+        builder.sort(ProfileEntrySearchDescriptor.NAME, Order.ASC);
+        SearchOptions options = builder.done();
+        return options;
+    }
 }

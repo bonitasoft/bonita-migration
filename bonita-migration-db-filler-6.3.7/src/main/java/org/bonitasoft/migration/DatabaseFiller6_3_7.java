@@ -27,6 +27,8 @@ import org.bonitasoft.engine.bpm.process.ProcessDefinition;
 import org.bonitasoft.engine.bpm.process.ProcessInstance;
 import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder;
 import org.bonitasoft.engine.exception.BonitaException;
+import org.bonitasoft.engine.exception.ServerAPIException;
+import org.bonitasoft.engine.exception.UnknownAPITypeException;
 import org.bonitasoft.engine.expression.ExpressionBuilder;
 import org.bonitasoft.engine.identity.User;
 import org.bonitasoft.engine.operation.OperationBuilder;
@@ -71,6 +73,7 @@ public class DatabaseFiller6_3_7 extends SimpleDatabaseFiller6_3_1 {
         logger.info("Finished to fill the database");
         return stats;
     }
+
 
     private Map<? extends String, ? extends String> fillDocuments() throws Exception {
         User user = apiTestUtil.createUser("userForDocuments", "bpm");
