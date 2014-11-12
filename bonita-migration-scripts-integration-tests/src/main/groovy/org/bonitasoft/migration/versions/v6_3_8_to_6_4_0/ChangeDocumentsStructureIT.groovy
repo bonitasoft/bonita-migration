@@ -38,7 +38,7 @@ class ChangeDocumentsStructureIT extends GroovyTestCase {
         sql = createSqlConnection();
         tester = createTester()
 
-        createTables(sql)
+        createTables(sql, "documents")
 
         tester.dataSet = dataSet {
             tenant id: 1
