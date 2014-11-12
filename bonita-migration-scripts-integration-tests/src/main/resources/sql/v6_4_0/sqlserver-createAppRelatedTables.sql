@@ -12,6 +12,21 @@ CREATE TABLE sequence (
 )
 @@
 
+CREATE TABLE profile (
+  tenantId NUMERIC(19, 0) NOT NULL,
+  id NUMERIC(19, 0) NOT NULL,
+  isDefault BIT NOT NULL,
+  name NVARCHAR(50) NOT NULL,
+  description NVARCHAR(MAX),
+  creationDate NUMERIC(19, 0) NOT NULL,
+  createdBy NUMERIC(19, 0) NOT NULL,
+  lastUpdateDate NUMERIC(19, 0) NOT NULL,
+  lastUpdatedBy NUMERIC(19, 0) NOT NULL,
+  UNIQUE (tenantId, name),
+  PRIMARY KEY (tenantId, id)
+)
+@@
+
 CREATE TABLE page (
   tenantId NUMERIC(19, 0) NOT NULL,
   id NUMERIC(19, 0) NOT NULL,
