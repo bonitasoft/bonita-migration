@@ -55,7 +55,10 @@ sql.eachRow("SELECT * from theme WHERE isDefault = ${false} AND type = ${"PORTAL
                 stream.withStream { defaultTheme ->
                     for (ZipEntry ze = defaultTheme.getNextEntry(); ze != null; ze = defaultTheme.getNextEntry()) {
                         def entryName = ze.getName()
-                        if(entryName.startsWith("skin/bootstrap") || entryName.equals("css/bootstrap.min.css") || entryName.equals("scripts/bootstrap.min.js")){
+                        if(entryName.startsWith("skin/bootstrap")
+                                || entryName.startsWith("skin/fonts/glyphicons")
+                                || entryName.equals("css/bootstrap.min.css")
+                                || entryName.equals("scripts/bootstrap.min.js")){
                             def newZe = new ZipEntry(entryName)
                             //reset the size
                             zous.putNextEntry(newZe)
@@ -82,7 +85,7 @@ sql.eachRow("SELECT * from theme WHERE isDefault = ${false} AND type = ${"PORTAL
         println "The custom theme $rowId was updated, a backup was put in ${backup.getPath()}/theme-${rowId}.zip"
         sql.executeUpdate("UPDATE theme SET content = ? , lastUpdateDate = ? WHERE tenantid = ? AND id = ?", newZipContent, currentTime, tenantId, rowId)
     }else{
-        println "The custom theme $rowId can't be updated, update it manually to add skin/bootstrap  css/bootstrap.min.js and scripts/bootstrap.min.js"
+        println "The custom theme $rowId can't be updated, update it manually to add skin/bootstrap skin/font/ css/bootstrap.min.js scripts/bootstrap.min.js"
     }
 }
 
