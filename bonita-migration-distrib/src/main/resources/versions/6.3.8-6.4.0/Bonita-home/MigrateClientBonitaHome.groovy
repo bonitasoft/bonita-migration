@@ -11,8 +11,10 @@ println "Check if security was enabled"
 def oldSecurityFile = new File(oldClientBonitaHome.path + "/platform/tenant-template/conf/security-config.properties")
 def newSecurityFile = new File(newClientBonitaHome.path + "/platform/tenant-template/conf/security-config.properties")
 def props = new Properties()
-if(oldSecurityFile.exists()){
-    props.load(oldSecurityFile.newDataInputStream())
+if(oldSecurityFile.exists()) {
+    oldSecurityFile.withDataInputStream { s ->
+        props.load(s)
+    }
 }
 def secuEnabled = props.getProperty("security.rest.api.authorizations.check.enabled")
 if(!"true".equals(secuEnabled)){
@@ -20,9 +22,11 @@ if(!"true".equals(secuEnabled)){
         println "Security of REST APIs is disabled, to enable it modify the file security-config.properties in the client tenant configuration folder of the bonita home"
     }
     def newProps = new Properties()
-    newProps.load(newSecurityFile.newDataInputStream())
-    newProps.setProperty("security.rest.api.authorizations.check.enabled", "false")
-    newProps.store(newSecurityFile.newWriter(), null);
+    newSecurityFile.withDataInputStream { s->
+        newProps.load(s)
+        newProps.setProperty("security.rest.api.authorizations.check.enabled", "false")
+        newProps.store(newSecurityFile.newWriter(), null);
+    }
 }
 
 currentDir = "/platform/conf"
