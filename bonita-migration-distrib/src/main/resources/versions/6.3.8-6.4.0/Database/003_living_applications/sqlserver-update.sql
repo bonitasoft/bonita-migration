@@ -1,10 +1,9 @@
 CREATE TABLE business_app (
   tenantId NUMERIC(19, 0) NOT NULL,
   id NUMERIC(19, 0) NOT NULL,
-  name NVARCHAR(50) NOT NULL,
+  token NVARCHAR(50) NOT NULL,
   version NVARCHAR(50) NOT NULL,
   profileId NUMERIC(19, 0),
-  path NVARCHAR(255) NOT NULL,
   description NVARCHAR(MAX),
   iconPath NVARCHAR(255),
   creationDate NUMERIC(19, 0) NOT NULL,
@@ -16,15 +15,14 @@ CREATE TABLE business_app (
   displayName NVARCHAR(255) NOT NULL
 )
 @@
-
 ALTER TABLE business_app ADD CONSTRAINT pk_business_app PRIMARY KEY (tenantid, id)
 @@
-ALTER TABLE business_app ADD CONSTRAINT uk_app_name_version UNIQUE (tenantId, name, version)
-@@
-ALTER TABLE business_app ADD CONSTRAINT fk_app_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id)
-@@
 
-CREATE INDEX idx_app_name ON business_app (name, tenantid)
+CREATE INDEX idx_app_token ON business_app (token, tenantid)
+@@
+CREATE INDEX idx_app_profile ON business_app (profileId, tenantid)
+@@
+CREATE INDEX idx_app_homepage ON business_app (homePageId, tenantid)
 @@
 
 CREATE TABLE business_app_page (
@@ -32,13 +30,46 @@ CREATE TABLE business_app_page (
   id NUMERIC(19, 0) NOT NULL,
   applicationId NUMERIC(19, 0) NOT NULL,
   pageId NUMERIC(19, 0) NOT NULL,
-  name NVARCHAR(255) NOT NULL
+  token NVARCHAR(255) NOT NULL
 )
 @@
-
 ALTER TABLE business_app_page ADD CONSTRAINT pk_business_app_page PRIMARY KEY (tenantid, id)
 @@
-ALTER TABLE business_app_page ADD CONSTRAINT uk_app_page_appId_name UNIQUE (tenantId, applicationId, name)
+
+CREATE INDEX idx_app_page_token ON business_app_page (applicationId, token, tenantid)
+@@
+CREATE INDEX idx_app_page_pageId ON business_app_page (pageId, tenantid)
+@@
+
+CREATE TABLE business_app_menu (
+  tenantId NUMERIC(19, 0) NOT NULL,
+  id NUMERIC(19, 0) NOT NULL,
+  displayName NVARCHAR(255) NOT NULL,
+  applicationId NUMERIC(19, 0) NOT NULL,
+  applicationPageId NUMERIC(19, 0),
+  parentId NUMERIC(19, 0),
+  index_ NUMERIC(19, 0)
+)
+@@
+ALTER TABLE business_app_menu ADD CONSTRAINT pk_business_app_menu PRIMARY KEY (tenantid, id)
+@@
+
+
+CREATE INDEX idx_app_menu_app ON business_app_menu (applicationId, tenantid)
+@@
+CREATE INDEX idx_app_menu_page ON business_app_menu (applicationPageId, tenantid)
+@@
+CREATE INDEX idx_app_menu_parent ON business_app_menu (parentId, tenantid)
+@@
+
+ALTER TABLE business_app ADD CONSTRAINT uk_app_token_version UNIQUE (tenantId, token, version)
+@@
+ALTER TABLE business_app ADD CONSTRAINT fk_app_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id)
+@@
+ALTER TABLE business_app ADD CONSTRAINT fk_app_profileId FOREIGN KEY (tenantid, profileId) REFERENCES profile (tenantid, id)
+@@
+
+ALTER TABLE business_app_page ADD CONSTRAINT uk_app_page_appId_token UNIQUE (tenantId, applicationId, token)
 @@
 ALTER TABLE business_app_page ADD CONSTRAINT fk_app_page_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id)
 @@
@@ -47,9 +78,14 @@ ALTER TABLE business_app_page ADD CONSTRAINT fk_bus_app_id FOREIGN KEY (tenantid
 ALTER TABLE business_app_page ADD CONSTRAINT fk_page_id FOREIGN KEY (tenantid, pageId) REFERENCES page (tenantid, id)
 @@
 
-CREATE INDEX idx_app_page_name ON business_app_page (applicationId, name, tenantid)
+
+ALTER TABLE business_app_menu ADD CONSTRAINT fk_app_menu_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id)
 @@
-CREATE INDEX idx_app_page_pageId ON business_app_page (pageId, tenantid)
+ALTER TABLE business_app_menu ADD CONSTRAINT fk_app_menu_appId FOREIGN KEY (tenantid, applicationId) REFERENCES business_app (tenantid, id)
+@@
+ALTER TABLE business_app_menu ADD CONSTRAINT fk_app_menu_pageId FOREIGN KEY (tenantid, applicationPageId) REFERENCES business_app_page (tenantid, id)
+@@
+ALTER TABLE business_app_menu ADD CONSTRAINT fk_app_menu_parentId FOREIGN KEY (tenantid, parentId) REFERENCES business_app_menu (tenantid, id)
 @@
 
 INSERT INTO sequence (tenantid, id, nextid)
@@ -59,5 +95,10 @@ INSERT INTO sequence (tenantid, id, nextid)
 
 INSERT INTO sequence (tenantid, id, nextid)
 	SELECT id, 10201, 1 FROM tenant
+	ORDER BY id ASC
+@@
+
+INSERT INTO sequence (tenantid, id, nextid)
+	SELECT id, 10202, 1 FROM tenant
 	ORDER BY id ASC
 @@
