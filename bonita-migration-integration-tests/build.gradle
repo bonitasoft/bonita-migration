@@ -27,8 +27,8 @@ ext{
     devMode = project.hasProperty('devMode')
     //used for oracle: creates table not the same way
     //used for postgres: give a user able to drop and create databases
-    dbRootUser = System.getProperty("db.root.user","bonita")
-    dbRootPassword = System.getProperty("db.root.password","bonita")
+    dbRootUser = System.getProperty("db.root.user","postgres")
+    dbRootPassword = System.getProperty("db.root.password","postgres")
 
     //for postgres
     databaseName = "migration"
