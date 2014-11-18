@@ -21,7 +21,9 @@ import org.bonitasoft.migration.versions.v6_2_6_to_6_3_0.UpdateDataMappingContra
 import org.bonitasoft.migration.versions.v6_3_1_to_6_3_2.UpdatedDefaultCommandsIT
 import org.bonitasoft.migration.versions.v6_3_2_to_6_3_3.ArchivedDataInstancesIT
 import org.bonitasoft.migration.versions.v6_3_2_to_6_3_3.ResetFailedGatewaysIT
-import org.bonitasoft.migration.versions.v6_3_2_to_6_4_0.CreateApplicationTablesIT
+import org.bonitasoft.migration.versions.v6_3_8_to_6_4_0.ChangeDocumentsStructureIT
+import org.bonitasoft.migration.versions.v6_3_x_to_6_4_0.CreateApplicationTablesIT
+import org.bonitasoft.migration.versions.v6_3_x_to_6_4_0.UpdateProfileEntriesIT
 import org.junit.runner.JUnitCore
 
 
@@ -45,6 +47,8 @@ class DBUnitTestSuite extends TestSuite {
         suite.addTestSuite(ArchivedDataInstancesIT.class);
         suite.addTestSuite(ResetFailedGatewaysIT.class);
         suite.addTestSuite(CreateApplicationTablesIT.class);
+        suite.addTestSuite(ChangeDocumentsStructureIT.class);
+        suite.addTestSuite(UpdateProfileEntriesIT.class);
         return suite;
     }
 }

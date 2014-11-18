@@ -4,12 +4,12 @@
 	<parent>
     <artifactId>bonita-migration</artifactId>
     <groupId>org.bonitasoft.migration</groupId>
-    <version>1.14.0-SNAPSHOT</version>
+    <version>1.15.0-SNAPSHOT</version>
   </parent>
 	<artifactId>bonita-migration-db-filler-6.3.4</artifactId>
 
 	<properties>
-		<bonita.version>${current.bonita.version}</bonita.version>
+		<bonita.version>6.3.4</bonita.version>
 		<bonita.home>${project.build.directory}/home</bonita.home>
 	</properties>
 
@@ -30,13 +30,13 @@
 			<version>${bonita.version}</version>
 		</dependency>
 		<dependency>
-			<artifactId>bonita-integration-tests-client</artifactId>
-			<groupId>org.bonitasoft.engine.test</groupId>
+			<artifactId>bonita-integration-client-tests</artifactId>
+			<groupId>org.bonitasoft.engine</groupId>
 			<version>${bonita.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.bonitasoft.engine.test</groupId>
-			<artifactId>bonita-server-test-utils</artifactId>
+			<artifactId>bonita-test-util</artifactId>
 			<version>${bonita.version}</version>
 		</dependency>
 		<dependency>
