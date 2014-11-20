@@ -62,7 +62,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-public class DatabaseChecker6_4_0 extends DatabaseCheckerInitilizer640  {
+public class DatabaseChecker6_4_0 extends DatabaseCheckerInitiliazer6_4_0 {
 
     private static final String KIND = "012345678912345";
 

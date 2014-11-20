@@ -13,10 +13,16 @@
  **/
 package org.bonitasoft.migration;
 
+import java.io.InputStream;
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
+import org.bonitasoft.engine.api.CommandAPI;
+import org.bonitasoft.engine.api.ProfileAPI;
+import org.bonitasoft.engine.api.TenantAPIAccessor;
 import org.bonitasoft.engine.bpm.bar.BarResource;
 import org.bonitasoft.engine.bpm.bar.BusinessArchiveBuilder;
 import org.bonitasoft.engine.bpm.document.DocumentValue;
@@ -28,8 +34,11 @@ import org.bonitasoft.engine.exception.BonitaException;
 import org.bonitasoft.engine.exception.ServerAPIException;
 import org.bonitasoft.engine.exception.UnknownAPITypeException;
 import org.bonitasoft.engine.expression.ExpressionBuilder;
+import org.bonitasoft.engine.identity.ImportPolicy;
 import org.bonitasoft.engine.identity.User;
 import org.bonitasoft.engine.operation.OperationBuilder;
+import org.bonitasoft.engine.search.SearchOptions;
+import org.bonitasoft.engine.search.SearchOptionsBuilder;
 import org.bonitasoft.engine.session.APISession;
 import org.bonitasoft.engine.test.APITestUtil;
 
@@ -39,7 +48,7 @@ public class DatabaseFiller6_3_8 extends SimpleDatabaseFiller6_3_1 {
     private final APITestUtil apiTestUtil = new APITestUtil();
 
     public static void main(final String[] args) throws Exception {
-        DatabaseFiller6_3_8 databaseFiller = new DatabaseFiller6_3_8();
+        final DatabaseFiller6_3_8 databaseFiller = new DatabaseFiller6_3_8();
         databaseFiller.execute(1, 1, 1, 1);
     }
 
@@ -51,6 +60,27 @@ public class DatabaseFiller6_3_8 extends SimpleDatabaseFiller6_3_1 {
     @Override
     protected void shutdownWorkService() throws Exception {
        System.out.println("no need to stop workService, already stop by tenant");
+    }
+
+    @Override
+    protected Map<String, String> fillProfiles(final APISession session) throws Exception {
+        final InputStream xmlStream = getProfilesXMLStream();
+        final byte[] xmlContent = IOUtils.toByteArray(xmlStream);
+        final HashMap<String, Serializable> parameters = new HashMap<String, Serializable>(2);
+        parameters.put("xmlContent", xmlContent);
+        parameters.put("importPolicy", ImportPolicy.MERGE_DUPLICATES);
+        final CommandAPI commandAPI = TenantAPIAccessor.getCommandAPI(session);
+        final ProfileAPI profileAPI = TenantAPIAccessor.getProfileAPI(session);
+        commandAPI.execute("importProfilesCommand", parameters);
+        final SearchOptions searchOptions = new SearchOptionsBuilder(0, 1).done();
+        final Map<String, String> map = new HashMap<String, String>(1);
+        map.put("Profiles", String.valueOf(profileAPI.searchProfiles(searchOptions).getCount()));
+        return map;
+    }
+
+    @Override
+    protected InputStream getProfilesXMLStream() {
+        return DatabaseFiller6_3_8.class.getResourceAsStream("profiles.xml");
     }
 
     @Override
@@ -68,16 +98,16 @@ public class DatabaseFiller6_3_8 extends SimpleDatabaseFiller6_3_1 {
         logger.info("Finished to fill the database");
         return stats;
     }
-    
-    protected void fillOthers(APISession session) throws Exception, ServerAPIException, UnknownAPITypeException {
+
+    protected void fillOthers(final APISession session) throws Exception, ServerAPIException, UnknownAPITypeException {
 
     }
 
 
     private Map<? extends String, ? extends String> fillDocuments() throws Exception {
-        User user = apiTestUtil.createUser("userForDocuments", "bpm");
+        final User user = apiTestUtil.createUser("userForDocuments", "bpm");
 
-        ProcessDefinitionBuilder processWithDocuments = new ProcessDefinitionBuilder().createNewInstance("ProcessWithDocuments", "1.0");
+        final ProcessDefinitionBuilder processWithDocuments = new ProcessDefinitionBuilder().createNewInstance("ProcessWithDocuments", "1.0");
         processWithDocuments.addStartEvent("start");
         processWithDocuments.addUserTask("step1", "actor")
                 .addOperation(new OperationBuilder()
@@ -94,28 +124,28 @@ public class DatabaseFiller6_3_8 extends SimpleDatabaseFiller6_3_1 {
                 .addTransition("start", "step1").addTransition("step1", "step2");
         processWithDocuments.addDocumentDefinition("doc1").addContentFileName("file.txt").addFile("file.txt").addMimeType("plain/text").addDescription("It is a text file");
         processWithDocuments.addActor("actor");
-        BusinessArchiveBuilder businessArchiveBuilder = new BusinessArchiveBuilder().createNewBusinessArchive();
+        final BusinessArchiveBuilder businessArchiveBuilder = new BusinessArchiveBuilder().createNewBusinessArchive();
         businessArchiveBuilder.addDocumentResource(new BarResource("file.txt", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.".getBytes()));
         businessArchiveBuilder.setProcessDefinition(processWithDocuments.done());
 
-        ProcessDefinition processDefinition = apiTestUtil.deployAndEnableProcessWithActor(businessArchiveBuilder.done(), "actor", user);
+        final ProcessDefinition processDefinition = apiTestUtil.deployAndEnableProcessWithActor(businessArchiveBuilder.done(), "actor", user);
 
         //finished instance
-        ProcessInstance inst1 = apiTestUtil.getProcessAPI().startProcess(processDefinition.getId());
+        final ProcessInstance inst1 = apiTestUtil.getProcessAPI().startProcess(processDefinition.getId());
         HumanTaskInstance step1 = apiTestUtil.waitForUserTask("step1",inst1);
         apiTestUtil.assignAndExecuteStep(step1,user.getId());
-        HumanTaskInstance step2 = apiTestUtil.waitForUserTask("step2",inst1);
+        final HumanTaskInstance step2 = apiTestUtil.waitForUserTask("step2",inst1);
         apiTestUtil.assignAndExecuteStep(step2,user.getId());
         apiTestUtil.waitForProcessToFinish(inst1);
 
         //instance with step1 having operations executed
-        ProcessInstance inst2 = apiTestUtil.getProcessAPI().startProcess(processDefinition.getId());
+        final ProcessInstance inst2 = apiTestUtil.getProcessAPI().startProcess(processDefinition.getId());
         step1 = apiTestUtil.waitForUserTask("step1",inst2);
         apiTestUtil.assignAndExecuteStep(step1,user.getId());
         apiTestUtil.waitForUserTask("step2",inst2);
 
         //instance with document attached using api
-        ProcessInstance inst3 = apiTestUtil.getProcessAPI().startProcess(processDefinition.getId());
+        final ProcessInstance inst3 = apiTestUtil.getProcessAPI().startProcess(processDefinition.getId());
         apiTestUtil.waitForUserTask("step1",inst3);
         apiTestUtil.getProcessAPI().attachDocument(inst3.getId(),"documentAttachedUsingAPI","doc.txt","plain/text","The content of the file attached using the api".getBytes());
         apiTestUtil.getProcessAPI().attachDocument(inst3.getId(),"urlDocumentAttachedUsingAPI","doc.txt","plain/text","http://MyWebSite.com/file.txt");
@@ -124,7 +154,7 @@ public class DatabaseFiller6_3_8 extends SimpleDatabaseFiller6_3_1 {
 
 
         // just started instance
-        ProcessInstance inst4 = apiTestUtil.getProcessAPI().startProcess(processDefinition.getId());
+        final ProcessInstance inst4 = apiTestUtil.getProcessAPI().startProcess(processDefinition.getId());
         apiTestUtil.waitForUserTask("step1",inst4);
 
 
