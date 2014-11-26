@@ -54,7 +54,9 @@ class UpdateProfileEntriesIT extends GroovyTestCase {
         tester.onTearDown();
 
         def String[] strings = ["profileentry",
-                                "profile"
+                                "profile",
+                                "sequence",
+                                "tenant"
         ]
         dropTables(sql, strings)
     }
