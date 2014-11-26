@@ -1,3 +1,13 @@
+CREATE TABLE tenant (
+  id NUMBER(19, 0) NOT NULL,
+  PRIMARY KEY (id)
+)@@
+CREATE TABLE sequence (
+  tenantid NUMBER(19, 0) NOT NULL,
+  id NUMBER(19, 0) NOT NULL,
+  nextid NUMBER(19, 0) NOT NULL,
+  PRIMARY KEY (tenantid, id)
+)@@
 CREATE TABLE profile (
   tenantId NUMBER(19, 0) NOT NULL,
   id NUMBER(19, 0) NOT NULL,

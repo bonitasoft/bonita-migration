@@ -1,3 +1,13 @@
+CREATE TABLE tenant (
+  id BIGINT NOT NULL,
+  PRIMARY KEY (id)
+) ENGINE = INNODB;
+CREATE TABLE sequence (
+  tenantid BIGINT NOT NULL,
+  id BIGINT NOT NULL,
+  nextid BIGINT NOT NULL,
+  PRIMARY KEY (tenantid, id)
+) ENGINE = INNODB;
 CREATE TABLE profile (
   tenantId BIGINT NOT NULL,
   id BIGINT NOT NULL,

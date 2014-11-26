@@ -16,6 +16,7 @@
  */
 package org.bonitasoft.migration.core
 
+import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 
 /**
@@ -213,6 +214,18 @@ END""")
         }
         return res + ")"
     }*/
+
+
+
+    def GroovyRowResult selectFirstRow(GString string) {
+        return sql.firstRow(adaptFor(string))
+    }
+
+    def long getAndUpdateNextSequenceId(long sequenceId, long tenantId){
+        def long nextId = (Long) selectFirstRow("SELECT nextId from sequence WHERE id = $sequenceId and tenantId = $tenantId").get("nextId")
+        executeUpdate("UPDATE sequence SET nextId = ${nextId + 1 } WHERE tenantId = $tenantId and id = $sequenceId")
+        return nextId
+    }
 
     public abstract migrate();
 
