@@ -1,14 +1,10 @@
-
-
-
 //clean old build files
 rootDir.listFiles(new FilenameFilter() {
     @Override
     boolean accept(File file, String s) {
         return s.startsWith("build@")
     }
-}).each {GFileUtils.deleteDirectory(it)}
-
+}).each { GFileUtils.deleteDirectory(it) }
 
 //list available version on filesystem
 def availableVersions = new File("../bonita-migration-distrib/src/main/resources/versions").listFiles(new FilenameFilter() {
@@ -25,27 +21,29 @@ def sourceGlobalVersion = System.getProperty("source.version")
 def targetGlobalVersion = System.getProperty("target.version")
 def startIndex = -1
 def endIndex = -1
-for(int i = 0; i < availableVersions.size(); i++){
-    if(availableVersions.get(i).startsWith(sourceGlobalVersion+"-")){
+for (int i = 0; i < availableVersions.size(); i++) {
+    if (availableVersions.get(i).startsWith(sourceGlobalVersion + "-")) {
         startIndex = i
     }
-    if(availableVersions.get(i).endsWith("-"+targetGlobalVersion)){
+    if (availableVersions.get(i).endsWith("-" + targetGlobalVersion)) {
         endIndex = i
     }
 }
-if( startIndex == -1 || endIndex == -1){
+if (startIndex == -1 || endIndex == -1) {
     throw new IllegalArgumentException("source or target version is unknown")
 }
 
 //create a project for each migration step to test
-def String[] list = availableVersions.subList(startIndex,endIndex+1).collect{ "build@"+it }
+def String[] list = availableVersions.subList(startIndex, endIndex + 1).collect { "build@" + it }
 //copy src and lib
 def stepSrcDir = new File(rootDir, "src")
 def stepLibDir = new File(rootDir, "lib")
 list.each {
     def stepDir = new File(rootDir, it)
     copyDirectory(stepSrcDir, new File(stepDir, "src"))
-    copyDirectory(stepLibDir, new File(stepDir, "lib"));
+    copyDirectory(stepLibDir, new File(stepDir, "lib"))
+    GFileUtils.copyFile(new File(rootDir, "logback.xml"), new File(stepDir, "logback.xml"))
+    GFileUtils.copyFile(new File(rootDir, "init-sqlserver.sql"), new File(stepDir, "init-sqlserver.sql"))
 
 }
 println "executing steps $list"
@@ -56,7 +54,7 @@ include list
 def copyDirectory(final File srcDir, final File destDir) throws IOException {
     final File[] srcFiles = srcDir.listFiles();
     if (destDir.exists()) {
-        if (!destDir.isDirectory() ) {
+        if (!destDir.isDirectory()) {
             throw new IOException("Destination '" + destDir + "' exists but is not a directory");
         }
     } else {
@@ -66,10 +64,10 @@ def copyDirectory(final File srcDir, final File destDir) throws IOException {
     }
     for (final File srcFile : srcFiles) {
         final File dstFile = new File(destDir, srcFile.getName());
-            if (srcFile.isDirectory()) {
-                copyDirectory(srcFile, dstFile);
-            } else {
-                GFileUtils.copyFile(srcFile, dstFile);
-            }
+        if (srcFile.isDirectory()) {
+            copyDirectory(srcFile, dstFile);
+        } else {
+            GFileUtils.copyFile(srcFile, dstFile);
+        }
     }
 }
