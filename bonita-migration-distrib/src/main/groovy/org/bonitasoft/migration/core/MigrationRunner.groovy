@@ -101,7 +101,7 @@ public class MigrationRunner {
         println "Configuration: "
         sourceVersion = MigrationUtil.getAndPrintProperty(properties, MigrationUtil.SOURCE_VERSION, false);
         targetVersion = MigrationUtil.getAndPrintProperty(properties, MigrationUtil.TARGET_VERSION, false);
-        bonitaHome = new File(MigrationUtil.getAndPrintProperty(properties, MigrationUtil.BONITA_HOME, true));
+        bonitaHome = MigrationUtil.getBonitaHome();
         if(!bonitaHome.exists()){
             throw new IllegalStateException("Bonita home does not exist.");
         }
@@ -142,9 +142,7 @@ public class MigrationRunner {
     String checkSourceVersion(File bonitaHome,String givenSourceVersion){
         //get version in sources
         def String platformVersionInDatabase = MigrationUtil.getPlatformVersion(dburl, user, pwd, driverClass)
-        def s = File.separator;
-        def File versionFile = new File(bonitaHome, "server${s}platform${s}conf${s}VERSION");
-        def String platformVersionInBonitaHome = versionFile.exists()?versionFile.text:null;
+        def String platformVersionInBonitaHome = MigrationUtil.getBonitaVersionFromBonitaHome()
         return checkSourceVersion(platformVersionInDatabase, platformVersionInBonitaHome, givenSourceVersion);
     }
 

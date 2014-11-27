@@ -273,7 +273,18 @@ task runmigration(dependsOn:execfill, type:JavaExec){
     systemProperty 'auto.accept', 'true'
 }
 
-test.dependsOn(runmigration)
+task postmigrationtests(dependsOn:runmigration, type:JavaExec) {
+    doFirst {
+        println "run post-migration integration tests scripts"
+        systemProperties(["bonita.home":bonitahome,
+                          "target.version":targetversion])
+        println systemProperties
+        main = "org.bonitasoft.migration.postmigration.PostMigrationTest"
+    }
+    classpath configurations.scriptsintegration
+}
+
+test.dependsOn(postmigrationtests)
 test {
     doFirst {
         println "execute test of the database using classpath of $targetversion"

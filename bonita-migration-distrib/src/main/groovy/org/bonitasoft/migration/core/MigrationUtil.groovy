@@ -54,7 +54,7 @@ public class MigrationUtil {
 
     public static read = System.in.newReader().&readLine
 
-    public static boolean isAutoAccept(){
+    public static boolean isAutoAccept() {
         return System.getProperty(MigrationUtil.AUTO_ACCEPT)=="true"
     }
 
@@ -62,7 +62,7 @@ public class MigrationUtil {
      * Load properties form the 'Config.properties' file inside the distribution
      * @return the properties of the migration distribution
      */
-    public static Properties getProperties(){
+    public static Properties getProperties() {
         def Properties properties = new Properties();
         def FileInputStream fileInputStream = null;
 
@@ -80,6 +80,17 @@ public class MigrationUtil {
             }
         }
         return properties;
+    }
+    
+    public static File getBonitaHome() {
+        def Properties properties = MigrationUtil.getProperties();
+        return new File(MigrationUtil.getAndPrintProperty(properties, MigrationUtil.BONITA_HOME, true));
+    }
+    
+    public static String getBonitaVersionFromBonitaHome() {
+        def s = File.separator;
+        def File versionFile = new File(getBonitaHome(), "server${s}platform${s}conf${s}VERSION");
+        return versionFile.exists() ? versionFile.text : null;
     }
 
     /**
