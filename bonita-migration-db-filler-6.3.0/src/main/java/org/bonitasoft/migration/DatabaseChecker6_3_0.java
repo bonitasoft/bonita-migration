@@ -33,10 +33,8 @@ import org.bonitasoft.engine.api.PlatformAPIAccessor;
 import org.bonitasoft.engine.api.ProcessAPI;
 import org.bonitasoft.engine.api.ProfileAPI;
 import org.bonitasoft.engine.api.TenantAPIAccessor;
-import org.bonitasoft.engine.api.ThemeAPI;
 import org.bonitasoft.engine.bpm.flownode.ActivityInstanceCriterion;
 import org.bonitasoft.engine.bpm.flownode.ArchivedHumanTaskInstance;
-import org.bonitasoft.engine.bpm.flownode.HumanTaskInstance;
 import org.bonitasoft.engine.bpm.flownode.HumanTaskInstanceSearchDescriptor;
 import org.bonitasoft.engine.bpm.process.ProcessInstance;
 import org.bonitasoft.engine.bpm.process.ProcessInstanceSearchDescriptor;
@@ -68,10 +66,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
  * Check that the migrated database is ok
- * 
+ *
  * @author Baptiste Mesta
  * @author Celine Souchet
- * 
  */
 public class DatabaseChecker6_3_0 {
 
@@ -82,8 +79,6 @@ public class DatabaseChecker6_3_0 {
     protected static IdentityAPI identityAPI;
 
     protected static CommandAPI commandAPI;
-
-    private static ThemeAPI themeAPI;
 
     protected static APISession session;
 
@@ -107,7 +102,6 @@ public class DatabaseChecker6_3_0 {
         processAPI = TenantAPIAccessor.getProcessAPI(session);
         identityAPI = TenantAPIAccessor.getIdentityAPI(session);
         profileAPI = TenantAPIAccessor.getProfileAPI(session);
-        themeAPI = TenantAPIAccessor.getThemeAPI(session);
         commandAPI = TenantAPIAccessor.getCommandAPI(session);
     }
 
