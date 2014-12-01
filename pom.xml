@@ -22,12 +22,13 @@
         <module>bonita-migration-db-filler-6.3.2</module>
         <module>bonita-migration-db-filler-6.3.3</module>
         <module>bonita-migration-db-filler-6.3.4</module>
-	    <module>bonita-migration-db-filler-6.3.5</module>
+	<module>bonita-migration-db-filler-6.3.5</module>
         <module>bonita-migration-db-filler-6.3.6</module>
         <module>bonita-migration-db-filler-6.3.7</module>
         <module>bonita-migration-db-filler-6.3.8</module>
+	<module>bonita-migration-db-filler-6.3.9</module>
     	<module>bonita-migration-db-filler-6.4.0</module>
-	    <module>bonita-migration-scripts-integration-tests</module>
+	<module>bonita-migration-scripts-integration-tests</module>
   </modules>
 
     <properties>
@@ -37,7 +38,7 @@
         <!-- at the same version number that is the version number that will be released -->
         <!-- -->
         <!-- specify the previous version of that is migrated -->
-        <previous.bonita.version>6.3.8</previous.bonita.version>
+        <previous.bonita.version>6.3.9</previous.bonita.version>
         <!-- specify the in developpement version of bonita -->
 		<current.bonita.version>6.4.0-SNAPSHOT</current.bonita.version>
         <!-- specify the name of the release next release of bonita that will be migrated -->
