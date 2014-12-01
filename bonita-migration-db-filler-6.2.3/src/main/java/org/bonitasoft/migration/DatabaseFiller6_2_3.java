@@ -14,6 +14,7 @@
 package org.bonitasoft.migration;
 
 import java.io.InputStream;
+import java.util.Map;
 
 
 /**
@@ -30,5 +31,13 @@ public class DatabaseFiller6_2_3 extends SimpleDatabaseFiller6_0_2 {
     protected InputStream getProfilesXMLStream() {
         return getClass().getResourceAsStream("profiles.xml");
     }
-    
+
+
+    @Override
+    public void shutdown() throws Exception {
+        super.shutdown();
+        for (Map.Entry<Thread, StackTraceElement[]> threadEntry : Thread.getAllStackTraces().entrySet()) {
+            System.out.println(threadEntry.getKey()+": " +threadEntry.getValue()[0]);
+        }
+    }
 }
