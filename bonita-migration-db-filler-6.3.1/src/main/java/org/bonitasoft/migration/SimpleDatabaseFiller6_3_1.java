@@ -28,10 +28,10 @@ import org.bonitasoft.engine.work.WorkService;
  */
 public class SimpleDatabaseFiller6_3_1 extends SimpleDatabaseFiller6_0_2 {
 
-    private APITestUtil apiTestUtil = new APITestUtil();
+    protected APITestUtil apiTestUtil = new APITestUtil();
     private PlatformTestUtil platformTestUtil = new PlatformTestUtil();
     
-    private long tenantId;
+    protected long tenantId;
 
     @Override
     protected APISession loginDefaultTenant() throws BonitaException {
