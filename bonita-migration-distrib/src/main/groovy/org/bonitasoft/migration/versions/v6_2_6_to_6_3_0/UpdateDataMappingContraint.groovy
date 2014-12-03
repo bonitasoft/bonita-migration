@@ -83,7 +83,7 @@ class UpdateDataMappingContraint {
         try {
             MigrationUtil.executeDefaultSqlFile(feature, dbvendor, sql)
         }catch(Throwable t){
-            println "Unable to update the constraint, try to append  \"AND all_cons.OWNER = '<name of the user>'\" to the file in versions/6.2.6-6.3.0/Database/008_BS-296/oracle-check-constraint.sql"
+            println "Unable to update the constraint, try to append  \"AND all_cons.OWNER = '<name of the user>'\" with the name in uppercase to the file in versions/6.2.6-6.3.0/Database/008_BS-296/oracle-check-constraint.sql"
             throw t
         }
         return true
