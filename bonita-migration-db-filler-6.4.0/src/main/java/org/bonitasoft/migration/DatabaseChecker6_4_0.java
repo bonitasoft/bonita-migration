@@ -62,7 +62,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-public class DatabaseChecker6_4_0 extends DatabaseCheckerInitiliazer6_4_0 {
+public class DatabaseChecker6_4_0 extends SimpleDatabaseChecker6_4_0 {
 
     private static final String KIND = "012345678912345";
 
@@ -102,7 +102,7 @@ public class DatabaseChecker6_4_0 extends DatabaseCheckerInitiliazer6_4_0 {
 
     @AfterClass
     public static void teardown() throws BonitaException {
-        final DataSource bonitaDatasource = (DataSource) getSpringContext().getBean("bonitaDataSource");
+        final DataSource bonitaDatasource = (DataSource) springContext.getBean("bonitaDataSource");
         final JdbcTemplate jdbcTemplate = new JdbcTemplate(bonitaDatasource);
 
         // clean up

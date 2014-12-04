@@ -53,75 +53,11 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 /**
  * @author Celine Souchet
  */
-public class DatabaseCheckerInitiliazer6_4_0 {
+public class SimpleDatabaseChecker6_4_0 extends SimpleDatabaseChecker6_3_2 {
 
-    private final Logger logger = LoggerFactory.getLogger(DatabaseChecker6_4_0.class);
+    private final Logger logger = LoggerFactory.getLogger(SimpleDatabaseChecker6_4_0.class);
 
-    protected static ClassPathXmlApplicationContext springContext;
-
-    protected static ProcessAPI processAPI;
-
-    protected static ProfileAPI profileAPI;
-
-    protected static IdentityAPI identityApi;
-
-    protected static CommandAPI commandApi;
-
-    protected static APISession session;
-
-    private static PlatformTestUtil platformTestUtil = new PlatformTestUtil();
-
-    protected static APITestUtil apiTestUtil = new APITestUtil();
-
-    @BeforeClass
-    public static void setup() throws BonitaException {
-        setupSpringContext();
-        final PlatformSession platformSession = platformTestUtil.loginOnPlatform();
-        final PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(platformSession);
-        platformAPI.startNode();
-        platformTestUtil.logoutOnPlatform(platformSession);
-
-        apiTestUtil.loginOnDefaultTenantWithDefaultTechnicalUser();
-        session = apiTestUtil.getSession();
-        processAPI = TenantAPIAccessor.getProcessAPI(session);
-        identityApi = TenantAPIAccessor.getIdentityAPI(session);
-        profileAPI = TenantAPIAccessor.getProfileAPI(session);
-        commandApi = TenantAPIAccessor.getCommandAPI(session);
-    }
-
-    @AfterClass
-    public static void teardown() throws BonitaException {
-        apiTestUtil.logoutOnTenant();
-        final PlatformSession pSession = apiTestUtil.loginOnPlatform();
-        final PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(pSession);
-        apiTestUtil.stopPlatformAndTenant(platformAPI, false);
-        apiTestUtil.logoutOnPlatform(pSession);
-        closeSpringContext();
-    }
-
-    private static void setupSpringContext() {
-        setSystemPropertyIfNotSet("sysprop.bonita.db.vendor", "h2");
-
-        // Force these system properties
-        System.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.bonitasoft.engine.local.SimpleMemoryContextFactory");
-        System.setProperty(Context.URL_PKG_PREFIXES, "org.bonitasoft.engine.local");
-
-        springContext = new ClassPathXmlApplicationContext("datasource.xml", "jndi-setup.xml");
-    }
-
-    private static void closeSpringContext() {
-        springContext.close();
-    }
-
-    protected static ClassPathXmlApplicationContext getSpringContext() {
-        return springContext;
-    }
-
-    private static void setSystemPropertyIfNotSet(final String property, final String value) {
-        System.setProperty(property, System.getProperty(property, value));
-    }
-
-    @Test
+     @Test
     public void check_profiles() throws Exception {
         final SAXReader reader = new SAXReader();
         final Document document = getProfilesXML(reader);
@@ -153,7 +89,7 @@ public class DatabaseCheckerInitiliazer6_4_0 {
     }
 
     protected Document getProfilesXML(final SAXReader reader) throws Exception {
-        return reader.read(DatabaseCheckerInitiliazer6_4_0.class.getResource("profiles.xml"));
+        return reader.read(SimpleDatabaseChecker6_4_0.class.getResource("profiles.xml"));
     }
 
     private Profile checkProfile(final Element profileElement) throws SearchException {

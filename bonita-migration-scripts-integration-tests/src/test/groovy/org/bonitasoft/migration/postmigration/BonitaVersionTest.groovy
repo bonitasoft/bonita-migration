@@ -11,15 +11,31 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
-package org.bonitasoft.migration;
+package org.bonitasoft.migration.postmigration
 
-import org.bonitasoft.engine.test.APITestUtil;
+import org.junit.Test
+import static org.assertj.core.api.Assertions.assertThat
 
-public class DatabaseFiller6_4_0 extends SimpleDatabaseFiller6_4_0 {
+/**
+ * @author Emmanuel Duchastenier
+ *
+ */
+class BonitaVersionTest {
 
-    public static void main(final String[] args) throws Exception {
-        DatabaseFiller6_4_0 databaseFiller = new DatabaseFiller6_4_0();
-        databaseFiller.execute(1, 1, 1, 1);
+    @Test
+    public void getNumericVersionShouldConvertToNumeric() {
+        assertThat(PostMigrationTest.getCurrentNumericVersion("6.3.9")).isEqualTo(639);
+    }
+
+    @Test
+    public void getNumericVersionShouldReturnFirst3Digits() {
+        assertThat(PostMigrationTest.getCurrentNumericVersion("6.4.2-toto")).isEqualTo(642);
+    }
+
+
+    @Test
+    public void getNumericVersionShouldRemoveDots() {
+        assertThat(PostMigrationTest.getCurrentNumericVersion("6..4.0")).isEqualTo(640);
     }
 
 }

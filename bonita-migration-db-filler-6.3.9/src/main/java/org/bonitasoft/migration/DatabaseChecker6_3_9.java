@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2014 BonitaSoft S.A.
+ * Copyright (C) 214 BonitaSoft S.A.
  * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
@@ -13,13 +13,13 @@
  **/
 package org.bonitasoft.migration;
 
-import org.bonitasoft.engine.test.APITestUtil;
+import org.junit.runner.JUnitCore;
 
-public class DatabaseFiller6_4_0 extends SimpleDatabaseFiller6_4_0 {
 
+public class DatabaseChecker6_3_9 extends SimpleDatabaseChecker6_3_2 {
+    
     public static void main(final String[] args) throws Exception {
-        DatabaseFiller6_4_0 databaseFiller = new DatabaseFiller6_4_0();
-        databaseFiller.execute(1, 1, 1, 1);
+        JUnitCore.main(DatabaseChecker6_3_9.class.getName());
     }
 
 }
