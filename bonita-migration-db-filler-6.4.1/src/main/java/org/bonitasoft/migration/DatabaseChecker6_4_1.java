@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 214 BonitaSoft S.A.
+ * Copyright (C) 2014 BonitaSoft S.A.
  * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
@@ -13,13 +13,20 @@
  **/
 package org.bonitasoft.migration;
 
+import org.dom4j.Document;
+import org.dom4j.io.SAXReader;
 import org.junit.runner.JUnitCore;
 
 
-public class DatabaseChecker6_4_1 extends SimpleDatabaseChecker6_3_2 {
-    
+public class DatabaseChecker6_4_1 extends SimpleDatabaseChecker6_4_0 {
+
     public static void main(final String[] args) throws Exception {
         JUnitCore.main(DatabaseChecker6_4_1.class.getName());
+    }
+
+    @Override
+    protected Document getProfilesXML(final SAXReader reader) throws Exception {
+        return reader.read(DatabaseChecker6_4_1.class.getResource("profiles.xml"));
     }
 
 }

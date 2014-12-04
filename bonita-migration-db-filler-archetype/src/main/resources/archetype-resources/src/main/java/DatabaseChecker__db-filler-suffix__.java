@@ -20,7 +20,7 @@ import org.junit.runner.JUnitCore;
 import org.bonitasoft.migration.DatabaseChecker6_4_0;
 
 
-public class DatabaseChecker${db-filler-suffix} extends DatabaseChecker6_4_0 {
+public class DatabaseChecker${db-filler-suffix} extends SimpleDatabaseChecker6_4_0 {
     
     public static void main(final String[] args) throws Exception {
         JUnitCore.main(DatabaseChecker${db-filler-suffix}.class.getName());

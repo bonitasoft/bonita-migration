@@ -19,7 +19,7 @@ import org.bonitasoft.engine.exception.BonitaException;
 import org.bonitasoft.engine.test.PlatformTestUtil;
 import org.bonitasoft.migration.DatabaseFiller6_4_0;
 
-public class DatabaseFiller${db-filler-suffix} extends DatabaseFiller6_4_0 {
+public class DatabaseFiller${db-filler-suffix} extends SimpleDatabaseFiller6_4_0 {
 
     public static void main(final String[] args) throws Exception {
         DatabaseFiller${db-filler-suffix} databaseFiller = new DatabaseFiller${db-filler-suffix}();
