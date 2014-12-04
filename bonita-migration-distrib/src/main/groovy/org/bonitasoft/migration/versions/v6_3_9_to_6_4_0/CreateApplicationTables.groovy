@@ -11,7 +11,7 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
-package org.bonitasoft.migration.versions.v6_3_8_to_6_4_0
+package org.bonitasoft.migration.versions.v6_3_9_to_6_4_0
 
 import groovy.sql.Sql
 

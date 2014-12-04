@@ -14,7 +14,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.bonitasoft.migration.versions.v6_3_8_to_6_4_0
+package org.bonitasoft.migration.versions.v6_3_9_to_6_4_0
 
 import groovy.sql.Sql
 import org.bonitasoft.migration.core.DatabaseMigrationStep
