@@ -25,11 +25,6 @@
 			<version>${bonita.version}</version>
 		</dependency>
         <dependency>
-            <groupId>org.bonitasoft.engine.test</groupId>
-            <artifactId>bonita-server-test-utils</artifactId>
-            <version>${bonita.version}</version>
-        </dependency>
-        <dependency>
 			<groupId>org.bonitasoft.engine.test</groupId>
 			<artifactId>bonita-integration-tests-client</artifactId>
 			<version>${bonita.version}</version>
