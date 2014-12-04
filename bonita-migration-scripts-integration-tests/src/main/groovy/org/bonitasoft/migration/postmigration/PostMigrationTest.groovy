@@ -36,11 +36,16 @@ class PostMigrationTest extends TestSuite {
         for (clazz in tests) {
             def method = clazz.getMethod("runFromVersion");
             Integer fromVersion = method.invoke(null);
-            if (fromVersion <= Integer.parseInt(getCurrentBonitaVersion().replaceAll("\\.", "").replace("-SNAPSHOT", ""))) {
+            if (fromVersion <= getCurrentNumericVersion(getCurrentBonitaVersion())) {
                 suite.addTestSuite(clazz);
             }
         }
         return suite
+    }
+
+    protected static int getCurrentNumericVersion(String version) {
+        // Keep only the first 3 digits of the numeric part of the version;
+        Integer.parseInt(version.replaceAll("\\.", "").substring(0,3))
     }
 
     protected static List<Class> getTestsList() {
