@@ -34,7 +34,7 @@ ext{
     dbRootUser = System.getProperty("db.root.user","postgres")
     dbRootPassword = System.getProperty("db.root.password","postgres")
 
-    //for postgres
+    // Define variables:
     databaseName = "migration"
     serverName="localhost"
     portNumber="5432"
