@@ -144,7 +144,7 @@ task cleardb<<{
         println "recreate database $databaseName on server $serverName and port $portNumber with driver $dbdriverClass"
         println "url is  $genericUrl"
         if(dbvendor.equals("postgres")){
-            println "cleaning postgres database $dbuser"
+            println "cleaning postgres database $databaseName"
             if(dbRootUser == null || dbRootUser.isEmpty() || dbRootPassword == null || dbRootPassword.isEmpty()){
                 throw new IllegalStateException("must specify db.root.user and db.root.password for postgres")
             }
