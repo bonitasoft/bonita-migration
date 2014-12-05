@@ -15,16 +15,16 @@ package org.bonitasoft.migration;
 
 import java.io.InputStream;
 
-public class DatabaseFiller6_4_1 extends SimpleDatabaseFiller6_4_0 {
+public class DatabaseFiller6_5_0 extends SimpleDatabaseFiller6_4_0 {
 
     public static void main(final String[] args) throws Exception {
-        final DatabaseFiller6_4_1 databaseFiller = new DatabaseFiller6_4_1();
+        final DatabaseFiller6_5_0 databaseFiller = new DatabaseFiller6_5_0();
         databaseFiller.execute(1, 1, 1, 1);
     }
 
     @Override
     protected InputStream getProfilesXMLStream() {
-        return DatabaseFiller6_4_1.class.getResourceAsStream("profiles.xml");
+        return DatabaseFiller6_5_0.class.getResourceAsStream("profiles.xml");
     }
 
 }

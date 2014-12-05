@@ -18,15 +18,15 @@ import org.dom4j.io.SAXReader;
 import org.junit.runner.JUnitCore;
 
 
-public class DatabaseChecker6_4_1 extends SimpleDatabaseChecker6_4_0 {
+public class DatabaseChecker6_5_0 extends SimpleDatabaseChecker6_4_0 {
 
     public static void main(final String[] args) throws Exception {
-        JUnitCore.main(DatabaseChecker6_4_1.class.getName());
+        JUnitCore.main(DatabaseChecker6_5_0.class.getName());
     }
 
     @Override
     protected Document getProfilesXML(final SAXReader reader) throws Exception {
-        return reader.read(DatabaseChecker6_4_1.class.getResource("profiles.xml"));
+        return reader.read(DatabaseChecker6_5_0.class.getResource("profiles.xml"));
     }
 
 }
