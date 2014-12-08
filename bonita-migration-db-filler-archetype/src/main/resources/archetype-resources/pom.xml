@@ -10,28 +10,23 @@
 
 	<dependencies>
 		<dependency>
-			<artifactId>bonita-migration-db-filler-6.3.3</artifactId>
+			<artifactId>bonita-migration-db-filler-6.4.0</artifactId>
 			<groupId>org.bonitasoft.migration</groupId>
 			<version>${project.version}</version>
+		</dependency>
+        <dependency>
+			<artifactId>bonita-client</artifactId>
+			<groupId>org.bonitasoft.engine</groupId>
+			<version>${bonita.version}</version>
 		</dependency>
 		<dependency>
 			<artifactId>bonita-server</artifactId>
 			<groupId>org.bonitasoft.engine</groupId>
 			<version>${bonita.version}</version>
 		</dependency>
-		<dependency>
-			<artifactId>bonita-client</artifactId>
-			<groupId>org.bonitasoft.engine</groupId>
-			<version>${bonita.version}</version>
-		</dependency>
-		<dependency>
-			<artifactId>bonita-integration-client-tests</artifactId>
-			<groupId>org.bonitasoft.engine</groupId>
-			<version>${bonita.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.bonitasoft.engine.jndi</groupId>
-			<artifactId>bonita-jndi-memory</artifactId>
+        <dependency>
+			<groupId>org.bonitasoft.engine.test</groupId>
+			<artifactId>bonita-integration-tests-client</artifactId>
 			<version>${bonita.version}</version>
 		</dependency>
 		<dependency>
