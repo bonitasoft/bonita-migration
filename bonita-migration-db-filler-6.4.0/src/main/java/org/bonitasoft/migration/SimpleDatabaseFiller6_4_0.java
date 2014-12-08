@@ -15,19 +15,36 @@ package org.bonitasoft.migration;
 
 import org.bonitasoft.engine.exception.BonitaException;
 import org.bonitasoft.engine.session.APISession;
+import org.bonitasoft.engine.test.APITestUtil;
+import org.bonitasoft.engine.test.PlatformTestUtil;
 
 /**
  * @author Elias Ricken de Medeiros
- * 
+ *
  */
 public class SimpleDatabaseFiller6_4_0 extends SimpleDatabaseFiller6_3_1 {
 
+    private final APITestUtil apiTestUtil = new APITestUtil();
+
+    private final PlatformTestUtil platformTestUtil = new PlatformTestUtil();
+
+    @Override
+    protected APITestUtil getAPITestUtil() {
+        return apiTestUtil;
+    }
+
+    @Override
+    protected PlatformTestUtil getPlatformTestUtil() {
+        return platformTestUtil;
+    }
+
     @Override
     protected APISession loginDefaultTenant() throws BonitaException {
-        apiTestUtil.loginOnDefaultTenantWithDefaultTechnicalUser();
-        APISession session = apiTestUtil.getSession();
+        getAPITestUtil().loginOnDefaultTenantWithDefaultTechnicalUser();
+        final APISession session = getAPITestUtil().getSession();
         tenantId = session.getTenantId();
         return session;
     }
+
 
 }

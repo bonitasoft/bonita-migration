@@ -24,51 +24,60 @@ import org.bonitasoft.engine.work.WorkService;
 
 /**
  * @author Elias Ricken de Medeiros
- * 
+ *
  */
 public class SimpleDatabaseFiller6_3_1 extends SimpleDatabaseFiller6_0_2 {
 
-    protected APITestUtil apiTestUtil = new APITestUtil();
-    private PlatformTestUtil platformTestUtil = new PlatformTestUtil();
-    
+    private final APITestUtil apiTestUtil = new APITestUtil();
+
+    private final PlatformTestUtil platformTestUtil = new PlatformTestUtil();
+
     protected long tenantId;
+
+    protected APITestUtil getAPITestUtil() {
+        return apiTestUtil;
+    }
+
+    protected PlatformTestUtil getPlatformTestUtil() {
+        return platformTestUtil;
+    }
 
     @Override
     protected APISession loginDefaultTenant() throws BonitaException {
-        apiTestUtil.loginOnDefaultTenantWithDefaultTechnicalLogger();
-        APISession session = apiTestUtil.getSession();
+        getAPITestUtil().loginOnDefaultTenantWithDefaultTechnicalLogger();
+        final APISession session = getAPITestUtil().getSession();
         tenantId = session.getTenantId();
         return session;
     }
-    
+
     @Override
-    protected void logoutTenant(APISession session) throws BonitaException {
-        apiTestUtil.logoutOnTenant();
+    protected void logoutTenant(final APISession session) throws BonitaException {
+        getAPITestUtil().logoutOnTenant();
     }
-    
+
+    @Override
     protected void initializePlatform() throws BonitaException {
-        platformTestUtil.createInitializeAndStartPlatformWithDefaultTenant(false);
+        getPlatformTestUtil().createInitializeAndStartPlatformWithDefaultTenant(false);
     }
-    
+
     @Override
     protected PlatformSession loginPlatform() throws BonitaException {
-        return platformTestUtil.loginOnPlatform();
+        return getPlatformTestUtil().loginOnPlatform();
     }
-    
+
     @Override
-    protected void stopPlatformAndTenant(PlatformAPI platformAPI) throws BonitaException {
-        platformTestUtil.stopPlatformAndTenant(platformAPI, true);
+    protected void stopPlatformAndTenant(final PlatformAPI platformAPI) throws BonitaException {
+        getPlatformTestUtil().stopPlatformAndTenant(platformAPI, true);
     }
-    
+
     @Override
-    protected void logoutPlatform(PlatformSession pSession) throws BonitaException {
-        platformTestUtil.logoutOnPlatform(pSession);
+    protected void logoutPlatform(final PlatformSession pSession) throws BonitaException {
+        getPlatformTestUtil().logoutOnPlatform(pSession);
     }
-    
+
     @Override
     protected WorkService getWorkService() throws Exception {
         return ServiceAccessorFactory.getInstance().createTenantServiceAccessor(tenantId).getWorkService();
     }
-    
 
 }
