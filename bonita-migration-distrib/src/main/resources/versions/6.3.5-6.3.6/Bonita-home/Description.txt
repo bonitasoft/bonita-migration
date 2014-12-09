@@ -1,0 +1,1 @@
+Replace 6.3.5 configuration files with the 6.3.6 files. 

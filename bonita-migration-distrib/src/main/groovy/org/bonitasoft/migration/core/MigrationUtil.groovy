@@ -54,7 +54,7 @@ public class MigrationUtil {
 
     public static read = System.in.newReader().&readLine
 
-    public static boolean isAutoAccept(){
+    public static boolean isAutoAccept() {
         return System.getProperty(MigrationUtil.AUTO_ACCEPT)=="true"
     }
 
@@ -62,7 +62,7 @@ public class MigrationUtil {
      * Load properties form the 'Config.properties' file inside the distribution
      * @return the properties of the migration distribution
      */
-    public static Properties getProperties(){
+    public static Properties getProperties() {
         def Properties properties = new Properties();
         def FileInputStream fileInputStream = null;
 
@@ -70,7 +70,7 @@ public class MigrationUtil {
             // Load a properties file
             fileInputStream = new FileInputStream("Config.properties");
             properties.load(fileInputStream);
-        } catch (java.io.FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             throw new NotFoundException("File Config.properties not found : " + e);
         } catch (IOException e) {
             throw new MigrationException("Can't get all properties to migrate : " + e);
@@ -80,6 +80,17 @@ public class MigrationUtil {
             }
         }
         return properties;
+    }
+    
+    public static File getBonitaHome() {
+        def Properties properties = MigrationUtil.getProperties();
+        return new File(MigrationUtil.getAndPrintProperty(properties, MigrationUtil.BONITA_HOME, true));
+    }
+    
+    public static String getBonitaVersionFromBonitaHome() {
+        def s = File.separator;
+        def File versionFile = new File(getBonitaHome(), "server${s}platform${s}conf${s}VERSION");
+        return versionFile.exists() ? versionFile.text : null;
     }
 
     /**
@@ -140,7 +151,7 @@ public class MigrationUtil {
         return Sql.newInstance(dburl, user, pwd, driverClass);
     }
 
-    public static executeDefaultSqlFile(File file, String dbVendor, groovy.sql.Sql sql){
+    public static executeDefaultSqlFile(File file, String dbVendor, Sql sql){
         executeSqlFile(file, dbVendor, null, null, sql, true)
     }
 
@@ -159,7 +170,7 @@ public class MigrationUtil {
      * @param toUpdate
      *      if this will update elements
      */
-    public static executeSqlFile(File feature, String dbVendor, String suffix, Map<String, String> parameters, groovy.sql.Sql sql, boolean toUpdate){
+    public static executeSqlFile(File feature, String dbVendor, String suffix, Map<String, String> parameters, Sql sql, boolean toUpdate){
         def sqlFile = getSqlFile(feature, dbVendor, suffix)
         if(sqlFile.exists()){
             def List<String> contents = getSqlContent(sqlFile.text, parameters)
@@ -222,7 +233,7 @@ public class MigrationUtil {
         return platformVersionInDatabase;
     }
 
-    public static Object getId(File feature, String dbVendor, String fileExtension, Object it, groovy.sql.Sql sql){
+    public static Object getId(File feature, String dbVendor, String fileExtension, Object it, Sql sql){
         if (it == null || sql == null){
             throw new IllegalArgumentException("Can't execute getId method with arguments : it = " + it + ", sql = " + sql);
         }
@@ -235,16 +246,31 @@ public class MigrationUtil {
         }
         return id
     }
+    
+    /**
+     * Return a list of ids. 
+     * The SQL file to execute need to begin by "SELECT id FROM...".
+     */
+    public static List<Long> getIds(File feature, String dbVendor, String fileExtension, Map<String, String> parameters, Sql sql){
+        if (sql == null){
+            throw new IllegalArgumentException("Can't execute getId method with arguments : sql = " + sql);
+        }
+        def sqlFile = getSqlFile(feature, dbVendor, fileExtension)
+        def ids = []
+        sql.query(getSqlContent(sqlFile.text, parameters).get(0)) { ResultSet rs ->
+            while (rs.next())
+                ids.add(rs.getLong(1))
+        }
+        return ids
+    }
 
     public static List<Object> getTenantsId(String dbVendor, groovy.sql.Sql sql){
         if (sql == null){
             throw new IllegalArgumentException("Can't execute getTenantsId method with arguments : sql = " + sql);
         }
-
-        def sqlFile = getSqlFile(new File("commons/tenant"), dbVendor, "getTenantsId")
         def tenants = []
 
-        sql.query(getSqlContent(sqlFile.text, null).get(0)) { ResultSet rs ->
+        sql.query("SELECT id FROM tenant ORDER BY id ASC") { ResultSet rs ->
             while (rs.next()) tenants.add(rs.getLong(1))
         }
         return tenants

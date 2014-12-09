@@ -76,7 +76,7 @@ public class MigrationRunner {
             def bonitaHomeMigrationFolder = new File(migrationVersionFolder + "Bonita-home")
             def newBonitaHome = bonitaHomeMigrationFolder.listFiles().findAll { it.isDirectory() && it.exists() && it.getName().startsWith("bonita")}[0]
             if(newBonitaHome == null){
-                println "Error there is no bonita home in for the target version $targetStepVersion"
+                println "Error there is no bonita home for the target version $targetStepVersion"
                 throw new GroovyRuntimeException("inconsistent migration tool");
             }
             migrateDatabase(gse, migrationVersionFolder, newBonitaHome, sql)
@@ -101,7 +101,7 @@ public class MigrationRunner {
         println "Configuration: "
         sourceVersion = MigrationUtil.getAndPrintProperty(properties, MigrationUtil.SOURCE_VERSION, false);
         targetVersion = MigrationUtil.getAndPrintProperty(properties, MigrationUtil.TARGET_VERSION, false);
-        bonitaHome = new File(MigrationUtil.getAndPrintProperty(properties, MigrationUtil.BONITA_HOME, true));
+        bonitaHome = MigrationUtil.getBonitaHome();
         if(!bonitaHome.exists()){
             throw new IllegalStateException("Bonita home does not exist.");
         }
@@ -142,9 +142,7 @@ public class MigrationRunner {
     String checkSourceVersion(File bonitaHome,String givenSourceVersion){
         //get version in sources
         def String platformVersionInDatabase = MigrationUtil.getPlatformVersion(dburl, user, pwd, driverClass)
-        def s = File.separator;
-        def File versionFile = new File(bonitaHome, "server${s}platform${s}conf${s}VERSION");
-        def String platformVersionInBonitaHome = versionFile.exists()?versionFile.text:null;
+        def String platformVersionInBonitaHome = MigrationUtil.getBonitaVersionFromBonitaHome()
         return checkSourceVersion(platformVersionInDatabase, platformVersionInBonitaHome, givenSourceVersion);
     }
 

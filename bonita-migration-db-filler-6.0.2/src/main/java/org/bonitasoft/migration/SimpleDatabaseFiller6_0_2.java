@@ -73,7 +73,7 @@ public class SimpleDatabaseFiller6_0_2 extends DatabaseFiller6_0_2 {
         return APITestUtil.loginDefaultTenant();
     }
 
-    private Map<String, String> fillSimpleProcess(APISession session, int nbProcessInstances) throws Exception {
+    protected Map<String, String> fillSimpleProcess(APISession session, int nbProcessInstances) throws Exception {
         ProcessAPI processAPI = TenantAPIAccessor.getProcessAPI(session);
         IdentityAPI identityAPI = TenantAPIAccessor.getIdentityAPI(session);
         ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance(PROCESS_NAME, PROCESS_VERSION);

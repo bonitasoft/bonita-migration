@@ -1,20 +1,26 @@
 import groovy.sql.Sql
 
+subprojects {
+
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'maven'
 
 group = 'org.bonitasoft.migration'
-version = '1.9.0-SNAPSHOT'
+version = '1.18.0-SNAPSHOT'
 
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
 
 
+
 ext{
-    sourceversion = System.getProperty("source.version","6.3.2")
-    targetversion = System.getProperty("target.version","6.4.0")
+    migrationDistribClasses='../bonita-migration-distrib/target/classes'
+    migrationScriptsClasses='../bonita-migration-scripts-integration-tests/target/classes'
+    def split = project.name.split("@")[1].split("-")
+    sourceversion = split[0]
+    targetversion = split[1]
     dbvendor = System.getProperty("db.vendor", "postgres")
     dburl = System.getProperty("db.url","jdbc:postgresql://localhost:5432/migration");
     dbuser=System.getProperty("db.user","bonita")
@@ -22,12 +28,13 @@ ext{
     dbdriverClass=System.getProperty("db.driverClass","org.postgresql.Driver")
     bonitahome="${buildDir.path}/home"
     distDir="${buildDir.path}/dist"
+    devMode = project.hasProperty('devMode')
     //used for oracle: creates table not the same way
     //used for postgres: give a user able to drop and create databases
-    dbRootUser = System.getProperty("db.root.user","bonita")
-    dbRootPassword = System.getProperty("db.root.password","bpm")
+    dbRootUser = System.getProperty("db.root.user","postgres")
+    dbRootPassword = System.getProperty("db.root.password","postgres")
 
-    //for postgres
+    // Define variables:
     databaseName = "migration"
     serverName="localhost"
     portNumber="5432"
@@ -174,7 +181,28 @@ task unpackdist(dependsOn:unpackhome, type: Copy){
     from zipTree(zipFile)
     into outputDir
 }
-task copyDrivers(dependsOn:unpackdist, type: Copy){
+
+task overwritedist(dependsOn:unpackdist, type: Copy){
+//    def zipFile = configurations.migrationdist.files.iterator().next()
+    //devMode = hasProperty('devMode')
+    if(project.hasProperty('devMode') && devMode){
+        println """
+***************************************
+************** DEV MODE ***************
+** overwriting files of distrib with :*
+ - $migrationDistribClasses
+ - $migrationScriptsClasses
+***************************************
+***************************************
+"""
+        def outputDir = file(distDir)
+    
+        from files(migrationDistribClasses)
+        from files(migrationScriptsClasses)
+        into outputDir
+    }
+}
+task copyDrivers(dependsOn:overwritedist, type: Copy){
     into "$distDir/lib"
     from configurations.drivers
 }
@@ -249,7 +277,18 @@ task runmigration(dependsOn:execfill, type:JavaExec){
     systemProperty 'auto.accept', 'true'
 }
 
-test.dependsOn(runmigration)
+task postmigrationtests(dependsOn:runmigration, type:JavaExec) {
+    doFirst {
+        println "run post-migration integration tests scripts"
+        systemProperties(["bonita.home":bonitahome,
+                          "target.version":targetversion])
+        println systemProperties
+        main = "org.bonitasoft.migration.postmigration.PostMigrationTest"
+    }
+    classpath configurations.scriptsintegration
+}
+
+test.dependsOn(postmigrationtests)
 test {
     doFirst {
         println "execute test of the database using classpath of $targetversion"
@@ -271,4 +310,4 @@ test {
     testLogging.showStandardStreams = true
 }
 
-
+}
