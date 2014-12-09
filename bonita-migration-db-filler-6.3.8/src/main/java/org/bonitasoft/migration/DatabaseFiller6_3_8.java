@@ -13,34 +13,7 @@
  **/
 package org.bonitasoft.migration;
 
-import java.io.InputStream;
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.commons.io.IOUtils;
-import org.bonitasoft.engine.api.CommandAPI;
-import org.bonitasoft.engine.api.ProfileAPI;
-import org.bonitasoft.engine.api.TenantAPIAccessor;
-import org.bonitasoft.engine.bpm.bar.BarResource;
-import org.bonitasoft.engine.bpm.bar.BusinessArchiveBuilder;
-import org.bonitasoft.engine.bpm.document.DocumentValue;
-import org.bonitasoft.engine.bpm.flownode.HumanTaskInstance;
-import org.bonitasoft.engine.bpm.process.ProcessDefinition;
-import org.bonitasoft.engine.bpm.process.ProcessInstance;
-import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder;
 import org.bonitasoft.engine.exception.BonitaException;
-import org.bonitasoft.engine.exception.ServerAPIException;
-import org.bonitasoft.engine.exception.UnknownAPITypeException;
-import org.bonitasoft.engine.expression.ExpressionBuilder;
-import org.bonitasoft.engine.identity.ImportPolicy;
-import org.bonitasoft.engine.identity.User;
-import org.bonitasoft.engine.operation.OperationBuilder;
-import org.bonitasoft.engine.search.SearchOptions;
-import org.bonitasoft.engine.search.SearchOptionsBuilder;
-import org.bonitasoft.engine.session.APISession;
-import org.bonitasoft.engine.test.APITestUtil;
 
 
 public class DatabaseFiller6_3_8 extends SimpleDatabaseFiller6_3_1 {
@@ -52,7 +25,7 @@ public class DatabaseFiller6_3_8 extends SimpleDatabaseFiller6_3_1 {
 
     @Override
     protected void initializePlatform() throws BonitaException {
-        apiTestUtil.createInitializeAndStartPlatformWithDefaultTenant(true);
+        getAPITestUtil().createInitializeAndStartPlatformWithDefaultTenant(true);
     }
 
     @Override

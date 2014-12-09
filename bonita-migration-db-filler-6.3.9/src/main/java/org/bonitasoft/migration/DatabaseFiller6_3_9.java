@@ -40,18 +40,17 @@ import org.bonitasoft.engine.operation.OperationBuilder;
 import org.bonitasoft.engine.search.SearchOptions;
 import org.bonitasoft.engine.search.SearchOptionsBuilder;
 import org.bonitasoft.engine.session.APISession;
-import org.bonitasoft.engine.test.PlatformTestUtil;
 
 public class DatabaseFiller6_3_9 extends SimpleDatabaseFiller6_3_1 {
 
     public static void main(final String[] args) throws Exception {
-        DatabaseFiller6_3_9 databaseFiller = new DatabaseFiller6_3_9();
+        final DatabaseFiller6_3_9 databaseFiller = new DatabaseFiller6_3_9();
         databaseFiller.execute(1, 1, 1, 1);
     }
 
     @Override
     protected void initializePlatform() throws BonitaException {
-        apiTestUtil.createInitializeAndStartPlatformWithDefaultTenant(true);
+        getAPITestUtil().createInitializeAndStartPlatformWithDefaultTenant(true);
     }
 
     @Override
@@ -84,14 +83,14 @@ public class DatabaseFiller6_3_9 extends SimpleDatabaseFiller6_3_1 {
     public Map<String, String> fillDatabase(final int nbProcessesDefinitions, final int nbProcessInstances, final int nbWaitingEvents, final int nbDocuments)
             throws Exception {
         logger.info("Starting to fill the database");
-        apiTestUtil.loginOnDefaultTenantWithDefaultTechnicalLogger();
-        final APISession session = apiTestUtil.getSession();
+        getAPITestUtil().loginOnDefaultTenantWithDefaultTechnicalLogger();
+        final APISession session = getAPITestUtil().getSession();
         final Map<String, String> stats = new HashMap<String, String>();
         stats.putAll(fillOrganization(session));
         stats.putAll(fillProfiles(session));
         stats.putAll(fillDocuments());
         fillOthers(session);
-        apiTestUtil.loginOnDefaultTenantWithDefaultTechnicalLogger();
+        getAPITestUtil().loginOnDefaultTenantWithDefaultTechnicalLogger();
         logger.info("Finished to fill the database");
         return stats;
     }
@@ -102,7 +101,7 @@ public class DatabaseFiller6_3_9 extends SimpleDatabaseFiller6_3_1 {
 
 
     private Map<? extends String, ? extends String> fillDocuments() throws Exception {
-        final User user = apiTestUtil.createUser("userForDocuments", "bpm");
+        final User user = getAPITestUtil().createUser("userForDocuments", "bpm");
 
         final ProcessDefinitionBuilder processWithDocuments = new ProcessDefinitionBuilder().createNewInstance("ProcessWithDocuments", "1.0");
         processWithDocuments.addStartEvent("start");
@@ -125,34 +124,37 @@ public class DatabaseFiller6_3_9 extends SimpleDatabaseFiller6_3_1 {
         businessArchiveBuilder.addDocumentResource(new BarResource("file.txt", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.".getBytes()));
         businessArchiveBuilder.setProcessDefinition(processWithDocuments.done());
 
-        final ProcessDefinition processDefinition = apiTestUtil.deployAndEnableProcessWithActor(businessArchiveBuilder.done(), "actor", user);
+        final ProcessDefinition processDefinition = getAPITestUtil().deployAndEnableProcessWithActor(businessArchiveBuilder.done(), "actor", user);
 
         //finished instance
-        final ProcessInstance inst1 = apiTestUtil.getProcessAPI().startProcess(processDefinition.getId());
-        HumanTaskInstance step1 = apiTestUtil.waitForUserTask("step1",inst1);
-        apiTestUtil.assignAndExecuteStep(step1,user.getId());
-        final HumanTaskInstance step2 = apiTestUtil.waitForUserTask("step2",inst1);
-        apiTestUtil.assignAndExecuteStep(step2,user.getId());
-        apiTestUtil.waitForProcessToFinish(inst1);
+        final ProcessInstance inst1 = getAPITestUtil().getProcessAPI().startProcess(processDefinition.getId());
+        HumanTaskInstance step1 = getAPITestUtil().waitForUserTask("step1", inst1);
+        getAPITestUtil().assignAndExecuteStep(step1, user.getId());
+        final HumanTaskInstance step2 = getAPITestUtil().waitForUserTask("step2", inst1);
+        getAPITestUtil().assignAndExecuteStep(step2, user.getId());
+        getAPITestUtil().waitForProcessToFinish(inst1);
 
         //instance with step1 having operations executed
-        final ProcessInstance inst2 = apiTestUtil.getProcessAPI().startProcess(processDefinition.getId());
-        step1 = apiTestUtil.waitForUserTask("step1",inst2);
-        apiTestUtil.assignAndExecuteStep(step1,user.getId());
-        apiTestUtil.waitForUserTask("step2",inst2);
+        final ProcessInstance inst2 = getAPITestUtil().getProcessAPI().startProcess(processDefinition.getId());
+        step1 = getAPITestUtil().waitForUserTask("step1", inst2);
+        getAPITestUtil().assignAndExecuteStep(step1, user.getId());
+        getAPITestUtil().waitForUserTask("step2", inst2);
 
         //instance with document attached using api
-        final ProcessInstance inst3 = apiTestUtil.getProcessAPI().startProcess(processDefinition.getId());
-        apiTestUtil.waitForUserTask("step1",inst3);
-        apiTestUtil.getProcessAPI().attachDocument(inst3.getId(),"documentAttachedUsingAPI","doc.txt","plain/text","The content of the file attached using the api".getBytes());
-        apiTestUtil.getProcessAPI().attachDocument(inst3.getId(),"urlDocumentAttachedUsingAPI","doc.txt","plain/text","http://MyWebSite.com/file.txt");
-        apiTestUtil.getProcessAPI().attachNewDocumentVersion(inst3.getId(),"documentAttachedUsingAPI","doc2.txt","plain/text","The content of the file attached using the api2".getBytes());
-        apiTestUtil.getProcessAPI().attachNewDocumentVersion(inst3.getId(),"urlDocumentAttachedUsingAPI","doc2.txt","plain/text","http://MyWebSite.com/file2.txt");
+        final ProcessInstance inst3 = getAPITestUtil().getProcessAPI().startProcess(processDefinition.getId());
+        getAPITestUtil().waitForUserTask("step1", inst3);
+        getAPITestUtil().getProcessAPI().attachDocument(inst3.getId(), "documentAttachedUsingAPI", "doc.txt", "plain/text",
+                "The content of the file attached using the api".getBytes());
+        getAPITestUtil().getProcessAPI().attachDocument(inst3.getId(), "urlDocumentAttachedUsingAPI", "doc.txt", "plain/text", "http://MyWebSite.com/file.txt");
+        getAPITestUtil().getProcessAPI().attachNewDocumentVersion(inst3.getId(), "documentAttachedUsingAPI", "doc2.txt", "plain/text",
+                "The content of the file attached using the api2".getBytes());
+        getAPITestUtil().getProcessAPI().attachNewDocumentVersion(inst3.getId(), "urlDocumentAttachedUsingAPI", "doc2.txt", "plain/text",
+                "http://MyWebSite.com/file2.txt");
 
 
         // just started instance
-        final ProcessInstance inst4 = apiTestUtil.getProcessAPI().startProcess(processDefinition.getId());
-        apiTestUtil.waitForUserTask("step1",inst4);
+        final ProcessInstance inst4 = getAPITestUtil().getProcessAPI().startProcess(processDefinition.getId());
+        getAPITestUtil().waitForUserTask("step1", inst4);
 
 
         return Collections.emptyMap();
