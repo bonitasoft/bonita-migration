@@ -2,7 +2,7 @@ package org.bonitasoft.migration.versions.v6_3_x_to_6_4_0
 
 import groovy.sql.Sql
 import org.bonitasoft.migration.CustomAssertion
-import org.bonitasoft.migration.versions.v6_3_8_to_6_4_0.UpdateProfileEntries
+import org.bonitasoft.migration.versions.v6_3_9_to_6_4_0.UpdateProfileEntries
 import org.dbunit.JdbcDatabaseTester
 
 import static org.bonitasoft.migration.DBUnitHelper.*
@@ -63,7 +63,7 @@ class UpdateProfileEntriesIT extends GroovyTestCase {
 
 
     void test_migration_documents_structure() {
-        def feature = new File("build/dist/versions/6.3.8-6.4.0/Database/003_living_applications");
+        def feature = new File("build/dist/versions/6.3.9-6.4.0/Database/003_living_applications");
         new UpdateProfileEntries().migrate(feature, dbVendor(), sql);
 
         def updatedDocuments = tester.connection.createDataSet("profile", "profileentry");
