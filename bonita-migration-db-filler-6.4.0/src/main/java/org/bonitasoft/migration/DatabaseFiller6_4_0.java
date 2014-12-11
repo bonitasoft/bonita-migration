@@ -13,7 +13,9 @@
  **/
 package org.bonitasoft.migration;
 
-public class DatabaseFiller6_4_0 extends DatabaseFiller6_3_8 {
+import org.bonitasoft.engine.test.APITestUtil;
+
+public class DatabaseFiller6_4_0 extends SimpleDatabaseFiller6_4_0 {
 
     public static void main(final String[] args) throws Exception {
         DatabaseFiller6_4_0 databaseFiller = new DatabaseFiller6_4_0();

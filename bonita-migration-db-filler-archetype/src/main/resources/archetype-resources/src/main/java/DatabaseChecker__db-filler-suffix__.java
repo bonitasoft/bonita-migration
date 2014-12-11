@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 214 BonitaSoft S.A.
+ * Copyright (C) 2014 BonitaSoft S.A.
  * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
@@ -16,7 +16,7 @@ package ${package};
 import org.junit.runner.JUnitCore;
 
 
-public class DatabaseChecker${db-filler-suffix} extends SimpleDatabaseChecker6_3_2 {
+public class DatabaseChecker${db-filler-suffix} extends SimpleDatabaseChecker6_4_0 {
     
     public static void main(final String[] args) throws Exception {
         JUnitCore.main(DatabaseChecker${db-filler-suffix}.class.getName());
