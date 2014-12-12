@@ -24,7 +24,7 @@ ext{
     dbvendor = System.getProperty("db.vendor", "postgres")
     dburl = System.getProperty("db.url","jdbc:postgresql://localhost:5432/migration");
     dbuser=System.getProperty("db.user","bonita")
-    dbpassword=System.getProperty("db.password", "bonita")
+    dbpassword=System.getProperty("db.password", "bpm")
     dbdriverClass=System.getProperty("db.driverClass","org.postgresql.Driver")
     bonitahome="${buildDir.path}/home"
     distDir="${buildDir.path}/dist"

@@ -18,6 +18,12 @@
 			<artifactId>bonita-migration-db-filler-6.4.0</artifactId>
 			<groupId>org.bonitasoft.migration</groupId>
 			<version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>bonita-client-test-utils</artifactId>
+                    <groupId>org.bonitasoft.engine</groupId>
+                </exclusion>
+            </exclusions>
 		</dependency>
         <dependency>
 			<artifactId>bonita-client</artifactId>
@@ -34,6 +40,11 @@
 			<groupId>org.bonitasoft.engine.test</groupId>
 			<version>${bonita.version}</version>
 		</dependency>
+        <dependency>
+            <groupId>org.bonitasoft.engine.test</groupId>
+            <artifactId>bonita-client-test-utils</artifactId>
+            <version>${bonita.version}</version>
+        </dependency>
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
