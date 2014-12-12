@@ -30,7 +30,7 @@ for (int i = 0; i < availableVersions.size(); i++) {
     }
 }
 if (startIndex == -1 || endIndex == -1) {
-    throw new IllegalArgumentException("source or target version is unknown")
+    throw new IllegalArgumentException("Migration is unknown : startIndex=" + startIndex + ", endIndex=" + endIndex + ", availableVersions=" +availableVersions)
 }
 
 //create a project for each migration step to test
