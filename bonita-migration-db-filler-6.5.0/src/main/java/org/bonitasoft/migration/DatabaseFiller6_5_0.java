@@ -13,13 +13,16 @@
  **/
 package org.bonitasoft.migration;
 
-import org.junit.runner.JUnitCore;
+import org.bonitasoft.engine.exception.BonitaException;
+import org.bonitasoft.engine.test.PlatformTestUtil;
 
+public class DatabaseFiller6_5_0 extends SimpleDatabaseFiller6_4_0 {
 
-public class DatabaseChecker6_4_1 extends SimpleDatabaseChecker6_4_0 {
-    
     public static void main(final String[] args) throws Exception {
-        JUnitCore.main(DatabaseChecker6_4_1.class.getName());
+        final DatabaseFiller6_5_0 databaseFiller = new DatabaseFiller6_5_0();
+        databaseFiller.execute(1, 1, 1, 1);
     }
+
+
 
 }

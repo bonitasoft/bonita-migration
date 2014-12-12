@@ -13,14 +13,15 @@
  **/
 package org.bonitasoft.migration;
 
-import org.bonitasoft.engine.exception.BonitaException;
-import org.bonitasoft.engine.test.PlatformTestUtil;
+import org.dom4j.Document;
+import org.dom4j.io.SAXReader;
+import org.junit.runner.JUnitCore;
 
-public class DatabaseFiller6_4_1 extends SimpleDatabaseFiller6_4_0 {
+
+public class DatabaseChecker6_5_0 extends SimpleDatabaseChecker6_4_0 {
 
     public static void main(final String[] args) throws Exception {
-        DatabaseFiller6_4_1 databaseFiller = new DatabaseFiller6_4_1();
-        databaseFiller.execute(1, 1, 1, 1);
+        JUnitCore.main(DatabaseChecker6_5_0.class.getName());
     }
-    
+
 }
