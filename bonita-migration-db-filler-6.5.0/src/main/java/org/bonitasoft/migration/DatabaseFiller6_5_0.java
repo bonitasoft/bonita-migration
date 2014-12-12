@@ -13,8 +13,7 @@
  **/
 package org.bonitasoft.migration;
 
-import org.bonitasoft.engine.exception.BonitaException;
-import org.bonitasoft.engine.test.PlatformTestUtil;
+import java.io.InputStream;
 
 public class DatabaseFiller6_5_0 extends SimpleDatabaseFiller6_4_0 {
 
@@ -23,6 +22,9 @@ public class DatabaseFiller6_5_0 extends SimpleDatabaseFiller6_4_0 {
         databaseFiller.execute(1, 1, 1, 1);
     }
 
-
+    @Override
+    protected InputStream getProfilesXMLStream() {
+        return DatabaseFiller6_5_0.class.getResourceAsStream("profiles.xml");
+    }
 
 }
