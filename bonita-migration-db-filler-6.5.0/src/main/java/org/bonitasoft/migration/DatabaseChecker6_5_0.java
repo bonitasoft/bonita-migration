@@ -24,4 +24,9 @@ public class DatabaseChecker6_5_0 extends SimpleDatabaseChecker6_4_0 {
         JUnitCore.main(DatabaseChecker6_5_0.class.getName());
     }
 
+    @Override
+    protected Document getProfilesXML(final SAXReader reader) throws Exception {
+        return reader.read(DatabaseChecker6_5_0.class.getResource("profiles.xml"));
+    }
+
 }
