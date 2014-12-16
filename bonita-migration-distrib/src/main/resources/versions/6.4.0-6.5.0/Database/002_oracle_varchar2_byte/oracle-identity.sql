@@ -2,26 +2,29 @@
 -- External_identity_mapping
 -- 
 
-ALTER TABLE "external_identity_mapping" ADD "kind_temp" VARCHAR2(25 CHAR) NOT NULL @@
+ALTER TABLE "external_identity_mapping" ADD "kind_temp" VARCHAR2(25 CHAR) @@
 UPDATE "external_identity_mapping" SET "kind_temp" = "kind" @@
 ALTER TABLE "external_identity_mapping" DROP COLUMN "kind" @@
 ALTER TABLE "external_identity_mapping" RENAME COLUMN "kind_temp" TO "kind" @@
+ALTER TABLE "external_identity_mapping" MODIFY "kind" NOT NULL @@
 
 
-ALTER TABLE "external_identity_mapping" ADD "externalId_temp" VARCHAR2(50 CHAR) NOT NULL @@
+ALTER TABLE "external_identity_mapping" ADD "externalId_temp" VARCHAR2(50 CHAR) @@
 UPDATE "external_identity_mapping" SET "externalId_temp" = "externalId" @@
 ALTER TABLE "external_identity_mapping" DROP COLUMN "externalId" @@
 ALTER TABLE "external_identity_mapping" RENAME COLUMN "externalId_temp" TO "externalId" @@
+ALTER TABLE "external_identity_mapping" MODIFY "externalId" NOT NULL @@
 
 
 --
 -- Group
 -- 
 
-ALTER TABLE "group_" ADD "name_temp" VARCHAR2(50 CHAR) NOT NULL @@
+ALTER TABLE "group_" ADD "name_temp" VARCHAR2(50 CHAR) @@
 UPDATE "group_" SET "name_temp" = "name" @@
 ALTER TABLE "group_" DROP COLUMN "name" @@
 ALTER TABLE "group_" RENAME COLUMN "name_temp" TO "name" @@
+ALTER TABLE "group_" MODIFY "name" NOT NULL @@
 
 
 ALTER TABLE "group_" ADD "parentPath_temp" VARCHAR2(255 CHAR) @@
@@ -59,10 +62,11 @@ ALTER TABLE "group_" RENAME COLUMN "iconPath_temp" TO "iconPath" @@
 -- Role
 -- 
 
-ALTER TABLE "role" ADD "name_temp" VARCHAR2(50 CHAR) NOT NULL @@
+ALTER TABLE "role" ADD "name_temp" VARCHAR2(50 CHAR) @@
 UPDATE "role" SET "name_temp" = "name" @@
 ALTER TABLE "role" DROP COLUMN "name" @@
 ALTER TABLE "role" RENAME COLUMN "name_temp" TO "name" @@
+ALTER TABLE "role" MODIFY "name" NOT NULL @@
 
 
 ALTER TABLE "role" ADD "displayName_temp" VARCHAR2(75 CHAR) @@
@@ -94,10 +98,11 @@ ALTER TABLE "role" RENAME COLUMN "iconPath_temp" TO "iconPath" @@
 -- User
 -- 
 
-ALTER TABLE "user_" ADD "userName_temp" VARCHAR2(255 CHAR) NOT NULL @@
+ALTER TABLE "user_" ADD "userName_temp" VARCHAR2(255 CHAR) @@
 UPDATE "user_" SET "userName_temp" = "userName" @@
 ALTER TABLE "user_" DROP COLUMN "userName" @@
 ALTER TABLE "user_" RENAME COLUMN "userName_temp" TO "userName" @@
+ALTER TABLE "user_" MODIFY "userName" NOT NULL @@
 
 
 ALTER TABLE "user_" ADD "password_temp" VARCHAR2(60 CHAR) @@
@@ -230,10 +235,11 @@ ALTER TABLE "user_contactinfo" RENAME COLUMN "website_temp" TO "website" @@
 -- Custom_usr_inf_def
 -- 
 
-ALTER TABLE "custom_usr_inf_def" ADD "name_temp" VARCHAR2(75 CHAR) NOT NULL @@
+ALTER TABLE "custom_usr_inf_def" ADD "name_temp" VARCHAR2(75 CHAR) @@
 UPDATE "custom_usr_inf_def" SET "name_temp" = "name" @@
 ALTER TABLE "custom_usr_inf_def" DROP COLUMN "name" @@
 ALTER TABLE "custom_usr_inf_def" RENAME COLUMN "name_temp" TO "name" @@
+ALTER TABLE "custom_usr_inf_def" MODIFY "name" NOT NULL @@
 
 
 ALTER TABLE "custom_usr_inf_def" ADD "description_temp" VARCHAR2(1024 CHAR) @@

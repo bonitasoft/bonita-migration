@@ -2,10 +2,11 @@
 -- Waiting_event
 -- 
 
-ALTER TABLE "waiting_event" ADD "kind_temp" VARCHAR2(15 CHAR) NOT NULL @@
+ALTER TABLE "waiting_event" ADD "kind_temp" VARCHAR2(15 CHAR) @@
 UPDATE "waiting_event" SET "kind_temp" = "kind" @@
 ALTER TABLE "waiting_event" DROP COLUMN "kind" @@
 ALTER TABLE "waiting_event" RENAME COLUMN "kind_temp" TO "kind" @@
+ALTER TABLE "waiting_event" MODIFY "kind" NOT NULL @@
 
 
 ALTER TABLE "waiting_event" ADD "eventType_temp" VARCHAR2(50 CHAR) @@

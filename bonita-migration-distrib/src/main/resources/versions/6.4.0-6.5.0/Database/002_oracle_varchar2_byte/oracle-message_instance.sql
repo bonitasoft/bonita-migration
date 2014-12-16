@@ -2,16 +2,18 @@
 -- Message_instance
 -- 
 
-ALTER TABLE "message_instance" ADD "messageName_temp" VARCHAR2(255 CHAR) NOT NULL @@
+ALTER TABLE "message_instance" ADD "messageName_temp" VARCHAR2(255 CHAR) @@
 UPDATE "message_instance" SET "messageName_temp" = "messageName" @@
 ALTER TABLE "message_instance" DROP COLUMN "messageName" @@
 ALTER TABLE "message_instance" RENAME COLUMN "messageName_temp" TO "messageName" @@
+ALTER TABLE "message_instance" MODIFY "messageName" NOT NULL @@
 
 
-ALTER TABLE "message_instance" ADD "targetProcess_temp" VARCHAR2(255 CHAR) NOT NULL @@
+ALTER TABLE "message_instance" ADD "targetProcess_temp" VARCHAR2(255 CHAR) @@
 UPDATE "message_instance" SET "targetProcess_temp" = "targetProcess" @@
 ALTER TABLE "message_instance" DROP COLUMN "targetProcess" @@
 ALTER TABLE "message_instance" RENAME COLUMN "targetProcess_temp" TO "targetProcess" @@
+ALTER TABLE "message_instance" MODIFY "targetProcess" NOT NULL @@
 
 
 ALTER TABLE "message_instance" ADD "targetFlowNode_temp" VARCHAR2(255 CHAR) NULL @@

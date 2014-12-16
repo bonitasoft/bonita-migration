@@ -24,10 +24,11 @@ ALTER TABLE "document" RENAME COLUMN "url_temp" TO "url" @@
 -- Document_mapping
 -- 
 
-ALTER TABLE "document_mapping" ADD "name_temp" VARCHAR2(50 CHAR) NOT NULL @@
+ALTER TABLE "document_mapping" ADD "name_temp" VARCHAR2(50 CHAR) @@
 UPDATE "document_mapping" SET "name_temp" = "name" @@
 ALTER TABLE "document_mapping" DROP COLUMN "name" @@
 ALTER TABLE "document_mapping" RENAME COLUMN "name_temp" TO "name" @@
+ALTER TABLE "document_mapping" MODIFY "name" NOT NULL @@
 
 
 ALTER TABLE "document_mapping" ADD "description_temp" VARCHAR2(1024 CHAR) @@
@@ -36,20 +37,22 @@ ALTER TABLE "document_mapping" DROP COLUMN "description" @@
 ALTER TABLE "document_mapping" RENAME COLUMN "description_temp" TO "description" @@
 
 
-ALTER TABLE "document_mapping" ADD "version_temp" VARCHAR2(10 CHAR) NOT NULL @@
+ALTER TABLE "document_mapping" ADD "version_temp" VARCHAR2(10 CHAR) @@
 UPDATE "document_mapping" SET "version_temp" = "version" @@
 ALTER TABLE "document_mapping" DROP COLUMN "version" @@
 ALTER TABLE "document_mapping" RENAME COLUMN "version_temp" TO "version" @@
+ALTER TABLE "document_mapping" MODIFY "version" NOT NULL @@
 
 
 --
 -- Archived_document_mapping
 -- 
 
-ALTER TABLE "arch_document_mapping" ADD "name_temp" VARCHAR2(50 CHAR) NOT NULL @@
+ALTER TABLE "arch_document_mapping" ADD "name_temp" VARCHAR2(50 CHAR) @@
 UPDATE "arch_document_mapping" SET "name_temp" = "name" @@
 ALTER TABLE "arch_document_mapping" DROP COLUMN "name" @@
 ALTER TABLE "arch_document_mapping" RENAME COLUMN "name_temp" TO "name" @@
+ALTER TABLE "arch_document_mapping" MODIFY "name" NOT NULL @@
 
 
 ALTER TABLE "arch_document_mapping" ADD "description_temp" VARCHAR2(1024 CHAR) @@
@@ -58,7 +61,8 @@ ALTER TABLE "arch_document_mapping" DROP COLUMN "description" @@
 ALTER TABLE "arch_document_mapping" RENAME COLUMN "description_temp" TO "description" @@
 
 
-ALTER TABLE "arch_document_mapping" ADD "version_temp" VARCHAR2(10 CHAR) NOT NULL @@
+ALTER TABLE "arch_document_mapping" ADD "version_temp" VARCHAR2(10 CHAR) @@
 UPDATE "arch_document_mapping" SET "version_temp" = "version" @@
 ALTER TABLE "arch_document_mapping" DROP COLUMN "version" @@
 ALTER TABLE "arch_document_mapping" RENAME COLUMN "version_temp" TO "version" @@
+ALTER TABLE "arch_document_mapping" MODIFY "version" NOT NULL @@

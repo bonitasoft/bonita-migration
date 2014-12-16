@@ -2,10 +2,11 @@
 -- Process_instance
 -- 
 
-ALTER TABLE "process_instance" ADD "name_temp" VARCHAR2(75 CHAR) NOT NULL @@
+ALTER TABLE "process_instance" ADD "name_temp" VARCHAR2(75 CHAR) @@
 UPDATE "process_instance" SET "name_temp" = "name" @@
 ALTER TABLE "process_instance" DROP COLUMN "name" @@
 ALTER TABLE "process_instance" RENAME COLUMN "name_temp" TO "name" @@
+ALTER TABLE "process_instance" MODIFY "name" NOT NULL @@
 
 
 ALTER TABLE "process_instance" ADD "description_temp" VARCHAR2(255 CHAR) @@
@@ -14,10 +15,11 @@ ALTER TABLE "process_instance" DROP COLUMN "description" @@
 ALTER TABLE "process_instance" RENAME COLUMN "description_temp" TO "description" @@
 
 
-ALTER TABLE "process_instance" ADD "stateCategory_temp" VARCHAR2(50 CHAR) NOT NULL @@
+ALTER TABLE "process_instance" ADD "stateCategory_temp" VARCHAR2(50 CHAR) @@
 UPDATE "process_instance" SET "name_temp" = "stateCategory" @@
 ALTER TABLE "process_instance" DROP COLUMN "stateCategory" @@
 ALTER TABLE "process_instance" RENAME COLUMN "stateCategory_temp" TO "stateCategory" @@
+ALTER TABLE "process_instance" MODIFY "stateCategory" NOT NULL @@
 
 
 ALTER TABLE "process_instance" ADD "callerType_temp" VARCHAR2(50 CHAR) @@
@@ -61,10 +63,11 @@ ALTER TABLE "process_instance" RENAME COLUMN "stringIndex5_temp" TO "stringIndex
 -- Archived_process_instance
 -- 
 
-ALTER TABLE "arch_process_instance" ADD "name_temp" VARCHAR2(75 CHAR) NOT NULL @@
+ALTER TABLE "arch_process_instance" ADD "name_temp" VARCHAR2(75 CHAR) @@
 UPDATE "arch_process_instance" SET "name_temp" = "name" @@
 ALTER TABLE "arch_process_instance" DROP COLUMN "name" @@
 ALTER TABLE "arch_process_instance" RENAME COLUMN "name_temp" TO "name" @@
+ALTER TABLE "arch_process_instance" MODIFY "name" NOT NULL @@
 
 
 ALTER TABLE "arch_process_instance" ADD "description_temp" VARCHAR2(255 CHAR) @@

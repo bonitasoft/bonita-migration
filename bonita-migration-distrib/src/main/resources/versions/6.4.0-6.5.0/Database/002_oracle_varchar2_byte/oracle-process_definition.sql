@@ -2,16 +2,18 @@
 -- Process_definition
 -- 
 
-ALTER TABLE "process_definition" ADD "name_temp" VARCHAR2(150 CHAR) NOT NULL @@
+ALTER TABLE "process_definition" ADD "name_temp" VARCHAR2(150 CHAR) @@
 UPDATE "process_definition" SET "name_temp" = "name" @@
 ALTER TABLE "process_definition" DROP COLUMN "name" @@
 ALTER TABLE "process_definition" RENAME COLUMN "name_temp" TO "name" @@
+ALTER TABLE "process_definition" MODIFY "name" NOT NULL @@
 
 
-ALTER TABLE "process_definition" ADD "version_temp" VARCHAR2(50 CHAR) NOT NULL @@
+ALTER TABLE "process_definition" ADD "version_temp" VARCHAR2(50 CHAR) @@
 UPDATE "process_definition" SET "version_temp" = "version" @@
 ALTER TABLE "process_definition" DROP COLUMN "version" @@
 ALTER TABLE "process_definition" RENAME COLUMN "version_temp" TO "version" @@
+ALTER TABLE "process_definition" MODIFY "version" NOT NULL @@
 
 
 ALTER TABLE "process_definition" ADD "description_temp" VARCHAR2(255 CHAR) @@
@@ -20,16 +22,18 @@ ALTER TABLE "process_definition" DROP COLUMN "description" @@
 ALTER TABLE "process_definition" RENAME COLUMN "description_temp" TO "description" @@
 
 
-ALTER TABLE "process_definition" ADD "activationState_temp" VARCHAR2(30 CHAR) NOT NULL @@
+ALTER TABLE "process_definition" ADD "activationState_temp" VARCHAR2(30 CHAR) @@
 UPDATE "process_definition" SET "activationState_temp" = "activationState" @@
 ALTER TABLE "process_definition" DROP COLUMN "activationState" @@
 ALTER TABLE "process_definition" RENAME COLUMN "activationState_temp" TO "activationState" @@
+ALTER TABLE "process_definition" MODIFY "activationState" NOT NULL @@
 
 
-ALTER TABLE "process_definition" ADD "configurationState_temp" VARCHAR2(30 CHAR) NOT NULL @@
+ALTER TABLE "process_definition" ADD "configurationState_temp" VARCHAR2(30 CHAR) @@
 UPDATE "process_definition" SET "configurationState_temp" = "configurationState" @@
 ALTER TABLE "process_definition" DROP COLUMN "configurationState" @@
 ALTER TABLE "process_definition" RENAME COLUMN "configurationState_temp" TO "configurationState" @@
+ALTER TABLE "process_definition" MODIFY "configurationState" NOT NULL @@
 
 
 ALTER TABLE "process_definition" ADD "displayName_temp" VARCHAR2(75 CHAR) @@

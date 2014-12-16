@@ -44,10 +44,11 @@ ALTER TABLE "data_instance" DROP COLUMN "shortTextValue" @@
 ALTER TABLE "data_instance" RENAME COLUMN "shortTextValue_temp" TO "shortTextValue" @@
 
 
-ALTER TABLE "data_instance" ADD "discriminant_temp" VARCHAR2(50 CHAR) NOT NULL @@
+ALTER TABLE "data_instance" ADD "discriminant_temp" VARCHAR2(50 CHAR) @@
 UPDATE "data_instance" SET "discriminant_temp" = "discriminant" @@
 ALTER TABLE "data_instance" DROP COLUMN "discriminant" @@
 ALTER TABLE "data_instance" RENAME COLUMN "discriminant_temp" TO "discriminant" @@
+ALTER TABLE "data_instance" MODIFY "discriminant" NOT NULL @@
 
 
 --
@@ -112,10 +113,11 @@ ALTER TABLE "arch_data_instance" DROP COLUMN "shortTextValue" @@
 ALTER TABLE "arch_data_instance" RENAME COLUMN "shortTextValue_temp" TO "shortTextValue" @@
 
 
-ALTER TABLE "arch_data_instance" ADD "discriminant_temp" VARCHAR2(50 CHAR) NOT NULL @@
+ALTER TABLE "arch_data_instance" ADD "discriminant_temp" VARCHAR2(50 CHAR) @@
 UPDATE "arch_data_instance" SET "discriminant_temp" = "discriminant" @@
 ALTER TABLE "arch_data_instance" DROP COLUMN "discriminant" @@
 ALTER TABLE "arch_data_instance" RENAME COLUMN "discriminant_temp" TO "discriminant" @@
+ALTER TABLE "arch_data_instance" MODIFY "discriminant" NOT NULL @@
 
 
 --

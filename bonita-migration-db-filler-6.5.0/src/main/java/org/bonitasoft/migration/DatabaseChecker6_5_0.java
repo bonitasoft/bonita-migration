@@ -24,7 +24,6 @@ import org.bonitasoft.engine.bpm.process.ProcessDefinition;
 import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder;
 import org.bonitasoft.engine.expression.ExpressionBuilder;
 import org.bonitasoft.engine.identity.User;
-import org.bonitasoft.engine.test.APITestUtil;
 import org.bonitasoft.engine.test.BuildTestUtil;
 import org.dom4j.Document;
 import org.dom4j.io.SAXReader;
@@ -32,9 +31,8 @@ import org.junit.Test;
 import org.junit.runner.JUnitCore;
 
 
-public class DatabaseChecker6_5_0 extends SimpleDatabaseChecker6_4_0 {
+public class DatabaseChecker6_5_0 extends SimpleDatabaseChecker6_5_0 {
 
-    public static APITestUtil apiTestUtil = new APITestUtil();
 
     public static void main(final String[] args) throws Exception {
         JUnitCore.main(DatabaseChecker6_5_0.class.getName());

@@ -2,16 +2,18 @@
 -- FlowNode_instance
 -- 
 
-ALTER TABLE "flownode_instance" ADD "kind_temp" VARCHAR2(25 CHAR) NOT NULL @@
+ALTER TABLE "flownode_instance" ADD "kind_temp" VARCHAR2(25 CHAR) @@
 UPDATE "flownode_instance" SET "kind_temp" = "kind" @@
 ALTER TABLE "flownode_instance" DROP COLUMN "kind" @@
 ALTER TABLE "flownode_instance" RENAME COLUMN "kind_temp" TO "kind" @@
+ALTER TABLE "flownode_instance" MODIFY "kind" NOT NULL @@
 
 
-ALTER TABLE "flownode_instance" ADD "name_temp" VARCHAR2(50 CHAR) NOT NULL @@
+ALTER TABLE "flownode_instance" ADD "name_temp" VARCHAR2(50 CHAR) @@
 UPDATE "flownode_instance" SET "name_temp" = "name" @@
 ALTER TABLE "flownode_instance" DROP COLUMN "name" @@
 ALTER TABLE "flownode_instance" RENAME COLUMN "name_temp" TO "name" @@
+ALTER TABLE "flownode_instance" MODIFY "name" NOT NULL @@
 
 
 ALTER TABLE "flownode_instance" ADD "displayName_temp" VARCHAR2(75 CHAR) @@
@@ -44,10 +46,11 @@ ALTER TABLE "flownode_instance" DROP COLUMN "hitBys" @@
 ALTER TABLE "flownode_instance" RENAME COLUMN "hitBys_temp" TO "hitBys" @@
 
 
-ALTER TABLE "flownode_instance" ADD "stateCategory_temp" VARCHAR2(50 CHAR) NOT NULL @@
+ALTER TABLE "flownode_instance" ADD "stateCategory_temp" VARCHAR2(50 CHAR) @@
 UPDATE "flownode_instance" SET "stateCategory_temp" = "stateCategory" @@
 ALTER TABLE "flownode_instance" DROP COLUMN "stateCategory" @@
 ALTER TABLE "flownode_instance" RENAME COLUMN "stateCategory_temp" TO "stateCategory" @@
+ALTER TABLE "flownode_instance" MODIFY "stateCategory" NOT NULL @@
 
 
 ALTER TABLE "flownode_instance" ADD "description" VARCHAR2(255 CHAR) @@
@@ -86,16 +89,18 @@ ALTER TABLE "flownode_instance" RENAME COLUMN "dataOutputItemRef_temp" TO "dataO
 -- Archived_flowNode_instance
 -- 
 
-ALTER TABLE "arch_flownode_instance" ADD "kind_temp" VARCHAR2(25 CHAR) NOT NULL @@
+ALTER TABLE "arch_flownode_instance" ADD "kind_temp" VARCHAR2(25 CHAR) @@
 UPDATE "arch_flownode_instance" SET "kind_temp" = "kind" @@
 ALTER TABLE "arch_flownode_instance" DROP COLUMN "kind" @@
 ALTER TABLE "arch_flownode_instance" RENAME COLUMN "kind_temp" TO "kind" @@
+ALTER TABLE "arch_flownode_instance" MODIFY "kind" NOT NULL @@
 
 
-ALTER TABLE "arch_flownode_instance" ADD "name_temp" VARCHAR2(50 CHAR) NOT NULL @@
+ALTER TABLE "arch_flownode_instance" ADD "name_temp" VARCHAR2(50 CHAR) @@
 UPDATE "arch_flownode_instance" SET "name_temp" = "name" @@
 ALTER TABLE "arch_flownode_instance" DROP COLUMN "name" @@
 ALTER TABLE "arch_flownode_instance" RENAME COLUMN "name_temp" TO "name" @@
+ALTER TABLE "arch_flownode_instance" MODIFY "name" NOT NULL @@
 
 
 ALTER TABLE "arch_flownode_instance" ADD "displayName_temp" VARCHAR2(75 CHAR) @@

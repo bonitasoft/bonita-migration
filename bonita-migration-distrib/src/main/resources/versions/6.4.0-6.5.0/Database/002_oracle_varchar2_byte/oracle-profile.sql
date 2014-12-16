@@ -2,10 +2,11 @@
 -- Profile
 -- 
 
-ALTER TABLE "profile" ADD "name_temp" VARCHAR2(50 CHAR) NOT NULL @@
+ALTER TABLE "profile" ADD "name_temp" VARCHAR2(50 CHAR) @@
 UPDATE "profile" SET "name_temp" = "name" @@
 ALTER TABLE "profile" DROP COLUMN "name" @@
 ALTER TABLE "profile" RENAME COLUMN "name_temp" TO "name" @@
+ALTER TABLE "profile" MODIFY "name" NOT NULL @@
 
 
 ALTER TABLE "profile" ADD "description_temp" VARCHAR2(1024 CHAR) @@

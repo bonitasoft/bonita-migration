@@ -2,10 +2,11 @@
 -- Event_trigger_instance
 -- 
 
-ALTER TABLE "event_trigger_instance" ADD "kind_temp" VARCHAR2(15 CHAR) NOT NULL @@
+ALTER TABLE "event_trigger_instance" ADD "kind_temp" VARCHAR2(15 CHAR) @@
 UPDATE "event_trigger_instance" SET "kind_temp" = "kind" @@
 ALTER TABLE "event_trigger_instance" DROP COLUMN "kind" @@
 ALTER TABLE "event_trigger_instance" RENAME COLUMN "kind_temp" TO "kind" @@
+ALTER TABLE "event_trigger_instance" MODIFY "kind" NOT NULL @@
 
 
 ALTER TABLE "event_trigger_instance" ADD "eventInstanceName_temp" VARCHAR2(50 CHAR) @@

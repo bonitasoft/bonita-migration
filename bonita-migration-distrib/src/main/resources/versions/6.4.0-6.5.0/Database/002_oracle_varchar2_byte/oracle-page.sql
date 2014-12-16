@@ -2,10 +2,11 @@
 -- Page
 -- 
 
-ALTER TABLE "page" ADD "name_temp" VARCHAR2(50 CHAR) NOT NULL @@
+ALTER TABLE "page" ADD "name_temp" VARCHAR2(50 CHAR) @@
 UPDATE "page" SET "name_temp" = "name" @@
 ALTER TABLE "page" DROP COLUMN "name" @@
 ALTER TABLE "page" RENAME COLUMN "name_temp" TO "name" @@
+ALTER TABLE "page" MODIFY "name" NOT NULL @@
 
 
 ALTER TABLE "page" ADD "description_temp" VARCHAR2(1024 CHAR) @@
@@ -14,13 +15,15 @@ ALTER TABLE "page" DROP COLUMN "description" @@
 ALTER TABLE "page" RENAME COLUMN "description_temp" TO "description" @@
 
 
-ALTER TABLE "page" ADD "displayName_temp" VARCHAR2(255 CHAR) NOT NULL @@
+ALTER TABLE "page" ADD "displayName_temp" VARCHAR2(255 CHAR) @@
 UPDATE "page" SET "displayName_temp" = "displayName" @@
 ALTER TABLE "page" DROP COLUMN "displayName" @@
 ALTER TABLE "page" RENAME COLUMN "displayName_temp" TO "displayName" @@
+ALTER TABLE "page" MODIFY "displayName" NOT NULL @@
 
 
-ALTER TABLE "page" ADD "contentName_temp" VARCHAR2(50 CHAR) NOT NULL @@
+ALTER TABLE "page" ADD "contentName_temp" VARCHAR2(50 CHAR) @@
 UPDATE "page" SET "contentName_temp" = "contentName" @@
 ALTER TABLE "page" DROP COLUMN "contentName" @@
 ALTER TABLE "page" RENAME COLUMN "contentName_temp" TO "contentName" @@
+ALTER TABLE "page" MODIFY "contentName" NOT NULL @@

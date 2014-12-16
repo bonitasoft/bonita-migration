@@ -90,7 +90,7 @@ public class DatabaseCheckerInitiliazer6_3_1 {
         closeSpringContext();
     }
 
-    private static void setupSpringContext() {
+    protected static void setupSpringContext() {
         setSystemPropertyIfNotSet("sysprop.bonita.db.vendor", "h2");
 
         // Force these system properties
@@ -100,7 +100,7 @@ public class DatabaseCheckerInitiliazer6_3_1 {
         springContext = new ClassPathXmlApplicationContext("datasource.xml", "jndi-setup.xml");
     }
 
-    private static void closeSpringContext() {
+    protected static void closeSpringContext() {
         springContext.close();
     }
 
@@ -108,7 +108,7 @@ public class DatabaseCheckerInitiliazer6_3_1 {
         return springContext;
     }
 
-    private static void setSystemPropertyIfNotSet(final String property, final String value) {
+    protected static void setSystemPropertyIfNotSet(final String property, final String value) {
         System.setProperty(property, System.getProperty(property, value));
     }
 
