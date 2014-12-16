@@ -16,6 +16,7 @@ package org.bonitasoft.migration.versions.v6_4_0_to_6_4_1
 
 import groovy.sql.Sql
 
+import org.apache.commons.io.IOUtils;
 import org.bonitasoft.migration.core.DatabaseMigrationStep
 
 import com.thoughtworks.xstream.XStream;
@@ -32,15 +33,23 @@ class MigrateDateDataInstancesFromWrongXMLObject extends DatabaseMigrationStep {
 
     @Override
     def migrate() {
-        def row = sql.eachRow("SELECT * FROM data_instance where DISCRIMINANT = 'SXMLObjectDataInstanceImpl'"){ row ->
-             def tenantId = row.tenantId
-             def id = row.id
-             executeUpdate("UPDATE data_instance set LONGVALUE="+getDate(row.clobValue)+", CLOBVALUE=NULL, DISCRIMINANT='SDateDataInstanceImpl' WHERE tenantId="+tenantId+" AND id="+id)
+        def row = sql.eachRow("SELECT tenantId, id, clobValue FROM data_instance where DISCRIMINANT = 'SXMLObjectDataInstanceImpl'"){ row ->
+            def tenantId = row.tenantId
+            def id = row.id
+            def rowClobValue = row.clobValue
+            def clobAsString = rowClobValue;
+            // Special treatment of blobs in Oracle:
+            if( rowClobValue != null && dbVendor == "oracle") {
+                StringWriter w = new StringWriter();
+                IOUtils.copy(rowClobValue.getCharacterStream(), w);
+                clobAsString = w.toString();
+            }
+
+            executeUpdate("UPDATE data_instance set LONGVALUE=" + getDate(clobAsString) + ", CLOBVALUE=NULL, DISCRIMINANT='SDateDataInstanceImpl' WHERE tenantId=" + tenantId + " AND id=" + id)
         }
     }
-    
+
     def getDate(String xmlDate) {
         return ((java.util.Date) new XStream(new StaxDriver()).fromXML(xmlDate)).getTime()
     }
-    
 }
