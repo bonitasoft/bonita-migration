@@ -13,7 +13,11 @@
  **/
 package ${package};
 
+import org.dom4j.Document;
+import org.dom4j.io.SAXReader;
 import org.junit.runner.JUnitCore;
+
+import org.bonitasoft.migration.DatabaseChecker6_4_0;
 
 
 public class DatabaseChecker${db-filler-suffix} extends SimpleDatabaseChecker6_4_0 {
@@ -21,5 +25,11 @@ public class DatabaseChecker${db-filler-suffix} extends SimpleDatabaseChecker6_4
     public static void main(final String[] args) throws Exception {
         JUnitCore.main(DatabaseChecker${db-filler-suffix}.class.getName());
     }
+    
+    @Override
+    protected Document getProfilesXML(final SAXReader reader) throws Exception {
+        return reader.read(DatabaseChecker${db-filler-suffix}.class.getResource("profiles.xml"));
+    }
+
 
 }
