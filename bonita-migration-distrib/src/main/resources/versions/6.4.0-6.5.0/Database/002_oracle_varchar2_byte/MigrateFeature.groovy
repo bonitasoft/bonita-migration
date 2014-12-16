@@ -1,0 +1,28 @@
+import org.bonitasoft.migration.core.MigrationUtil;
+ 
+MigrationUtil.executeSqlFile(feature, dbVendor, "actor", parameters, sql, false);
+MigrationUtil.executeSqlFile(feature, dbVendor, "arch_transition_instance", parameters, sql, false);
+MigrationUtil.executeSqlFile(feature, dbVendor, "biz_data_instance", parameters, sql, false);
+MigrationUtil.executeSqlFile(feature, dbVendor, "breakpoint", parameters, sql, false);
+MigrationUtil.executeSqlFile(feature, dbVendor, "business_app", parameters, sql, false);
+MigrationUtil.executeSqlFile(feature, dbVendor, "category", parameters, sql, false);
+MigrationUtil.executeSqlFile(feature, dbVendor, "command", parameters, sql, false);
+MigrationUtil.executeSqlFile(feature, dbVendor, "comment", parameters, sql, false);
+MigrationUtil.executeSqlFile(feature, dbVendor, "connector_instance", parameters, sql, false);
+MigrationUtil.executeSqlFile(feature, dbVendor, "data_instance", parameters, sql, false);
+MigrationUtil.executeSqlFile(feature, dbVendor, "dependency", parameters, sql, false);
+MigrationUtil.executeSqlFile(feature, dbVendor, "document", parameters, sql, false);
+MigrationUtil.executeSqlFile(feature, dbVendor, "event_trigger_instance", parameters, sql, false);
+MigrationUtil.executeSqlFile(feature, dbVendor, "flownode_instance", parameters, sql, false);
+MigrationUtil.executeSqlFile(feature, dbVendor, "identity", parameters, sql, false);
+MigrationUtil.executeSqlFile(feature, dbVendor, "log", parameters, sql, false);
+MigrationUtil.executeSqlFile(feature, dbVendor, "message_instance", parameters, sql, false);
+MigrationUtil.executeSqlFile(feature, dbVendor, "migration", parameters, sql, false);
+MigrationUtil.executeSqlFile(feature, dbVendor, "page", parameters, sql, false);
+MigrationUtil.executeSqlFile(feature, dbVendor, "platform", parameters, sql, false);
+MigrationUtil.executeSqlFile(feature, dbVendor, "process_definition", parameters, sql, false);
+MigrationUtil.executeSqlFile(feature, dbVendor, "process_instance", parameters, sql, false);
+MigrationUtil.executeSqlFile(feature, dbVendor, "report", parameters, sql, false);
+MigrationUtil.executeSqlFile(feature, dbVendor, "scheduler", parameters, sql, false);
+MigrationUtil.executeSqlFile(feature, dbVendor, "theme", parameters, sql, false);
+MigrationUtil.executeSqlFile(feature, dbVendor, "waiting_event", parameters, sql, false);
