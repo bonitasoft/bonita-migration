@@ -2,7 +2,7 @@
 -- ACTOR
 -- 
 -- WARNING: If the index below is backing a unique/primary key constraint this DROP INDEX statement may cause an error if the constraint was already dropped
-ALTER TABLE actor DISABLE UNIQUE (tenantid, id, scopeId, name)  @@
+ALTER TABLE actor DISABLE UNIQUE (tenantid, id, scopeId, name) @@
 ALTER TABLE actor DROP UNIQUE (tenantid, id, scopeId, name) @@
 
 ALTER TABLE actor ADD name_temp VARCHAR2(50 CHAR) @@

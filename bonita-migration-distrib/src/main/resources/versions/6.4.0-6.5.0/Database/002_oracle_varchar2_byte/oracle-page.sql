@@ -2,7 +2,7 @@
 -- Page
 -- 
 -- WARNING: If the index below is backing a unique/primary key constraint this DROP INDEX statement may cause an error if the constraint was already dropped
-ALTER TABLE page DISABLE UNIQUE (tenantId, name)  @@
+ALTER TABLE page DISABLE UNIQUE (tenantId, name) @@
 ALTER TABLE page DROP UNIQUE (tenantId, name) @@
 
 

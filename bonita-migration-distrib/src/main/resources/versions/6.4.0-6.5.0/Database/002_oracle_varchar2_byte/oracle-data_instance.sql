@@ -55,7 +55,7 @@ ALTER TABLE data_instance MODIFY discriminant NOT NULL @@
 -- Data_mapping
 -- 
 -- WARNING: If the index below is backing a unique/primary key constraint this DROP INDEX statement may cause an error if the constraint was already dropped
-ALTER TABLE data_mapping DISABLE UNIQUE (tenantId, containerId, containerType, dataName)  @@
+ALTER TABLE data_mapping DISABLE UNIQUE (tenantId, containerId, containerType, dataName) @@
 ALTER TABLE data_mapping DROP UNIQUE (tenantId, containerId, containerType, dataName) @@
 
 ALTER TABLE data_mapping ADD containerType_temp VARCHAR2(60 CHAR) @@

@@ -2,7 +2,7 @@
 -- Category
 -- 
 -- WARNING: If the index below is backing a unique/primary key constraint this DROP INDEX statement may cause an error if the constraint was already dropped
-ALTER TABLE category DISABLE UNIQUE (tenantid, name)  @@
+ALTER TABLE category DISABLE UNIQUE (tenantid, name) @@
 ALTER TABLE category DROP UNIQUE (tenantid, name) @@
 
 ALTER TABLE category ADD name_temp VARCHAR2(50 CHAR) @@
