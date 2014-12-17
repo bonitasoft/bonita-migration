@@ -58,9 +58,9 @@ ALTER TABLE waiting_event RENAME COLUMN correlation2_temp TO correlation2 @@
 
 
 ALTER TABLE waiting_event ADD correlation3_temp VARCHAR2(128 CHAR) @@
-UPDATE waiting_event SET correlation3_temp = "correlation3" @@
-ALTER TABLE waiting_event DROP COLUMN "correlation3" @@
-ALTER TABLE waiting_event RENAME COLUMN correlation3_temp TO "correlation3" @@
+UPDATE waiting_event SET correlation3_temp = correlation3 @@
+ALTER TABLE waiting_event DROP COLUMN correlation3 @@
+ALTER TABLE waiting_event RENAME COLUMN correlation3_temp TO correlation3 @@
 
 
 ALTER TABLE waiting_event ADD correlation4_temp VARCHAR2(128 CHAR) @@
@@ -70,6 +70,6 @@ ALTER TABLE waiting_event RENAME COLUMN correlation4_temp TO correlation4 @@
 
 
 ALTER TABLE waiting_event ADD correlation5_temp VARCHAR2(128 CHAR) @@
-UPDATE waiting_event SET correlation5_temp = "correlation5" @@
-ALTER TABLE waiting_event DROP COLUMN "correlation5" @@
-ALTER TABLE waiting_event RENAME COLUMN correlation5_temp TO "correlation5" @@
+UPDATE waiting_event SET correlation5_temp = correlation5 @@
+ALTER TABLE waiting_event DROP COLUMN correlation5 @@
+ALTER TABLE waiting_event RENAME COLUMN correlation5_temp TO correlation5 @@
