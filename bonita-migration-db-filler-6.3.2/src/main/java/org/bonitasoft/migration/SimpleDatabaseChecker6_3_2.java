@@ -29,7 +29,7 @@ import org.junit.Test;
 
 /**
  * Check that the migrated database is ok
- * 
+ *
  * @author Elias Ricken de Medeiros
  */
 public class SimpleDatabaseChecker6_3_2 extends SimpleDatabaseChecker6_3_1 {
@@ -56,7 +56,10 @@ public class SimpleDatabaseChecker6_3_2 extends SimpleDatabaseChecker6_3_1 {
     private List<SimpleCommandDescriptor> toSimpleCommandDescriptors(final List<CommandDescriptor> commandDescriptors) {
         final List<SimpleCommandDescriptor> simpleConfigCommands = new ArrayList<SimpleCommandDescriptor>(commandDescriptors.size());
         for (final CommandDescriptor configCommand : commandDescriptors) {
-            simpleConfigCommands.add(new SimpleCommandDescriptor(configCommand.getName(), configCommand.getImplementation(), configCommand.getDescription()));
+            if (!configCommand.getName().equals("waitServerCommand")) {
+                simpleConfigCommands
+                        .add(new SimpleCommandDescriptor(configCommand.getName(), configCommand.getImplementation(), configCommand.getDescription()));
+            }
         }
         return simpleConfigCommands;
     }
