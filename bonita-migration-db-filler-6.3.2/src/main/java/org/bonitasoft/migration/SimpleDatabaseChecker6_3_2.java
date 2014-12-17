@@ -56,12 +56,12 @@ public class SimpleDatabaseChecker6_3_2 extends SimpleDatabaseChecker6_3_1 {
     private List<SimpleCommandDescriptor> toSimpleCommandDescriptors(final List<CommandDescriptor> commandDescriptors) {
         final List<SimpleCommandDescriptor> simpleConfigCommands = new ArrayList<SimpleCommandDescriptor>(commandDescriptors.size());
         for (final CommandDescriptor configCommand : commandDescriptors) {
-            if (!configCommand.getName().equals("waitServerCommand")) {
+            if (!(configCommand.getName().equals("waitServerCommand") || configCommand.getName().equals("addHandlerCommand") || configCommand.getName().equals(
+                    "executeEventsCommand"))) {
                 simpleConfigCommands
                         .add(new SimpleCommandDescriptor(configCommand.getName(), configCommand.getImplementation(), configCommand.getDescription()));
             }
         }
         return simpleConfigCommands;
     }
-
 }
