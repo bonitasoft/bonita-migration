@@ -17,7 +17,6 @@ MigrationUtil.executeSqlFile(feature, dbVendor, "flownode_instance", null, sql, 
 MigrationUtil.executeSqlFile(feature, dbVendor, "identity", null, sql, false);
 MigrationUtil.executeSqlFile(feature, dbVendor, "log", null, sql, false);
 MigrationUtil.executeSqlFile(feature, dbVendor, "message_instance", null, sql, false);
-MigrationUtil.executeSqlFile(feature, dbVendor, "migration", null, sql, false);
 MigrationUtil.executeSqlFile(feature, dbVendor, "page", null, sql, false);
 MigrationUtil.executeSqlFile(feature, dbVendor, "platform", null, sql, false);
 MigrationUtil.executeSqlFile(feature, dbVendor, "process_definition", null, sql, false);
