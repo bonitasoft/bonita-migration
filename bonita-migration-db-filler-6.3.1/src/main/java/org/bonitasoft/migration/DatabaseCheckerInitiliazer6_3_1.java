@@ -151,10 +151,10 @@ public class DatabaseCheckerInitiliazer6_3_1 {
             builder.filter(ActivityInstanceSearchDescriptor.PROCESS_INSTANCE_ID, processInstanceId);
             builder.filter(ActivityInstanceSearchDescriptor.NAME, taskName);
             builder.filter(ActivityInstanceSearchDescriptor.STATE_NAME, "ready");
-            searchResult = processAPI.searchActivities(builder.done());
+            searchResult = getProcessAPI().searchActivities(builder.done());
         } while (searchResult.getCount() == 0 && now + timeout > System.currentTimeMillis());
         assertEquals(1, searchResult.getCount());
-        final HumanTaskInstance getHumanTaskInstance = processAPI.getHumanTaskInstance(searchResult.getResult().get(0).getId());
+        final HumanTaskInstance getHumanTaskInstance = getProcessAPI().getHumanTaskInstance(searchResult.getResult().get(0).getId());
         assertNotNull(getHumanTaskInstance);
         return getHumanTaskInstance;
     }
@@ -166,7 +166,7 @@ public class DatabaseCheckerInitiliazer6_3_1 {
             final SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 1);
             builder.filter(ArchivedProcessInstancesSearchDescriptor.SOURCE_OBJECT_ID, processInstanceId);
             builder.filter(ArchivedProcessInstancesSearchDescriptor.STATE_ID, ProcessInstanceState.COMPLETED.getId());
-            searchResult = processAPI.searchArchivedProcessInstances(builder.done());
+            searchResult = getProcessAPI().searchArchivedProcessInstances(builder.done());
         } while (searchResult.getCount() == 0 && now + timeout > System.currentTimeMillis());
         assertEquals(1, searchResult.getCount());
     }
