@@ -39,30 +39,58 @@ import org.bonitasoft.engine.session.PlatformSession;
 import org.bonitasoft.engine.test.APITestUtil;
 import org.bonitasoft.engine.test.PlatformTestUtil;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * @author Elias Ricken de Medeiros
- *
  */
 public class DatabaseCheckerInitiliazer6_3_1 {
 
     protected static ClassPathXmlApplicationContext springContext;
 
-    protected static ProcessAPI processAPI;
+    private ProcessAPI processAPI;
 
-    protected static ProfileAPI profileAPI;
+    private ProfileAPI profileAPI;
 
-    protected static IdentityAPI identityApi;
+    private IdentityAPI identityApi;
 
-    protected static CommandAPI commandApi;
+    private CommandAPI commandApi;
 
-    protected static APISession session;
+    private APISession session;
 
     private static PlatformTestUtil platformTestUtil = new PlatformTestUtil();
 
     public static APITestUtil apiTestUtil = new APITestUtil();
+
+    public ProcessAPI getProcessAPI() {
+        return processAPI;
+    }
+
+    public ProfileAPI getProfileAPI() {
+        return profileAPI;
+    }
+
+    public IdentityAPI getIdentityApi() {
+        return identityApi;
+    }
+
+    public CommandAPI getCommandApi() {
+        return commandApi;
+    }
+
+    public APISession getSession() {
+        return session;
+    }
+
+    public static PlatformTestUtil getPlatformTestUtil() {
+        return platformTestUtil;
+    }
+
+    public static APITestUtil getApiTestUtil() {
+        return apiTestUtil;
+    }
 
     @BeforeClass
     public static void setup() throws BonitaException {
@@ -71,14 +99,7 @@ public class DatabaseCheckerInitiliazer6_3_1 {
         final PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(platformSession);
         platformAPI.startNode();
         platformTestUtil.logoutOnPlatform(platformSession);
-        apiTestUtil.loginOnDefaultTenantWith(APITestUtil.DEFAULT_TECHNICAL_LOGGER_USERNAME, APITestUtil.DEFAULT_TECHNICAL_LOGGER_PASSWORD);
-        session = apiTestUtil.getSession();
-        processAPI = TenantAPIAccessor.getProcessAPI(session);
-        identityApi = TenantAPIAccessor.getIdentityAPI(session);
-        profileAPI = TenantAPIAccessor.getProfileAPI(session);
-        commandApi = TenantAPIAccessor.getCommandAPI(session);
     }
-
 
     @AfterClass
     public static void teardown() throws BonitaException {
@@ -88,6 +109,16 @@ public class DatabaseCheckerInitiliazer6_3_1 {
         apiTestUtil.stopPlatformAndTenant(platformAPI, false);
         apiTestUtil.logoutOnPlatform(pSession);
         closeSpringContext();
+    }
+
+    @Before
+    public void before() throws BonitaException {
+        apiTestUtil.loginOnDefaultTenantWith(APITestUtil.DEFAULT_TECHNICAL_LOGGER_USERNAME, APITestUtil.DEFAULT_TECHNICAL_LOGGER_PASSWORD);
+        session = apiTestUtil.getSession();
+        processAPI = TenantAPIAccessor.getProcessAPI(session);
+        identityApi = TenantAPIAccessor.getIdentityAPI(session);
+        profileAPI = TenantAPIAccessor.getProfileAPI(session);
+        commandApi = TenantAPIAccessor.getCommandAPI(session);
     }
 
     protected static void setupSpringContext() {

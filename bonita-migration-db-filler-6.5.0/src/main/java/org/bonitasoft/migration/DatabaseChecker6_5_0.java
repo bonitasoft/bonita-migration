@@ -17,7 +17,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 
-import org.bonitasoft.engine.api.TenantAPIAccessor;
 import org.bonitasoft.engine.bpm.flownode.HumanTaskInstance;
 import org.bonitasoft.engine.bpm.process.DesignProcessDefinition;
 import org.bonitasoft.engine.bpm.process.ProcessDefinition;
@@ -30,9 +29,7 @@ import org.dom4j.io.SAXReader;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
 
-
 public class DatabaseChecker6_5_0 extends SimpleDatabaseChecker6_5_0 {
-
 
     public static void main(final String[] args) throws Exception {
         JUnitCore.main(DatabaseChecker6_5_0.class.getName());
@@ -45,9 +42,7 @@ public class DatabaseChecker6_5_0 extends SimpleDatabaseChecker6_5_0 {
 
     @Test
     public void can_creatte_FlowNodeInstance_with_several_non_ascii_characters() throws Exception {
-        processAPI = TenantAPIAccessor.getProcessAPI(session);
-        apiTestUtil.loginOnDefaultTenantWithDefaultTechnicalUser();
-        final User user = apiTestUtil.createUser("tom", "bpm");
+        final User user = getApiTestUtil().createUser("tom", "bpm");
 
         final String taskName = "Žingsnis, kuriame paraiškos te";
         //        final String taskName = "Žingsnis, kuriame paraiškos teikėjas gali laisvai užpildyti duomenis, ąčęė";
@@ -60,13 +55,13 @@ public class DatabaseChecker6_5_0 extends SimpleDatabaseChecker6_5_0 {
                 .addDisplayName(new ExpressionBuilder().createConstantStringExpression(taskName))
                 .addDescription("description");
 
-        final ProcessDefinition processDef1 = apiTestUtil.deployAndEnableProcessWithActor(designProcessDef1, BuildTestUtil.ACTOR_NAME, user);
-        processAPI.startProcess(processDef1.getId());
-        final HumanTaskInstance task1 = apiTestUtil.waitForUserTask(taskName);
+        final ProcessDefinition processDef1 = getApiTestUtil().deployAndEnableProcessWithActor(designProcessDef1, BuildTestUtil.ACTOR_NAME, user);
+        getProcessAPI().startProcess(processDef1.getId());
+        final HumanTaskInstance task1 = getApiTestUtil().waitForUserTask(taskName);
         assertEquals(taskName, task1.getDisplayName());
 
-        apiTestUtil.disableAndDeleteProcess(processDef1);
-        apiTestUtil.deleteUser(user);
+        getApiTestUtil().disableAndDeleteProcess(processDef1);
+        getApiTestUtil().deleteUser(user);
     }
 
 }

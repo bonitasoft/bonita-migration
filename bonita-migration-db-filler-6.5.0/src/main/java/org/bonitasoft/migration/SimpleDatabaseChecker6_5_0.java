@@ -13,33 +13,41 @@
  **/
 package org.bonitasoft.migration;
 
-import static org.bonitasoft.migration.DatabaseCheckerInitiliazer6_3_1.setupSpringContext;
-
+import org.bonitasoft.engine.api.CommandAPI;
+import org.bonitasoft.engine.api.IdentityAPI;
 import org.bonitasoft.engine.api.PlatformAPI;
 import org.bonitasoft.engine.api.PlatformAPIAccessor;
+import org.bonitasoft.engine.api.ProcessAPI;
+import org.bonitasoft.engine.api.ProfileAPI;
+import org.bonitasoft.engine.api.TenantAPIAccessor;
 import org.bonitasoft.engine.exception.BonitaException;
+import org.bonitasoft.engine.session.APISession;
 import org.bonitasoft.engine.session.PlatformSession;
 import org.bonitasoft.engine.test.APITestUtil;
 import org.bonitasoft.engine.test.ClientEventUtil;
 import org.bonitasoft.engine.test.PlatformTestUtil;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * @author Celine Souchet
  */
 public class SimpleDatabaseChecker6_5_0 extends SimpleDatabaseChecker6_4_0 {
 
-    private final Logger logger = LoggerFactory.getLogger(SimpleDatabaseChecker6_5_0.class);
+    private ProcessAPI processAPI;
 
-    private static ClassPathXmlApplicationContext springContext;
+    private ProfileAPI profileAPI;
+
+    private IdentityAPI identityApi;
+
+    private CommandAPI commandApi;
+
+    private APISession session;
 
     private static PlatformTestUtil platformTestUtil = new PlatformTestUtil();
 
-    protected static APITestUtil apiTestUtil = new APITestUtil();
+    private static APITestUtil apiTestUtil = new APITestUtil();
 
     @BeforeClass
     public static void setup() throws BonitaException {
@@ -65,6 +73,48 @@ public class SimpleDatabaseChecker6_5_0 extends SimpleDatabaseChecker6_4_0 {
         closeSpringContext();
     }
 
+    @Override
+    @Before
+    public void before() throws BonitaException {
+        getApiTestUtil().loginOnDefaultTenantWithDefaultTechnicalUser();
+        session = apiTestUtil.getSession();
+        processAPI = TenantAPIAccessor.getProcessAPI(session);
+        identityApi = TenantAPIAccessor.getIdentityAPI(session);
+        profileAPI = TenantAPIAccessor.getProfileAPI(session);
+        commandApi = TenantAPIAccessor.getCommandAPI(session);
+    }
 
+    @Override
+    public ProcessAPI getProcessAPI() {
+        return processAPI;
+    }
+
+    @Override
+    public ProfileAPI getProfileAPI() {
+        return profileAPI;
+    }
+
+    @Override
+    public IdentityAPI getIdentityApi() {
+        return identityApi;
+    }
+
+    @Override
+    public CommandAPI getCommandApi() {
+        return commandApi;
+    }
+
+    @Override
+    public APISession getSession() {
+        return session;
+    }
+
+    public static PlatformTestUtil getPlatformTestUtil() {
+        return platformTestUtil;
+    }
+
+    public static APITestUtil getApiTestUtil() {
+        return apiTestUtil;
+    }
 
 }
