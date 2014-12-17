@@ -2,20 +2,20 @@
 -- ACTOR
 -- 
 
-ALTER TABLE "ACTOR" ADD "name_temp" VARCHAR2(50 CHAR) @@
-UPDATE "ACTOR" SET "name_temp" = "name" @@
-ALTER TABLE "ACTOR" DROP COLUMN "name" @@
-ALTER TABLE "ACTOR" RENAME COLUMN "name_temp" TO "name" @@
-ALTER TABLE "ACTOR" MODIFY "name" NOT NULL @@
+ALTER TABLE actor ADD name_temp VARCHAR2(50 CHAR) @@
+UPDATE actor SET name_temp = name @@
+ALTER TABLE actor DROP COLUMN name @@
+ALTER TABLE actor RENAME COLUMN name_temp TO name @@
+ALTER TABLE actor MODIFY name NOT NULL @@
 
 
-ALTER TABLE "ACTOR" ADD "displayName_temp" VARCHAR2(75 CHAR) @@
-UPDATE "ACTOR" SET "displayName_temp" = "displayName" @@
-ALTER TABLE "ACTOR" DROP COLUMN "displayName" @@
-ALTER TABLE "ACTOR" RENAME COLUMN "displayName_temp" TO "displayName" @@
+ALTER TABLE actor ADD displayName_temp VARCHAR2(75 CHAR) @@
+UPDATE actor SET displayName_temp = displayName @@
+ALTER TABLE actor DROP COLUMN displayName @@
+ALTER TABLE actor RENAME COLUMN displayName_temp TO displayName @@
 
 
-ALTER TABLE "ACTOR" ADD "description_temp" VARCHAR2(1024 CHAR) @@
-UPDATE "ACTOR" SET "description_temp" = "description" @@
-ALTER TABLE "ACTOR" DROP COLUMN "description" @@
-ALTER TABLE "ACTOR" RENAME COLUMN "description_temp" TO "description" @@
+ALTER TABLE actor ADD description_temp VARCHAR2(1024 CHAR) @@
+UPDATE actor SET description_temp = description @@
+ALTER TABLE actor DROP COLUMN description @@
+ALTER TABLE actor RENAME COLUMN description_temp TO description @@
