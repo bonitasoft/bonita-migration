@@ -1,6 +1,9 @@
 --
 -- External_identity_mapping
 -- 
+-- WARNING: If the index below is backing a unique/primary key constraint this DROP INDEX statement may cause an error if the constraint was already dropped
+ALTER TABLE external_identity_mapping DISABLE UNIQUE (tenantid, kind, externalId, userId, groupId, roleId) @@
+ALTER TABLE external_identity_mapping DROP UNIQUE (tenantid, kind, externalId, userId, groupId, roleId) @@
 
 ALTER TABLE external_identity_mapping ADD kind_temp VARCHAR2(25 CHAR) @@
 UPDATE external_identity_mapping SET kind_temp = kind @@
@@ -15,10 +18,17 @@ ALTER TABLE external_identity_mapping DROP COLUMN externalId @@
 ALTER TABLE external_identity_mapping RENAME COLUMN externalId_temp TO externalId @@
 ALTER TABLE external_identity_mapping MODIFY externalId NOT NULL @@
 
+ALTER TABLE external_identity_mapping ADD CONSTRAINT UK_External_Identity_Mapping UNIQUE (tenantid, kind, externalId, userId, groupId, roleId) @@
+ALTER TABLE external_identity_mapping ENABLE CONSTRAINT UK_External_Identity_Mapping @@
+
+
 
 --
 -- Group
 -- 
+-- WARNING: If the index below is backing a unique/primary key constraint this DROP INDEX statement may cause an error if the constraint was already dropped
+ALTER TABLE group_ DISABLE UNIQUE (tenantid, parentPath, name) @@
+ALTER TABLE group_ DROP UNIQUE (tenantid, parentPath, name) @@
 
 ALTER TABLE group_ ADD name_temp VARCHAR2(50 CHAR) @@
 UPDATE group_ SET name_temp = name @@
@@ -56,11 +66,17 @@ UPDATE group_ SET iconPath_temp = iconPath @@
 ALTER TABLE group_ DROP COLUMN iconPath @@
 ALTER TABLE group_ RENAME COLUMN iconPath_temp TO iconPath @@
 
+ALTER TABLE group_ ADD CONSTRAINT UK_Group UNIQUE (tenantid, parentPath, name) @@
+ALTER TABLE group_ ENABLE CONSTRAINT UK_Group @@
+
 
 
 --
 -- Role
 -- 
+-- WARNING: If the index below is backing a unique/primary key constraint this DROP INDEX statement may cause an error if the constraint was already dropped
+ALTER TABLE role DISABLE UNIQUE (tenantId, name) @@
+ALTER TABLE role DROP UNIQUE (tenantId, name) @@
 
 ALTER TABLE role ADD name_temp VARCHAR2(50 CHAR) @@
 UPDATE role SET name_temp = name @@
@@ -92,11 +108,17 @@ UPDATE role SET iconPath_temp = iconPath @@
 ALTER TABLE role DROP COLUMN iconPath @@
 ALTER TABLE role RENAME COLUMN iconPath_temp TO iconPath @@
 
+ALTER TABLE role ADD CONSTRAINT UK_Role UNIQUE (tenantId, name) @@
+ALTER TABLE role ENABLE CONSTRAINT UK_Role @@
+
 
 
 --
 -- User
--- 
+--
+-- WARNING: If the index below is backing a unique/primary key constraint this DROP INDEX statement may cause an error if the constraint was already dropped
+ALTER TABLE user_ DISABLE UNIQUE (tenantId, userName) @@
+ALTER TABLE user_ DROP UNIQUE (tenantId, userName) @@ 
 
 ALTER TABLE user_ ADD userName_temp VARCHAR2(255 CHAR) @@
 UPDATE user_ SET userName_temp = userName @@
@@ -151,6 +173,9 @@ ALTER TABLE user_ ADD iconPath_temp VARCHAR2(50 CHAR) @@
 UPDATE user_ SET iconPath_temp = iconPath @@
 ALTER TABLE user_ DROP COLUMN iconPath @@
 ALTER TABLE user_ RENAME COLUMN iconPath_temp TO iconPath @@
+
+ALTER TABLE user_ ADD CONSTRAINT UK_User UNIQUE (tenantId, userName) @@
+ALTER TABLE user_ ENABLE CONSTRAINT UK_User @@
 
 
 
@@ -234,6 +259,9 @@ ALTER TABLE user_contactinfo RENAME COLUMN website_temp TO website @@
 --
 -- Custom_usr_inf_def
 -- 
+-- WARNING: If the index below is backing a unique/primary key constraint this DROP INDEX statement may cause an error if the constraint was already dropped
+ALTER TABLE custom_usr_inf_def DISABLE UNIQUE (tenantId, name) @@
+ALTER TABLE custom_usr_inf_def DROP UNIQUE (tenantId, name) @@ 
 
 ALTER TABLE custom_usr_inf_def ADD name_temp VARCHAR2(75 CHAR) @@
 UPDATE custom_usr_inf_def SET name_temp = name @@
@@ -246,6 +274,9 @@ ALTER TABLE custom_usr_inf_def ADD description_temp VARCHAR2(1024 CHAR) @@
 UPDATE custom_usr_inf_def SET description_temp = description @@
 ALTER TABLE custom_usr_inf_def DROP COLUMN description @@
 ALTER TABLE custom_usr_inf_def RENAME COLUMN description_temp TO description @@
+
+ALTER TABLE custom_usr_inf_def ADD CONSTRAINT UK_Custom_Usr_Inf_Def UNIQUE (tenantId, name) @@
+ALTER TABLE custom_usr_inf_def ENABLE CONSTRAINT UK_Custom_Usr_Inf_Def @@
 
 
 

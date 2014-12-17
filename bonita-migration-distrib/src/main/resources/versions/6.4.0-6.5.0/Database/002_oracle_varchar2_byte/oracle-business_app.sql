@@ -1,6 +1,9 @@
 --
 -- Business_app
 -- 
+-- WARNING: If the index below is backing a unique/primary key constraint this DROP INDEX statement may cause an error if the constraint was already dropped
+ALTER TABLE business_app DISABLE UNIQUE uk_app_token_version  @@
+ALTER TABLE business_app DROP UNIQUE uk_app_token_version @@
 
 ALTER TABLE business_app ADD token_temp VARCHAR2(50 CHAR) @@
 UPDATE business_app SET token_temp = token @@
@@ -41,17 +44,27 @@ ALTER TABLE business_app DROP COLUMN displayName @@
 ALTER TABLE business_app RENAME COLUMN displayName_temp TO displayName @@
 ALTER TABLE business_app MODIFY displayName NOT NULL @@
 
+ALTER TABLE business_app ADD CONSTRAINT UK_Business_app UNIQUE (tenantId, token, version) @@
+ALTER TABLE business_app ENABLE CONSTRAINT UK_Business_app @@
+
 
 
 --
 -- Business_app_page
 -- 
+-- WARNING: If the index below is backing a unique/primary key constraint this DROP INDEX statement may cause an error if the constraint was already dropped
+ALTER TABLE business_app_page DISABLE UNIQUE uk_app_page_appId_token  @@
+ALTER TABLE business_app_page DROP UNIQUE uk_app_page_appId_token @@
 
 ALTER TABLE business_app_page ADD token_temp VARCHAR2(255 CHAR) @@
 UPDATE business_app_page SET token_temp = token @@
 ALTER TABLE business_app_page DROP COLUMN token @@
 ALTER TABLE business_app_page RENAME COLUMN token_temp TO token @@
 ALTER TABLE business_app_page MODIFY token NOT NULL @@
+
+ALTER TABLE business_app_page ADD CONSTRAINT UK_Business_app_page UNIQUE (tenantId, applicationId, token) @@
+ALTER TABLE business_app_page ENABLE CONSTRAINT UK_Business_app_page @@
+
 
 
 --

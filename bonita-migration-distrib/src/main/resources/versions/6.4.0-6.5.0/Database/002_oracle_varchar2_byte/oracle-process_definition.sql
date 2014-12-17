@@ -1,6 +1,9 @@
 --
 -- Process_definition
 -- 
+-- WARNING: If the index below is backing a unique/primary key constraint this DROP INDEX statement may cause an error if the constraint was already dropped
+ALTER TABLE process_definition DISABLE UNIQUE (tenantId, name, version) @@
+ALTER TABLE process_definition DROP UNIQUE (tenantId, name, version) @@
 
 ALTER TABLE process_definition ADD name_temp VARCHAR2(150 CHAR) @@
 UPDATE process_definition SET name_temp = name @@
@@ -52,3 +55,6 @@ ALTER TABLE process_definition ADD iconPath_temp VARCHAR2(255 CHAR) @@
 UPDATE process_definition SET iconPath_temp = iconPath @@
 ALTER TABLE process_definition DROP COLUMN iconPath @@
 ALTER TABLE process_definition RENAME COLUMN iconPath_temp TO iconPath @@
+
+ALTER TABLE process_definition ADD CONSTRAINT UK_Process_Definition UNIQUE (tenantId, name, version) @@
+ALTER TABLE process_definition ENABLE CONSTRAINT UK_Process_Definition @@

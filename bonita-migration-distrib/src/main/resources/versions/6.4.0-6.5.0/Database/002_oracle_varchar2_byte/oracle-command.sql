@@ -1,6 +1,9 @@
 --
 -- Command
 -- 
+-- WARNING: If the index below is backing a unique/primary key constraint this DROP INDEX statement may cause an error if the constraint was already dropped
+ALTER TABLE command DISABLE UNIQUE (tenantId, name) @@
+ALTER TABLE command DROP UNIQUE (tenantId, name) @@
 
 ALTER TABLE command ADD name_temp VARCHAR2(50 CHAR) @@
 UPDATE command SET name_temp = name @@
@@ -20,6 +23,9 @@ UPDATE command SET IMPLEMENTATION_temp = IMPLEMENTATION @@
 ALTER TABLE command DROP COLUMN IMPLEMENTATION @@
 ALTER TABLE command RENAME COLUMN IMPLEMENTATION_temp TO IMPLEMENTATION @@
 ALTER TABLE command MODIFY IMPLEMENTATION NOT NULL @@
+
+ALTER TABLE command ADD CONSTRAINT UK_Command UNIQUE (tenantId, name) @@
+ALTER TABLE command ENABLE CONSTRAINT UK_Command @@
 
 
 
