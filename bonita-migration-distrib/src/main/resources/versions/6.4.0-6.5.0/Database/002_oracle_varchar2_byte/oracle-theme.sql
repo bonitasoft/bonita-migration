@@ -2,8 +2,8 @@
 -- theme
 -- 
 -- WARNING: If the index below is backing a unique/primary key constraint this DROP INDEX statement may cause an error if the constraint was already dropped
-ALTER TABLE theme DISABLE CONSTRAINT UNIQUE (tenantId, isDefault, type) @@
-ALTER TABLE theme DROP CONSTRAINT UNIQUE (tenantId, isDefault, type) @@
+ALTER TABLE theme DISABLE UNIQUE (tenantId, isDefault, type) @@
+ALTER TABLE theme DROP UNIQUE (tenantId, isDefault, type) @@
 
 
 ALTER TABLE theme ADD type_temp VARCHAR2(50 CHAR) @@
