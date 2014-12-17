@@ -45,7 +45,7 @@ ALTER TABLE process_definition DROP COLUMN displayName @@
 ALTER TABLE process_definition RENAME COLUMN displayName_temp TO displayName @@
 
 
-ALTER TABLE process_definition ADD displayDescription VARCHAR2(255 CHAR) @@
+ALTER TABLE process_definition ADD displayDescription_temp VARCHAR2(255 CHAR) @@
 UPDATE process_definition SET displayDescription_temp = displayDescription @@
 ALTER TABLE process_definition DROP COLUMN displayDescription @@
 ALTER TABLE process_definition RENAME COLUMN displayDescription_temp TO displayDescription @@
