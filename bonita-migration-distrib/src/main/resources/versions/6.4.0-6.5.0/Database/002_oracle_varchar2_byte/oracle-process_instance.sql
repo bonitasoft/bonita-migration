@@ -16,7 +16,7 @@ ALTER TABLE process_instance RENAME COLUMN description_temp TO description @@
 
 
 ALTER TABLE process_instance ADD stateCategory_temp VARCHAR2(50 CHAR) @@
-UPDATE process_instance SET name_temp = stateCategory @@
+UPDATE process_instance SET stateCategory_temp = stateCategory @@
 ALTER TABLE process_instance DROP COLUMN stateCategory @@
 ALTER TABLE process_instance RENAME COLUMN stateCategory_temp TO stateCategory @@
 ALTER TABLE process_instance MODIFY stateCategory NOT NULL @@
