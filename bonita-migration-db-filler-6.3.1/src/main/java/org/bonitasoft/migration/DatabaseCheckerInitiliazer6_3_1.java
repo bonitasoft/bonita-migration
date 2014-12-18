@@ -39,30 +39,58 @@ import org.bonitasoft.engine.session.PlatformSession;
 import org.bonitasoft.engine.test.APITestUtil;
 import org.bonitasoft.engine.test.PlatformTestUtil;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * @author Elias Ricken de Medeiros
- *
  */
 public class DatabaseCheckerInitiliazer6_3_1 {
 
     protected static ClassPathXmlApplicationContext springContext;
 
-    protected static ProcessAPI processAPI;
+    private ProcessAPI processAPI;
 
-    protected static ProfileAPI profileAPI;
+    private ProfileAPI profileAPI;
 
-    protected static IdentityAPI identityApi;
+    private IdentityAPI identityApi;
 
-    protected static CommandAPI commandApi;
+    private CommandAPI commandApi;
 
-    protected static APISession session;
+    private APISession session;
 
     private static PlatformTestUtil platformTestUtil = new PlatformTestUtil();
 
     public static APITestUtil apiTestUtil = new APITestUtil();
+
+    public ProcessAPI getProcessAPI() {
+        return processAPI;
+    }
+
+    public ProfileAPI getProfileAPI() {
+        return profileAPI;
+    }
+
+    public IdentityAPI getIdentityApi() {
+        return identityApi;
+    }
+
+    public CommandAPI getCommandApi() {
+        return commandApi;
+    }
+
+    public APISession getSession() {
+        return session;
+    }
+
+    public static PlatformTestUtil getPlatformTestUtil() {
+        return platformTestUtil;
+    }
+
+    public static APITestUtil getApiTestUtil() {
+        return apiTestUtil;
+    }
 
     @BeforeClass
     public static void setup() throws BonitaException {
@@ -71,14 +99,7 @@ public class DatabaseCheckerInitiliazer6_3_1 {
         final PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(platformSession);
         platformAPI.startNode();
         platformTestUtil.logoutOnPlatform(platformSession);
-        apiTestUtil.loginOnDefaultTenantWith(APITestUtil.DEFAULT_TECHNICAL_LOGGER_USERNAME, APITestUtil.DEFAULT_TECHNICAL_LOGGER_PASSWORD);
-        session = apiTestUtil.getSession();
-        processAPI = TenantAPIAccessor.getProcessAPI(session);
-        identityApi = TenantAPIAccessor.getIdentityAPI(session);
-        profileAPI = TenantAPIAccessor.getProfileAPI(session);
-        commandApi = TenantAPIAccessor.getCommandAPI(session);
     }
-
 
     @AfterClass
     public static void teardown() throws BonitaException {
@@ -90,7 +111,17 @@ public class DatabaseCheckerInitiliazer6_3_1 {
         closeSpringContext();
     }
 
-    private static void setupSpringContext() {
+    @Before
+    public void before() throws BonitaException {
+        apiTestUtil.loginOnDefaultTenantWith(APITestUtil.DEFAULT_TECHNICAL_LOGGER_USERNAME, APITestUtil.DEFAULT_TECHNICAL_LOGGER_PASSWORD);
+        session = apiTestUtil.getSession();
+        processAPI = TenantAPIAccessor.getProcessAPI(session);
+        identityApi = TenantAPIAccessor.getIdentityAPI(session);
+        profileAPI = TenantAPIAccessor.getProfileAPI(session);
+        commandApi = TenantAPIAccessor.getCommandAPI(session);
+    }
+
+    protected static void setupSpringContext() {
         setSystemPropertyIfNotSet("sysprop.bonita.db.vendor", "h2");
 
         // Force these system properties
@@ -100,7 +131,7 @@ public class DatabaseCheckerInitiliazer6_3_1 {
         springContext = new ClassPathXmlApplicationContext("datasource.xml", "jndi-setup.xml");
     }
 
-    private static void closeSpringContext() {
+    protected static void closeSpringContext() {
         springContext.close();
     }
 
@@ -108,7 +139,7 @@ public class DatabaseCheckerInitiliazer6_3_1 {
         return springContext;
     }
 
-    private static void setSystemPropertyIfNotSet(final String property, final String value) {
+    protected static void setSystemPropertyIfNotSet(final String property, final String value) {
         System.setProperty(property, System.getProperty(property, value));
     }
 
@@ -120,10 +151,10 @@ public class DatabaseCheckerInitiliazer6_3_1 {
             builder.filter(ActivityInstanceSearchDescriptor.PROCESS_INSTANCE_ID, processInstanceId);
             builder.filter(ActivityInstanceSearchDescriptor.NAME, taskName);
             builder.filter(ActivityInstanceSearchDescriptor.STATE_NAME, "ready");
-            searchResult = processAPI.searchActivities(builder.done());
+            searchResult = getProcessAPI().searchActivities(builder.done());
         } while (searchResult.getCount() == 0 && now + timeout > System.currentTimeMillis());
         assertEquals(1, searchResult.getCount());
-        final HumanTaskInstance getHumanTaskInstance = processAPI.getHumanTaskInstance(searchResult.getResult().get(0).getId());
+        final HumanTaskInstance getHumanTaskInstance = getProcessAPI().getHumanTaskInstance(searchResult.getResult().get(0).getId());
         assertNotNull(getHumanTaskInstance);
         return getHumanTaskInstance;
     }
@@ -135,7 +166,7 @@ public class DatabaseCheckerInitiliazer6_3_1 {
             final SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 1);
             builder.filter(ArchivedProcessInstancesSearchDescriptor.SOURCE_OBJECT_ID, processInstanceId);
             builder.filter(ArchivedProcessInstancesSearchDescriptor.STATE_ID, ProcessInstanceState.COMPLETED.getId());
-            searchResult = processAPI.searchArchivedProcessInstances(builder.done());
+            searchResult = getProcessAPI().searchArchivedProcessInstances(builder.done());
         } while (searchResult.getCount() == 0 && now + timeout > System.currentTimeMillis());
         assertEquals(1, searchResult.getCount());
     }
