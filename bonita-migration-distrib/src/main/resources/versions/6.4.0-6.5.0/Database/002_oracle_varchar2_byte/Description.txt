@@ -1,0 +1,1 @@
+BS-6831 : For Oracle, replace all columns of the type VARCHAR2(BYTE) by the type VARCHAR2(CHAR).
