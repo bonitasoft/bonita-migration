@@ -15,10 +15,7 @@ package org.bonitasoft.migration;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Arrays;
-
 import org.bonitasoft.engine.bpm.flownode.HumanTaskInstance;
-import org.bonitasoft.engine.bpm.process.DesignProcessDefinition;
 import org.bonitasoft.engine.bpm.process.ProcessDefinition;
 import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder;
 import org.bonitasoft.engine.expression.ExpressionBuilder;
@@ -44,18 +41,17 @@ public class DatabaseChecker6_5_0 extends SimpleDatabaseChecker6_5_0 {
     public void can_creatte_FlowNodeInstance_with_several_non_ascii_characters() throws Exception {
         final User user = getApiTestUtil().createUser("tom", "bpm");
 
-        final String taskName = "Žingsnis, kuriame paraiškos te";
-        //        final String taskName = "Žingsnis, kuriame paraiškos teikėjas gali laisvai užpildyti duomenis, ąčęė";
-        final DesignProcessDefinition designProcessDef1 = BuildTestUtil.buildProcessDefinitionWithHumanAndAutomaticSteps(Arrays.asList(taskName),
-                Arrays.asList(true));
+        final String taskDisplayName = "Žingsnis, kuriame paraiškos teikėjas gali laisvai užpildyti duomenis, ąčęė";
+        final String taskName = "task1क्तु क्तु क्तु क्तु क्तु paraiškos teikėjas Ž";
+
         final ProcessDefinitionBuilder processBuilder = new ProcessDefinitionBuilder().createNewInstance(BuildTestUtil.PROCESS_NAME,
                 BuildTestUtil.PROCESS_VERSION);
         processBuilder.addActor(BuildTestUtil.ACTOR_NAME);
-        processBuilder.addUserTask("task1क्तु क्तु क्तु क्तु क्तु क्तु क्तु क्तु", BuildTestUtil.ACTOR_NAME)
-                .addDisplayName(new ExpressionBuilder().createConstantStringExpression(taskName))
+        processBuilder.addUserTask(taskName, BuildTestUtil.ACTOR_NAME)
+                .addDisplayName(new ExpressionBuilder().createConstantStringExpression(taskDisplayName))
                 .addDescription("description");
 
-        final ProcessDefinition processDef1 = getApiTestUtil().deployAndEnableProcessWithActor(designProcessDef1, BuildTestUtil.ACTOR_NAME, user);
+        final ProcessDefinition processDef1 = getApiTestUtil().deployAndEnableProcessWithActor(processBuilder.done(), BuildTestUtil.ACTOR_NAME, user);
         getProcessAPI().startProcess(processDef1.getId());
         final HumanTaskInstance task1 = getApiTestUtil().waitForUserTask(taskName);
         assertEquals(taskName, task1.getDisplayName());
