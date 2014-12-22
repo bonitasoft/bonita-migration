@@ -33,7 +33,12 @@ class MigrateDateDataInstancesFromWrongXMLObject extends DatabaseMigrationStep {
 
     @Override
     def migrate() {
-        def row = sql.eachRow("SELECT tenantId, id, clobValue FROM data_instance where DISCRIMINANT = 'SXMLObjectDataInstanceImpl'"){ row ->
+        migrateTable("data_instance");
+        migrateTable("arch_data_instance");
+    }
+
+    def migrateTable(String tableName) {
+        def row = sql.eachRow("SELECT tenantId, id, clobValue FROM "+tableName+" where DISCRIMINANT = 'SXMLObjectDataInstanceImpl'"){ row ->
             def tenantId = row.tenantId
             def id = row.id
             def rowClobValue = row.clobValue
@@ -45,10 +50,10 @@ class MigrateDateDataInstancesFromWrongXMLObject extends DatabaseMigrationStep {
                 clobAsString = w.toString();
             }
 
-            executeUpdate("UPDATE data_instance set LONGVALUE=" + getDate(clobAsString) + ", CLOBVALUE=NULL, DISCRIMINANT='SDateDataInstanceImpl' WHERE tenantId=" + tenantId + " AND id=" + id)
+            executeUpdate("UPDATE "+tableName+" set LONGVALUE=" + getDate(clobAsString) + ", CLOBVALUE=NULL, DISCRIMINANT='SDateDataInstanceImpl' WHERE tenantId=" + tenantId + " AND id=" + id)
         }
     }
-
+    
     def getDate(String xmlDate) {
         return ((java.util.Date) new XStream(new StaxDriver()).fromXML(xmlDate)).getTime()
     }
