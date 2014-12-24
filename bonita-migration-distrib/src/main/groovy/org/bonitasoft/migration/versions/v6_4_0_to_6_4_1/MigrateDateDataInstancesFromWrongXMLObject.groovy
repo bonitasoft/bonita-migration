@@ -16,11 +16,11 @@ package org.bonitasoft.migration.versions.v6_4_0_to_6_4_1
 
 import groovy.sql.Sql
 
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.IOUtils
 import org.bonitasoft.migration.core.DatabaseMigrationStep
 
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.StaxDriver;
+import com.thoughtworks.xstream.XStream
+import com.thoughtworks.xstream.io.xml.StaxDriver
 
 /**
  * Emmanuel Duchastenier
@@ -33,12 +33,12 @@ class MigrateDateDataInstancesFromWrongXMLObject extends DatabaseMigrationStep {
 
     @Override
     def migrate() {
-        migrateTable("data_instance");
-        migrateTable("arch_data_instance");
+        migrateTable("data_instance", "SXMLObjectDataInstanceImpl", "SDateDataInstanceImpl");
+        migrateTable("arch_data_instance", "SAXMLObjectDataInstanceImpl", "SADateDataInstanceImpl");
     }
 
-    def migrateTable(String tableName) {
-        def row = sql.eachRow("SELECT tenantId, id, clobValue FROM "+tableName+" where DISCRIMINANT = 'SXMLObjectDataInstanceImpl'"){ row ->
+    def migrateTable(String tableName, String formerDiscriminant, String newDiscriminant) {
+        def row = sql.eachRow("SELECT tenantId, id, clobValue FROM "+tableName+" where DISCRIMINANT = '$formerDiscriminant'"){ row ->
             def tenantId = row.tenantId
             def id = row.id
             def rowClobValue = row.clobValue
@@ -49,11 +49,12 @@ class MigrateDateDataInstancesFromWrongXMLObject extends DatabaseMigrationStep {
                 IOUtils.copy(rowClobValue.getCharacterStream(), w);
                 clobAsString = w.toString();
             }
-
-            executeUpdate("UPDATE "+tableName+" set LONGVALUE=" + getDate(clobAsString) + ", CLOBVALUE=NULL, DISCRIMINANT='SDateDataInstanceImpl' WHERE tenantId=" + tenantId + " AND id=" + id)
+            if( new XmlParser().parseText(clobAsString).name().equals('date') ) {
+                executeUpdate("UPDATE "+tableName+" set LONGVALUE=" + getDate(clobAsString) + ", CLOBVALUE=NULL, DISCRIMINANT='$newDiscriminant' WHERE tenantId=$tenantId AND id=$id")
+            }
         }
     }
-    
+
     def getDate(String xmlDate) {
         return ((java.util.Date) new XStream(new StaxDriver()).fromXML(xmlDate)).getTime()
     }

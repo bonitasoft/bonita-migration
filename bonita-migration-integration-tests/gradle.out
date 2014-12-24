@@ -1,0 +1,848 @@
+executing steps [build@6.4.0-6.4.1]
+using custom maven.repository.extra: http://repositories.rd.lan/archiva/repository/releases/
+using custom maven.repository: /home/julienreboul/.m2/repository
+:build@6.4.0-6.4.1:clean UP-TO-DATE
+:build@6.4.0-6.4.1:compileJava UP-TO-DATE
+:build@6.4.0-6.4.1:processResources UP-TO-DATE
+:build@6.4.0-6.4.1:classes UP-TO-DATE
+:build@6.4.0-6.4.1:cleardb
+Migration of postgres
+drop and create: jdbc:postgresql://localhost:5432/migration
+recreate database migration on server localhost and port 5432 with driver org.postgresql.Driver
+url is  jdbc:postgresql://localhost:5432/
+cleaning postgres database bonita
+:build@6.4.0-6.4.1:unpackhome
+:build@6.4.0-6.4.1:unpackdist
+:build@6.4.0-6.4.1:overwritedist UP-TO-DATE
+:build@6.4.0-6.4.1:copyDrivers
+:build@6.4.0-6.4.1:changeproperties
+:build@6.4.0-6.4.1:scriptsintegration
+run scripts integration tests
+{bonita.home=/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home, db.vendor=postgres, jdbc.databaseName=migration, jdbc.driverClass=org.postgresql.Driver, jdbc.password=bpm, jdbc.portNumber=5432, jdbc.serverName=localhost, jdbc.url=jdbc:postgresql://localhost:5432/migration, jdbc.user=bonita, jdbc.vendor=postgres, sysprop.bonita.db.vendor=postgres}
+JUnit version 4.11
+.Updating constraint from 'UNIQUE (containerId, containerType, dataName) to 'UNIQUE (tenantId, containerId, containerType, dataName)'
+.The constraint is already up to date, nothing to do
+.setUp
+setUp: create tables
+tearDown: drop tables
+.setUp
+setUp: create tables
+index:idx1_arch_process_instance found on table:arch_process_instance
+index:idx1_arch_connector_instance found on table:arch_connector_instance
+index:idx1_arch_flownode_instance found on table:arch_flownode_instance
+index:idx1_arch_data_mapping found on table:arch_data_mapping
+index:idx1_arch_data_instance found on table:arch_data_instance
+tearDown: drop tables
+.executing stmt 0 for postgres
+executing stmt 1 for postgres
+executing stmt 2 for postgres
+executing stmt 3 for postgres
+setUp: create tables
+next id by tenants for sequence id 10110: [1:200, 2:100]
+Creating tokens for boundary events...
+3 tokens were created.
+update next id to 202 for sequence id 10110 on tenant 1
+1 row(s) updated
+update next id to 101 for sequence id 10110 on tenant 2
+1 row(s) updated
+Updating token ref id for completed boundary events not yet archived...
+1 token ref ids were updated.
+.executing stmt 0 for postgres
+setUp: create tables
+next id by tenants for sequence id 90: [1:200, 2:100]
+Inserting sytem command 'newCommand1' for tenant 1
+Inserting sytem command 'newCommand1' for tenant 2
+Inserting sytem command 'newCommand2' for tenant 1
+Inserting sytem command 'newCommand2' for tenant 2
+update next id to 202 for sequence id 90 on tenant 1
+1 row(s) updated
+update next id to 102 for sequence id 90 on tenant 2
+1 row(s) updated
+.executing stmt 0 for postgres
+setUp: create tables
+next id by tenants for sequence id 90: [1:200, 2:100]
+update next id to 200 for sequence id 90 on tenant 1
+1 row(s) updated
+update next id to 100 for sequence id 90 on tenant 2
+1 row(s) updated
+Deleting system command 'command1' for all tenants
+2 row(s) deleted.
+.executing stmt 0 for postgres
+setUp: create tables
+next id by tenants for sequence id 90: [1:200, 2:100]
+The system command 'command1' already exists on tenant 1. Nothing to do.
+The system command 'command1' already exists on tenant 2. Nothing to do.
+update next id to 200 for sequence id 90 on tenant 1
+1 row(s) updated
+update next id to 100 for sequence id 90 on tenant 2
+1 row(s) updated
+.executing stmt CREATE TABLE arch_data_instance (
+    tenantId INT8 NOT NULL,
+	id INT8 NOT NULL,
+	name VARCHAR(50),
+	sourceObjectId INT8 NOT NULL,
+	PRIMARY KEY (tenantid, id)
+);
+
+CREATE TABLE arch_data_mapping (
+    tenantid INT8 NOT NULL,
+	id INT8 NOT NULL,
+	dataName VARCHAR(50),
+	dataInstanceId INT8 NOT NULL,
+	sourceObjectId INT8 NOT NULL,
+	PRIMARY KEY (tenantid, id)
+);
+
+CREATE TABLE flownode_instance (
+  tenantid INT8 NOT NULL,
+  id INT8 NOT NULL,
+  name VARCHAR(50) NOT NULL,
+  parentContainerId INT8 NOT NULL,
+  kind VARCHAR(25) NOT NULL,
+  stateId INT NOT NULL,
+  stateName VARCHAR(50),
+  prev_state_id INT NOT NULL,
+  terminal BOOLEAN NOT NULL,
+  stable BOOLEAN ,
+  hitBys VARCHAR(255),
+  token_ref_id INT8 NULL,
+  PRIMARY KEY (tenantid, id)
+);
+
+CREATE TABLE arch_flownode_instance (
+  tenantid INT8 NOT NULL,
+  id INT8 NOT NULL,
+  sourceObjectId INT8 NOT NULL,
+  stateId INT NOT NULL,
+  stateName VARCHAR(50),
+  terminal BOOLEAN NOT NULL,
+  stable BOOLEAN ,
+  hitBys VARCHAR(255),
+  PRIMARY KEY (tenantid, id)
+);
+CREATE TABLE tenant (
+  id INT8 NOT NULL,
+  PRIMARY KEY (id)
+);
+CREATE TABLE token (
+  tenantid INT8 NOT NULL,
+  id INT8 NOT NULL,
+  processInstanceId INT8 NOT NULL,
+  ref_id INT8 NOT NULL,
+  parent_ref_id INT8 NULL,
+  PRIMARY KEY (tenantid, id)
+); for postgres
+setUp: create tables
+setUp: populating tables
+Deleting archived data mapping orphans for all tenants
+1503 archived data mapping orphans have been deleted
+.executing stmt CREATE TABLE arch_data_instance (
+    tenantId INT8 NOT NULL,
+	id INT8 NOT NULL,
+	name VARCHAR(50),
+	sourceObjectId INT8 NOT NULL,
+	PRIMARY KEY (tenantid, id)
+);
+
+CREATE TABLE arch_data_mapping (
+    tenantid INT8 NOT NULL,
+	id INT8 NOT NULL,
+	dataName VARCHAR(50),
+	dataInstanceId INT8 NOT NULL,
+	sourceObjectId INT8 NOT NULL,
+	PRIMARY KEY (tenantid, id)
+);
+
+CREATE TABLE flownode_instance (
+  tenantid INT8 NOT NULL,
+  id INT8 NOT NULL,
+  name VARCHAR(50) NOT NULL,
+  parentContainerId INT8 NOT NULL,
+  kind VARCHAR(25) NOT NULL,
+  stateId INT NOT NULL,
+  stateName VARCHAR(50),
+  prev_state_id INT NOT NULL,
+  terminal BOOLEAN NOT NULL,
+  stable BOOLEAN ,
+  hitBys VARCHAR(255),
+  token_ref_id INT8 NULL,
+  PRIMARY KEY (tenantid, id)
+);
+
+CREATE TABLE arch_flownode_instance (
+  tenantid INT8 NOT NULL,
+  id INT8 NOT NULL,
+  sourceObjectId INT8 NOT NULL,
+  stateId INT NOT NULL,
+  stateName VARCHAR(50),
+  terminal BOOLEAN NOT NULL,
+  stable BOOLEAN ,
+  hitBys VARCHAR(255),
+  PRIMARY KEY (tenantid, id)
+);
+CREATE TABLE tenant (
+  id INT8 NOT NULL,
+  PRIMARY KEY (id)
+);
+CREATE TABLE token (
+  tenantid INT8 NOT NULL,
+  id INT8 NOT NULL,
+  processInstanceId INT8 NOT NULL,
+  ref_id INT8 NOT NULL,
+  parent_ref_id INT8 NULL,
+  PRIMARY KEY (tenantid, id)
+); for postgres
+setUp: create tables
+setUp: populating tables
+Executing update for each tenant : [1, 2]
+ | For tenant with id = 1
+ | Set hitBys on 117 to FINISH:2
+ | Delete 1 gateways that are duplicated of 117
+ | Set hitBys on 119 to 1,2,3
+ | Delete 1 gateways that are duplicated of 119
+ | Updated 2 gateway in executing state
+ | Updated 3 gateway in completed state
+ | For tenant with id = 2
+ | Updated 1 gateway in executing state
+ | Updated 1 gateway in completed state
+.executing stmt CREATE TABLE tenant (
+  id INT8 NOT NULL,
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE sequence (
+  tenantid INT8 NOT NULL,
+  id INT8 NOT NULL,
+  nextid INT8 NOT NULL,
+  PRIMARY KEY (tenantid, id)
+);
+
+CREATE TABLE profile (
+  tenantId INT8 NOT NULL,
+  id INT8 NOT NULL,
+  isDefault BOOLEAN NOT NULL,
+  name VARCHAR(50) NOT NULL,
+  description TEXT,
+  creationDate INT8 NOT NULL,
+  createdBy INT8 NOT NULL,
+  lastUpdateDate INT8 NOT NULL,
+  lastUpdatedBy INT8 NOT NULL,
+  UNIQUE (tenantId, name),
+  PRIMARY KEY (tenantId, id)
+);
+
+CREATE TABLE page (
+  tenantId INT8 NOT NULL,
+  id INT8 NOT NULL,
+  name VARCHAR(50) NOT NULL,
+  displayName VARCHAR(255) NOT NULL,
+  description TEXT,
+  installationDate INT8 NOT NULL,
+  installedBy INT8 NOT NULL,
+  provided BOOLEAN,
+  lastModificationDate INT8 NOT NULL,
+  lastUpdatedBy INT8 NOT NULL,
+  contentName VARCHAR(50) NOT NULL,
+  content BYTEA,
+  UNIQUE (tenantId, name),
+  PRIMARY KEY (tenantId, id)
+);
+
+ for postgres
+setUp: populating table
+.Create tables of documents
+.Create tables of profiles
+ | insert new profile entry 601 for theme management
+ | theme management profile entry was already here
+table:profile
+tenantid: 1 id: 200 isdefault: true name: User description: MyDescription creationdate: 1419413501869 createdby: 1 lastupdatedate: 1419413501869 lastupdatedby: 1 
+tenantid: 1 id: 201 isdefault: true name: Administrator description: MyDescription creationdate: 1419413501869 createdby: 1 lastupdatedate: 1419413501869 lastupdatedby: 1 
+tenantid: 1 id: 202 isdefault: true name: Process manager description: MyDescription creationdate: 1419413501869 createdby: 1 lastupdatedate: 1419413501869 lastupdatedby: 1 
+tenantid: 2 id: 200 isdefault: true name: User description: MyDescription creationdate: 1419413501869 createdby: 1 lastupdatedate: 1419413501869 lastupdatedby: 1 
+tenantid: 2 id: 201 isdefault: true name: Administrator description: MyDescription creationdate: 1419413501869 createdby: 1 lastupdatedate: 1419413501869 lastupdatedby: 1 
+tenantid: 2 id: 202 isdefault: true name: Process manager description: MyDescription creationdate: 1419413501869 createdby: 1 lastupdatedate: 1419413501869 lastupdatedby: 1 
+table:profileentry
+tenantid: 1 id: 500 profileid: 201 name: Configuration description: Manage apps parentid: 0 index_: 4 type: link page: anypage custom: false 
+tenantid: 1 id: 601 profileid: 201 name: Look & Feel description: LooknFeel parentid: 500 index_: 2 type: link page: thememoredetailsadminext custom: false 
+tenantid: 2 id: 500 profileid: 201 name: Configuration description: Manage apps parentid: 0 index_: 4 type: link page: anypage custom: false 
+tenantid: 2 id: 501 profileid: 201 name: Apps description: Manage apps parentid: 0 index_: 4 type: link page: thememoredetailsadminext custom: false 
+table:sequence
+tenantid: 1 id: 9991 nextid: 602 
+tenantid: 2 id: 9991 nextid: 601 
+table:tenant
+id: 1 
+id: 2 
+.Create tables of profiles
+2 row(s) updated
+.Create tables of documents
+Executing request: CREATE INDEX idx_a_doc_mp_pr_id ON arch_document_mapping (processinstanceid, tenantid)
+.Create tables of data_instance
+date supposée: <?xml version="1.0" encoding="UTF-8" ?><date>2014-12-15 16:17:48.855 UTC</date>
+.Create tables of data_instance
+date supposée: <?xml version="1.0" encoding="UTF-8" ?><date>2014-12-15 16:17:48.855 UTC</date>
+
+Time: 10,528
+
+OK (17 tests)
+
+:build@6.4.0-6.4.1:execfill
+execute fill of the database using classpath of 6.4.0
+{bonita.home=/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home, db.vendor=postgres, jdbc.databaseName=migration, jdbc.driverClass=org.postgresql.Driver, jdbc.password=bpm, jdbc.portNumber=5432, jdbc.serverName=localhost, jdbc.url=jdbc:postgresql://localhost:5432/migration, jdbc.user=bonita, jdbc.vendor=postgres, sysprop.bonita.db.vendor=postgres}
+|10:31:46.519|main|INFO |o.b.m.DatabaseFiller6_0_2| Using bonita.home: /home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home
+|10:31:56.315|main|WARN |o.h.t.TypeFactory| HHH000233: Scoping types to session factory org.hibernate.internal.SessionFactoryImpl@d8c5522 after already scoped org.hibernate.internal.SessionFactoryImpl@78293220
+|10:31:59.143|main|WARN |o.h.e.j.s.SqlExceptionHelper| SQL Error: 0, SQLState: 42P01
+|10:31:59.143|main|ERROR|o.h.e.j.s.SqlExceptionHelper| ERROR: relation "platform" does not exist
+  Position : 250
+|10:31:59.160|main|WARN |o.h.e.j.s.SqlExceptionHelper| SQL Error: 0, SQLState: 42P01
+|10:31:59.161|main|ERROR|o.h.e.j.s.SqlExceptionHelper| ERROR: relation "platform" does not exist
+  Position : 250
+|10:31:59.165|main|WARN |o.h.e.j.s.SqlExceptionHelper| SQL Error: 0, SQLState: 42P01
+|10:31:59.165|main|ERROR|o.h.e.j.s.SqlExceptionHelper| ERROR: relation "platform" does not exist
+  Position : 250
+|10:32:02.529|main|INFO |o.b.e.s.i.BonitaSchedulerFactory| Using default implementation for ThreadExecutor
+|10:32:02.549|main|INFO |o.b.e.s.i.BonitaJobStoreCMT| Using db table-based data access locking (synchronization).
+|10:32:02.551|main|INFO |o.b.e.s.i.BonitaJobStoreCMT| JobStoreCMT initialized.
+|10:32:02.553|main|INFO |o.b.e.s.i.BonitaSchedulerFactory| Quartz scheduler 'QuartzScheduler' initialized from an externally provided properties instance.
+|10:32:02.553|main|INFO |o.b.e.s.i.BonitaSchedulerFactory| Quartz scheduler version: 2.2.1
+|10:32:02.553|main|INFO |o.b.e.s.i.SchedulerServiceImpl| THREAD_ID=1 | HOSTNAME=bouboulou | Start scheduler
+|10:32:02.564|main|INFO |o.b.e.s.i.BonitaJobStoreCMT| Freed 0 triggers from 'acquired' / 'blocked' state.
+|10:32:02.566|main|INFO |o.b.e.s.i.BonitaJobStoreCMT| Recovering 0 jobs that were in-progress at the time of the last shut-down.
+|10:32:02.566|main|INFO |o.b.e.s.i.BonitaJobStoreCMT| Recovery complete.
+|10:32:02.567|main|INFO |o.b.e.s.i.BonitaJobStoreCMT| Removed 0 'complete' triggers.
+|10:32:02.567|main|INFO |o.b.e.s.i.BonitaJobStoreCMT| Removed 0 stale fired job entries.
+|10:32:02.601|main|INFO |o.b.e.a.i.t.p.ActivateTenant| THREAD_ID=1 | HOSTNAME=bouboulou | Starting event handling job with frequency : 0/5 * * * * ?
+|10:32:02.641|main|INFO |o.b.e.a.i.t.p.ActivateTenant| THREAD_ID=1 | HOSTNAME=bouboulou | Starting clean invalid sessions job with frequency : 0 0 */2 * * ?
+|10:32:02.731|main|INFO |o.b.e.a.i.PlatformAPIImpl| THREAD_ID=1 | HOSTNAME=bouboulou | Start service of platform : org.bonitasoft.engine.classloader.ClassLoaderServiceImpl
+|10:32:02.731|main|INFO |o.b.e.a.i.PlatformAPIImpl| THREAD_ID=1 | HOSTNAME=bouboulou | Start service of platform : org.bonitasoft.engine.cache.ehcache.PlatformEhCacheCacheService
+|10:32:02.821|main|INFO |o.b.e.a.i.PlatformAPIImpl| THREAD_ID=1 | HOSTNAME=bouboulou | Start service of platform : org.bonitasoft.engine.cache.ehcache.EhCacheCacheService
+|10:32:02.824|main|INFO |o.b.e.e.w.RestartFlowNodesHandler| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | Restarting flow nodes...
+|10:32:02.828|main|INFO |o.b.e.e.w.RestartFlowNodesHandler| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | Found 0 flow nodes to restart on tenant 1
+|10:32:02.849|main|INFO |o.b.e.e.w.RestartProcessHandler| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | Found 0 process to restart on tenant 1
+|10:32:02.854|main|INFO |o.b.e.e.w.BPMEventWorksHandler| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | Reinitializing message instances in non-stable state to make them reworked by BPMEventHandlingJob
+|10:32:02.857|main|INFO |o.b.e.e.w.BPMEventWorksHandler| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | 0 message instances found and reset.
+|10:32:02.857|main|INFO |o.b.e.e.w.BPMEventWorksHandler| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | Reinitializing waiting message events in non-stable state to make them reworked by BPMEventHandlingJob
+|10:32:02.860|main|INFO |o.b.e.e.w.BPMEventWorksHandler| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | 0 waiting message events found and reset.
+|10:32:02.889|main|INFO |o.b.e.a.i.t.SetServiceState| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | start tenant-level service org.bonitasoft.engine.connector.impl.ConnectorExecutorImpl on tenant with ID 1
+|10:32:02.889|main|INFO |o.b.e.a.i.t.SetServiceState| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | start tenant-level service org.bonitasoft.engine.service.impl.PermissionServiceImpl on tenant with ID 1
+|10:32:02.897|main|INFO |o.b.e.s.i.PermissionServiceImpl| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The security script folder /home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/tenants/1/conf/security-scripts does not exists or is a file, PermissionRules will be loaded only from the tenant classloader
+|10:32:02.897|main|INFO |o.b.e.a.i.t.SetServiceState| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | start tenant-level service org.bonitasoft.engine.tracking.TimeTracker on tenant with ID 1
+|10:32:02.897|main|INFO |o.b.e.t.TimeTracker| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | Starting TimeTracker...
+|10:32:02.897|main|INFO |o.b.e.t.TimeTracker| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | TimeTracker started.
+|10:32:02.897|main|INFO |o.b.e.a.i.t.SetServiceState| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | start tenant-level service org.bonitasoft.engine.work.ExecutorWorkService on tenant with ID 1
+|10:32:02.901|main|INFO |o.b.e.h.SchedulerServiceRestartHandler| THREAD_ID=1 | HOSTNAME=bouboulou | Rescheduling all scheduler Triggers in ERROR state
+|10:32:02.914|main|INFO |o.b.e.a.i.StarterThread| THREAD_ID=1 | HOSTNAME=bouboulou | Restarting elements in the Thread 39
+|10:32:02.914|Starter Thread|INFO |o.b.e.a.i.StarterThread| THREAD_ID=39 | HOSTNAME=bouboulou | Restarting elements for tenant 1
+|10:32:02.915|Starter Thread|INFO |o.b.e.e.w.RestartFlowNodesHandler| THREAD_ID=39 | HOSTNAME=bouboulou | TENANT_ID=1 | Restarting 0 flow nodes for tenant 1
+|10:32:02.915|main|INFO |o.b.m.DatabaseFiller6_0_2| Starting to fill the database
+|10:32:02.915|main|INFO |o.b.m.DatabaseFiller6_0_2| Starting to fill the database
+|10:32:02.920|Starter Thread|INFO |o.b.e.e.w.RestartProcessHandler| THREAD_ID=39 | HOSTNAME=bouboulou | TENANT_ID=1 | Restarting 0 processes for tenant 1
+|10:32:04.407|main|INFO |o.b.e.a.i.ProcessAPIImpl| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has installed process <SimpleProcessToBeMigrated> in version <1.0> with id <7833850941309938036>
+|10:32:04.547|main|INFO |o.b.e.a.i.t.p.EnableProcess| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has enabled process <SimpleProcessToBeMigrated> in version <1.0> with id <7833850941309938036>
+|10:32:04.602|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <1> of process <SimpleProcessToBeMigrated> in version <1.0> and id <7833850941309938036>
+|10:32:04.631|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <2> of process <SimpleProcessToBeMigrated> in version <1.0> and id <7833850941309938036>
+|10:32:04.667|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <3> of process <SimpleProcessToBeMigrated> in version <1.0> and id <7833850941309938036>
+|10:32:04.722|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <4> of process <SimpleProcessToBeMigrated> in version <1.0> and id <7833850941309938036>
+|10:32:04.792|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <5> of process <SimpleProcessToBeMigrated> in version <1.0> and id <7833850941309938036>
+|10:32:04.849|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <6> of process <SimpleProcessToBeMigrated> in version <1.0> and id <7833850941309938036>
+|10:32:05.586|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <7> of process <SimpleProcessToBeMigrated> in version <1.0> and id <7833850941309938036>
+|10:32:05.688|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <8> of process <SimpleProcessToBeMigrated> in version <1.0> and id <7833850941309938036>
+|10:32:05.826|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <9> of process <SimpleProcessToBeMigrated> in version <1.0> and id <7833850941309938036>
+|10:32:05.854|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <10> of process <SimpleProcessToBeMigrated> in version <1.0> and id <7833850941309938036>
+|10:32:06.073|main|INFO |o.b.e.a.i.ProcessAPIImpl| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has installed process <ProcessToBeMigrated> in version <1.0.0> with id <6420149090172790861>
+|10:32:06.146|main|INFO |o.b.e.a.i.t.p.EnableProcess| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has enabled process <ProcessToBeMigrated> in version <1.0.0> with id <6420149090172790861>
+|10:32:06.992|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <11> of process <ProcessToBeMigrated> in version <1.0.0> and id <6420149090172790861>
+|10:32:07.064|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <12> of process <ProcessToBeMigrated> in version <1.0.0> and id <6420149090172790861>
+|10:32:07.178|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <13> of process <ProcessToBeMigrated> in version <1.0.0> and id <6420149090172790861>
+|10:32:07.246|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <14> of process <ProcessToBeMigrated> in version <1.0.0> and id <6420149090172790861>
+|10:32:07.325|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <15> of process <ProcessToBeMigrated> in version <1.0.0> and id <6420149090172790861>
+|10:32:07.401|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <16> of process <ProcessToBeMigrated> in version <1.0.0> and id <6420149090172790861>
+|10:32:07.436|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <17> of process <ProcessToBeMigrated> in version <1.0.0> and id <6420149090172790861>
+|10:32:07.529|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <18> of process <ProcessToBeMigrated> in version <1.0.0> and id <6420149090172790861>
+|10:32:07.629|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <19> of process <ProcessToBeMigrated> in version <1.0.0> and id <6420149090172790861>
+|10:32:07.682|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <20> of process <ProcessToBeMigrated> in version <1.0.0> and id <6420149090172790861>
+|10:32:07.790|main|INFO |o.b.e.a.i.ProcessAPIImpl| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has installed process <ProcessWithSignalStart> in version <1.0.0> with id <7599101160910056006>
+|10:32:07.841|main|INFO |o.b.e.a.i.t.p.EnableProcess| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has enabled process <ProcessWithSignalStart> in version <1.0.0> with id <7599101160910056006>
+|10:32:07.972|main|INFO |o.b.e.a.i.ProcessAPIImpl| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has installed process <ProcessThatFinish> in version <1.0> with id <6061922965989688228>
+|10:32:07.993|main|INFO |o.b.e.a.i.t.p.EnableProcess| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has enabled process <ProcessThatFinish> in version <1.0> with id <6061922965989688228>
+|10:32:08.006|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <22> of process <ProcessThatFinish> in version <1.0> and id <6061922965989688228>
+|10:32:08.045|main|INFO |o.b.e.a.i.ProcessAPIImpl| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has installed process <ProcessWithStartMessage> in version <1.0> with id <5303303642342834758>
+|10:32:08.084|main|INFO |o.b.e.a.i.t.p.EnableProcess| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has enabled process <ProcessWithStartMessage> in version <1.0> with id <5303303642342834758>
+|10:32:08.130|main|INFO |o.b.e.a.i.ProcessAPIImpl| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has installed process <ProcessWithStartTimer> in version <1.0> with id <8753114262901407707>
+|10:32:08.194|main|INFO |o.b.e.a.i.t.p.EnableProcess| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has enabled process <ProcessWithStartTimer> in version <1.0> with id <8753114262901407707>
+|10:32:08.425|main|INFO |o.b.m.DatabaseFiller6_0_2| Finished to fill the database
+|10:32:08.461|main|INFO |o.b.e.a.i.ProcessAPIImpl| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has installed process <ProcessToBeMigrated> in version <1.0.> with id <7130978554933925377>
+|10:32:08.508|main|INFO |o.b.e.a.i.t.p.EnableProcess| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has enabled process <ProcessToBeMigrated> in version <1.0.> with id <7130978554933925377>
+|10:32:08.565|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <23> of process <ProcessToBeMigrated> in version <1.0.> and id <7130978554933925377>
+|10:32:08.599|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <24> of process <ProcessToBeMigrated> in version <1.0.> and id <7130978554933925377>
+|10:32:08.628|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <25> of process <ProcessToBeMigrated> in version <1.0.> and id <7130978554933925377>
+|10:32:08.664|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <26> of process <ProcessToBeMigrated> in version <1.0.> and id <7130978554933925377>
+|10:32:08.693|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <27> of process <ProcessToBeMigrated> in version <1.0.> and id <7130978554933925377>
+|10:32:08.721|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <28> of process <ProcessToBeMigrated> in version <1.0.> and id <7130978554933925377>
+|10:32:08.764|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <29> of process <ProcessToBeMigrated> in version <1.0.> and id <7130978554933925377>
+|10:32:08.791|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <30> of process <ProcessToBeMigrated> in version <1.0.> and id <7130978554933925377>
+|10:32:08.830|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <31> of process <ProcessToBeMigrated> in version <1.0.> and id <7130978554933925377>
+|10:32:08.866|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <32> of process <ProcessToBeMigrated> in version <1.0.> and id <7130978554933925377>
+|10:32:08.904|main|INFO |o.b.e.a.i.ProcessAPIImpl| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has installed process <ArchivedProcessToBeMigrated> in version <1.0.> with id <6945810255054980479>
+|10:32:08.961|main|INFO |o.b.e.a.i.t.p.EnableProcess| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has enabled process <ArchivedProcessToBeMigrated> in version <1.0.> with id <6945810255054980479>
+|10:32:08.997|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <33> of process <ArchivedProcessToBeMigrated> in version <1.0.> and id <6945810255054980479>
+|10:32:09.027|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <34> of process <ArchivedProcessToBeMigrated> in version <1.0.> and id <6945810255054980479>
+|10:32:09.054|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <35> of process <ArchivedProcessToBeMigrated> in version <1.0.> and id <6945810255054980479>
+|10:32:09.072|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <36> of process <ArchivedProcessToBeMigrated> in version <1.0.> and id <6945810255054980479>
+|10:32:09.123|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <37> of process <ArchivedProcessToBeMigrated> in version <1.0.> and id <6945810255054980479>
+|10:32:09.147|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <38> of process <ArchivedProcessToBeMigrated> in version <1.0.> and id <6945810255054980479>
+|10:32:09.217|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <39> of process <ArchivedProcessToBeMigrated> in version <1.0.> and id <6945810255054980479>
+|10:32:09.252|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <40> of process <ArchivedProcessToBeMigrated> in version <1.0.> and id <6945810255054980479>
+|10:32:09.291|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <41> of process <ArchivedProcessToBeMigrated> in version <1.0.> and id <6945810255054980479>
+|10:32:09.325|main|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <42> of process <ArchivedProcessToBeMigrated> in version <1.0.> and id <6945810255054980479>
+|10:32:09.361|main|INFO |o.b.m.DatabaseFiller6_0_2| Finished to fill the database
+|10:32:09.362|main|INFO |o.b.m.DatabaseFiller6_0_2| Groups: 13
+|10:32:09.362|main|INFO |o.b.m.DatabaseFiller6_0_2| Archived Process instances: 10
+|10:32:09.362|main|INFO |o.b.m.DatabaseFiller6_0_2| Process definitions: 1
+|10:32:09.362|main|INFO |o.b.m.DatabaseFiller6_0_2| Process instances: 10
+|10:32:09.362|main|INFO |o.b.m.DatabaseFiller6_0_2| Users: 21
+|10:32:09.362|main|INFO |o.b.m.DatabaseFiller6_0_2| Waiting events: 1
+|10:32:09.362|main|INFO |o.b.m.DatabaseFiller6_0_2| Roles: 1
+|10:32:09.901|main|INFO |o.b.e.a.i.t.SetServiceState| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | stop tenant-level service org.bonitasoft.engine.connector.impl.ConnectorExecutorImpl on tenant with ID 1
+|10:32:09.903|main|INFO |o.b.e.a.i.t.SetServiceState| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | stop tenant-level service org.bonitasoft.engine.service.impl.PermissionServiceImpl on tenant with ID 1
+|10:32:09.904|main|INFO |o.b.e.a.i.t.SetServiceState| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | stop tenant-level service org.bonitasoft.engine.tracking.TimeTracker on tenant with ID 1
+|10:32:09.904|main|INFO |o.b.e.t.TimeTracker| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | Stopping TimeTracker...
+|10:32:09.904|main|INFO |o.b.e.t.TimeTracker| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | TimeTracker stopped.
+|10:32:09.904|main|INFO |o.b.e.a.i.t.SetServiceState| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | stop tenant-level service org.bonitasoft.engine.work.ExecutorWorkService on tenant with ID 1
+|10:32:09.905|main|INFO |o.b.e.w.BonitaThreadPoolExecutor| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | Clearing queue of work, had 0 elements
+|10:32:09.905|main|INFO |o.b.e.w.ExecutorWorkService| THREAD_ID=1 | HOSTNAME=bouboulou | TENANT_ID=1 | Stopped executor service
+|10:32:09.906|main|INFO |o.b.e.a.i.PlatformAPIImpl| THREAD_ID=1 | HOSTNAME=bouboulou | Stop service of platform: org.bonitasoft.engine.classloader.ClassLoaderServiceImpl
+|10:32:09.912|main|INFO |o.b.e.a.i.PlatformAPIImpl| THREAD_ID=1 | HOSTNAME=bouboulou | Stop service of platform: org.bonitasoft.engine.cache.ehcache.PlatformEhCacheCacheService
+|10:32:09.914|main|INFO |o.b.e.a.i.PlatformAPIImpl| THREAD_ID=1 | HOSTNAME=bouboulou | Stop service of platform: org.bonitasoft.engine.cache.ehcache.EhCacheCacheService
+|10:32:09.915|main|INFO |o.b.m.DatabaseFiller6_0_2| Resulting bonita home is /home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home
+:build@6.4.0-6.4.1:runmigration
+adding lib/ojdbc6.jar to classpath
+adding lib/sqljdbc-4.0.2206.100.jar to classpath
+adding lib/postgresql-9.2-1003-jdbc4.jar to classpath
+adding lib/mysql-connector-java-5.1.26.jar to classpath
+
++--------------------------------------------------------------------------------------------------------------------------+
+|                                                                                                                          |
+|                                                Bonita BPM migration tool                                                 |
+|                                                                                                                          |
+|                                 This tool will migrate your installation of Bonita BPM.                                  |
+|                                     Both database and bonita home will be modified.                                      |
+|          Please refer to the documentation for further steps to completely migrate your production environment.          |
+|                                                                                                                          |
+|                                                         Warning:                                                         |
+|                                Back up the database AND the bonita home before migrating                                 |
+|         If you have a custom Look & Feel, test and update it, if it's necessary when the migration is finished.          |
+| If you have customized the configuration of your bonita home, reapply the customizations when the migration is finished. |
+|                                                                                                                          |
++--------------------------------------------------------------------------------------------------------------------------+
+
+Configuration: 
+source.version = 6.4.0
+target.version = 6.4.1
+bonita.home = /home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home
+db.vendor = postgres
+db.url = jdbc:postgresql://localhost:5432/migration
+db.user = bonita
+db.password = bpm
+db.driverClass = org.postgresql.Driver
+
+bonita.home = /home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home
+List of all possible migration starting from your version:
+6.4.0 -> 6.4.1
+
+
+MIGRATE 6.4.0 TO 6.4.1 using path 6.4.0 -> 6.4.1
++---------------------------------------------+
+| Migration of version 6.4.0 to version 6.4.1 |
+|     migration number 1 of a total of 1      |
++---------------------------------------------+
+Migration of database:
+
+ | [ Migrating <Theme> 1/4 ]
+ | Description : Update default theme
+ | [ Migration step success in 0.269 seconds. Migration started  0.321 seconds ago. ]
+ | 
+ | [ Migrating <Arch_document_mapping_index> 2/4 ]
+ | Description : Create new index on table arch_document_mapping (processinstanceid,tenantid)
+ |  | Executing request: CREATE INDEX idx_a_doc_mp_pr_id ON arch_document_mapping (processinstanceid, tenantid)
+ | [ Migration step success in 0.153 seconds. Migration started  0.500 seconds ago. ]
+ | 
+ | [ Migrating <Archived_data_instance_index> 3/4 ]
+ | Description : BS-10462 : Add an index to improve archived data search performance.
+ | [ Migration step success in 0.035 seconds. Migration started  0.540 seconds ago. ]
+ | 
+ | [ Migrating <Date_clob_data_instance> 4/4 ]
+ | Description : Migrate data instances of type CLOB (as XML) to timestamps (as Long) 
+ | [ Migration step success in 0.236 seconds. Migration started  0.781 seconds ago. ]
+ | 
+Migration of bonita home:
+
+ | Description : Replace 6.4.0 configuration files with the 6.4.1 files. 
+ |  | [ Migrating <Client bonita home> 1/2 ]
+ |  |  | Check if security was enabled
+ |  |  | Security of REST APIs is disabled, to enable it modify the file security-config.properties in the client tenant configuration folder of the bonita home
+ |  |  | Replacing all content of /home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/client/platform/conf...
+ |  |  | Replacing all content of /home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/client/platform/tenant-template...
+ |  |  | Adding/overwriting content in /home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/client/platform/work...
+ |  |  | Checking for tenants.
+ |  |  | Not found any tenants.
+ |  | [ Migration step success in 0.242 seconds. Migration started  1.081 seconds ago. ]
+ |  | 
+ |  | [ Migrating <Server bonita home> 2/2 ]
+ |  |  | Replacing all content of /home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf...
+ |  |  | Replacing all content of /home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/tenant-template...
+ |  |  | Detecting tenants...
+ |  |  | Executing update for each tenant : [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/tenants/1]
+ |  |  | For tenant : 1
+ |  |  |  | Replacing all content of /home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/tenants/1/conf...
+ |  | [ Migration step success in 0.165 seconds. Migration started  1.248 seconds ago. ]
+ |  | 
+ | [ Migration step success in 0.460 seconds. Migration started  1.250 seconds ago. ]
+ | 
+Platform version in database changed to 6.4.1
+Migration from 6.4.0 to 6.4.1 is complete.
+
+Migration successfully completed, in 1.261 seconds
+The version of your Bonita BPM installation is now: 6.4.1
+Now, you must to reapply the customizations of your bonita home.
+
+:build@6.4.0-6.4.1:postmigrationtests
+run post-migration integration tests scripts
+{bonita.home=/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home, target.version=6.4.1}
+JUnit version 4.11
+
+Time: 0,003
+
+OK (0 tests)
+
+:build@6.4.0-6.4.1:compileTestJava
+:build@6.4.0-6.4.1:processTestResources UP-TO-DATE
+:build@6.4.0-6.4.1:testClasses
+:build@6.4.0-6.4.1:test
+execute test of the database using classpath of 6.4.1
+{bonita.home=/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home, db.vendor=postgres, jdbc.databaseName=migration, jdbc.driverClass=org.postgresql.Driver, jdbc.password=bpm, jdbc.portNumber=5432, jdbc.serverName=localhost, jdbc.url=jdbc:postgresql://localhost:5432/migration, jdbc.user=bonita, jdbc.vendor=postgres, logback.configurationFile=/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/logback.xml, sysprop.bonita.db.vendor=postgres, target.version=6.4.1}
+
+org.bonitasoft.migration.MigrationIT STANDARD_OUT
+    test class:org.bonitasoft.migration.DatabaseChecker6_4_1
+    class org.bonitasoft.migration.DatabaseChecker6_4_1
+
+org.bonitasoft.migration.MigrationIT STANDARD_ERROR
+    déc. 24, 2014 10:32:19 AM org.springframework.context.support.AbstractApplicationContext prepareRefresh
+    Infos: Refreshing org.springframework.context.support.ClassPathXmlApplicationContext@5c47e1f4: startup date [Wed Dec 24 10:32:19 CET 2014]; root of context hierarchy
+    déc. 24, 2014 10:32:20 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from class path resource [datasource.xml]
+    déc. 24, 2014 10:32:20 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from class path resource [datasource-dependency-postgres.xml]
+    déc. 24, 2014 10:32:20 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from class path resource [jndi-setup.xml]
+    déc. 24, 2014 10:32:20 AM org.springframework.core.io.support.PropertiesLoaderSupport loadProperties
+    Infos: Loading properties file from class path resource [jdbc-postgres.properties]
+    déc. 24, 2014 10:32:20 AM org.springframework.beans.factory.support.DefaultListableBeanFactory preInstantiateSingletons
+    Infos: Pre-instantiating singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@f4049aa: defining beans [dataSourceDependency,driverProperties,org.springframework.beans.factory.config.PropertyPlaceholderConfigurer#0,bonitaDataSource,bonitaSequenceManagerDataSource,btmConfig,BitronixTransactionManager,jndiMapping,jndiTemplate,jndiSetup]; root of factory hierarchy
+
+org.bonitasoft.migration.MigrationIT STANDARD_OUT
+    |10:32:20.988|WARN |b.t.j.DiskJournal| active log file is unclean, did you call BitronixTransactionManager.shutdown() at the end of the last run?
+
+org.bonitasoft.migration.MigrationIT STANDARD_ERROR
+    déc. 24, 2014 10:32:21 AM org.springframework.context.support.AbstractApplicationContext prepareRefresh
+    Infos: Refreshing org.bonitasoft.engine.service.impl.AbsoluteFileSystemXmlApplicationContext@60467e9b: startup date [Wed Dec 24 10:32:21 CET 2014]; root of context hierarchy
+    déc. 24, 2014 10:32:21 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/sessionaccessor/cfg-bonita-sessionaccessor-threadlocal.xml]
+    déc. 24, 2014 10:32:21 AM org.springframework.beans.factory.support.DefaultListableBeanFactory preInstantiateSingletons
+    Infos: Pre-instantiating singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@48db67e7: defining beans [sessionAccessor]; root of factory hierarchy
+    déc. 24, 2014 10:32:21 AM org.springframework.context.support.AbstractApplicationContext prepareRefresh
+    Infos: Refreshing org.bonitasoft.engine.service.impl.AbsoluteFileSystemXmlApplicationContext@5e5a6f01: startup date [Wed Dec 24 10:32:21 CET 2014]; parent: org.bonitasoft.engine.service.impl.AbsoluteFileSystemXmlApplicationContext@60467e9b
+    déc. 24, 2014 10:32:21 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-actor-mapping-impl-hibernate.xml]
+    déc. 24, 2014 10:32:21 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-archive-configuration.xml]
+    déc. 24, 2014 10:32:21 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-business-application-model-impl.xml]
+    déc. 24, 2014 10:32:21 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-cache-configurations.xml]
+    déc. 24, 2014 10:32:21 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-cache.xml]
+    déc. 24, 2014 10:32:21 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-category-model-impl-hibernate.xml]
+    déc. 24, 2014 10:32:21 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-classloader-impl.xml]
+    déc. 24, 2014 10:32:21 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-command-model-impl-hibernate.xml]
+    déc. 24, 2014 10:32:21 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-data-instance-model-impl-hibernate.xml]
+    déc. 24, 2014 10:32:21 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-delete-impl.xml]
+    déc. 24, 2014 10:32:21 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-dependency-model-impl-hibernate.xml]
+    déc. 24, 2014 10:32:21 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-dependency-platform-impl.xml]
+    déc. 24, 2014 10:32:21 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-dependency-platform-model-impl-hibernate.xml]
+    déc. 24, 2014 10:32:21 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-document-model-impl-hibernate.xml]
+    déc. 24, 2014 10:32:21 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-ds.xml]
+    déc. 24, 2014 10:32:21 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-events-api-impl.xml]
+    déc. 24, 2014 10:32:21 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-external-identity-mapping-impl-hibernate.xml]
+    déc. 24, 2014 10:32:21 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-identity-model-impl-hibernate.xml]
+    déc. 24, 2014 10:32:21 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-incident.xml]
+    déc. 24, 2014 10:32:21 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-lock.xml]
+    déc. 24, 2014 10:32:21 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-log-impl.xml]
+    déc. 24, 2014 10:32:21 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-log-model-impl-hibernate.xml]
+    déc. 24, 2014 10:32:21 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-log-technical-slf4j.xml]
+    déc. 24, 2014 10:32:21 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-node-configuration.xml]
+    déc. 24, 2014 10:32:21 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-persistence-db.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-persistence-hibernate.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-platform-api-impl.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-platform-authentication-impl.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-platform-command-api-impl.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-platform-command-model-impl-hibernate.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-platform-login-impl.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-platform-model-impl-hibernate.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-platform-session-impl.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-platform-session-provider.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-process-comment-model-impl-hibernate.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-process-definition-model-impl-hibernate.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-process-instance-model-impl-hibernate.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-profile-model-impl-hibernate.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-scheduler-impl-hibernate.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-scheduler-quartz-factory.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-scheduler-quartz.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-sequence-impl.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-session-impl.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-session-provider.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-supervisor-mapping-impl-hibernate.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-synchro.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-theme-model-impl-hibernate.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/cfg-bonita-transaction-api-impl.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/services/platform-cfg.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/model/cfg-bonita-actor-mapping-model-impl.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/model/cfg-bonita-archive-model-impl.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/model/cfg-bonita-data-instance-model-impl.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/model/cfg-bonita-dependency-model-impl.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/model/cfg-bonita-dependency-platform-model-impl.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/model/cfg-bonita-document-model-impl.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/model/cfg-bonita-external-identity-mapping-model-impl.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/model/cfg-bonita-identity-model-impl.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/model/cfg-bonita-log-model-impl.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/model/cfg-bonita-page-model-impl.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/model/cfg-bonita-platform-command-model-impl.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/model/cfg-bonita-platform-model-impl.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/model/cfg-bonita-process-comment-model-impl.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/model/cfg-bonita-process-definition-model-impl.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/model/cfg-bonita-process-instance-model-impl.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/model/cfg-bonita-profile-model-impl.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/model/cfg-bonita-reporting-model-impl.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/model/cfg-bonita-scheduler-quartz-model.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/model/cfg-bonita-supervisor-mapping-model-impl.xml]
+    déc. 24, 2014 10:32:22 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/model/cfg-bonita-theme-model-impl.xml]
+    déc. 24, 2014 10:32:23 AM org.springframework.core.io.support.PropertiesLoaderSupport loadProperties
+    Infos: Loading properties file from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/bonita-platform.properties]
+    déc. 24, 2014 10:32:23 AM org.springframework.core.io.support.PropertiesLoaderSupport loadProperties
+    Infos: Loading properties file from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/platform/conf/jdbc-postgres.xml]
+    déc. 24, 2014 10:32:23 AM org.springframework.beans.factory.support.DefaultListableBeanFactory preInstantiateSingletons
+    Infos: Pre-instantiating singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@11b6d4df: defining beans [hbm-bos-actor-mapping,archivingStrategy,db-bonita-business-application-model,cacheConfigurations,connectorCacheConfig,processDefCacheConfig,userFilterCacheConfig,migrationPlanCacheConfig,breakpointCacheConfig,groovyScriptCacheConfig,synchroServiceCacheConfig,transientDataCacheConfig,platformCacheConfig,cacheService,platformCacheService,db-bos-category-model,hbm-bos-category-model,parentClassLoaderResolver,classLoaderService,db-bos-command-model,hbm-bos-command-model,hbm-bos-data-instance-model,hbm-bos-data-instance-model-arch,deleteService,hbm-bonita-dependency-model,platformDependencyService,hbm-bonita-dependency-platform-model,hbm-bonita-document-model,jndiTemplate,bonitaSequenceManagerDSJNDI,eventService,hbm-bos-external-identity-mapping,hbm-bonita-identity-model,incidentService,lockService,queriableLoggerStrategy,syncQueriableLoggerService,hbm-bonita-log-model,platformTechnicalLoggerService,nodeConfiguration,jobLogCreator,jdbcJobListener,loggerJobListener,schedulerServiceRestartHandler,dbConfigurationsProvider,sequencecripts,platformPersistenceService,persistenceService,journalConfigurationProvider,hbmResourcesConfigurationProvider,platformService,platformProperties,platformAuthenticationService,platformCommandService,hbm-bos-platform-command-model,platformLoginService,hbm-bonita-platform-model,platformSessionService,platformSessionProvider,hbm-bos-process-comment-model,hbm-bos-process-comment-model-arch,hbm-bonita-process-definition-model,hbm-bonita-process-instance-model,hbm-bonita-process-instance-model-arch,hbm-bos-profile-model,hbm-bonita-scheduler,quartzSchedulerFactory,quartzProperties,schedulerExecutor,jobService,scheduler,servicesResolver,sequenceManager,sessionService,sessionProvider,hbm-bos-supervisor-mapping,synchroService,hbm-bos-theme-model,transactionManager,transactionService,dbProperties,queriableLogSessionProvider,platformRecorderSync,tenantRecorderSyncForPlatform,parserFactory,xmlValidatorFactory,xmlValidator,xmlWriter,transactionExecutor,db-bos-actor-mapping,definitiveArchiveDescriptor,db-bos-data-instance-model,db-bos-data-instance-model-arch,db-bonita-dependency-model,db-bonita-dependency-platform-model,db-bonita-document-model,db-bonita-document-model-arch,db-bos-external-identity-mapping,db-bonita-identity-model,db-bonita-log,db-bonita-page-model,db-bos-platform-command-model,db-bonita-platform-model,db-bos-process-comment-model,db-bos-process-comment-model-arch,db-bonita-process-definition-model,db-bonita-process-instance-model,db-bonita-process-instance-model-arch,db-bos-profile-model,db-bonita-reporting-model,db-bonita-scheduler-quartz,db-bonita-scheduler,db-bos-supervisor-mapping,db-bos-theme-model]; parent: org.springframework.beans.factory.support.DefaultListableBeanFactory@48db67e7
+
+org.bonitasoft.migration.MigrationIT STANDARD_OUT
+    |10:32:30.559|WARN |o.h.t.TypeFactory| HHH000233: Scoping types to session factory org.hibernate.internal.SessionFactoryImpl@11a41324 after already scoped org.hibernate.internal.SessionFactoryImpl@2ae4a988
+    |10:32:33.653|INFO |o.b.e.a.i.PlatformAPIImpl| THREAD_ID=9 | HOSTNAME=bouboulou | Start service of platform : org.bonitasoft.engine.classloader.ClassLoaderServiceImpl
+    |10:32:33.653|INFO |o.b.e.a.i.PlatformAPIImpl| THREAD_ID=9 | HOSTNAME=bouboulou | Start service of platform : org.bonitasoft.engine.cache.ehcache.PlatformEhCacheCacheService
+    |10:32:33.756|INFO |o.b.e.a.i.PlatformAPIImpl| THREAD_ID=9 | HOSTNAME=bouboulou | Start service of platform : org.bonitasoft.engine.cache.ehcache.EhCacheCacheService
+
+org.bonitasoft.migration.MigrationIT STANDARD_ERROR
+    déc. 24, 2014 10:32:33 AM org.springframework.context.support.AbstractApplicationContext prepareRefresh
+    Infos: Refreshing org.bonitasoft.engine.service.impl.AbsoluteFileSystemXmlApplicationContext@6954e85c: startup date [Wed Dec 24 10:32:33 CET 2014]; parent: org.bonitasoft.engine.service.impl.AbsoluteFileSystemXmlApplicationContext@5e5a6f01
+    déc. 24, 2014 10:32:33 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/tenants/1/conf/services/cfg-bonita-actor-mapping-impl.xml]
+    déc. 24, 2014 10:32:33 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/tenants/1/conf/services/cfg-bonita-archive-impl.xml]
+    déc. 24, 2014 10:32:33 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/tenants/1/conf/services/cfg-bonita-authentication-impl.xml]
+    déc. 24, 2014 10:32:33 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/tenants/1/conf/services/cfg-bonita-category-impl.xml]
+    déc. 24, 2014 10:32:33 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/tenants/1/conf/services/cfg-bonita-command-api-impl.xml]
+    déc. 24, 2014 10:32:33 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/tenants/1/conf/services/cfg-bonita-connector-impl.xml]
+    déc. 24, 2014 10:32:33 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/tenants/1/conf/services/cfg-bonita-connector-service-api-impl.xml]
+    déc. 24, 2014 10:32:33 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/tenants/1/conf/services/cfg-bonita-data-instance-api-impl.xml]
+    déc. 24, 2014 10:32:33 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/tenants/1/conf/services/cfg-bonita-data-transient.xml]
+    déc. 24, 2014 10:32:33 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/tenants/1/conf/services/cfg-bonita-dependency-impl.xml]
+    déc. 24, 2014 10:32:33 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/tenants/1/conf/services/cfg-bonita-document-impl.xml]
+    déc. 24, 2014 10:32:33 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/tenants/1/conf/services/cfg-bonita-events-api-impl.xml]
+    déc. 24, 2014 10:32:33 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/tenants/1/conf/services/cfg-bonita-expression-api-impl.xml]
+    déc. 24, 2014 10:32:34 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/tenants/1/conf/services/cfg-bonita-expression-resolver.xml]
+    déc. 24, 2014 10:32:34 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/tenants/1/conf/services/cfg-bonita-external-identity-mapping-impl.xml]
+    déc. 24, 2014 10:32:34 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/tenants/1/conf/services/cfg-bonita-identity-impl.xml]
+    déc. 24, 2014 10:32:34 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/tenants/1/conf/services/cfg-bonita-log-impl.xml]
+    déc. 24, 2014 10:32:34 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/tenants/1/conf/services/cfg-bonita-log-technical-slf4j.xml]
+    déc. 24, 2014 10:32:34 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/tenants/1/conf/services/cfg-bonita-login.xml]
+    déc. 24, 2014 10:32:34 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/tenants/1/conf/services/cfg-bonita-permission.xml]
+    déc. 24, 2014 10:32:34 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/tenants/1/conf/services/cfg-bonita-process-comment-api-impl.xml]
+    déc. 24, 2014 10:32:34 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/tenants/1/conf/services/cfg-bonita-process-definition-impl.xml]
+    déc. 24, 2014 10:32:34 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/tenants/1/conf/services/cfg-bonita-process-instance-impl-ext.xml]
+    déc. 24, 2014 10:32:34 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/tenants/1/conf/services/cfg-bonita-process-instance-impl.xml]
+    déc. 24, 2014 10:32:34 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/tenants/1/conf/services/cfg-bonita-profile-impl.xml]
+    déc. 24, 2014 10:32:34 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/tenants/1/conf/services/cfg-bonita-supervisor-mapping-impl.xml]
+    déc. 24, 2014 10:32:34 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/tenants/1/conf/services/cfg-bonita-tenant-configuration.xml]
+    déc. 24, 2014 10:32:34 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/tenants/1/conf/services/cfg-bonita-theme-impl.xml]
+    déc. 24, 2014 10:32:34 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/tenants/1/conf/services/cfg-bonita-time-tracker.xml]
+    déc. 24, 2014 10:32:34 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/tenants/1/conf/services/cfg-bonita-user-filter-impl.xml]
+    déc. 24, 2014 10:32:34 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/tenants/1/conf/services/cfg-bonita-work-factory.xml]
+    déc. 24, 2014 10:32:34 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/tenants/1/conf/services/cfg-bonita-work-impl.xml]
+    déc. 24, 2014 10:32:34 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/tenants/1/conf/services/cfg-bos-operation-api-impl.xml]
+    déc. 24, 2014 10:32:34 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+    Infos: Loading XML bean definitions from file [/home/julienreboul/workspace-engine/bonita-migration/bonita-migration-integration-tests/build@6.4.0-6.4.1/build/home/server/tenants/1/conf/services/cfg.xml]
+    déc. 24, 2014 10:32:34 AM org.springframework.beans.factory.support.DefaultListableBeanFactory preInstantiateSingletons
+    Infos: Pre-instantiating singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@6e37bebf: defining beans [actorMappingService,archiveService,authenticationService,categoryService,commandService,defaultCommandProvider,canStartProcessDefinition,isInvolvedInHumanTask,isUserProcessSupervisor,createSupervisor,getSupervisor,deleteSupervisor,searchProcessSupervisors,importProfiles,executeActionsAndTerminate,isAllowedToStartProcess,isAllowedToSeeOverviewForm,isAllowedToSeeInstanciationForm,searchAssignedTasksSupervisedBy,searchArchivedTasksSupervisedBy,getUpdatedVariableValuesForProcessDefinition,getUpdatedVariableValuesForActivityInstance,getUpdatedVariableValuesForProcessInstance,searchProcessDefinitionsSupervisedBy,searchSCommentSupervisedBy,isAllowedToStartProcesses,addEntityMemberCommand,removeEntityMemberCommand,searchEntityMembersCommand,searchEntityMembersForUserCommand,deleteEntityMembersCommand,searchWaitingEventsCommand,advancedStartProcessCommand,connectorExecutor,connectorServiceSub,connectorService,connectorInstanceService,dataInstanceService,dataExpressionExecutorStrategy,transientDataService,transientDataExpressionExecutorStrategy,dependencyService,documentService,documentURLProvider,eventService,expressionService,expressionExecutorStrategyProvider,constantExpressionExecutorStrategy,groovyScriptExpressionExecutorStrategy,inputExpressionExecutorStrategy,patternExpressionExecutorStrategy,xPathReadExpressionExecutorStrategy,engineConstantExpressionExecutorStrategy,listExpressionExecutorStrategy,conditionExpressionExecutorStrategy,javaMethodCallExpressionExecutorStrategy,expressionResolverService,externalIdentityMappingService,identityService,queriableLoggerStrategy,syncQueriableLoggerService,tenantTechnicalLoggerService,loginService,permissionService,commentService,processDefinitionManager,activityInstanceService,processInstanceService,tokenService,gatewayInstanceService,transitionService,eventInstanceService,profileService,supervisorMappingService,tenantConfiguration,timerEventTriggerJobListener,themeService,timeTracker,userFilterService,userFilterServiceSub,bonitaExecutorServiceFactory,workService,operationService,operationExecutorStrategyProvider,leftOperandHandlerProvider,assignmentOperationExecutorStrategy,dataLeftOperandHandler,transientDataLeftOperandHandler,externalDataLeftOperandHandler,javaMethodOperationExecutorStrategy,xpathUpdateQueryOperationExecutorStrategy,documentLeftOperandHandler,documentListLeftOperandHandler,queriableLogSessionProvider,tenantRecorderSync,searchEntitiesDescriptor,flowNodeExecutor,containerRegistry,bpmInstancesCreator,flowNodeStateManager,eventsHandler,processExecutor,transactionalProcessInstanceInterruptor,documentReferenceExpressionExecutorStrategy,documentListReferenceExpressionExecutorStrategy,dependencyResolver]; parent: org.springframework.beans.factory.support.DefaultListableBeanFactory@11b6d4df
+
+org.bonitasoft.migration.MigrationIT STANDARD_OUT
+    |10:32:35.060|INFO |o.b.e.e.w.RestartFlowNodesHandler| THREAD_ID=9 | HOSTNAME=bouboulou | TENANT_ID=1 | Restarting flow nodes...
+    |10:32:35.075|INFO |o.b.e.e.w.RestartFlowNodesHandler| THREAD_ID=9 | HOSTNAME=bouboulou | TENANT_ID=1 | Found 0 flow nodes to restart on tenant 1
+    |10:32:35.097|INFO |o.b.e.e.w.RestartProcessHandler| THREAD_ID=9 | HOSTNAME=bouboulou | TENANT_ID=1 | Found 0 process to restart on tenant 1
+    |10:32:35.101|INFO |o.b.e.e.w.BPMEventWorksHandler| THREAD_ID=9 | HOSTNAME=bouboulou | TENANT_ID=1 | Reinitializing message instances in non-stable state to make them reworked by BPMEventHandlingJob
+    |10:32:35.111|INFO |o.b.e.e.w.BPMEventWorksHandler| THREAD_ID=9 | HOSTNAME=bouboulou | TENANT_ID=1 | 0 message instances found and reset.
+    |10:32:35.112|INFO |o.b.e.e.w.BPMEventWorksHandler| THREAD_ID=9 | HOSTNAME=bouboulou | TENANT_ID=1 | Reinitializing waiting message events in non-stable state to make them reworked by BPMEventHandlingJob
+    |10:32:35.116|INFO |o.b.e.e.w.BPMEventWorksHandler| THREAD_ID=9 | HOSTNAME=bouboulou | TENANT_ID=1 | 0 waiting message events found and reset.
+    |10:32:35.164|INFO |o.b.e.a.i.t.SetServiceState| THREAD_ID=9 | HOSTNAME=bouboulou | TENANT_ID=1 | start tenant-level service org.bonitasoft.engine.connector.impl.ConnectorExecutorImpl on tenant with ID 1
+    |10:32:35.167|INFO |o.b.e.a.i.t.SetServiceState| THREAD_ID=9 | HOSTNAME=bouboulou | TENANT_ID=1 | start tenant-level service org.bonitasoft.engine.service.impl.PermissionServiceImpl on tenant with ID 1
+    |10:32:35.174|INFO |o.b.e.a.i.t.SetServiceState| THREAD_ID=9 | HOSTNAME=bouboulou | TENANT_ID=1 | start tenant-level service org.bonitasoft.engine.tracking.TimeTracker on tenant with ID 1
+    |10:32:35.174|INFO |o.b.e.t.TimeTracker| THREAD_ID=9 | HOSTNAME=bouboulou | TENANT_ID=1 | Starting TimeTracker...
+    |10:32:35.174|INFO |o.b.e.t.TimeTracker| THREAD_ID=9 | HOSTNAME=bouboulou | TENANT_ID=1 | TimeTracker started.
+    |10:32:35.174|INFO |o.b.e.a.i.t.SetServiceState| THREAD_ID=9 | HOSTNAME=bouboulou | TENANT_ID=1 | start tenant-level service org.bonitasoft.engine.work.ExecutorWorkService on tenant with ID 1
+    |10:32:35.215|INFO |o.b.e.s.i.BonitaSchedulerFactory| Using default implementation for ThreadExecutor
+    |10:32:35.236|INFO |o.b.e.s.i.BonitaJobStoreCMT| Using db table-based data access locking (synchronization).
+    |10:32:35.238|INFO |o.b.e.s.i.BonitaJobStoreCMT| JobStoreCMT initialized.
+    |10:32:35.238|INFO |o.b.e.s.i.BonitaSchedulerFactory| Quartz scheduler 'QuartzScheduler' initialized from an externally provided properties instance.
+    |10:32:35.238|INFO |o.b.e.s.i.BonitaSchedulerFactory| Quartz scheduler version: 2.2.1
+    |10:32:35.244|INFO |o.b.e.s.i.SchedulerServiceImpl| THREAD_ID=9 | HOSTNAME=bouboulou | Start scheduler
+    |10:32:35.936|INFO |o.b.e.s.i.BonitaJobStoreCMT| Freed 0 triggers from 'acquired' / 'blocked' state.
+    |10:32:35.941|INFO |o.b.e.s.i.BonitaJobStoreCMT| Recovering 0 jobs that were in-progress at the time of the last shut-down.
+    |10:32:35.942|INFO |o.b.e.s.i.BonitaJobStoreCMT| Recovery complete.
+    |10:32:35.943|INFO |o.b.e.s.i.BonitaJobStoreCMT| Removed 0 'complete' triggers.
+    |10:32:35.943|INFO |o.b.e.s.i.BonitaJobStoreCMT| Removed 0 stale fired job entries.
+    |10:32:35.952|INFO |o.b.e.h.SchedulerServiceRestartHandler| THREAD_ID=9 | HOSTNAME=bouboulou | Rescheduling all scheduler Triggers in ERROR state
+    |10:32:35.963|INFO |o.b.e.a.i.StarterThread| THREAD_ID=9 | HOSTNAME=bouboulou | Restarting elements in the Thread 43
+    |10:32:35.963|INFO |o.b.e.a.i.StarterThread| THREAD_ID=43 | HOSTNAME=bouboulou | Restarting elements for tenant 1
+    |10:32:35.966|INFO |o.b.e.e.w.RestartFlowNodesHandler| THREAD_ID=43 | HOSTNAME=bouboulou | TENANT_ID=1 | Restarting 0 flow nodes for tenant 1
+    |10:32:35.970|INFO |o.b.e.e.w.RestartProcessHandler| THREAD_ID=43 | HOSTNAME=bouboulou | TENANT_ID=1 | Restarting 0 processes for tenant 1
+
+org.bonitasoft.migration.MigrationIT > org.bonitasoft.migration.DatabaseChecker6_4_1.check_profiles STANDARD_OUT
+    |10:32:36.241|INFO |o.b.m.SimpleDatabaseChecker6_4_0| The profile User is the same in database as the XML file.
+    |10:32:36.321|INFO |o.b.m.SimpleDatabaseChecker6_4_0| The profile entry Tasks is the same in database as the XML file.
+    |10:32:36.363|INFO |o.b.m.SimpleDatabaseChecker6_4_0| The profile entry Cases is the same in database as the XML file.
+    |10:32:36.395|INFO |o.b.m.SimpleDatabaseChecker6_4_0| The profile entry Processes is the same in database as the XML file.
+    |10:32:36.443|INFO |o.b.m.SimpleDatabaseChecker6_4_0| The profile Administrator is the same in database as the XML file.
+    |10:32:36.497|INFO |o.b.m.SimpleDatabaseChecker6_4_0| The profile entry Process management is the same in database as the XML file.
+    |10:32:36.546|INFO |o.b.m.SimpleDatabaseChecker6_4_0| The profile entry Organization is the same in database as the XML file.
+    |10:32:36.615|INFO |o.b.m.SimpleDatabaseChecker6_4_0| The profile entry Configuration is the same in database as the XML file.
+
+org.bonitasoft.migration.MigrationIT > org.bonitasoft.migration.DatabaseChecker6_4_1.can_complete_the_execution_of_previous_started_process_and_start_a_new_one STANDARD_OUT
+    |10:32:36.919|INFO |o.b.e.a.i.ProcessStarter| THREAD_ID=9 | HOSTNAME=bouboulou | TENANT_ID=1 | The user <install> has started the process instance <1003> of process <SimpleProcessToBeMigrated> in version <1.0> and id <7833850941309938036>
+
+org.bonitasoft.migration.MigrationIT > org.bonitasoft.migration.DatabaseChecker6_4_1.can_complete_the_execution_of_previous_started_process_and_start_a_new_one FAILED
+    org.junit.ComparisonFailure
+
+org.bonitasoft.migration.MigrationIT STANDARD_OUT
+    |10:32:37.682|INFO |o.b.e.a.i.t.SetServiceState| THREAD_ID=9 | HOSTNAME=bouboulou | TENANT_ID=1 | stop tenant-level service org.bonitasoft.engine.connector.impl.ConnectorExecutorImpl on tenant with ID 1
+    |10:32:37.683|INFO |o.b.e.a.i.t.SetServiceState| THREAD_ID=9 | HOSTNAME=bouboulou | TENANT_ID=1 | stop tenant-level service org.bonitasoft.engine.service.impl.PermissionServiceImpl on tenant with ID 1
+    |10:32:37.683|INFO |o.b.e.a.i.t.SetServiceState| THREAD_ID=9 | HOSTNAME=bouboulou | TENANT_ID=1 | stop tenant-level service org.bonitasoft.engine.tracking.TimeTracker on tenant with ID 1
+    |10:32:37.683|INFO |o.b.e.t.TimeTracker| THREAD_ID=9 | HOSTNAME=bouboulou | TENANT_ID=1 | Stopping TimeTracker...
+    |10:32:37.683|INFO |o.b.e.t.TimeTracker| THREAD_ID=9 | HOSTNAME=bouboulou | TENANT_ID=1 | TimeTracker stopped.
+    |10:32:37.683|INFO |o.b.e.a.i.t.SetServiceState| THREAD_ID=9 | HOSTNAME=bouboulou | TENANT_ID=1 | stop tenant-level service org.bonitasoft.engine.work.ExecutorWorkService on tenant with ID 1
+    |10:32:37.684|INFO |o.b.e.w.BonitaThreadPoolExecutor| THREAD_ID=9 | HOSTNAME=bouboulou | TENANT_ID=1 | Clearing queue of work, had 0 elements
+    |10:32:37.684|INFO |o.b.e.w.ExecutorWorkService| THREAD_ID=9 | HOSTNAME=bouboulou | TENANT_ID=1 | Stopped executor service
+    |10:32:37.685|INFO |o.b.e.a.i.PlatformAPIImpl| THREAD_ID=9 | HOSTNAME=bouboulou | Stop service of platform: org.bonitasoft.engine.classloader.ClassLoaderServiceImpl
+    |10:32:37.705|INFO |o.b.e.a.i.PlatformAPIImpl| THREAD_ID=9 | HOSTNAME=bouboulou | Stop service of platform: org.bonitasoft.engine.cache.ehcache.PlatformEhCacheCacheService
+    |10:32:37.725|INFO |o.b.e.a.i.PlatformAPIImpl| THREAD_ID=9 | HOSTNAME=bouboulou | Stop service of platform: org.bonitasoft.engine.cache.ehcache.EhCacheCacheService
+
+org.bonitasoft.migration.MigrationIT STANDARD_ERROR
+    déc. 24, 2014 10:32:37 AM org.springframework.context.support.AbstractApplicationContext doClose
+    Infos: Closing org.springframework.context.support.ClassPathXmlApplicationContext@5c47e1f4: startup date [Wed Dec 24 10:32:19 CET 2014]; root of context hierarchy
+    déc. 24, 2014 10:32:37 AM org.springframework.beans.factory.support.DefaultSingletonBeanRegistry destroySingletons
+    Infos: Destroying singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@f4049aa: defining beans [dataSourceDependency,driverProperties,org.springframework.beans.factory.config.PropertyPlaceholderConfigurer#0,bonitaDataSource,bonitaSequenceManagerDataSource,btmConfig,BitronixTransactionManager,jndiMapping,jndiTemplate,jndiSetup]; root of factory hierarchy
+:build@6.4.0-6.4.1:test FAILED
+
+BUILD FAILED
+
+Total time: 1 mins 31.549 secs
