@@ -25,6 +25,7 @@ import org.bonitasoft.migration.versions.v6_3_x_to_6_4_0.ChangeDocumentsStructur
 import org.bonitasoft.migration.versions.v6_3_x_to_6_4_0.CreateApplicationTablesIT
 import org.bonitasoft.migration.versions.v6_3_x_to_6_4_0.UpdateDefaultProfilesIT
 import org.bonitasoft.migration.versions.v6_3_x_to_6_4_0.UpdateProfileEntriesIT
+import org.bonitasoft.migration.versions.v6_4_0_to_6_4_1.AddArchDocumentMappingIndexIT
 import org.junit.runner.JUnitCore
 
 
@@ -50,6 +51,7 @@ class DBUnitTestSuite extends TestSuite {
         suite.addTestSuite(ChangeDocumentsStructureIT.class);
         suite.addTestSuite(UpdateDefaultProfilesIT.class);
         suite.addTestSuite(UpdateProfileEntriesIT.class);
+        suite.addTestSuite(AddArchDocumentMappingIndexIT.class);
         return suite;
     }
 }

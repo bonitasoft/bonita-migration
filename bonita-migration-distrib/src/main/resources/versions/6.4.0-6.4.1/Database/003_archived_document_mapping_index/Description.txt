@@ -1,0 +1,1 @@
+Create new index on table arch_document_mapping (processinstanceid,tenantid)

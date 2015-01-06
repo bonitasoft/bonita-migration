@@ -21,34 +21,17 @@ import static org.junit.Assert.assertNotNull;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.naming.Context;
-
-import org.bonitasoft.engine.api.CommandAPI;
-import org.bonitasoft.engine.api.IdentityAPI;
-import org.bonitasoft.engine.api.PlatformAPI;
-import org.bonitasoft.engine.api.PlatformAPIAccessor;
-import org.bonitasoft.engine.api.ProcessAPI;
-import org.bonitasoft.engine.api.ProfileAPI;
-import org.bonitasoft.engine.api.TenantAPIAccessor;
-import org.bonitasoft.engine.exception.BonitaException;
 import org.bonitasoft.engine.exception.SearchException;
 import org.bonitasoft.engine.profile.Profile;
 import org.bonitasoft.engine.profile.ProfileEntry;
 import org.bonitasoft.engine.search.Order;
 import org.bonitasoft.engine.search.SearchOptionsBuilder;
-import org.bonitasoft.engine.session.APISession;
-import org.bonitasoft.engine.session.PlatformSession;
-import org.bonitasoft.engine.test.APITestUtil;
-import org.bonitasoft.engine.test.PlatformTestUtil;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * @author Celine Souchet
@@ -57,7 +40,7 @@ public class SimpleDatabaseChecker6_4_0 extends SimpleDatabaseChecker6_3_2 {
 
     private final Logger logger = LoggerFactory.getLogger(SimpleDatabaseChecker6_4_0.class);
 
-     @Test
+    @Test
     public void check_profiles() throws Exception {
         final SAXReader reader = new SAXReader();
         final Document document = getProfilesXML(reader);
@@ -96,7 +79,7 @@ public class SimpleDatabaseChecker6_4_0 extends SimpleDatabaseChecker6_3_2 {
         final String name = profileElement.attributeValue("name");
         final SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 10);
         builder.filter("name", name);
-        final List<Profile> resultProfiles = profileAPI.searchProfiles(builder.done()).getResult();
+        final List<Profile> resultProfiles = getProfileAPI().searchProfiles(builder.done()).getResult();
         assertEquals("Profile " + name + " not found.", 1, resultProfiles.size());
 
         final Profile profile = resultProfiles.get(0);
@@ -124,7 +107,7 @@ public class SimpleDatabaseChecker6_4_0 extends SimpleDatabaseChecker6_3_2 {
         builder.filter("name", name);
         builder.filter("parentId", parentProfileEntryId);
         builder.filter("profileId", profileId);
-        final List<ProfileEntry> profileEntries = profileAPI.searchProfileEntries(builder.done()).getResult();
+        final List<ProfileEntry> profileEntries = getProfileAPI().searchProfileEntries(builder.done()).getResult();
         assertEquals("Profile entry " + name + " not found for profile " + profileId + ", and parent profile entry " + parentProfileEntryId + ".", 1,
                 profileEntries.size());
 

@@ -14,6 +14,7 @@
 package org.bonitasoft.migration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.bonitasoft.migration.DatabaseCheckerInitiliazer6_3_1.springContext;
 import static org.junit.Assert.assertEquals;
 
 import java.io.FileInputStream;
@@ -31,7 +32,6 @@ import org.bonitasoft.engine.bpm.document.ArchivedDocument;
 import org.bonitasoft.engine.bpm.document.ArchivedDocumentsSearchDescriptor;
 import org.bonitasoft.engine.bpm.document.Document;
 import org.bonitasoft.engine.bpm.document.DocumentsSearchDescriptor;
-import org.bonitasoft.engine.bpm.flownode.HumanTaskInstance;
 import org.bonitasoft.engine.bpm.process.ArchivedProcessInstance;
 import org.bonitasoft.engine.bpm.process.ArchivedProcessInstancesSearchDescriptor;
 import org.bonitasoft.engine.bpm.process.ProcessDefinition;
@@ -46,7 +46,6 @@ import org.bonitasoft.engine.expression.ExpressionBuilder;
 import org.bonitasoft.engine.home.BonitaHomeClient;
 import org.bonitasoft.engine.identity.User;
 import org.bonitasoft.engine.operation.OperationBuilder;
-import org.bonitasoft.engine.persistence.QueryOptions;
 import org.bonitasoft.engine.profile.Profile;
 import org.bonitasoft.engine.profile.ProfileEntry;
 import org.bonitasoft.engine.profile.ProfileEntrySearchDescriptor;
@@ -111,14 +110,14 @@ public class DatabaseChecker6_4_0 extends SimpleDatabaseChecker6_4_0 {
         jdbcTemplate.update("DELETE FROM flownode_instance where tenantid = ?", new Object[] { TENANT_ID });
         jdbcTemplate.update("DELETE FROM process_instance where tenantid = ?", new Object[] { TENANT_ID });
         jdbcTemplate.update("DELETE FROM event_trigger_instance where tenantid = ?", new Object[] { TENANT_ID });
-        jdbcTemplate.update("DELETE FROM tenant where id = ?", new Object[]{TENANT_ID});
+        jdbcTemplate.update("DELETE FROM tenant where id = ?", new Object[] { TENANT_ID });
     }
 
     @Test
     public void check_security_is_off() throws Exception {
-        String path = BonitaHomeClient.getInstance().getBonitaHomeClientFolder() + "/platform/tenant-template/conf/security-config.properties";
-        Properties properties = new Properties();
-        FileInputStream inStream = new FileInputStream(path);
+        final String path = BonitaHomeClient.getInstance().getBonitaHomeClientFolder() + "/platform/tenant-template/conf/security-config.properties";
+        final Properties properties = new Properties();
+        final FileInputStream inStream = new FileInputStream(path);
         properties.load(inStream);
         inStream.close();
         assertThat(properties.getProperty("security.rest.api.authorizations.check.enabled")).isEqualTo("false");
@@ -155,16 +154,16 @@ public class DatabaseChecker6_4_0 extends SimpleDatabaseChecker6_4_0 {
         final long countRefBusinessdata = countRefBusinessdata(jdbcTemplate, TENANT_ID);
 
         createTenantIfNotExists(jdbcTemplate, TENANT_ID);
-        jdbcTemplate.update(SQL_INSERT_PROCESS_INSTANCE, new Object[]{TENANT_ID, PROCESS_INSTANCE_ID1});
+        jdbcTemplate.update(SQL_INSERT_PROCESS_INSTANCE, new Object[] { TENANT_ID, PROCESS_INSTANCE_ID1 });
         jdbcTemplate.update(SQL_INSERT_PROCESS_INSTANCE, new Object[] { TENANT_ID, PROCESS_INSTANCE_ID2 });
 
         // when
         final String sqlInsertRefBizData = "INSERT INTO ref_biz_data_inst(tenantid, id, name, proc_inst_id, fn_inst_id, data_id, data_classname, kind) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sqlInsertRefBizData, new Object[]{TENANT_ID, 38484, "businessdata", PROCESS_INSTANCE_ID1, null, 1, CLASSNAME,
-                KIND});
+        jdbcTemplate.update(sqlInsertRefBizData, new Object[] { TENANT_ID, 38484, "businessdata", PROCESS_INSTANCE_ID1, null, 1, CLASSNAME,
+                KIND });
 
-        jdbcTemplate.update(sqlInsertRefBizData, new Object[]{TENANT_ID, 4959595, "businessdata", PROCESS_INSTANCE_ID2, null, 1, CLASSNAME,
+        jdbcTemplate.update(sqlInsertRefBizData, new Object[] { TENANT_ID, 4959595, "businessdata", PROCESS_INSTANCE_ID2, null, 1, CLASSNAME,
                 KIND
         });
 
@@ -187,11 +186,11 @@ public class DatabaseChecker6_4_0 extends SimpleDatabaseChecker6_4_0 {
         createTenantIfNotExists(jdbcTemplate, TENANT_ID);
         jdbcTemplate
                 .update(SQL_INSERT_FLOWNODE
-                        , new Object[]{TENANT_ID, FLOWNODE_INSTANCE_ID1, "kind", false, false, false, false, false, false, false});
+                        , new Object[] { TENANT_ID, FLOWNODE_INSTANCE_ID1, "kind", false, false, false, false, false, false, false });
 
         jdbcTemplate
                 .update(SQL_INSERT_FLOWNODE
-                        , new Object[]{TENANT_ID, FLOWNODE_INSTANCE_ID2, "kind", false, false, false, false, false, false, false});
+                        , new Object[] { TENANT_ID, FLOWNODE_INSTANCE_ID2, "kind", false, false, false, false, false, false, false });
 
         // when
 
@@ -223,7 +222,7 @@ public class DatabaseChecker6_4_0 extends SimpleDatabaseChecker6_4_0 {
 
         createTenantIfNotExists(jdbcTemplate, TENANT_ID);
         jdbcTemplate.update("INSERT INTO ref_biz_data_inst(tenantid, id, name,  data_id, data_classname, kind) "
-                + "VALUES (?, ?, ?, ?, ?, ?)", new Object[]{TENANT_ID, 298989, "businessdata", 1, CLASSNAME, "multi_ref"});
+                + "VALUES (?, ?, ?, ?, ?, ?)", new Object[] { TENANT_ID, 298989, "businessdata", 1, CLASSNAME, "multi_ref" });
         logger.info("insert first multiple data");
         jdbcTemplate.update("INSERT INTO multi_biz_data(tenantid, id, idx, data_id) "
                 + "VALUES (?, ?, ?, ?)", new Object[] { TENANT_ID, 298989, 1, 1 });
@@ -294,99 +293,112 @@ public class DatabaseChecker6_4_0 extends SimpleDatabaseChecker6_4_0 {
 
     @Test
     public void checkDocumentsAreMigrated() throws Exception {
-        SearchResult<ArchivedProcessInstance> archivedProcessInstances = processAPI.searchArchivedProcessInstances(new SearchOptionsBuilder(0, 100).filter(ArchivedProcessInstancesSearchDescriptor.NAME, "ProcessWithDocuments").sort(ArchivedProcessInstancesSearchDescriptor.SOURCE_OBJECT_ID, Order.ASC).done());
-        SearchResult<ProcessInstance> processInstances = processAPI.searchProcessInstances(new SearchOptionsBuilder(0, 100).filter(ProcessInstanceSearchDescriptor.NAME, "ProcessWithDocuments").sort(ProcessInstanceSearchDescriptor.ID, Order.ASC).done());
-        Set<Long> ids = new HashSet<Long>();
-        for (ArchivedProcessInstance archivedProcessInstance : archivedProcessInstances.getResult()) {
+        final SearchResult<ArchivedProcessInstance> archivedProcessInstances = getProcessAPI().searchArchivedProcessInstances(new SearchOptionsBuilder(0, 100)
+                .filter(ArchivedProcessInstancesSearchDescriptor.NAME, "ProcessWithDocuments")
+                .sort(ArchivedProcessInstancesSearchDescriptor.SOURCE_OBJECT_ID, Order.ASC).done());
+        final SearchResult<ProcessInstance> processInstances = getProcessAPI().searchProcessInstances(new SearchOptionsBuilder(0, 100)
+                .filter(ProcessInstanceSearchDescriptor.NAME, "ProcessWithDocuments").sort(ProcessInstanceSearchDescriptor.ID, Order.ASC).done());
+        final Set<Long> ids = new HashSet<Long>();
+        for (final ArchivedProcessInstance archivedProcessInstance : archivedProcessInstances.getResult()) {
             ids.add(archivedProcessInstance.getSourceObjectId());
         }
-        for (ProcessInstance processInstance : processInstances.getResult()) {
+        for (final ProcessInstance processInstance : processInstances.getResult()) {
             ids.add(processInstance.getId());
         }
-        List<Long> sortedIds = new ArrayList<Long>(ids);
+        final List<Long> sortedIds = new ArrayList<Long>(ids);
         Collections.sort(sortedIds);
         assertThat(sortedIds).hasSize(4).describedAs("Can't find all processes");
 
-        Long inst1 = sortedIds.get(0);
-        Long inst2 = sortedIds.get(1);
-        Long inst3 = sortedIds.get(2);
-        Long inst4 = sortedIds.get(3);
+        final Long inst1 = sortedIds.get(0);
+        final Long inst2 = sortedIds.get(1);
+        final Long inst3 = sortedIds.get(2);
+        final Long inst4 = sortedIds.get(3);
 
         //check on finished instance that we have 3 archived document with expected values
-        SearchResult<ArchivedDocument> archivedDocumentsOfInstance1 = processAPI.searchArchivedDocuments(new SearchOptionsBuilder(0, 100).filter(ArchivedDocumentsSearchDescriptor.PROCESSINSTANCE_ID, inst1).sort(ArchivedDocumentsSearchDescriptor.ARCHIVE_DATE,Order.ASC).done());
-        SearchResult<Document> documentsOfInstance1 = processAPI.searchDocuments(new SearchOptionsBuilder(0, 100).filter(DocumentsSearchDescriptor.PROCESSINSTANCE_ID, inst1).done());
+        final SearchResult<ArchivedDocument> archivedDocumentsOfInstance1 = getProcessAPI().searchArchivedDocuments(new SearchOptionsBuilder(0, 100)
+                .filter(ArchivedDocumentsSearchDescriptor.PROCESSINSTANCE_ID, inst1).sort(ArchivedDocumentsSearchDescriptor.ARCHIVE_DATE, Order.ASC).done());
+        final SearchResult<Document> documentsOfInstance1 = getProcessAPI().searchDocuments(new SearchOptionsBuilder(0, 100).filter(
+                DocumentsSearchDescriptor.PROCESSINSTANCE_ID, inst1).done());
 
-        List<ArchivedDocument> archivedDocuments1 = archivedDocumentsOfInstance1.getResult();
+        final List<ArchivedDocument> archivedDocuments1 = archivedDocumentsOfInstance1.getResult();
         assertThat(archivedDocuments1).hasSize(3).describedAs("should have this number of archived documents for " + inst1);
         assertThat(archivedDocuments1.get(0).getName()).isEqualTo("doc1");
-        assertThat(processAPI.getDocumentContent(archivedDocuments1.get(0).getContentStorageId())).isEqualTo("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.".getBytes());
+        assertThat(getProcessAPI().getDocumentContent(archivedDocuments1.get(0).getContentStorageId())).isEqualTo(
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.".getBytes());
         assertThat(archivedDocuments1.get(1).getName()).isEqualTo("doc1");
-        assertThat(processAPI.getDocumentContent(archivedDocuments1.get(1).getContentStorageId())).isEqualTo("newContent1".getBytes());
+        assertThat(getProcessAPI().getDocumentContent(archivedDocuments1.get(1).getContentStorageId())).isEqualTo("newContent1".getBytes());
         assertThat(archivedDocuments1.get(2).getName()).isEqualTo("doc2");
-        assertThat(processAPI.getDocumentContent(archivedDocuments1.get(2).getContentStorageId())).isEqualTo("newContent2".getBytes());
-        List<Document> documents1 = documentsOfInstance1.getResult();
+        assertThat(getProcessAPI().getDocumentContent(archivedDocuments1.get(2).getContentStorageId())).isEqualTo("newContent2".getBytes());
+        final List<Document> documents1 = documentsOfInstance1.getResult();
         assertThat(documents1).hasSize(0);
 
         //check on instance with step1 executed that we have 1 archived document and 2 documents with expected values
-        SearchResult<ArchivedDocument> archivedDocumentsOfInstance2 = processAPI.searchArchivedDocuments(new SearchOptionsBuilder(0,100).filter(ArchivedDocumentsSearchDescriptor.PROCESSINSTANCE_ID,inst2).done());
-        SearchResult<Document> documentsOfInstance2 = processAPI.searchDocuments(new SearchOptionsBuilder(0, 100).filter(DocumentsSearchDescriptor.PROCESSINSTANCE_ID, inst2).sort(DocumentsSearchDescriptor.DOCUMENT_CREATIONDATE, Order.ASC).done());
+        final SearchResult<ArchivedDocument> archivedDocumentsOfInstance2 = getProcessAPI().searchArchivedDocuments(new SearchOptionsBuilder(0, 100).filter(
+                ArchivedDocumentsSearchDescriptor.PROCESSINSTANCE_ID, inst2).done());
+        final SearchResult<Document> documentsOfInstance2 = getProcessAPI().searchDocuments(new SearchOptionsBuilder(0, 100)
+                .filter(DocumentsSearchDescriptor.PROCESSINSTANCE_ID, inst2).sort(DocumentsSearchDescriptor.DOCUMENT_CREATIONDATE, Order.ASC).done());
 
-        List<ArchivedDocument> archivedDocuments2 = archivedDocumentsOfInstance2.getResult();
-        assertThat(archivedDocuments2).hasSize(1).describedAs("should have this number of archived documents for "+inst2);
-        List<Document> documents2 = documentsOfInstance2.getResult();
+        final List<ArchivedDocument> archivedDocuments2 = archivedDocumentsOfInstance2.getResult();
+        assertThat(archivedDocuments2).hasSize(1).describedAs("should have this number of archived documents for " + inst2);
+        final List<Document> documents2 = documentsOfInstance2.getResult();
         assertThat(documents2).hasSize(2);
 
         assertThat(archivedDocuments2.get(0).getName()).isEqualTo("doc1");
-        assertThat(processAPI.getDocumentContent(archivedDocuments2.get(0).getContentStorageId())).isEqualTo("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.".getBytes());
+        assertThat(getProcessAPI().getDocumentContent(archivedDocuments2.get(0).getContentStorageId())).isEqualTo(
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.".getBytes());
         assertThat(documents2.get(0).getName()).isEqualTo("doc1");
-        assertThat(processAPI.getDocumentContent(documents2.get(0).getContentStorageId())).isEqualTo("newContent1".getBytes());
+        assertThat(getProcessAPI().getDocumentContent(documents2.get(0).getContentStorageId())).isEqualTo("newContent1".getBytes());
         assertThat(documents2.get(1).getName()).isEqualTo("doc2");
-        assertThat(processAPI.getDocumentContent(documents2.get(1).getContentStorageId())).isEqualTo("newContent2".getBytes());
-
-
+        assertThat(getProcessAPI().getDocumentContent(documents2.get(1).getContentStorageId())).isEqualTo("newContent2".getBytes());
 
         //check on instance with document added using api that we have 3 documents and 2 archived document with expected values
-        SearchResult<ArchivedDocument> archivedDocumentsOfInstance3 = processAPI.searchArchivedDocuments(new SearchOptionsBuilder(0,100).filter(ArchivedDocumentsSearchDescriptor.PROCESSINSTANCE_ID,inst3).sort(ArchivedDocumentsSearchDescriptor.ARCHIVE_DATE, Order.ASC).done());
-        SearchResult<Document> documentsOfInstance3 = processAPI.searchDocuments(new SearchOptionsBuilder(0, 100).filter(DocumentsSearchDescriptor.PROCESSINSTANCE_ID, inst3).sort(DocumentsSearchDescriptor.DOCUMENT_CREATIONDATE, Order.ASC).done());
+        final SearchResult<ArchivedDocument> archivedDocumentsOfInstance3 = getProcessAPI().searchArchivedDocuments(new SearchOptionsBuilder(0, 100)
+                .filter(ArchivedDocumentsSearchDescriptor.PROCESSINSTANCE_ID, inst3).sort(ArchivedDocumentsSearchDescriptor.ARCHIVE_DATE, Order.ASC).done());
+        final SearchResult<Document> documentsOfInstance3 = getProcessAPI().searchDocuments(new SearchOptionsBuilder(0, 100)
+                .filter(DocumentsSearchDescriptor.PROCESSINSTANCE_ID, inst3).sort(DocumentsSearchDescriptor.DOCUMENT_CREATIONDATE, Order.ASC).done());
 
-        List<ArchivedDocument> archivedDocuments3 = archivedDocumentsOfInstance3.getResult();
+        final List<ArchivedDocument> archivedDocuments3 = archivedDocumentsOfInstance3.getResult();
         assertThat(archivedDocuments3).hasSize(2);
-        List<Document> documents3 = documentsOfInstance3.getResult();
+        final List<Document> documents3 = documentsOfInstance3.getResult();
         assertThat(documents3).hasSize(3);
 
         assertThat(archivedDocuments3.get(0).getName()).isEqualTo("documentAttachedUsingAPI");
-        assertThat(processAPI.getDocumentContent(archivedDocuments3.get(0).getContentStorageId())).isEqualTo("The content of the file attached using the api".getBytes());
+        assertThat(getProcessAPI().getDocumentContent(archivedDocuments3.get(0).getContentStorageId())).isEqualTo(
+                "The content of the file attached using the api".getBytes());
         assertThat(archivedDocuments3.get(1).getName()).isEqualTo("urlDocumentAttachedUsingAPI");
         assertThat(archivedDocuments3.get(1).getDocumentURL()).isEqualTo("http://MyWebSite.com/file.txt");
         assertThat(documents3.get(0).getName()).isEqualTo("doc1");
-        assertThat(processAPI.getDocumentContent(documents3.get(0).getContentStorageId())).isEqualTo("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.".getBytes());
+        assertThat(getProcessAPI().getDocumentContent(documents3.get(0).getContentStorageId())).isEqualTo(
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.".getBytes());
         assertThat(documents3.get(1).getName()).isEqualTo("documentAttachedUsingAPI");
-        assertThat(processAPI.getDocumentContent(documents3.get(1).getContentStorageId())).isEqualTo("The content of the file attached using the api2".getBytes());
+        assertThat(getProcessAPI().getDocumentContent(documents3.get(1).getContentStorageId())).isEqualTo(
+                "The content of the file attached using the api2".getBytes());
         assertThat(documents3.get(2).getName()).isEqualTo("urlDocumentAttachedUsingAPI");
         assertThat(documents3.get(2).getUrl()).isEqualTo("http://MyWebSite.com/file2.txt");
 
         //check on just started instance that we have only one document and that we have 3 archived document after execution
-        SearchResult<Document> documentsOfInstance4 = processAPI.searchDocuments(new SearchOptionsBuilder(0, 100).filter(DocumentsSearchDescriptor.PROCESSINSTANCE_ID, inst4).done());
+        final SearchResult<Document> documentsOfInstance4 = getProcessAPI().searchDocuments(new SearchOptionsBuilder(0, 100).filter(
+                DocumentsSearchDescriptor.PROCESSINSTANCE_ID, inst4).done());
 
-        List<Document> documents4 = documentsOfInstance4.getResult();
+        final List<Document> documents4 = documentsOfInstance4.getResult();
         assertThat(documents4).hasSize(1);
 
-        long processWithDocuments = processAPI.getProcessDefinitionId("ProcessWithDocuments", "1.0");
-        processAPI.startProcess(processWithDocuments);
+        final long processWithDocuments = getProcessAPI().getProcessDefinitionId("ProcessWithDocuments", "1.0");
+        getProcessAPI().startProcess(processWithDocuments);
 
         //check we can read the process-design.xml
-        processAPI.getDesignProcessDefinition(processWithDocuments);
+        getProcessAPI().getDesignProcessDefinition(processWithDocuments);
 
     }
 
     @Test
     public void checkListsWorks() throws Exception {
-        ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("processWithListOfDoc", "1.0");
+        final ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("processWithListOfDoc", "1.0");
         builder.addActor("john");
         builder.addLongData("doc1Id", null);
         builder.addLongData("doc2Id", null);
         builder.addUserTask("step1", "john");
-        Expression scriptExpression1 = new ExpressionBuilder()
+        final Expression scriptExpression1 = new ExpressionBuilder()
                 .createGroovyScriptExpression(
                         "updateDocs",
                         "[new org.bonitasoft.engine.bpm.document.DocumentValue(doc2Id), " +
@@ -395,26 +407,26 @@ public class DatabaseChecker6_4_0 extends SimpleDatabaseChecker6_4_0 {
                         List.class.getName(),
                         new ExpressionBuilder().createDataExpression("doc1Id", Long.class.getName()),
                         new ExpressionBuilder().createDataExpression("doc2Id", Long.class.getName()));
-        Expression scriptExpression2 = new ExpressionBuilder()
+        final Expression scriptExpression2 = new ExpressionBuilder()
                 .createGroovyScriptExpression(
                         "updateDocs",
                         "[new org.bonitasoft.engine.bpm.document.DocumentValue(\"updatedDoc\".getBytes(),\"plain/text\",\"file.txt\")]",
                         List.class.getName(),
                         new ExpressionBuilder().createDataExpression("doc2Id", Long.class.getName()));
-        UserTaskDefinitionBuilder userTaskDefinitionBuilder = builder.addUserTask("updateStep", "john");
+        final UserTaskDefinitionBuilder userTaskDefinitionBuilder = builder.addUserTask("updateStep", "john");
         userTaskDefinitionBuilder.addOperation(new OperationBuilder().createSetDocumentList("invoices", scriptExpression1));
         userTaskDefinitionBuilder.addOperation(new OperationBuilder().createSetDocumentList("emptyList", scriptExpression2));
         //        userTaskDefinitionBuilder.addOperation(new OperationBuilder().createSetDocumentList("unknown", scriptExpression2));
-        UserTaskDefinitionBuilder verifyStepBuilder = builder.addUserTask("verifyStep", "john");
+        final UserTaskDefinitionBuilder verifyStepBuilder = builder.addUserTask("verifyStep", "john");
         verifyStepBuilder.addDisplayDescription(new ExpressionBuilder().createGroovyScriptExpression("getInvoicesListSize",
                 "String.valueOf(invoices.size())",
                 String.class.getName(),
                 new ExpressionBuilder().createDocumentListExpression("invoices")));
         builder.addTransition("step1", "updateStep");
         builder.addTransition("updateStep", "verifyStep");
-        DocumentListDefinitionBuilder invoices = builder.addDocumentListDefinition("invoices");
+        final DocumentListDefinitionBuilder invoices = builder.addDocumentListDefinition("invoices");
         invoices.addDescription("My invoices");
-        String script = "[new org.bonitasoft.engine.bpm.document.DocumentValue(\"http://www.myrul.com/mydoc.txt\"), " +
+        final String script = "[new org.bonitasoft.engine.bpm.document.DocumentValue(\"http://www.myrul.com/mydoc.txt\"), " +
                 "new org.bonitasoft.engine.bpm.document.DocumentValue(\"hello1\".getBytes(),\"plain/text\",\"file.txt\")," +
                 "new org.bonitasoft.engine.bpm.document.DocumentValue(\"hello2\".getBytes(),\"plain/text\",\"file.txt\")," +
                 "new org.bonitasoft.engine.bpm.document.DocumentValue(\"hello3\".getBytes(),\"plain/text\",\"file.txt\")" +
@@ -423,59 +435,59 @@ public class DatabaseChecker6_4_0 extends SimpleDatabaseChecker6_4_0 {
                 script,
                 List.class.getName()));
         builder.addDocumentListDefinition("emptyList");
-        User john = identityApi.getUserByUserName("userForDocuments");
-        ProcessDefinition processDefinition = processAPI.deploy(builder.done());
-        processAPI.addUserToActor(processAPI.getActors(processDefinition.getId(),0,1,null).get(0).getId(),john.getId());
-        processAPI.enableProcess(processDefinition.getId());
-        ProcessInstance processInstance = processAPI.startProcess(processDefinition.getId());
-
+        final User john = getIdentityApi().getUserByUserName("userForDocuments");
+        final ProcessDefinition processDefinition = getProcessAPI().deploy(builder.done());
+        getProcessAPI().addUserToActor(getProcessAPI().getActors(processDefinition.getId(), 0, 1, null).get(0).getId(), john.getId());
+        getProcessAPI().enableProcess(processDefinition.getId());
+        final ProcessInstance processInstance = getProcessAPI().startProcess(processDefinition.getId());
 
         //we have a process with an initialized list and a non initialized list
 
         //check with api methods
-        List<Document> invoices1 = processAPI.getDocumentList(processInstance.getId(), "invoices", 0, 100);
+        final List<Document> invoices1 = getProcessAPI().getDocumentList(processInstance.getId(), "invoices", 0, 100);
         assertThat(invoices1).hasSize(4);
-        Document urlDocument = invoices1.get(0);
+        final Document urlDocument = invoices1.get(0);
         assertThat(urlDocument.getUrl()).isEqualTo("http://www.myrul.com/mydoc.txt");
-        Document fileDocument = invoices1.get(1);
+        final Document fileDocument = invoices1.get(1);
         assertThat(fileDocument.hasContent()).isTrue();
         assertThat(fileDocument.getContentFileName()).isEqualTo("file.txt");
-        assertThat(processAPI.getDocumentContent(fileDocument.getContentStorageId())).isEqualTo("hello1".getBytes());
-        List<Document> emptyList = processAPI.getDocumentList(processInstance.getId(), "emptyList", 0, 100);
+        assertThat(getProcessAPI().getDocumentContent(fileDocument.getContentStorageId())).isEqualTo("hello1".getBytes());
+        final List<Document> emptyList = getProcessAPI().getDocumentList(processInstance.getId(), "emptyList", 0, 100);
         assertThat(emptyList).isEmpty();
     }
 
     @Test
     public void profile_entry_should_be_renamed_from_apps_to_processes() throws Exception {
         //when
-        SearchResult<ProfileEntry> appsEntries = profileAPI.searchProfileEntries(buildSearchOptions("Apps"));
-        SearchResult<ProfileEntry> processEntries = profileAPI.searchProfileEntries(buildSearchOptions("Process"));
+        final SearchResult<ProfileEntry> appsEntries = getProfileAPI().searchProfileEntries(buildSearchOptions("Apps"));
+        final SearchResult<ProfileEntry> processEntries = getProfileAPI().searchProfileEntries(buildSearchOptions("Process"));
 
-        SearchResult<Profile> profilesSearchResult = profileAPI.searchProfiles(buildSearchOptionsForProfile("Administrator"));
-        Profile admin = profilesSearchResult.getResult().get(0);
+        SearchResult<Profile> profilesSearchResult = getProfileAPI().searchProfiles(buildSearchOptionsForProfile("Administrator"));
+        final Profile admin = profilesSearchResult.getResult().get(0);
 
-        profilesSearchResult = profileAPI.searchProfiles(buildSearchOptionsForProfile("User"));
-        Profile user = profilesSearchResult.getResult().get(0);
+        profilesSearchResult = getProfileAPI().searchProfiles(buildSearchOptionsForProfile("User"));
+        final Profile user = profilesSearchResult.getResult().get(0);
 
         //then
         assertThat(appsEntries.getCount()).isEqualTo(0);
         assertThat(processEntries.getCount()).isEqualTo(3);
-        assertThat(admin.getDescription()).isEqualTo("The administrator can install a process, manage the organization, and handle some errors (for example, by replaying a task).");
+        assertThat(admin.getDescription()).isEqualTo(
+                "The administrator can install a process, manage the organization, and handle some errors (for example, by replaying a task).");
         assertThat(user.getDescription()).isEqualTo("The user can view and perform tasks and can start a new case of a process.");
     }
 
     protected SearchOptions buildSearchOptionsForProfile(final String profileName) {
-        SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 100);
+        final SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 100);
         builder.filter(ProfileSearchDescriptor.NAME, profileName);
-        SearchOptions options = builder.done();
+        final SearchOptions options = builder.done();
         return options;
     }
 
     protected SearchOptions buildSearchOptions(final String name) {
-        SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 10);
+        final SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 10);
         builder.searchTerm(name);
         builder.sort(ProfileEntrySearchDescriptor.NAME, Order.ASC);
-        SearchOptions options = builder.done();
+        final SearchOptions options = builder.done();
         return options;
     }
 }

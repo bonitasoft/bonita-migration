@@ -27,18 +27,17 @@ import org.bonitasoft.engine.service.TenantServiceAccessor;
 import org.bonitasoft.engine.service.impl.ServiceAccessorFactory;
 import org.junit.Test;
 
-
 /**
  * Check that the migrated database is ok
- * @author Elias Ricken de Medeiros
  *
+ * @author Elias Ricken de Medeiros
  */
 public class SimpleDatabaseChecker6_3_2 extends SimpleDatabaseChecker6_3_1 {
 
     @Test
     public void commands_are_up_to_date() throws Exception {
         //given
-        final TenantServiceAccessor serviceAccessor = ServiceAccessorFactory.getInstance().createTenantServiceAccessor(session.getTenantId());
+        final TenantServiceAccessor serviceAccessor = ServiceAccessorFactory.getInstance().createTenantServiceAccessor(getSession().getTenantId());
         final DefaultCommandProvider commandProvider = serviceAccessor.getDefaultCommandProvider();
 
         final SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 1000);
@@ -47,7 +46,7 @@ public class SimpleDatabaseChecker6_3_2 extends SimpleDatabaseChecker6_3_1 {
 
         //when
         final List<SimpleCommandDescriptor> configCommands = toSimpleCommandDescriptors(commandProvider.getDefaultCommands());
-        final List<SimpleCommandDescriptor> dbCommands = toSimpleCommandDescriptors(commandApi.searchCommands(builder.done()).getResult());
+        final List<SimpleCommandDescriptor> dbCommands = toSimpleCommandDescriptors(getCommandApi().searchCommands(builder.done()).getResult());
 
         //then
         assertThat(dbCommands).containsAll(configCommands);
@@ -57,9 +56,12 @@ public class SimpleDatabaseChecker6_3_2 extends SimpleDatabaseChecker6_3_1 {
     private List<SimpleCommandDescriptor> toSimpleCommandDescriptors(final List<CommandDescriptor> commandDescriptors) {
         final List<SimpleCommandDescriptor> simpleConfigCommands = new ArrayList<SimpleCommandDescriptor>(commandDescriptors.size());
         for (final CommandDescriptor configCommand : commandDescriptors) {
-            simpleConfigCommands.add(new SimpleCommandDescriptor(configCommand.getName(), configCommand.getImplementation(), configCommand.getDescription()));
+            if (!(configCommand.getName().equals("waitServerCommand") || configCommand.getName().equals("addHandlerCommand") || configCommand.getName().equals(
+                    "executeEventsCommand"))) {
+                simpleConfigCommands
+                        .add(new SimpleCommandDescriptor(configCommand.getName(), configCommand.getImplementation(), configCommand.getDescription()));
+            }
         }
         return simpleConfigCommands;
     }
-
 }
