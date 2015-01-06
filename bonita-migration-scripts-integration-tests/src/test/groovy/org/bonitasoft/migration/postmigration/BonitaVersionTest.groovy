@@ -32,10 +32,8 @@ class BonitaVersionTest {
         assertThat(PostMigrationTest.getCurrentNumericVersion("6.4.2-toto")).isEqualTo(642);
     }
 
-
     @Test
     public void getNumericVersionShouldRemoveDots() {
         assertThat(PostMigrationTest.getCurrentNumericVersion("6..4.0")).isEqualTo(640);
     }
-
 }

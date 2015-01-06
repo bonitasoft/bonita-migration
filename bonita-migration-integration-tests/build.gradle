@@ -46,6 +46,7 @@ configurations {
     migrationdist
     drivers
     homezip
+    runmigration
 }
 
 repositories {
@@ -79,6 +80,8 @@ dependencies {
     drivers group: 'org.postgresql', name: 'postgresql', version: '9.3-1102-jdbc41'
     drivers name:'ojdbc6'
     drivers name:'sqljdbc-4.0.2206.100'
+    runmigration group: 'com.thoughtworks.xstream', name: 'xstream', version: '1.4.2'
+    runmigration group: 'commons-io', name  :'commons-io', version : '2.1'
     scriptsintegration configurations.drivers
     sourcefiller configurations.drivers
     testCompile group: 'junit', name: 'junit', version: '4.+'
@@ -259,6 +262,10 @@ task execfill(dependsOn:scriptsintegration, type: JavaExec) {
             "jdbc.portNumber":project.portNumber,
             "jdbc.databaseName":project.databaseName,
             "bonita.home":bonitahome])
+        /*jvmArgs([
+            "-Xdebug",
+            "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000"
+            ])*/
         println systemProperties
         main = "org.bonitasoft.migration.DatabaseFiller${sourceversion.replace('.','_')}"
     }
@@ -272,7 +279,7 @@ task runmigration(dependsOn:execfill, type:JavaExec){
     main = 'groovy.lang.GroovyShell'
     classpath = files([
         "build/dist/lib/groovy-all-1.8.6.jar"
-    ]as String[])
+    ]as String[], configurations.runmigration)
     args 'Migration.groovy'
     systemProperty 'auto.accept', 'true'
 }
@@ -305,6 +312,10 @@ test {
             "bonita.home":bonitahome,
             "target.version":targetversion,
             "logback.configurationFile":file("logback.xml").getAbsolutePath()])
+        /*jvmArgs([
+            "-Xdebug",
+            "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000"
+            ])*/
         println systemProperties
     }
     testLogging.showStandardStreams = true
