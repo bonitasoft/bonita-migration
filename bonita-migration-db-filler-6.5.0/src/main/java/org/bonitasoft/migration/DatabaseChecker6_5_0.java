@@ -53,7 +53,7 @@ public class DatabaseChecker6_5_0 extends SimpleDatabaseChecker6_5_0 {
 
         final ProcessDefinition processDef1 = getApiTestUtil().deployAndEnableProcessWithActor(processBuilder.done(), BuildTestUtil.ACTOR_NAME, user);
         getProcessAPI().startProcess(processDef1.getId());
-        final HumanTaskInstance task1 = getApiTestUtil().waitForUserTask(taskName);
+        final HumanTaskInstance task1 = getApiTestUtil().waitForUserTaskAndGetIt(taskName);
         assertEquals(taskDisplayName, task1.getDisplayName());
 
         getApiTestUtil().disableAndDeleteProcess(processDef1);
