@@ -8,9 +8,9 @@ DELETE FROM "SEQUENCE" WHERE "ID" = 10021
 @@
 DELETE FROM "SEQUENCE" WHERE "ID" = 20051
 @@
-DELETE FROM "COMMAND" WHERE "NAME" = getUpdatedVariableValuesForProcessDefinition
+DELETE FROM "COMMAND" WHERE "NAME" = 'getUpdatedVariableValuesForProcessDefinition'
 @@
-DELETE FROM "COMMAND" WHERE "NAME" = getUpdatedVariableValuesForActivityInstance
+DELETE FROM "COMMAND" WHERE "NAME" = 'getUpdatedVariableValuesForActivityInstance'
 @@
-DELETE FROM "COMMAND" WHERE "NAME" = getUpdatedVariableValuesForProcessInstance
+DELETE FROM "COMMAND" WHERE "NAME" = 'getUpdatedVariableValuesForProcessInstance'
 @@
