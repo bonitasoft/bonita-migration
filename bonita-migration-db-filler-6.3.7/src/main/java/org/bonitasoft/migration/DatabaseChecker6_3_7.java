@@ -26,19 +26,17 @@ import org.bonitasoft.engine.session.APISession;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
 
-
 public class DatabaseChecker6_3_7 extends SimpleDatabaseChecker6_3_2 {
-    
+
     public static void main(final String[] args) throws Exception {
         JUnitCore.main(DatabaseChecker6_3_7.class.getName());
     }
-
 
     //BS-8991
     @Test
     public void can_create_user_with_255_char_in_fields() throws Exception {
         //given
-        String username = completeWithZeros("user");
+        final String username = completeWithZeros("user");
         final UserCreator creator = new UserCreator(username, "bpm");
         creator.setJobTitle(completeWithZeros("Engineer"));
         creator.setFirstName(completeWithZeros("First"));
@@ -49,9 +47,9 @@ public class DatabaseChecker6_3_7 extends SimpleDatabaseChecker6_3_2 {
         creator.setProfessionalContactData(contactDataCreator);
 
         //when
-        final User user = identityApi.createUser(creator);
+        final User user = getIdentityApi().createUser(creator);
         //should be able to login using this user
-        APISession session2 = TenantAPIAccessor.getLoginAPI().login(username, "bpm");
+        final APISession session2 = TenantAPIAccessor.getLoginAPI().login(username, "bpm");
         TenantAPIAccessor.getLoginAPI().logout(session2);
 
         //then
@@ -62,15 +60,13 @@ public class DatabaseChecker6_3_7 extends SimpleDatabaseChecker6_3_2 {
         assertThat(user.getJobTitle()).hasSize(255);
 
         //when
-        final UserWithContactData userWithContactData = identityApi.getUserWithProfessionalDetails(user.getId());
-
+        final UserWithContactData userWithContactData = getIdentityApi().getUserWithProfessionalDetails(user.getId());
 
         //then
         assertThat(userWithContactData).isNotNull();
         assertThat(userWithContactData.getContactData().getAddress()).hasSize(255);
 
     }
-
 
     private String completeWithZeros(final String prefix) {
 
@@ -84,20 +80,20 @@ public class DatabaseChecker6_3_7 extends SimpleDatabaseChecker6_3_2 {
 
     @Test
     public void should_allow_documents_with_null_content() throws Exception {
-        ProcessInstance instance = processAPI.startProcess(processAPI.getProcessDefinitionId(
+        final ProcessInstance instance = getProcessAPI().startProcess(getProcessAPI().getProcessDefinitionId(
                 SimpleDatabaseFiller6_0_2.PROCESS_NAME,
                 SimpleDatabaseFiller6_0_2.PROCESS_VERSION));
 
-        Document document = processAPI.attachDocument(
+        final Document document = getProcessAPI().attachDocument(
                 instance.getId(),
                 "Document Name",
                 "File Name",
                 "Mime",
                 (byte[]) null);
 
-        assertThat(processAPI.getDocumentContent(document.getContentStorageId())).isEqualTo(new byte[0]);
+        assertThat(getProcessAPI().getDocumentContent(document.getContentStorageId())).isEqualTo(new byte[0]);
 
-        processAPI.deleteProcessInstance(instance.getId());
+        getProcessAPI().deleteProcessInstance(instance.getId());
     }
 
 }

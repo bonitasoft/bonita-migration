@@ -183,6 +183,15 @@ END""")
         execute("ALTER TABLE $table ADD $column $type ${defaultValue != null ? "DEFAULT $defaultValue" : ""} ${constraint != null ? constraint : ""}")
     }
 
+    def String addIndex(String tableName, String indexName, String ... columns) {
+        def concatenatedColumns = columns.collect{it}.join(", ")
+        String request = "CREATE INDEX $indexName ON $tableName ($concatenatedColumns)"
+        println "Executing request: $request"
+        execute(request)
+        return request;
+
+    }
+
     def dropForeignKey(String table, String name) {
         switch (dbVendor) {
             case "mysql":
