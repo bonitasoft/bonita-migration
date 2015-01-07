@@ -1,3 +1,4 @@
+DROP INDEX idx_datamapp_container on data_mapping@@
 DROP TABLE data_mapping@@
 DROP TABLE arch_data_mapping@@
 DROP INDEX idx_datai_container on data_instance@@
