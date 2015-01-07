@@ -1,16 +1,16 @@
-DROP INDEX "idx_datamapp_container" ON "DATA_MAPPING"
+DROP INDEX "IDX_DATAMAPP_CONTAINER" ON "DATA_MAPPING"
 @@
 DROP TABLE "DATA_MAPPING"
 @@
 DROP TABLE "ARCH_DATA_MAPPING"
 @@
-DROP INDEX idx_datai_container ON "DATA_INSTANCE"
+DROP INDEX "IDX_DATAI_CONTAINER" ON "DATA_INSTANCE"
 @@
-CREATE INDEX idx_datai_container ON "DATA_INSTANCE" (tenantId, containerId, containerType, name)
+CREATE INDEX "IDX_DATAI_CONTAINER" ON "DATA_INSTANCE" (tenantId, containerId, containerType, name)
 @@
-DROP INDEX idx1_arch_data_instance ON "ARCH_DATA_INSTANCE"
+DROP INDEX "IDX1_ARCH_DATA_INSTANCE" ON "ARCH_DATA_INSTANCE"
 @@
-CREATE INDEX idx1_arch_data_instance ON "ARCH_DATA_INSTANCE" (tenantId, containerId, containerType, archiveDate, name, sourceObjectId)
+CREATE INDEX "IDX1_ARCH_DATA_INSTANCE" ON "ARCH_DATA_INSTANCE" (tenantId, containerId, containerType, archiveDate, name, sourceObjectId)
 @@
 DELETE FROM "SEQUENCE" WHERE "ID" = 10021
 @@
