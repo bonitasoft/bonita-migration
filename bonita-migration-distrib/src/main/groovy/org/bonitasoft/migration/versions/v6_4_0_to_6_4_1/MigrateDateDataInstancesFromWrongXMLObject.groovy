@@ -44,13 +44,11 @@ class MigrateDateDataInstancesFromWrongXMLObject extends DatabaseMigrationStep {
             def rowClobValue = row.clobValue
             def clobAsString = rowClobValue;
             // Special treatment of blobs in Oracle:
-            println "data to be migrated : $row.id --> $row.name"
             if( rowClobValue != null && dbVendor == "oracle") {
                 StringWriter w = new StringWriter();
                 IOUtils.copy(rowClobValue.getCharacterStream(), w);
                 clobAsString = w.toString();
             }
-            println "clob to be migrated : $clobAsString"
             if(clobAsString !=null){
                 def newDate = new XmlParser().parseText(clobAsString)
                 if( newDate.name().equals('date') || newDate.name().equals('null')) {
