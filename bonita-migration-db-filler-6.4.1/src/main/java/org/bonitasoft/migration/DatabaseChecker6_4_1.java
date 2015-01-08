@@ -52,16 +52,13 @@ public class DatabaseChecker6_4_1 extends SimpleDatabaseChecker6_4_0 {
             final List<ArchivedDataInstance> aDataList = processAPI.getArchivedProcessDataInstances(aprocInstance.getSourceObjectId(), 0, 100);
             assertThat(aDataList).hasSize(2);
 
-            logger.info("\n\n\n\n***********************************");
-            logger.info("{}", extractProperty("value", Date.class).from(aDataList));
-            for (final Date extractedDate : extractProperty("value", Date.class).from(aDataList)) {
-                if (extractedDate != null) {
-                    logger.info("{} {}", extractedDate, extractedDate.getTime());
-                }
-            }
-            logger.info("***********************************\n\n\n\n");
             assertThat(extractProperty("name", String.class).from(aDataList)).hasSize(2).contains("dateData", "nullDateData");//.get(0).getName()).isEqualTo("dateData");
             assertThat(extractProperty("value", Date.class).from(aDataList)).hasSize(2).containsNull();//.get(0).getName()).isEqualTo("dateData");
+            for (final Date extractedDate : extractProperty("value", Date.class).from(aDataList)) {
+                if (extractedDate != null) {
+                    assertThat(extractedDate.toString()).isEqualTo("Thu Jul 18 14:49:26 CEST 2013");
+                }
+            }
 
         }
 
@@ -71,17 +68,14 @@ public class DatabaseChecker6_4_1 extends SimpleDatabaseChecker6_4_0 {
         assertThat(processInstances.getCount()).isEqualTo(10);
         for (final ProcessInstance procInstance : processInstances.getResult()) {
             final List<DataInstance> dataList = processAPI.getProcessDataInstances(procInstance.getId(), 0, 100);
-            logger.info("\n\n\n\n***********************************");
-            logger.info("{}", extractProperty("value", Date.class).from(dataList));
-            for (final Date extractedDate : extractProperty("value", Date.class).from(dataList)) {
-                if (extractedDate != null) {
-                    logger.info("{} {}", extractedDate, extractedDate.getTime());
-                }
-            }
-            logger.info("***********************************\n\n\n\n");
             assertThat(dataList).hasSize(2);
             assertThat(extractProperty("name", String.class).from(dataList)).hasSize(2).contains("dateData", "nullDateData");//.get(0).getName()).isEqualTo("dateData");
             assertThat(extractProperty("value", Date.class).from(dataList)).hasSize(2).containsNull();//.get(0).getName()).isEqualTo("dateData");
+            for (final Date extractedDate : extractProperty("value", Date.class).from(dataList)) {
+                if (extractedDate != null) {
+                    assertThat(extractedDate.toString()).isEqualTo("Thu Jul 18 14:49:26 CEST 2013");
+                }
+            }
         }
         logger.info("end checking date migration!!!!");
     }
