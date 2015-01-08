@@ -52,8 +52,12 @@ public class DatabaseChecker6_4_1 extends SimpleDatabaseChecker6_4_0 {
             final List<ArchivedDataInstance> aDataList = processAPI.getArchivedProcessDataInstances(aprocInstance.getSourceObjectId(), 0, 100);
             assertThat(aDataList).hasSize(1);
             for (final ArchivedDataInstance archivedDataInstance : aDataList) {
-                assertThat(archivedDataInstance.getName()).isEqualTo("dateData");
-                assertThat(archivedDataInstance.getValue()).isInstanceOf(Date.class);
+            assertThat(extractProperty("name", String.class).from(aDataList)).hasSize(2).contains("dateData", "nullDateData");//.get(0).getName()).isEqualTo("dateData");
+            assertThat(extractProperty("value", Date.class).from(aDataList)).hasSize(2).containsNull();//.get(0).getName()).isEqualTo("dateData");
+            for (final Date extractedDate : extractProperty("value", Date.class).from(aDataList)) {
+                if (extractedDate != null) {
+                    assertThat(extractedDate.toString()).isEqualTo("Thu Jul 18 14:49:26 CEST 2013");
+                }
             }
         }
 
@@ -63,10 +67,14 @@ public class DatabaseChecker6_4_1 extends SimpleDatabaseChecker6_4_0 {
         assertThat(processInstances.getCount()).isEqualTo(10);
         for (final ProcessInstance procInstance : processInstances.getResult()) {
             final List<DataInstance> dataList = processAPI.getProcessDataInstances(procInstance.getId(), 0, 100);
-            assertThat(dataList).hasSize(1);
-            for (final DataInstance dataInstance : dataList) {
-                assertThat(dataInstance.getName()).isEqualTo("dateData");
+            assertThat(dataList).hasSize(2);
+            assertThat(extractProperty("name", String.class).from(dataList)).hasSize(2).contains("dateData", "nullDateData");//.get(0).getName()).isEqualTo("dateData");
+            assertThat(extractProperty("value", Date.class).from(dataList)).hasSize(2).containsNull();//.get(0).getName()).isEqualTo("dateData");
                 assertThat(dataInstance.getValue()).isInstanceOf(Date.class);
+            for (final Date extractedDate : extractProperty("value", Date.class).from(dataList)) {
+                if (extractedDate != null) {
+                    assertThat(extractedDate.toString()).isEqualTo("Thu Jul 18 14:49:26 CEST 2013");
+                }
             }
         }
         logger.info("end checking date migration!!!!");
