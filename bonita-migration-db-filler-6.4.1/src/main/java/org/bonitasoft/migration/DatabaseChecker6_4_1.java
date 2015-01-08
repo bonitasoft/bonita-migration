@@ -45,16 +45,17 @@ public class DatabaseChecker6_4_1 extends SimpleDatabaseChecker6_4_0 {
     public void checkDates_are_retrieved_Correctly() throws Exception {
         logger.info("start checking date migration!!!!");
         final SearchResult<ArchivedProcessInstance> archivedProcessInstances = processAPI.searchArchivedProcessInstances(new SearchOptionsBuilder(0, 100)
-                .filter(ArchivedProcessInstancesSearchDescriptor.NAME, "ArchivedDateDataVariableProcessToBeMigrated")
+        .filter(ArchivedProcessInstancesSearchDescriptor.NAME, "ArchivedDateDataVariableProcessToBeMigrated")
         .sort(ArchivedProcessInstancesSearchDescriptor.SOURCE_OBJECT_ID, Order.ASC).done());
         assertThat(archivedProcessInstances.getCount()).isEqualTo(10);
         for (final ArchivedProcessInstance aprocInstance : archivedProcessInstances.getResult()) {
             final List<ArchivedDataInstance> aDataList = processAPI.getArchivedProcessDataInstances(aprocInstance.getSourceObjectId(), 0, 100);
-            assertThat(aDataList).hasSize(1);
-            for (final ArchivedDataInstance archivedDataInstance : aDataList) {
-                assertThat(archivedDataInstance.getName()).isEqualTo("dateData");
-                assertThat(archivedDataInstance.getValue()).isInstanceOf(Date.class);
-            }
+            assertThat(aDataList).hasSize(2);
+            logger.info(aDataList.toString());
+            assertThat(aDataList.get(0).getName()).isEqualTo("dateData");
+            assertThat(aDataList.get(0).getValue()).isInstanceOf(Date.class);
+            assertThat(aDataList.get(1).getName()).isEqualTo("nullDateData");
+            assertThat(aDataList.get(1).getValue()).isNull();
         }
 
         final SearchResult<ProcessInstance> processInstances = processAPI.searchProcessInstances(new SearchOptionsBuilder(0, 100)
@@ -63,11 +64,12 @@ public class DatabaseChecker6_4_1 extends SimpleDatabaseChecker6_4_0 {
         assertThat(processInstances.getCount()).isEqualTo(10);
         for (final ProcessInstance procInstance : processInstances.getResult()) {
             final List<DataInstance> dataList = processAPI.getProcessDataInstances(procInstance.getId(), 0, 100);
-            assertThat(dataList).hasSize(1);
-            for (final DataInstance dataInstance : dataList) {
-                assertThat(dataInstance.getName()).isEqualTo("dateData");
-                assertThat(dataInstance.getValue()).isInstanceOf(Date.class);
-            }
+            logger.info(dataList.toString());
+            assertThat(dataList).hasSize(2);
+            assertThat(dataList.get(0).getName()).isEqualTo("dateData");
+            assertThat(dataList.get(0).getValue()).isInstanceOf(Date.class);
+            assertThat(dataList.get(1).getName()).isEqualTo("nullDateData");
+            assertThat(dataList.get(1).getValue()).isNull();
         }
         logger.info("end checking date migration!!!!");
     }
