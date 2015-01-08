@@ -51,11 +51,18 @@ public class DatabaseChecker6_4_1 extends SimpleDatabaseChecker6_4_0 {
         for (final ArchivedProcessInstance aprocInstance : archivedProcessInstances.getResult()) {
             final List<ArchivedDataInstance> aDataList = processAPI.getArchivedProcessDataInstances(aprocInstance.getSourceObjectId(), 0, 100);
             assertThat(aDataList).hasSize(2);
-            logger.info(aDataList.toString());
-            assertThat(aDataList.get(0).getName()).isEqualTo("dateData");
-            assertThat(aDataList.get(0).getValue()).isInstanceOf(Date.class);
-            assertThat(aDataList.get(1).getName()).isEqualTo("nullDateData");
-            assertThat(aDataList.get(1).getValue()).isNull();
+
+            logger.info("\n\n\n\n***********************************");
+            logger.info("{}", extractProperty("value", Date.class).from(aDataList));
+            for (final Date extractedDate : extractProperty("value", Date.class).from(aDataList)) {
+                if (extractedDate != null) {
+                    logger.info("{} {}", extractedDate, extractedDate.getTime());
+                }
+            }
+            logger.info("***********************************\n\n\n\n");
+            assertThat(extractProperty("name", String.class).from(aDataList)).hasSize(2).contains("dateData", "nullDateData");//.get(0).getName()).isEqualTo("dateData");
+            assertThat(extractProperty("value", Date.class).from(aDataList)).hasSize(2).containsNull();//.get(0).getName()).isEqualTo("dateData");
+
         }
 
         final SearchResult<ProcessInstance> processInstances = processAPI.searchProcessInstances(new SearchOptionsBuilder(0, 100)
@@ -64,12 +71,17 @@ public class DatabaseChecker6_4_1 extends SimpleDatabaseChecker6_4_0 {
         assertThat(processInstances.getCount()).isEqualTo(10);
         for (final ProcessInstance procInstance : processInstances.getResult()) {
             final List<DataInstance> dataList = processAPI.getProcessDataInstances(procInstance.getId(), 0, 100);
-            logger.info(dataList.toString());
+            logger.info("\n\n\n\n***********************************");
+            logger.info("{}", extractProperty("value", Date.class).from(dataList));
+            for (final Date extractedDate : extractProperty("value", Date.class).from(dataList)) {
+                if (extractedDate != null) {
+                    logger.info("{} {}", extractedDate, extractedDate.getTime());
+                }
+            }
+            logger.info("***********************************\n\n\n\n");
             assertThat(dataList).hasSize(2);
-            assertThat(dataList.get(0).getName()).isEqualTo("dateData");
-            assertThat(dataList.get(0).getValue()).isInstanceOf(Date.class);
-            assertThat(dataList.get(1).getName()).isEqualTo("nullDateData");
-            assertThat(dataList.get(1).getValue()).isNull();
+            assertThat(extractProperty("name", String.class).from(dataList)).hasSize(2).contains("dateData", "nullDateData");//.get(0).getName()).isEqualTo("dateData");
+            assertThat(extractProperty("value", Date.class).from(dataList)).hasSize(2).containsNull();//.get(0).getName()).isEqualTo("dateData");
         }
         logger.info("end checking date migration!!!!");
     }
