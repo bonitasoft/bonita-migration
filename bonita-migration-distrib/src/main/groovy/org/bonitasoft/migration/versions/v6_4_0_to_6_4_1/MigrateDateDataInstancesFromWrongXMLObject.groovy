@@ -49,13 +49,23 @@ class MigrateDateDataInstancesFromWrongXMLObject extends DatabaseMigrationStep {
                 IOUtils.copy(rowClobValue.getCharacterStream(), w);
                 clobAsString = w.toString();
             }
-            if( new XmlParser().parseText(clobAsString).name().equals('date') ) {
-                executeUpdate("UPDATE "+tableName+" set LONGVALUE=" + getDate(clobAsString) + ", CLOBVALUE=NULL, DISCRIMINANT='$newDiscriminant' WHERE tenantId=$tenantId AND id=$id")
+            if(clobAsString !=null){
+                def newDate = new XmlParser().parseText(clobAsString)
+                if( newDate.name().equals('date') || newDate.name().equals('null')) {
+                    executeUpdate("UPDATE "+tableName+" set LONGVALUE=" + getDate(clobAsString) + ", CLOBVALUE=NULL, DISCRIMINANT='$newDiscriminant' WHERE tenantId=$tenantId AND id=$id")
+                }
+            }else{
+                executeUpdate("UPDATE "+tableName+" set LONGVALUE=NULL, CLOBVALUE=NULL, DISCRIMINANT='$newDiscriminant' WHERE tenantId=$tenantId AND id=$id")
             }
         }
     }
 
     def getDate(String xmlDate) {
-        return ((java.util.Date) new XStream(new StaxDriver()).fromXML(xmlDate)).getTime()
+        def date = ((java.util.Date) new XStream(new StaxDriver()).fromXML(xmlDate))
+        if(date == null) {
+            return null
+        } else {
+            return date.getTime()
+        }
     }
 }
