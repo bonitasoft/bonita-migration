@@ -4,7 +4,6 @@
 CREATE INDEX idx_app_token ON business_app (token, tenantid)@@
 CREATE INDEX idx_app_page_token ON business_app_page (applicationId, token, tenantid)@@
 CREATE INDEX idx_dependency_name ON dependency (name)@@
-CREATE INDEX idx_a_doc_mp_pr_id ON arch_document_mapping (processinstanceid, tenantid)@@
 CREATE INDEX idx_fn_lg2_state_tenant_del ON flownode_instance (logicalGroup2, stateName, tenantid, deleted)@@
 CREATE INDEX idx_ci_container_activation ON connector_instance (tenantid, containerId, containerType, activationEvent)@@
 CREATE INDEX idx_waiting_event ON waiting_event (progress, tenantid, kind, locked, active)@@
