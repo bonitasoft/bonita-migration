@@ -50,7 +50,7 @@ public class DatabaseCheckerInitiliazer6_3_1 {
 
     protected static ClassPathXmlApplicationContext springContext;
 
-    private ProcessAPI processAPI;
+    protected ProcessAPI processAPI;
 
     private ProfileAPI profileAPI;
 
