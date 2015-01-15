@@ -24,9 +24,9 @@ import org.bonitasoft.engine.test.PlatformTestUtil;
  */
 public class SimpleDatabaseFiller6_4_0 extends SimpleDatabaseFiller6_3_1 {
 
-    private final APITestUtil apiTestUtil = new APITestUtil();
+    protected final APITestUtil apiTestUtil = new APITestUtil();
 
-    private final PlatformTestUtil platformTestUtil = new PlatformTestUtil();
+    protected final PlatformTestUtil platformTestUtil = new PlatformTestUtil();
 
     @Override
     protected APITestUtil getAPITestUtil() {
