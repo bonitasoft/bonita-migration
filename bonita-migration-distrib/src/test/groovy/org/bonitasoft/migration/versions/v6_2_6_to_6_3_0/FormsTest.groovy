@@ -11,8 +11,10 @@ class FormsTest {
 
     private static final def beforeProcessDef = ProcessDefinitionTest.class.getResourceAsStream("before-processdefwithform.xml").text
     private static final def beforeForms = ProcessDefinitionTest.class.getResourceAsStream("before-forms.xml").text
+    private static final def beforeForms2 = ProcessDefinitionTest.class.getResourceAsStream("before-forms-2.xml").text
     private static final def afterProcessDef = ProcessDefinitionTest.class.getResourceAsStream("after-processdefwithform.xml").text
     private static final def afterForms = ProcessDefinitionTest.class.getResourceAsStream("after-forms.xml").text
+    private static final def afterForms2 = ProcessDefinitionTest.class.getResourceAsStream("after-forms-2.xml").text
 
 
     private Forms createForms() {
@@ -84,6 +86,7 @@ class FormsTest {
         def processDefinition = new ProcessDefinition(beforeProcessDef,true)
         def transientData = processDefinition.getTransientData()
         def forms = new Forms(beforeForms, transientData, "6.3")
+        def forms2 = new Forms(beforeForms2, new ArrayList(), "6.3")
 
 
         //when
@@ -92,6 +95,9 @@ class FormsTest {
         processDefinition.updateOperatorAndLeftOperandType(transientData)
         forms.updateExpressions();
         forms.updateActions();
+
+        forms2.updateExpressions();
+        forms2.updateActions();
 
         //then
         def content = processDefinition.getContent()
@@ -107,6 +113,18 @@ class FormsTest {
         assert xmlDiff.identical()
         //check formatting did not change also
         assertThat(content.trim()).isEqualTo(afterForms)
+
+        content = forms2.getContent()
+
+        xmlDiff = new Diff(afterForms2, content)
+        println new XmlParser().parseText(afterForms2).breadthFirst().find(){ it.name()=="value-after-event"}
+        println new XmlParser().parseText(content).breadthFirst().find(){ it.name()=="value-after-event"}
+        //[1].application[1].forms[1].form[2].pages[1].page[1].widgets[1].widget[7]."value-after-event"[1].expression[1].text()
+
+
+        assert xmlDiff.identical()
+        //check formatting did not change also
+        assertThat(content.trim()).isEqualTo(afterForms2)
     }
 
 
