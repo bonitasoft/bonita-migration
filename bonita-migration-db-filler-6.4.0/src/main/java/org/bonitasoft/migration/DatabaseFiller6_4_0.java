@@ -22,6 +22,7 @@ import org.bonitasoft.engine.api.ProcessAPI;
 import org.bonitasoft.engine.api.TenantAPIAccessor;
 import org.bonitasoft.engine.bpm.bar.BusinessArchiveBuilder;
 import org.bonitasoft.engine.bpm.process.ProcessDefinition;
+import org.bonitasoft.engine.bpm.process.ProcessInstance;
 import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder;
 import org.bonitasoft.engine.expression.ExpressionBuilder;
 import org.bonitasoft.engine.session.APISession;
@@ -62,6 +63,7 @@ public class DatabaseFiller6_4_0 extends SimpleDatabaseFiller6_4_0 {
         final ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("DateDataVariableProcessToBeMigrated", "1.0.");
         builder.addActor("delivery");
         builder.addDateData("dateData", new ExpressionBuilder().createConstantDateExpression("2013-07-18T14:49:26.86+02:00"));
+        builder.addDateData("nullDateData", new ExpressionBuilder().createConstantDateExpression("2013-07-18T14:49:26.86+02:00"));
         builder.addUserTask("ask for adress", "delivery");
 
         final BusinessArchiveBuilder archiveBuilder = new BusinessArchiveBuilder().createNewBusinessArchive();
@@ -70,7 +72,8 @@ public class DatabaseFiller6_4_0 extends SimpleDatabaseFiller6_4_0 {
         processAPI.addUserToActor("delivery", processDefinition, identityAPI.getUserByUserName("william.jobs").getId());
         processAPI.enableProcess(processDefinition.getId());
         for (int j = 0; j < nbProcessInstances; j++) {
-            processAPI.startProcess(processDefinition.getId());
+            final ProcessInstance pi = processAPI.startProcess(processDefinition.getId());
+            processAPI.updateProcessDataInstance("nullDateData", pi.getId(), null);
         }
         final Map<String, String> map = new HashMap<String, String>(2);
         map.put("Process instances", String.valueOf(nbProcessInstances));
@@ -87,6 +90,7 @@ public class DatabaseFiller6_4_0 extends SimpleDatabaseFiller6_4_0 {
         final ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("ArchivedDateDataVariableProcessToBeMigrated", "1.0.");
         builder.addActor("delivery");
         builder.addDateData("dateData", new ExpressionBuilder().createConstantDateExpression("2013-07-18T14:49:26.86+02:00"));
+        builder.addDateData("nullDateData", new ExpressionBuilder().createConstantDateExpression("2013-07-18T14:49:26.86+02:00"));
         builder.addAutomaticTask("ask for nothing");
 
         final BusinessArchiveBuilder archiveBuilder = new BusinessArchiveBuilder().createNewBusinessArchive();
@@ -95,7 +99,8 @@ public class DatabaseFiller6_4_0 extends SimpleDatabaseFiller6_4_0 {
         processAPI.addUserToActor("delivery", processDefinition, identityAPI.getUserByUserName("william.jobs").getId());
         processAPI.enableProcess(processDefinition.getId());
         for (int j = 0; j < nbProcessInstances; j++) {
-            processAPI.startProcess(processDefinition.getId());
+            final ProcessInstance pi = processAPI.startProcess(processDefinition.getId());
+            processAPI.updateProcessDataInstance("nullDateData", pi.getId(), null);
         }
         final Map<String, String> map = new HashMap<String, String>(2);
         map.put("Archived Process instances", String.valueOf(nbProcessInstances));
