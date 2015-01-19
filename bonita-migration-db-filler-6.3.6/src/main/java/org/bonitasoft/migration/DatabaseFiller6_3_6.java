@@ -64,6 +64,7 @@ public class DatabaseFiller6_3_6 extends SimpleDatabaseFiller6_3_1 {
         final APISession session = apiTestUtil.getSession();
         final Map<String, String> stats = new HashMap<String, String>();
         stats.putAll(fillOrganization(session));
+        stats.putAll(fillSimpleProcess(session, nbProcessInstances));
         stats.putAll(fillProfiles(session));
         stats.putAll(fillDocuments());
         apiTestUtil.loginOnDefaultTenantWithDefaultTechnicalLogger();

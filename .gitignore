@@ -8,7 +8,7 @@ dependency-reduced-pom.xml
 build
 bin
 .gradle
-build
+build*
 *.iml
 *.orig
 *.mine

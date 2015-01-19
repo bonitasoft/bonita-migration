@@ -126,8 +126,10 @@ public class Forms {
             def String variableType = "DATA"
             if(originalType == "DOCUMENT_CREATE_UPDATE"){
                 variableType = "DOCUMENT"
+                it.@type = type
             }else if (originalType == "STRING_INDEX"){
                 variableType = "SEARCH_INDEX"
+                it.@type = type
             } else if( external ){
                 variableType = "EXTERNAL_DATA"
             } else if(dataName != null && isDataTransientInContext(it, dataName)){
@@ -138,8 +140,7 @@ public class Forms {
             if(isExternalNode != null){
                 isExternalNode.replaceNode { node -> 'variable-type'(variableType) }
             }
-            //update the type
-            it.@type = type
+
 
         }
     }

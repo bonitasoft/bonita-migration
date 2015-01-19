@@ -16,6 +16,7 @@
  */
 package org.bonitasoft.migration.core
 
+import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 
 /**
@@ -182,6 +183,15 @@ END""")
         execute("ALTER TABLE $table ADD $column $type ${defaultValue != null ? "DEFAULT $defaultValue" : ""} ${constraint != null ? constraint : ""}")
     }
 
+    def String addIndex(String tableName, String indexName, String ... columns) {
+        def concatenatedColumns = columns.collect{it}.join(", ")
+        String request = "CREATE INDEX $indexName ON $tableName ($concatenatedColumns)"
+        println "Executing request: $request"
+        execute(request)
+        return request;
+
+    }
+
     def dropForeignKey(String table, String name) {
         switch (dbVendor) {
             case "mysql":
@@ -213,6 +223,18 @@ END""")
         }
         return res + ")"
     }*/
+
+
+
+    def GroovyRowResult selectFirstRow(GString string) {
+        return sql.firstRow(adaptFor(string))
+    }
+
+    def long getAndUpdateNextSequenceId(long sequenceId, long tenantId){
+        def long nextId = (Long) selectFirstRow("SELECT nextId from sequence WHERE id = $sequenceId and tenantId = $tenantId").get("nextId")
+        executeUpdate("UPDATE sequence SET nextId = ${nextId + 1 } WHERE tenantId = $tenantId and id = $sequenceId")
+        return nextId
+    }
 
     public abstract migrate();
 

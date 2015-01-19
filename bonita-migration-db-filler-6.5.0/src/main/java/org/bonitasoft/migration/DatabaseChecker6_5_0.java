@@ -1,0 +1,63 @@
+/**
+ * Copyright (C) 2014 BonitaSoft S.A.
+ * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
+ * This library is free software; you can redistribute it and/or modify it under the terms
+ * of the GNU Lesser General Public License as published by the Free Software Foundation
+ * version 2.1 of the License.
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ * You should have received a copy of the GNU Lesser General Public License along with this
+ * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
+ * Floor, Boston, MA 02110-1301, USA.
+ **/
+package org.bonitasoft.migration;
+
+import static org.junit.Assert.assertEquals;
+
+import org.bonitasoft.engine.bpm.flownode.HumanTaskInstance;
+import org.bonitasoft.engine.bpm.process.ProcessDefinition;
+import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder;
+import org.bonitasoft.engine.expression.ExpressionBuilder;
+import org.bonitasoft.engine.identity.User;
+import org.bonitasoft.engine.test.BuildTestUtil;
+import org.dom4j.Document;
+import org.dom4j.io.SAXReader;
+import org.junit.Test;
+import org.junit.runner.JUnitCore;
+
+public class DatabaseChecker6_5_0 extends SimpleDatabaseChecker6_5_0 {
+
+    public static void main(final String[] args) throws Exception {
+        JUnitCore.main(DatabaseChecker6_5_0.class.getName());
+    }
+
+    @Override
+    protected Document getProfilesXML(final SAXReader reader) throws Exception {
+        return reader.read(DatabaseChecker6_5_0.class.getResource("profiles.xml"));
+    }
+
+    @Test
+    public void can_creatte_FlowNodeInstance_with_several_non_ascii_characters() throws Exception {
+        final User user = getApiTestUtil().createUser("tom", "bpm");
+
+        final String taskDisplayName = "Žingsnis, kuriame paraiškos teikėjas gali laisvai užpildyti duomenis, ąčęė";
+        final String taskName = "task1क्तु क्तु क्तु क्तु क्तु paraiškos teikėjas Ž";
+
+        final ProcessDefinitionBuilder processBuilder = new ProcessDefinitionBuilder().createNewInstance(BuildTestUtil.PROCESS_NAME,
+                BuildTestUtil.PROCESS_VERSION);
+        processBuilder.addActor(BuildTestUtil.ACTOR_NAME);
+        processBuilder.addUserTask(taskName, BuildTestUtil.ACTOR_NAME)
+                .addDisplayName(new ExpressionBuilder().createConstantStringExpression(taskDisplayName))
+                .addDescription("description");
+
+        final ProcessDefinition processDef1 = getApiTestUtil().deployAndEnableProcessWithActor(processBuilder.done(), BuildTestUtil.ACTOR_NAME, user);
+        getProcessAPI().startProcess(processDef1.getId());
+        final HumanTaskInstance task1 = getApiTestUtil().waitForUserTaskAndGetIt(taskName);
+        assertEquals(taskDisplayName, task1.getDisplayName());
+
+        getApiTestUtil().disableAndDeleteProcess(processDef1);
+        getApiTestUtil().deleteUser(user);
+    }
+
+}

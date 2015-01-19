@@ -13,7 +13,7 @@
  **/
 package org.bonitasoft.migration;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 import org.bonitasoft.engine.bpm.flownode.HumanTaskInstance;
 import org.bonitasoft.engine.bpm.process.ProcessInstance;
@@ -24,40 +24,41 @@ import org.bonitasoft.engine.search.SearchResult;
 import org.bonitasoft.engine.test.APITestUtil;
 import org.junit.Test;
 
-
 /**
  * Check that the migrated database is ok
+ * 
  * @author Elias Ricken de Medeiros
- *
  */
 public class SimpleDatabaseChecker6_3_1 extends DatabaseCheckerInitiliazer6_3_1 {
-    
+
     @Test
     public void can_complete_the_execution_of_previous_started_process_and_start_a_new_one() throws Exception {
         //given
-        User user = identityApi.getUserByUserName("william.jobs");
-        long processDefinitionId = processAPI.getProcessDefinitionId(SimpleDatabaseFiller6_0_2.PROCESS_NAME, SimpleDatabaseFiller6_0_2.PROCESS_VERSION);
-        processAPI.startProcess(processDefinitionId);
+        final User user = getIdentityApi().getUserByUserName("william.jobs");
+        final long processDefinitionId = getProcessAPI().getProcessDefinitionId(SimpleDatabaseFiller6_0_2.PROCESS_NAME,
+                SimpleDatabaseFiller6_0_2.PROCESS_VERSION);
+        getProcessAPI().startProcess(processDefinitionId);
 
         //when
-        SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 10);
+        final SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 10);
         builder.filter(ProcessInstanceSearchDescriptor.PROCESS_DEFINITION_ID, processDefinitionId);
-        SearchResult<ProcessInstance> searchResult = processAPI.searchProcessInstances(builder.done());
-        
+        final SearchResult<ProcessInstance> searchResult = getProcessAPI().searchProcessInstances(builder.done());
+
         //then (there are two instance, one created before migration and one created after migration)
         assertThat(searchResult.getCount()).isEqualTo(2);
-        
+
         //when
-        for (ProcessInstance processInstance : searchResult.getResult()) {
-            HumanTaskInstance taskInstance = waitForUserTask(SimpleDatabaseFiller6_0_2.USER_TASK_NAME, processInstance.getId(), APITestUtil.DEFAULT_TIMEOUT);
-            processAPI.assignUserTask(taskInstance.getId(), user.getId());
-            processAPI.executeFlowNode(taskInstance.getId());
+        for (final ProcessInstance processInstance : searchResult.getResult()) {
+            final HumanTaskInstance taskInstance = waitForUserTask(SimpleDatabaseFiller6_0_2.USER_TASK_NAME, processInstance.getId(),
+                    APITestUtil.DEFAULT_TIMEOUT);
+            getProcessAPI().assignUserTask(taskInstance.getId(), user.getId());
+            getProcessAPI().executeFlowNode(taskInstance.getId());
         }
-        
+
         //then
-        for (ProcessInstance processInstance : searchResult.getResult()) {
+        for (final ProcessInstance processInstance : searchResult.getResult()) {
             waitForProcessToFinish(processInstance.getId(), APITestUtil.DEFAULT_TIMEOUT);
         }
     }
-    
+
 }
