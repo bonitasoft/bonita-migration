@@ -50,7 +50,6 @@ class MigrateDateDataInstancesFromWrongXMLObject extends DatabaseMigrationStep {
                 IOUtils.copy(rowClobValue.getCharacterStream(), w);
                 clobAsString = w.toString();
             }
-            println "clob to be migrated : $clobAsString"
             if(clobAsString !=null){
                 def newDate = new XmlParser().parseText(clobAsString)
                 if( newDate.name().equals('date') || newDate.name().equals('null')) {
