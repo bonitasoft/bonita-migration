@@ -1,0 +1,1 @@
+BS-11706 : Add an index to improve monitoring page display on heavy load
