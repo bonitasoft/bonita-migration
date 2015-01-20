@@ -261,6 +261,13 @@ task execfill(dependsOn:scriptsintegration, type: JavaExec) {
             "jdbc.serverName":project.serverName,
             "jdbc.portNumber":project.portNumber,
             "jdbc.databaseName":project.databaseName,
+            "db.url":dburl,
+            "db.user":dbuser,
+            "db.password":dbpassword,
+            "db.driver.class":dbdriverClass,
+            "db.server.name":project.serverName,
+            "db.server.port":project.portNumber,
+            "db.database.name":project.databaseName,
             "bonita.home":bonitahome])
         /*jvmArgs([
             "-Xdebug",
