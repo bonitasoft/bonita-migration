@@ -27,14 +27,31 @@ import org.bonitasoft.engine.bpm.connector.ConnectorEvent;
 import org.bonitasoft.engine.bpm.process.ProcessDefinition;
 import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder;
 import org.bonitasoft.engine.bpm.process.impl.UserTaskDefinitionBuilder;
+import org.bonitasoft.engine.exception.AlreadyExistsException;
+import org.bonitasoft.engine.exception.CreationException;
 import org.bonitasoft.engine.expression.ExpressionBuilder;
+import org.bonitasoft.engine.identity.User;
 import org.bonitasoft.engine.session.APISession;
+import org.junit.Test;
 
 public class DatabaseFiller6_4_1 extends SimpleDatabaseFiller6_4_0 {
 
     public static void main(final String[] args) throws Exception {
         final DatabaseFiller6_4_1 databaseFiller = new DatabaseFiller6_4_1();
         databaseFiller.execute(1, 1, 1, 1);
+    }
+
+    @Override
+    public Map<String, String> fillDatabase(final int nbProcessesDefinitions, final int nbProcessInstances, final int nbWaitingEvents, final int nbDocuments)
+            throws Exception {
+        logger.info("Starting to fill the database");
+        final Map<String, String> stats = super.fillDatabase(nbProcessesDefinitions, nbProcessInstances, nbWaitingEvents, nbDocuments);
+        apiTestUtil.loginOnDefaultTenantWithDefaultTechnicalUser();
+        final APISession session = apiTestUtil.getSession();
+        fillUserWithLoginDate();
+        logoutTenant(session);
+        logger.info("Finished to fill the database");
+        return stats;
     }
 
     @Override
@@ -71,5 +88,16 @@ public class DatabaseFiller6_4_1 extends SimpleDatabaseFiller6_4_0 {
         map.put("Process instances", String.valueOf(nbProcessInstances));
         return map;
     }
+
+    public void fillUserWithLoginDate() throws Exception {
+        IdentityAPI identityAPI = apiTestUtil.getIdentityAPI();
+        identityAPI.createUser("userWithLoginDate", "bpm");
+        identityAPI.createUser("userWithoutLoginDate", "bpm");
+        apiTestUtil.logoutOnTenant();
+        apiTestUtil.loginOnDefaultTenantWith("userWithLoginDate","bpm");
+        apiTestUtil.logoutOnTenant();
+        apiTestUtil.loginOnDefaultTenantWithDefaultTechnicalUser();
+    }
+
 
 }
