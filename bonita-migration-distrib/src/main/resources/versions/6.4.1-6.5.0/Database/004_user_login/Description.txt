@@ -1,0 +1,1 @@
+Add a table user_login to store last connection date
