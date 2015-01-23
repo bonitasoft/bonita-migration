@@ -1,1 +1,1 @@
-CREATE INDEX idx1_proc_inst_pdef_state ON process_instance (tenantid, stateid, processdefinitionid);
+CREATE INDEX process_instance_tenantid_idx ON process_instance (tenantid,processdefinitionid,stateid);
