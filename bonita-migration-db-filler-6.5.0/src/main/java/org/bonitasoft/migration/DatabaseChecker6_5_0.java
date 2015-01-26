@@ -13,13 +13,20 @@
  **/
 package org.bonitasoft.migration;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
+import java.util.Date;
+
+import org.assertj.core.api.Assertions;
+import org.bonitasoft.engine.api.IdentityAPI;
 import org.bonitasoft.engine.bpm.flownode.HumanTaskInstance;
 import org.bonitasoft.engine.bpm.process.ProcessDefinition;
 import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder;
 import org.bonitasoft.engine.expression.ExpressionBuilder;
 import org.bonitasoft.engine.identity.User;
+import org.bonitasoft.engine.identity.UserNotFoundException;
 import org.bonitasoft.engine.test.BuildTestUtil;
 import org.dom4j.Document;
 import org.dom4j.io.SAXReader;
@@ -53,11 +60,21 @@ public class DatabaseChecker6_5_0 extends SimpleDatabaseChecker6_5_0 {
 
         final ProcessDefinition processDef1 = getApiTestUtil().deployAndEnableProcessWithActor(processBuilder.done(), BuildTestUtil.ACTOR_NAME, user);
         getProcessAPI().startProcess(processDef1.getId());
-        final HumanTaskInstance task1 = getApiTestUtil().waitForUserTask(taskName);
+        final HumanTaskInstance task1 = getApiTestUtil().waitForUserTaskAndGetIt(taskName);
         assertEquals(taskDisplayName, task1.getDisplayName());
 
         getApiTestUtil().disableAndDeleteProcess(processDef1);
         getApiTestUtil().deleteUser(user);
+    }
+
+    @Test
+    public void user_should_keep_there_last_connection_date() throws UserNotFoundException {
+        IdentityAPI identityAPI = getApiTestUtil().getIdentityAPI();
+        User userWithLoginDate = identityAPI.getUserByUserName("userWithLoginDate");
+        User userWithoutLoginDate = identityAPI.getUserByUserName("userWithoutLoginDate");
+        assertThat(userWithLoginDate.getLastConnection()).isBefore(new Date());
+        assertThat(userWithoutLoginDate.getLastConnection()).isNull();
+
     }
 
 }
