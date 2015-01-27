@@ -1,0 +1,1 @@
+CREATE INDEX process_instance_tenantid_idx ON process_instance (tenantid,processdefinitionid,stateid);
