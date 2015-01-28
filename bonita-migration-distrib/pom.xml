@@ -117,9 +117,9 @@
                         <groupId>org.codehaus.groovy</groupId>
                         <artifactId>groovy-eclipse-batch</artifactId>
                         <!--  For compiling with Java 8, it requires to update to 2.3+ -->
-                        <version>2.3.7-01</version> 
+                        <!-- <version>2.3.7-01</version> -->
                         <!-- or choose a different compiler version -->
-                        <!--<version>1.8.6-01</version>-->
+                        <version>1.8.6-01</version>
                         <!-- <version>1.7.10-06</version> -->
                     </dependency>
                 </dependencies>
