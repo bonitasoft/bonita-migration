@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.bonitasoft.migration</groupId>
     <artifactId>bonita-migration</artifactId>
-    <version>1.18.0.RC1</version>
+    <version>1.18.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -42,7 +42,7 @@
         <!-- specify the previous version of that is migrated -->
         <previous.bonita.version>6.4.1</previous.bonita.version>
         <!-- specify the in developpement version of bonita -->
-		<current.bonita.version>6.4.2.RC1</current.bonita.version>
+		<current.bonita.version>6.4.2-SNAPSHOT</current.bonita.version>
         <!-- specify the name of the release next release of bonita that will be migrated -->
 		<next.bonita.version>6.4.2</next.bonita.version>
     </properties>
