@@ -77,6 +77,7 @@ public class DatabaseFiller6_4_1 extends SimpleDatabaseFiller6_4_0 {
         task.addMultiInstance(false, new ExpressionBuilder().createConstantIntegerExpression(100));
         builder.addUserTask("human", "actor");
         final BusinessArchiveBuilder archiveBuilder = new BusinessArchiveBuilder().createNewBusinessArchive();
+        archiveBuilder.setProcessDefinition(builder.done());
         final ProcessDefinition processDefinition = processAPI.deploy(archiveBuilder.done());
         processAPI.addUserToActor("actor", processDefinition, identityAPI.getUserByUserName("william.jobs").getId());
         processAPI.enableProcess(processDefinition.getId());
