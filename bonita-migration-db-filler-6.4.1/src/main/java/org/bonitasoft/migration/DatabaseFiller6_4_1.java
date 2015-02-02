@@ -45,6 +45,7 @@ import org.bonitasoft.engine.expression.InvalidExpressionException;
 import org.bonitasoft.engine.identity.User;
 import org.bonitasoft.engine.identity.UserNotFoundException;
 import org.bonitasoft.engine.session.APISession;
+import org.bonitasoft.engine.test.ClientEventUtil;
 import org.junit.Test;
 
 public class DatabaseFiller6_4_1 extends SimpleDatabaseFiller6_4_0 {
@@ -60,8 +61,13 @@ public class DatabaseFiller6_4_1 extends SimpleDatabaseFiller6_4_0 {
         logger.info("Starting to fill the database");
         final Map<String, String> stats = super.fillDatabase(nbProcessesDefinitions, nbProcessInstances, nbWaitingEvents, nbDocuments);
         apiTestUtil.loginOnDefaultTenantWithDefaultTechnicalUser();
+        ClientEventUtil.deployCommand(apiTestUtil.getSession());
+        apiTestUtil.logoutOnTenant();
         fillUserWithLoginDate();
         fillFlownodeInstanceForDeleted();
+        apiTestUtil.loginOnDefaultTenantWithDefaultTechnicalUser();
+        ClientEventUtil.undeployCommand(apiTestUtil.getSession());
+        apiTestUtil.logoutOnTenant();
         logger.info("Finished to fill the database");
         return stats;
     }
