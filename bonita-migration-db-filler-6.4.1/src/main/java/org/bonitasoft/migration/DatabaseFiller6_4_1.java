@@ -77,7 +77,7 @@ public class DatabaseFiller6_4_1 extends SimpleDatabaseFiller6_4_0 {
         final APISession session = apiTestUtil.getSession();
         final ProcessAPI processAPI = TenantAPIAccessor.getProcessAPI(session);
         final IdentityAPI identityAPI = TenantAPIAccessor.getIdentityAPI(session);
-        final ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("SimpleProcessWithDeleted", "1.0.");
+        final ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("SimpleProcessWithDeleted", "1.0");
         builder.addActor("actor");
         final AutomaticTaskDefinitionBuilder task = builder.addAutomaticTask("auto");
         task.addMultiInstance(false, new ExpressionBuilder().createConstantIntegerExpression(100));
