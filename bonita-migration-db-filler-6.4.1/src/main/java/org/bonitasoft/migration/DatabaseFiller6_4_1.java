@@ -82,6 +82,7 @@ public class DatabaseFiller6_4_1 extends SimpleDatabaseFiller6_4_0 {
         final AutomaticTaskDefinitionBuilder task = builder.addAutomaticTask("auto");
         task.addMultiInstance(false, new ExpressionBuilder().createConstantIntegerExpression(100));
         builder.addUserTask("human", "actor");
+        builder.addTransition("auto", "human");
         final BusinessArchiveBuilder archiveBuilder = new BusinessArchiveBuilder().createNewBusinessArchive();
         archiveBuilder.setProcessDefinition(builder.done());
         final ProcessDefinition processDefinition = processAPI.deploy(archiveBuilder.done());
