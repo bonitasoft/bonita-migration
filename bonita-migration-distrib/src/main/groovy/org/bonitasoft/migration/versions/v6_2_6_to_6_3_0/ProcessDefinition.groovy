@@ -74,7 +74,12 @@ public class ProcessDefinition {
     }
 
     public getId() {
-        Long.valueOf(processDefinitionXml.@id)
+        def id = processDefinitionXml.@id
+        if(id != null){
+            return Long.valueOf(id)
+        }else{
+            return "";
+        }
     }
 
     public getVersion() {
