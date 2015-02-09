@@ -21,17 +21,31 @@ import org.apache.commons.io.IOUtils;
 import org.bonitasoft.engine.api.IdentityAPI;
 import org.bonitasoft.engine.api.ProcessAPI;
 import org.bonitasoft.engine.api.TenantAPIAccessor;
+import org.bonitasoft.engine.bpm.actor.ActorNotFoundException;
 import org.bonitasoft.engine.bpm.bar.BarResource;
 import org.bonitasoft.engine.bpm.bar.BusinessArchiveBuilder;
+import org.bonitasoft.engine.bpm.bar.InvalidBusinessArchiveFormatException;
 import org.bonitasoft.engine.bpm.connector.ConnectorEvent;
+import org.bonitasoft.engine.bpm.process.ProcessActivationException;
 import org.bonitasoft.engine.bpm.process.ProcessDefinition;
+import org.bonitasoft.engine.bpm.process.ProcessDefinitionNotFoundException;
+import org.bonitasoft.engine.bpm.process.ProcessDeployException;
+import org.bonitasoft.engine.bpm.process.ProcessEnablementException;
+import org.bonitasoft.engine.bpm.process.ProcessExecutionException;
+import org.bonitasoft.engine.bpm.process.impl.AutomaticTaskDefinitionBuilder;
 import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder;
 import org.bonitasoft.engine.bpm.process.impl.UserTaskDefinitionBuilder;
 import org.bonitasoft.engine.exception.AlreadyExistsException;
+import org.bonitasoft.engine.exception.BonitaHomeNotSetException;
 import org.bonitasoft.engine.exception.CreationException;
+import org.bonitasoft.engine.exception.ServerAPIException;
+import org.bonitasoft.engine.exception.UnknownAPITypeException;
 import org.bonitasoft.engine.expression.ExpressionBuilder;
+import org.bonitasoft.engine.expression.InvalidExpressionException;
 import org.bonitasoft.engine.identity.User;
+import org.bonitasoft.engine.identity.UserNotFoundException;
 import org.bonitasoft.engine.session.APISession;
+import org.bonitasoft.engine.test.ClientEventUtil;
 import org.junit.Test;
 
 public class DatabaseFiller6_4_1 extends SimpleDatabaseFiller6_4_0 {
@@ -47,11 +61,38 @@ public class DatabaseFiller6_4_1 extends SimpleDatabaseFiller6_4_0 {
         logger.info("Starting to fill the database");
         final Map<String, String> stats = super.fillDatabase(nbProcessesDefinitions, nbProcessInstances, nbWaitingEvents, nbDocuments);
         apiTestUtil.loginOnDefaultTenantWithDefaultTechnicalUser();
-        final APISession session = apiTestUtil.getSession();
+        ClientEventUtil.deployCommand(apiTestUtil.getSession());
+        apiTestUtil.logoutOnTenant();
         fillUserWithLoginDate();
-        logoutTenant(session);
+        fillFlownodeInstanceForDeleted();
+        apiTestUtil.loginOnDefaultTenantWithDefaultTechnicalUser();
+        ClientEventUtil.undeployCommand(apiTestUtil.getSession());
+        apiTestUtil.logoutOnTenant();
         logger.info("Finished to fill the database");
         return stats;
+    }
+
+    private void fillFlownodeInstanceForDeleted() throws Exception {
+        apiTestUtil.loginOnDefaultTenantWithDefaultTechnicalUser();
+        final APISession session = apiTestUtil.getSession();
+        final ProcessAPI processAPI = TenantAPIAccessor.getProcessAPI(session);
+        final IdentityAPI identityAPI = TenantAPIAccessor.getIdentityAPI(session);
+        final ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("SimpleProcessWithDeleted", "1.0");
+        builder.addActor("actor");
+        final AutomaticTaskDefinitionBuilder task = builder.addAutomaticTask("auto");
+        task.addMultiInstance(false, new ExpressionBuilder().createConstantIntegerExpression(100));
+        builder.addUserTask("human", "actor");
+        builder.addTransition("auto", "human");
+        final BusinessArchiveBuilder archiveBuilder = new BusinessArchiveBuilder().createNewBusinessArchive();
+        archiveBuilder.setProcessDefinition(builder.done());
+        final ProcessDefinition processDefinition = processAPI.deploy(archiveBuilder.done());
+        processAPI.addUserToActor("actor", processDefinition, identityAPI.getUserByUserName("william.jobs").getId());
+        processAPI.enableProcess(processDefinition.getId());
+
+        final long instanceId = processAPI.startProcess(processDefinition.getId()).getId();
+        apiTestUtil.waitForUserTask(instanceId, "human");
+        apiTestUtil.logoutOnTenant();
+
     }
 
     @Override
@@ -90,13 +131,13 @@ public class DatabaseFiller6_4_1 extends SimpleDatabaseFiller6_4_0 {
     }
 
     public void fillUserWithLoginDate() throws Exception {
+        apiTestUtil.loginOnDefaultTenantWithDefaultTechnicalUser();
         IdentityAPI identityAPI = apiTestUtil.getIdentityAPI();
         identityAPI.createUser("userWithLoginDate", "bpm");
         identityAPI.createUser("userWithoutLoginDate", "bpm");
         apiTestUtil.logoutOnTenant();
         apiTestUtil.loginOnDefaultTenantWith("userWithLoginDate","bpm");
         apiTestUtil.logoutOnTenant();
-        apiTestUtil.loginOnDefaultTenantWithDefaultTechnicalUser();
     }
 
 
