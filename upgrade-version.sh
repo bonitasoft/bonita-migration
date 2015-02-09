@@ -40,12 +40,19 @@ updatePomVersion(){
 
 createNewMigrationFolder(){
     cd bonita-migration-versions-updated
-    mvn clean install -Pupdate -Dlast.version.to.migrate=$BONITA_PREVIOUS_VERSION -Dlast.bonita.version=$BONITA_CURRENT_VERSION -Dnext.bonita.version=$BONITA_NEXT_VERSION -Dlast.migration.tag=$LAST_MIGRATION_TAG
+    mvn clean install -Pupdate -Dlast.version.to.migrate=$BONITA_PREVIOUS_VERSION -Dlast.bonita.version=$BONITA_CURRENT_VERSION -Dnext.bonita.version=$BONITA_NEXT_VERSION
     cd ..
 }
 
 createNewDBFiller(){
+    cd bonita-migration-db-filler-archetype
+    mvn clean install
+    cd ..
     CURRENT_MIGRATION_VERSION=$(grep '<version>.*-SNAPSHOT<' pom.xml | sed -r 's:</?version>::g' | tr -d ' ')
+    # récupérer le num de version de la migration courante pour le passer en archetypeVersion ....
+    #
+    #
+    #
     mvn archetype:generate -B -DarchetypeArtifactId=bonita-migration-db-filler-archetype -DarchetypeGroupId=org.bonitasoft.migration -DarchetypeVersion=$LAST_MIGRATION_TAG -Dbonita-version=$BONITA_NEXT_VERSION -Ddb-filler-suffix=${BONITA_NEXT_VERSION//./_}  -DartifactId=bonita-migration-db-filler-$BONITA_NEXT_VERSION
 }
 
