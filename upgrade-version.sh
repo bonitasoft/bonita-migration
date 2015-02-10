@@ -14,7 +14,7 @@ OPTIONS:
    -c<current_version>, --current=<current_version>     current bonita version 
    -n<next_version>, --next=<next_version>              next bonita version 
 Example:
-./upgrade-version.sh --previous=6.3.3 --current=6.3.4 --next=6.3.5 -m1.10.0
+./upgrade-version.sh --previous=6.3.3 --current=6.3.4 --next=6.3.5
 
 Warning: If current version or previous version are not provided, they will be 
          detected with the content of the $VERSIONS_FOLDER_NAME folder
@@ -98,7 +98,7 @@ if [[ -z $BONITA_PREVIOUS_VERSION || -z $BONITA_CURRENT_VERSION || -z $BONITA_NE
   usage
   exit
 fi
-# updatePomVersion
-# createNewMigrationFolder
+updatePomVersion
+createNewMigrationFolder
 createNewDBFiller
 updateGAVersionInCurrentDistrib
