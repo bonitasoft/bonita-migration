@@ -1,0 +1,1 @@
+Replace 6.4.2 configuration files with the 6.5.0 files. 

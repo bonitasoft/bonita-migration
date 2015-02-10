@@ -13,9 +13,8 @@ OPTIONS:
    -p<previous_version>, --previous=<previous_version>  previous bonita version 
    -c<current_version>, --current=<current_version>     current bonita version 
    -n<next_version>, --next=<next_version>              next bonita version 
-   -m<migration_tag>, --migration=<migration_tag>       last migration tag
 Example:
-./upgrade-version.sh --previous=6.3.3 --current=6.3.4 --next=6.3.5 -m1.10.0
+./upgrade-version.sh --previous=6.3.3 --current=6.3.4 --next=6.3.5
 
 Warning: If current version or previous version are not provided, they will be 
          detected with the content of the $VERSIONS_FOLDER_NAME folder
@@ -40,13 +39,17 @@ updatePomVersion(){
 
 createNewMigrationFolder(){
     cd bonita-migration-versions-updated
-    mvn clean install -Pupdate -Dlast.version.to.migrate=$BONITA_PREVIOUS_VERSION -Dlast.bonita.version=$BONITA_CURRENT_VERSION -Dnext.bonita.version=$BONITA_NEXT_VERSION -Dlast.migration.tag=$LAST_MIGRATION_TAG
+    mvn clean install -Pupdate -Dlast.version.to.migrate=$BONITA_PREVIOUS_VERSION -Dlast.bonita.version=$BONITA_CURRENT_VERSION -Dnext.bonita.version=$BONITA_NEXT_VERSION
     cd ..
 }
 
 createNewDBFiller(){
+    # build current db-filler-archetype:
+    cd bonita-migration-db-filler-archetype
+    mvn clean install
+    cd ..
     CURRENT_MIGRATION_VERSION=$(grep '<version>.*-SNAPSHOT<' pom.xml | sed -r 's:</?version>::g' | tr -d ' ')
-    mvn archetype:generate -B -DarchetypeArtifactId=bonita-migration-db-filler-archetype -DarchetypeGroupId=org.bonitasoft.migration -DarchetypeVersion=$LAST_MIGRATION_TAG -Dbonita-version=$BONITA_NEXT_VERSION -Ddb-filler-suffix=${BONITA_NEXT_VERSION//./_}  -DartifactId=bonita-migration-db-filler-$BONITA_NEXT_VERSION
+    mvn archetype:generate -B -DarchetypeArtifactId=bonita-migration-db-filler-archetype -DarchetypeGroupId=org.bonitasoft.migration -DarchetypeVersion=$CURRENT_MIGRATION_VERSION -Dbonita-version=$BONITA_NEXT_VERSION -Ddb-filler-suffix=${BONITA_NEXT_VERSION//./_}  -DartifactId=bonita-migration-db-filler-$BONITA_NEXT_VERSION
 }
 
 updateGAVersionInCurrentDistrib(){
@@ -73,7 +76,6 @@ while true ; do
         -p) BONITA_PREVIOUS_VERSION=$2; shift;;
         -c) BONITA_CURRENT_VERSION=$2; shift;;
         -n) BONITA_NEXT_VERSION=$2; shift;;
-        -m) LAST_MIGRATION_TAG=$2; shift;;
         
         -d) checkDestination; DEBUG=true
            if [[ "$2" != "Community" ]]; then
@@ -86,14 +88,13 @@ while true ; do
         --previous) BONITA_PREVIOUS_VERSION=$2; shift 2;;
         --current) BONITA_CURRENT_VERSION=$2; shift 2;;
         --next) BONITA_NEXT_VERSION=$2; shift 2;;
-        --migration) LAST_MIGRATION_TAG=$2; shift 2;;
         --) shift; break;;
         *) shift;;
     esac
 done
 findCurrentAndPreviousVersion
 echo "Next Bonita Version : $BONITA_NEXT_VERSION ${BONITA_NEXT_VERSION//./_}"
-if [[ -z $BONITA_PREVIOUS_VERSION || -z $BONITA_CURRENT_VERSION || -z $BONITA_NEXT_VERSION || -z $LAST_MIGRATION_TAG ]]; then
+if [[ -z $BONITA_PREVIOUS_VERSION || -z $BONITA_CURRENT_VERSION || -z $BONITA_NEXT_VERSION ]]; then
   usage
   exit
 fi

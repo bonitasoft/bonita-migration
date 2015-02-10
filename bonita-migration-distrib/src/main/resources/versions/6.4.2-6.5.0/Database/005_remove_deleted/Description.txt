@@ -1,0 +1,1 @@
+Removed the "purge" mechanism that relies on "deleted" column in flownnode_instance
