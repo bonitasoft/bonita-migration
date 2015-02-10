@@ -26,7 +26,7 @@ import org.bonitasoft.engine.expression.ExpressionBuilder;
 import org.bonitasoft.engine.session.APISession;
 import org.bonitasoft.engine.test.ClientEventUtil;
 
-public class DatabaseFiller6_4_2 extends SimpleDatabaseFiller6_4_0 {
+public class DatabaseFiller6_4_2 extends SimpleDatabaseFiller6_4_1 {
 
     public static void main(final String[] args) throws Exception {
         final DatabaseFiller6_4_2 databaseFiller = new DatabaseFiller6_4_2();
