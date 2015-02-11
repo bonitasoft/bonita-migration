@@ -49,7 +49,7 @@
                                     </artifactItems>
                                 </configuration>
                             </execution>
-                            <!-- unpack new theme that will be change in database -->
+                            <!-- unpack new theme that will be changed in database -->
                             <execution>
                                 <id>get-theme-less</id>
                                 <phase>process-resources</phase>
@@ -129,10 +129,8 @@
                                                 <copy todir="${next.migration.folder.path}/Bonita-home">
                                                     <fileset dir="${last.migration.folder.path}/Bonita-home" />
                                                 </copy>
-                                                <replace file="${next.migration.folder.path}/Bonita-home/Description.txt" token="${last.bonita.version}"
-                                                    value="${next.bonita.version}" />
-                                                <replace file="${next.migration.folder.path}/Bonita-home/Description.txt" token="${last.version.to.migrate}"
-                                                    value="${last.bonita.version}" />
+                                                <replace file="${next.migration.folder.path}/Bonita-home/Description.txt" token="${last.bonita.version}" value="${next.bonita.version}" />
+                                                <replace file="${next.migration.folder.path}/Bonita-home/Description.txt" token="${last.version.to.migrate}" value="${last.bonita.version}" />
                                                 <copy todir="${next.migration.folder.path}/Database/001_theme">
                                                     <fileset dir="${last.migration.folder.path}/Database/001_theme" />
                                                 </copy>
