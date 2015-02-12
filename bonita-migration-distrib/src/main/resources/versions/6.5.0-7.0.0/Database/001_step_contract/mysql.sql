@@ -3,7 +3,7 @@ CREATE TABLE contract_data (
   id BIGINT NOT NULL,
   scopeId BIGINT NOT NULL,
   name VARCHAR(50) NOT NULL,
-  val LONGBLOB,
+  val LONGBLOB
 ) ENGINE = INNODB
 @@
 ALTER TABLE contract_data ADD CONSTRAINT pk_contract_data PRIMARY KEY (tenantid, id)
@@ -20,7 +20,7 @@ CREATE TABLE arch_contract_data (
   name VARCHAR(50) NOT NULL,
   val LONGBLOB,
   archiveDate BIGINT NOT NULL,
-  sourceObjectId BIGINT NOT NULL,
+  sourceObjectId BIGINT NOT NULL
 ) ENGINE = INNODB
 @@
 ALTER TABLE arch_contract_data ADD CONSTRAINT pk_arch_contract_data PRIMARY KEY (tenantid, id)
