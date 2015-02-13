@@ -1,5 +1,7 @@
-Increase some text columns to 255 on various tables:
+Increase some text columns to a length of 255 on various tables:
 - FIELDS SearchIndex1, 2, 3, 4, 5 on TABLES "process_instance" and "arch_process_instance"
-- FIELDS name, displayName, parentPath (to 1024 CHAR) on TABLE group_
+- FIELDS name (125 chars), displayName on TABLE group_
 - FIELDS name, displayName on TABLE role
+
+DROP some fields:
 - FIELD delegeeUserName on TABLE user_
