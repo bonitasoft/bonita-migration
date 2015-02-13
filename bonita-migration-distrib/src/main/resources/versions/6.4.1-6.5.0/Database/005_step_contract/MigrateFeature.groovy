@@ -7,10 +7,8 @@ def tenants = MigrationUtil.getTenantsId(dbVendor, sql)
 println "Executing update for each tenant : " + tenants
 tenants.each {
     println "For tenant with id = " + it
-    if(adminId != null && directoryId != null){
-        parameters = [:]
-        parameters.put(":tenantId", String.valueOf(it))
-        MigrationUtil.executeSqlFile(feature, dbVendor, "update", parameters, sql, false)
-    }
+    parameters = [:]
+    parameters.put(":tenantId", String.valueOf(it))
+    MigrationUtil.executeSqlFile(feature, dbVendor, "update", parameters, sql, false)
     println "Done"
 }
