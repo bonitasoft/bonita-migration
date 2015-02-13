@@ -17,3 +17,8 @@ ALTER TABLE role ALTER COLUMN name NVARCHAR(255) @@
 ALTER TABLE role ALTER COLUMN displayName NVARCHAR(255) @@
 
 ALTER TABLE user_ DROP COLUMN delegeeUserName @@
+
+ALTER TABLE user_contactinfo ALTER COLUMN city NVARCHAR(255) @@
+ALTER TABLE user_contactinfo ALTER COLUMN state NVARCHAR(255) @@
+ALTER TABLE user_contactinfo ALTER COLUMN country NVARCHAR(255) @@
+ALTER TABLE user_contactinfo ALTER COLUMN website NVARCHAR(255) @@

@@ -2,6 +2,7 @@ Increase some text columns to a length of 255 on various tables:
 - FIELDS SearchIndex1, 2, 3, 4, 5 on TABLES "process_instance" and "arch_process_instance"
 - FIELDS name (125 chars), displayName on TABLE group_
 - FIELDS name, displayName on TABLE role
+- FIELDS city, state, country, website on TABLE user_contactinfo
 
 DROP some fields:
 - FIELD delegeeUserName on TABLE user_

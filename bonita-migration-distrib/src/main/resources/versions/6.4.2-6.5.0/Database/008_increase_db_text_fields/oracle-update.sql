@@ -17,3 +17,8 @@ ALTER TABLE role MODIFY name VARCHAR2(255 CHAR) @@
 ALTER TABLE role MODIFY displayName VARCHAR2(255 CHAR) @@
 
 ALTER TABLE user_ DROP COLUMN delegeeUserName @@
+
+ALTER TABLE user_contactinfo MODIFY city VARCHAR2(255 CHAR) @@
+ALTER TABLE user_contactinfo MODIFY state VARCHAR2(255 CHAR) @@
+ALTER TABLE user_contactinfo MODIFY country VARCHAR2(255 CHAR) @@
+ALTER TABLE user_contactinfo MODIFY website VARCHAR2(255 CHAR) @@
