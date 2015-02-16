@@ -22,3 +22,8 @@ ALTER TABLE user_contactinfo MODIFY COLUMN city VARCHAR(255);
 ALTER TABLE user_contactinfo MODIFY COLUMN state VARCHAR(255);
 ALTER TABLE user_contactinfo MODIFY COLUMN country VARCHAR(255);
 ALTER TABLE user_contactinfo MODIFY COLUMN website VARCHAR(255);
+
+ALTER TABLE flownode_instance MODIFY COLUMN name VARCHAR(255);
+ALTER TABLE flownode_instance MODIFY COLUMN displayName VARCHAR(255);
+ALTER TABLE arch_flownode_instance MODIFY COLUMN name VARCHAR(255);
+ALTER TABLE arch_flownode_instance MODIFY COLUMN displayName VARCHAR(255);

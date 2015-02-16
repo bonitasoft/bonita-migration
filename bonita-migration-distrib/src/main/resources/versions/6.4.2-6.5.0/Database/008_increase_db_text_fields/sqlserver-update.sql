@@ -22,3 +22,8 @@ ALTER TABLE user_contactinfo ALTER COLUMN city NVARCHAR(255) @@
 ALTER TABLE user_contactinfo ALTER COLUMN state NVARCHAR(255) @@
 ALTER TABLE user_contactinfo ALTER COLUMN country NVARCHAR(255) @@
 ALTER TABLE user_contactinfo ALTER COLUMN website NVARCHAR(255) @@
+
+ALTER TABLE flownode_instance ALTER COLUMN name NVARCHAR(255) @@
+ALTER TABLE flownode_instance ALTER COLUMN displayName NVARCHAR(255) @@
+ALTER TABLE arch_flownode_instance ALTER COLUMN name NVARCHAR(255) @@
+ALTER TABLE arch_flownode_instance ALTER COLUMN displayName NVARCHAR(255) @@
