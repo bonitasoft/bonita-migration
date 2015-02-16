@@ -8,7 +8,7 @@ CREATE TABLE contract_data (
 @@
 ALTER TABLE contract_data ADD CONSTRAINT pk_contract_data PRIMARY KEY (tenantid, id)
 @@
-CREATE UNIQUE INDEX idx_cd_scope_name ON contract_data (scopeId, name, tenantid)
+ALTER TABLE contract_data ADD CONSTRAINT uc_cd_scope_name UNIQUE (scopeId, name, tenantid)
 @@
 
 CREATE TABLE arch_contract_data (
@@ -23,5 +23,5 @@ CREATE TABLE arch_contract_data (
 @@
 ALTER TABLE arch_contract_data ADD CONSTRAINT pk_arch_contract_data PRIMARY KEY (tenantid, id)
 @@
-CREATE UNIQUE INDEX idx_acd_scope_name ON arch_contract_data (scopeId, name, tenantid)
+ALTER TABLE arch_contract_data ADD CONSTRAINT uc_acd_scope_name UNIQUE (scopeId, name, tenantid)
 @@
