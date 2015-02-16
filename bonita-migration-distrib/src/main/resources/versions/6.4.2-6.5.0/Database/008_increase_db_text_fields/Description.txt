@@ -8,3 +8,9 @@ Increase some text columns to a length of 255 on various tables:
 
 DROP some fields:
 - FIELD delegeeUserName on TABLE user_
+
+=====================================================================================================================
+                                                 /!\ WARNING /!\ 
+Some DB columns have been extended in 6.5.0.
+Please rebuild your DB tables using your administration tool to avoid fragmentation of data after migrating to 6.5.0
+=====================================================================================================================
