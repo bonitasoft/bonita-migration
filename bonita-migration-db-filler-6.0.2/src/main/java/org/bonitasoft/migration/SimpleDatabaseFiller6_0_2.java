@@ -74,6 +74,7 @@ public class SimpleDatabaseFiller6_0_2 extends DatabaseFiller6_0_2 {
     }
 
     protected Map<String, String> fillSimpleProcess(APISession session, int nbProcessInstances) throws Exception {
+        logger.info("Starting fillSimpleProcess");
         ProcessAPI processAPI = TenantAPIAccessor.getProcessAPI(session);
         IdentityAPI identityAPI = TenantAPIAccessor.getIdentityAPI(session);
         ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance(PROCESS_NAME, PROCESS_VERSION);
@@ -93,6 +94,7 @@ public class SimpleDatabaseFiller6_0_2 extends DatabaseFiller6_0_2 {
         Map<String, String> map = new HashMap<String, String>(2);
         map.put("Process definitions", String.valueOf(1));
         map.put("Process instances", String.valueOf(nbProcessInstances));
+        logger.info("Finished fillSimpleProcess");
         return map;
     }
 
