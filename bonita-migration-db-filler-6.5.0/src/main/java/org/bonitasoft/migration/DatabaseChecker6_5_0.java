@@ -65,7 +65,7 @@ public class DatabaseChecker6_5_0 extends SimpleDatabaseChecker6_5_0 {
     }
 
     @Test
-    public void can_creatte_FlowNodeInstance_with_several_non_ascii_characters() throws Exception {
+    public void can_create_FlowNodeInstance_with_several_non_ascii_characters() throws Exception {
         final User user = getApiTestUtil().createUser("tom", "bpm");
 
         final String taskDisplayName = "Žingsnis, kuriame paraiškos teikėjas gali laisvai užpildyti duomenis, ąčęė";
