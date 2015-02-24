@@ -27,3 +27,4 @@ ALTER TABLE flownode_instance ALTER COLUMN name TYPE VARCHAR(255);
 ALTER TABLE flownode_instance ALTER COLUMN displayName TYPE VARCHAR(255);
 ALTER TABLE arch_flownode_instance ALTER COLUMN name TYPE VARCHAR(255);
 ALTER TABLE arch_flownode_instance ALTER COLUMN displayName TYPE VARCHAR(255);
+ALTER TABLE arch_transition_instance DROP COLUMN name;
