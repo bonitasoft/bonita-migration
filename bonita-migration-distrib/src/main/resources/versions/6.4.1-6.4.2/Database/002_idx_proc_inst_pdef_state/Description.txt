@@ -1,0 +1,1 @@
+Add indexes to improve performance in administration pages
