@@ -8,6 +8,7 @@ Increase some text columns to a length of 255 on various tables:
 
 DROP some fields:
 - FIELD delegeeUserName on TABLE user_
+- FIELD name on TABLE arch_transition_instance
 
 =====================================================================================================================
                                                  /!\ WARNING /!\ 
