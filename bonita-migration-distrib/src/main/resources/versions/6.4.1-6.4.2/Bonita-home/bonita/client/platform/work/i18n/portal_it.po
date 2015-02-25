@@ -1,0 +1,2234 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: bonita-bpm-new-features\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-12-18 01:02+0100\n"
+"PO-Revision-Date: 2015-01-30 03:11-0500\n"
+"Last-Translator: rlg <rodrigue.legall@bonitasoft.com>\n"
+"Language-Team: Italian\n"
+"Language: it_IT\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: bonita-bpm-new-features\n"
+"X-Crowdin-File: /release-6.4.2/bonita-web/portal/portal.po\n"
+
+msgid " To do so, go to %entitymappingprofilelink%."
+msgstr " Per eseguire questa operazione, andare a %entitymappingprofilelink%."
+
+msgid " for "
+msgstr " for "
+
+msgid "%attribute% file format is not allowed. Only %file_formats% files are allowed."
+msgstr "%attribute% formato file non consentito. Solo i file %file_formats% sono ammessi."
+
+msgid "%attribute% file format not allowed"
+msgstr "%attribute% formato file non consentito"
+
+msgid "%attribute% is mandatory"
+msgstr "%attribute% è obbligatorio"
+
+msgid "%attribute% is not a valid Color value"
+msgstr "%attribute% non è un valore di colore valido"
+
+msgid "%attribute% is not a valid URL"
+msgstr "%attribute% non è un Url valido"
+
+msgid "%attribute% is not a valid email"
+msgstr "%attribute% non è un'email valida"
+
+msgid "%attribute% is not well written"
+msgstr "%attribute% non è scritto bene"
+
+msgid "%attribute% must be a boolean value"
+msgstr "%attribute% deve essere un valore booleano"
+
+msgid "%attribute% must be a negative value"
+msgstr "%attribute% deve essere un valore negativo"
+
+msgid "%attribute% must be a negative value diffrent from 0"
+msgstr "%attribute% deve essere un valore negativo diverso da 0"
+
+msgid "%attribute% must be a numeric value"
+msgstr "%attribute% deve essere un valore numerico"
+
+msgid "%attribute% must be a positive value"
+msgstr "%attribute% deve essere un valore positivo"
+
+msgid "%attribute% must be a positive value different from 0"
+msgstr "%attribute% deve essere un valore positivo diverso da 0"
+
+msgid "%attribute% must be a valid date"
+msgstr "%attribute% deve essere una data valida"
+
+msgid "%attribute% must be an integer value"
+msgstr "%attribute% deve essere un valore intero"
+
+msgid "%attribute% must be equal to %secondAttribute%"
+msgstr "%attribute% deve essere uguale a %secondAttribute%"
+
+msgid "%attribute% must be less or equal than %value%"
+msgstr "%attribute% deve essere minore o uguale a %value%"
+
+msgid "%attribute% must be less than %secondAttribute%"
+msgstr "%attribute% deve essere minore di %secondAttribute%"
+
+msgid "%attribute% must be less than %value%"
+msgstr "%attribute% deve essere meno di %value%"
+
+msgid "%attribute% must be more or equal than %secondAttribute%"
+msgstr "%attribute% deve essere maggiore o uguale a %secondAttribute%"
+
+msgid "%attribute% must be more or equal than %value%"
+msgstr "%attribute% deve essere maggiore o uguale a %value%"
+
+msgid "%attribute% must be more than %secondAttribute%"
+msgstr "%attribute% deve essere maggiore di %secondAttribute%"
+
+msgid "%attribute% must be more than %value%"
+msgstr "%attribute% deve essere maggiore di %value%"
+
+msgid "%attribute% must be on a single line"
+msgstr "%attribute% deve essere una linea singola"
+
+msgid "%attribute% must be one of {%list%}"
+msgstr "%attribute% deve essere uno dei {%list%}"
+
+msgid "%attribute% must contain exactly %length% characters"
+msgstr "%attribute% deve contenere esattamente %length% caratteri"
+
+msgid "%attribute% must not be equal to %secondAttribute%"
+msgstr "%attribute% non deve essere uguale a %secondAttribute%"
+
+msgid "%attribute% mustn't contains blank spaces"
+msgstr "%attribute% non deve contenere spazi bianchi"
+
+msgid "%attribute% mustn't contains spaces"
+msgstr "%attribute% non deve contenere spazi"
+
+msgid "%className% is not Serializable"
+msgstr "%className% non è Serializable"
+
+msgid "%className% not found. Only jdk types are supported"
+msgstr "%className% non trovata. Solo i tipi jdk sono supportati"
+
+msgid "%current_page% of %total_pages%"
+msgstr "%current_page% di %total_pages%"
+
+msgid "%firstname% %lastname%"
+msgstr "%firstname% %lastname%"
+
+msgid "%firstname% %lastname% for"
+msgstr "%firstname% %lastname% per"
+
+msgid "%groupname%"
+msgstr "%groupname%"
+
+msgid "%nb_archived% archived"
+msgstr "%nb_archived% archiviati"
+
+msgid "%nb_ongoing% ongoing"
+msgstr "%nb_ongoing% in corso"
+
+msgid "%rolename%"
+msgstr "%rolename%"
+
+msgid "%rolename% of %groupname%"
+msgstr "%rolename% di %groupname%"
+
+msgid "%secondAttribute% must be a numeric value"
+msgstr "%secondAttribute% deve essere un valore numerico"
+
+msgid "%start_result% - %end_result% of %total_results%"
+msgstr "%start_result% - %end_result% di %total_results%"
+
+msgid "%start_result% of %total_results%"
+msgstr "%start_result% su %total_results%"
+
+msgid "%time% ago"
+msgstr "%time% fa"
+
+msgid "%user%"
+msgstr "%user%"
+
+msgid "%value% is not a valid value for %className%"
+msgstr "%value% non è un valore valido per %className%"
+
+msgid "?"
+msgstr "?"
+
+msgid "A business archive has a .bar extension"
+msgstr "Un archivio di business ha un'estensione .bar"
+
+msgid "Aborted by:"
+msgstr "Interrotto da:"
+
+msgid "Aborted on:"
+msgstr "Interrotta su:"
+
+msgid "About"
+msgstr "Info su"
+
+msgid "Actions"
+msgstr "azioni"
+
+msgid "Activate"
+msgstr "Attiva"
+
+msgid "Activate selected users"
+msgstr "Attivare gli utenti selezionati"
+
+msgid "Activation state"
+msgstr "Stato di attivazione"
+
+msgid "Active"
+msgstr "Attivo"
+
+msgid "Active Users"
+msgstr "Utenti attivi"
+
+msgid "Actor mapping"
+msgstr "Mappatura degli attori"
+
+msgid "Actor name"
+msgstr "Nome attore"
+
+msgid "Actors: %ok_ko%"
+msgstr "Attori: %ok_ko%"
+
+msgid "Add"
+msgstr "Aggiungi"
+
+msgid "Add Comment"
+msgstr "Aggiungi commento"
+
+msgid "Add a category"
+msgstr "Aggiungi una categoria"
+
+msgid "Add a comment"
+msgstr "Aggiungi un commento"
+
+msgid "Add a group"
+msgstr "Aggiungi un gruppo"
+
+msgid "Add a group to %actor_name%"
+msgstr "Aggiungi un gruppo a %actor_name%"
+
+msgid "Add a group to profile %%"
+msgstr "Aggiungi un gruppo al profilo %%"
+
+msgid "Add a membership"
+msgstr "Aggiungi un'adesione"
+
+msgid "Add a membership to %actor_name%"
+msgstr "Aggiungi un'adesione a %actor_name%"
+
+msgid "Add a membership to %user%"
+msgstr "Aggiungi un'adesione a %user%"
+
+msgid "Add a membership to profile %%"
+msgstr "Aggiungi un'adesione al profilo %%"
+
+msgid "Add a new category"
+msgstr "Aggiungi una nuova categoria"
+
+msgid "Add a new category to %%"
+msgstr "Aggiungi una nuova categoria a %%"
+
+msgid "Add a new membership to this user"
+msgstr "Aggiungi una nuova adesione a questo utente"
+
+msgid "Add a role"
+msgstr "Aggiungi un ruolo"
+
+msgid "Add a role to %actor_name%"
+msgstr "Aggiungi un ruolo a %actor_name%"
+
+msgid "Add a role to profile %%"
+msgstr "Aggiungi un ruolo al profilo %%"
+
+msgid "Add a user"
+msgstr "Aggiungi un utente"
+
+msgid "Add a user to %actor_name%"
+msgstr "Aggiungi un utente a %actor_name%"
+
+msgid "Add a user to profile %%"
+msgstr "Aggiungi un utente al profilo %%"
+
+msgid "Add new memberships for %user%"
+msgstr "Aggiungi nuove adesioni per %user%"
+
+msgid "Add selected group(s) to this profile"
+msgstr "Aggiungi i gruppi selezionati a questo profilo"
+
+msgid "Add selected role(s) to this profile"
+msgstr "Aggiungi i ruoli selezionati a questo profilo"
+
+msgid "Add selected user(s) to this profile"
+msgstr "Aggiungi gli utenti selezionati su questo profilo"
+
+msgid "Add this group to %actor_name%"
+msgstr "Aggiungi questo gruppo a %actor_name%"
+
+msgid "Add this membership"
+msgstr "Aggiungi questa adesione"
+
+msgid "Add this membership to %actor_name%"
+msgstr "Aggiungi questa adesione a %actor_name%"
+
+msgid "Add this role to %actor_name%"
+msgstr "Aggiungi questo ruolo a %actor_name%"
+
+msgid "Add this user to %actor_name%"
+msgstr "Aggiungi questo utente a %actor_name%"
+
+msgid "Address"
+msgstr "Indirizzo"
+
+msgid "Administrator"
+msgstr "Amministratore"
+
+msgid "Alert"
+msgstr "Allarme"
+
+msgid "All"
+msgstr "Tutti"
+
+msgid "All Groups"
+msgstr "Tutti i gruppi"
+
+msgid "All Profiles"
+msgstr "Tutti i profili"
+
+msgid "All Roles"
+msgstr "Tutti i ruoli"
+
+msgid "All groups"
+msgstr "Tutti i gruppi"
+
+msgid "An error occurred while creating a definition"
+msgstr "Errore durante la creazione di una definizione"
+
+msgid "An error occurred while deleting an item with the id %id%"
+msgstr "Errore durante l'eliminazione di un elemento con id %id%"
+
+msgid "Analytics"
+msgstr "Statistiche"
+
+msgid "Applications"
+msgstr "Applicazioni"
+
+msgid "Apps management"
+msgstr "Gestione applicazioni"
+
+msgid "April"
+msgstr "Aprile"
+
+msgid "Archived"
+msgstr "Archiviato"
+
+msgid "Archived date"
+msgstr "Data di archiviazione"
+
+msgid "Archives"
+msgstr "Archivi"
+
+msgid "Are you sur you want to remove selected actor members from the process ?"
+msgstr "Sei sicuro di voler rimuovere gli attori di processo selezionati?"
+
+msgid "Are you sure you want to delete this membership ?"
+msgstr "Sei sicuro di voler cancellare questa adesione?"
+
+msgid "Are you sure you want to remove category '%categoryName%' from process '%appName%' ?"
+msgstr "Sicuro di voler rimuovere la categoria '%categoryName%' dal processo '%appName%' ?"
+
+msgid "Assign"
+msgstr "Assegna"
+
+msgid "Assign selected tasks to user"
+msgstr "Assegna i task selezionati all'utente"
+
+msgid "Assign task to someone"
+msgstr "Assegna task a qualcuno"
+
+msgid "Assign this task to me. Other allowed users will no longer see it"
+msgstr "Assegna questo task a me. Altri utenti abilitati non potranno vederlo più"
+
+msgid "Assigned date"
+msgstr "Data assegnata"
+
+msgid "Assigned to"
+msgstr "Assegnato a"
+
+msgid "Assigned to me"
+msgstr "Assegnato a me"
+
+msgid "August"
+msgstr "Agosto"
+
+msgid "Available"
+msgstr "Disponibile"
+
+msgid "Available tasks"
+msgstr "Task disponibili"
+
+msgid "Avatar"
+msgstr "Avatar"
+
+msgid "Back"
+msgstr "Indietro"
+
+msgid "Be careful, your organization will be merged with existing data."
+msgstr "Attenzione, l'organizzazione verrà fusa con dati esistenti."
+
+msgid "Bonita Archive"
+msgstr "Archivio Bonita"
+
+msgid "Bonita BPM Portal"
+msgstr "Bonita BPM Portal"
+
+msgid "Browse your computer and select the business archive containing the process definition to install."
+msgstr "Sfoglia il tuo file system e seleziona il business archive contenente la definizione dell'applicazione da installare."
+
+msgid "Business archive"
+msgstr "Archivio Business"
+
+msgid "Business card"
+msgstr "Biglietto da visita"
+
+msgid "Call activity"
+msgstr "Attività di chiamata"
+
+msgid "Call activity (launches another process)"
+msgstr "Call activity (chiama un altro processo)"
+
+msgid "Can't create group. Group '%groupName%' already exists"
+msgstr "Non posso creare il gruppo. Il gruppo '%groupName%' esiste già"
+
+msgid "Can't create role. Role '%roleName%' already exists"
+msgstr "Non posso creare il ruolo. Il ruolo '%roleName%' esiste già"
+
+msgid "Can't create user. User '%userName%' already exists"
+msgstr "Non posso creare l'utente. L'utente '%userName%' esiste già"
+
+msgid "Can't import organization. Please check that your file is well-formed"
+msgstr "Non posso importare l'organizzazione. Si prega di controllare che il file sia ben formattato"
+
+msgid "Can't parse json, non-well formed content"
+msgstr "Impossibile analizzare json, contenuto non ben formattato"
+
+msgid "Can't start process %processId%, user %userId% not found"
+msgstr "Non è possibile avviare il processo %processId% utente %userId% non trovato"
+
+msgid "Can't start process, process %processId% is not enabled"
+msgstr "Non è possibile avviare il processo, %processId% non è abilitato"
+
+msgid "Can't start process, process %processId% not found"
+msgstr "Non è possibile avviare il processo, processo %processId% non trovato"
+
+msgid "Can't update group. Group not found"
+msgstr "Non è stato possibile aggiornare il gruppo. Gruppo non trovato"
+
+msgid "Can't update user. User not found"
+msgstr "Non è possibile aggiornare l'utente. Utente non trovato"
+
+msgid "Cancel"
+msgstr "Annulla"
+
+msgid "Cancel this action"
+msgstr "Annulla questa azione"
+
+msgid "Cancel this form"
+msgstr "Annulla questo modulo"
+
+msgid "Case"
+msgstr "Caso"
+
+msgid "Case id"
+msgstr "id del caso "
+
+msgid "Case id: "
+msgstr "ID caso:"
+
+msgid "Case variables"
+msgstr "Variabili del caso"
+
+msgid "Cases"
+msgstr "Casi"
+
+msgid "Cases I have started"
+msgstr "Casi che ho avviato"
+
+msgid "Cases I have started or I have worked on"
+msgstr "Casi che ho avviato o su cui ho lavorato"
+
+msgid "Cases I worked on"
+msgstr "Casi su cui ho lavorato"
+
+msgid "Categories"
+msgstr "Categorie"
+
+msgid "Category"
+msgstr "Categoria"
+
+msgid "Category with name %categoryName% already exists"
+msgstr "Categoria con il nome %categoryName% esiste già"
+
+msgid "Change to selected language"
+msgstr "Cambia lingua selezionata"
+
+msgid "Choose a language"
+msgstr "Scegli una lingua"
+
+msgid "City"
+msgstr "Città"
+
+msgid "Class name"
+msgstr "Nome della classe"
+
+msgid "Click here to choose your file."
+msgstr "Clicca qui per scegliere il tuo file."
+
+msgid "Click here to choose your file. "
+msgstr "Fai click qui per selezionare il file."
+
+msgid "Click here to go to Profile listing page"
+msgstr "Clicca qui per andare alla pagina della lista dei profili"
+
+msgid "Close"
+msgstr "Chiudi"
+
+msgid "Close without saving"
+msgstr "Chiudi senza salvare"
+
+msgid "Comments"
+msgstr "Commenti"
+
+msgid "Configuration"
+msgstr "Configurazione"
+
+msgid "Configuration state "
+msgstr "Stato della configurazione "
+
+msgid "Confirm"
+msgstr "Conferma"
+
+msgid "Confirm delete ?"
+msgstr "Confermi la cancellazione?"
+
+msgid "Confirm deletion"
+msgstr "Conferma l'eliminazione"
+
+msgid "Confirm deletion ?"
+msgstr "Conferma l'eliminazione?"
+
+msgid "Confirm password"
+msgstr "Conferna password"
+
+msgid "Confirm removing"
+msgstr "Conferma rimozione"
+
+msgid "Confirm removing ?"
+msgstr "COnfermi la rimozione?"
+
+msgid "Confirm the password for this user"
+msgstr "Conferma la password per questo utente"
+
+msgid "Confirm this action"
+msgstr "Conferma questa azione"
+
+msgid "Connector definitions"
+msgstr "Definizioni del connettore"
+
+msgid "Connector definitions must be resolved before enabling the Process."
+msgstr "Le Definizioni di connettore devono essere risolti prima di attivare il processo."
+
+msgid "Connectors"
+msgstr "Connettori"
+
+msgid "Connectors: %ok_ko%"
+msgstr "Connettori: %ok_ko%"
+
+msgid "Content"
+msgstr "Contenuto"
+
+msgid "Country"
+msgstr "Paese"
+
+msgid "Create"
+msgstr "Crea"
+
+msgid "Create a group"
+msgstr "Crea un gruppo"
+
+msgid "Create a new category"
+msgstr "Crea una nuova categoria"
+
+msgid "Create a new element"
+msgstr "Crea un nuovo elemento"
+
+msgid "Create a role"
+msgstr "Crea un ruolo"
+
+msgid "Create a user"
+msgstr "Crea un utente"
+
+msgid "Create this group"
+msgstr "Crea questo gruppo"
+
+msgid "Create this role"
+msgstr "Crea questo ruolo"
+
+msgid "Create this user"
+msgstr "Crea questo utente"
+
+msgid "Creation date"
+msgstr "Data di creazione"
+
+msgid "Custom Pages"
+msgstr "Pagine personalizzate"
+
+msgid "Dactivate selected user"
+msgstr "Disattiva utente selezionato"
+
+msgid "Data definition %dataName% doesn't exists for process %processId%"
+msgstr "La definizione di dati %dataName%  non esiste per il processo %processId%"
+
+msgid "Data included are : Users, groups and roles"
+msgstr "I dati inclusi sono: utenti, gruppi e ruoli"
+
+msgid "Deactivate"
+msgstr "Disattiva"
+
+msgid "Deactivate selected users"
+msgstr "Disattiva gli utenti selezionati"
+
+msgid "Deactivated user"
+msgstr "Utente disattivato"
+
+msgid "December"
+msgstr "Dicembre"
+
+msgid "Deletable"
+msgstr "Cancellabile"
+
+msgid "Delete"
+msgstr "Cancella"
+
+msgid "Delete %resource_name%"
+msgstr "Elimina %resource_name%"
+
+msgid "Delete selected groups"
+msgstr "Cancella i gruppi selezionati"
+
+msgid "Delete selected processes"
+msgstr "Eliminare i processi selezionati"
+
+msgid "Delete selected roles"
+msgstr "Cancella i ruoli selezionati"
+
+msgid "Delete the process %app_name%?"
+msgstr "Eliminare il processo %app_name%?"
+
+msgid "Delete this member"
+msgstr "Cancella questo membro"
+
+msgid "Delete this membership"
+msgstr "Cancella questa adesione"
+
+msgid "Delete this process"
+msgstr "Eliminare questo processo"
+
+msgid "Description"
+msgstr "Descrizione"
+
+msgid "Description:"
+msgstr "Descrizione:"
+
+msgid "Details"
+msgstr "Dettagli"
+
+msgid "Direct users"
+msgstr "Utenti diretti"
+
+msgid "Disable"
+msgstr "Disabilita"
+
+msgid "Disable selected processes"
+msgstr "Disabilitare i processi selezionati"
+
+msgid "Disable this process"
+msgstr "Disabilitare questo processo"
+
+msgid "Disabled"
+msgstr "Disabilitato"
+
+msgid "Disabled processes"
+msgstr "Processi disabilitati"
+
+msgid "Discuss :"
+msgstr "Discutere:"
+
+msgid "Display a case form of process %app_name%"
+msgstr "Visualizzare un form del caso del processo %app_name%"
+
+msgid "Display a summary of all processes"
+msgstr "Visualizzare un riepilogo di tutti i processi"
+
+msgid "Display name"
+msgstr "Nome visualizzato"
+
+msgid "Display tasks I have done"
+msgstr "Mostra i task che ho eseguito"
+
+msgid "Display tasks I'm ignoring"
+msgstr "Mostra i task che sto ignorando"
+
+msgid "Display the case form"
+msgstr "Mostra modulo del caso"
+
+msgid "Do it"
+msgstr "Esegui"
+
+msgid "Do not delete this membership"
+msgstr "NOn cancellare questa adesione"
+
+msgid "Done"
+msgstr "Eseguiti"
+
+msgid "Done %task_last_update% by %executed_by%"
+msgstr "Completato il %task_last_update% da %executed_by%"
+
+msgid "Done by"
+msgstr "Effettuato da"
+
+msgid "Done on"
+msgstr "Eseguito il"
+
+msgid "Done tasks"
+msgstr "Task fatti"
+
+msgid "Due date"
+msgstr "Scade il"
+
+msgid "Due in:"
+msgstr "Scade il:"
+
+msgid "Edit"
+msgstr "modifica"
+
+msgid "Edit a role"
+msgstr "Modificare un ruolo"
+
+msgid "Edit a user"
+msgstr "Aggiorna un utente"
+
+msgid "Edit case variable"
+msgstr "Modifica la variabile del caso"
+
+msgid "Edit groups of actor %actor_name%"
+msgstr "Modifica i gruppi dell'attore %actor_name%"
+
+msgid "Edit memberships of actor %actor_name%"
+msgstr "Modifica adesioni dell'attore %actor_name%"
+
+msgid "Edit roles of actor %actor_name%"
+msgstr "Modifica ruoli dell'attore %actor_name%"
+
+msgid "Edit this group"
+msgstr "Modifica questo gruppo"
+
+msgid "Edit this value"
+msgstr "Modifica questo valore"
+
+msgid "Edit user"
+msgstr "Aggiorna utente"
+
+msgid "Edit users of actor %actor_name%"
+msgstr "Modifica utenti dell'attore %actor_name%"
+
+msgid "Edit variable"
+msgstr "Modifica variabile"
+
+msgid "Email"
+msgstr "E-mail"
+
+msgid "Enable"
+msgstr "Abilita"
+
+msgid "Enable selected processes"
+msgstr "Attivare i processi selezionati"
+
+msgid "Enable this process"
+msgstr "Attivare questo processo"
+
+msgid "Enabled"
+msgstr "Abilitato"
+
+msgid "Enabled processes"
+msgstr "Processi attivati"
+
+msgid "Enter a category name"
+msgstr "Inserisci il nome della categoria"
+
+msgid "Enter the address of this user"
+msgstr "Immettere l'indirizzo di questo utente"
+
+msgid "Enter the city of this user"
+msgstr "Inserisci la città di questo utente"
+
+msgid "Enter the country of this user"
+msgstr "Imposta il Paese di questo utente"
+
+msgid "Enter the description for this category"
+msgstr "Inserisci la descrizione per questa categoria"
+
+msgid "Enter the description of this group"
+msgstr "Inserisci la descrizione di questo gruppo"
+
+msgid "Enter the description of this role"
+msgstr "Inserisci la descrizione di questo ruolo"
+
+msgid "Enter the display name of this group"
+msgstr "Inserisci il nome visualizzato per questo gruppo"
+
+msgid "Enter the display name of this role"
+msgstr "Inserisci il nome visualizzato per questo ruolo"
+
+msgid "Enter the email of this user"
+msgstr "Inserisci l'email di questo utente"
+
+msgid "Enter the first name of this user"
+msgstr "Indica il nome di questo utente"
+
+msgid "Enter the job title of this user"
+msgstr "Inserisci il titolo professionale di questo utente"
+
+msgid "Enter the last name of this user"
+msgstr "Indica il cognome di questo utente"
+
+msgid "Enter the mobile phone of this user"
+msgstr "Inserisci il telefono cellulare di questo utente"
+
+msgid "Enter the name of this group"
+msgstr "Inserisci il nome di questo gruppo"
+
+msgid "Enter the name of this role"
+msgstr "Immetti il nome di questo ruolo"
+
+msgid "Enter the password for this user"
+msgstr "Inserisci la password per questo utente"
+
+msgid "Enter the phone of this user"
+msgstr "Inserisci il telefono per questo utente"
+
+msgid "Enter the state of this user"
+msgstr "Inserisci lo stato di questo utente"
+
+msgid "Enter the text to search for"
+msgstr "Immettere il testo da cercare"
+
+msgid "Enter the title of this user"
+msgstr "Inserisci il titolo di questo utente"
+
+msgid "Enter the username for this user"
+msgstr "Inserire il nome utente"
+
+msgid "Enter the zip code of this user"
+msgstr "Indica il codice di avviamento postale di questo utente"
+
+msgid "Entity Mapping must be resolved before enabling the Process."
+msgstr "I mapping delle entità devono essere risolti prima di attivare il processo."
+
+msgid "Error"
+msgstr "Errore"
+
+msgid "Error occured when starting process %processId%"
+msgstr "Errore durante l'avvio del processo %processId%"
+
+msgid "Error when adding group to actor member"
+msgstr "Errore quando aggiungi gruppo a un attore membro"
+
+msgid "Error when creating group"
+msgstr "Errore durante la creazione del gruppo"
+
+msgid "Error when creating user"
+msgstr "Errore durante la creazione dell'utente"
+
+msgid "Error when deleting groups"
+msgstr "Errore durante l'eliminazione dei gruppi"
+
+msgid "Error when deleting users"
+msgstr "Errore durante l'eliminazione degli utenti"
+
+msgid "Error when searching users"
+msgstr "Errore durante la ricerca degli utenti"
+
+msgid "Error when updating %activityId% activity variables"
+msgstr "Errore durante l'aggiornamento delle variabili di attività di %activityId%"
+
+msgid "Error when updating group"
+msgstr "Errore durante l'aggiornamento del gruppo"
+
+msgid "Error when updating process deployment informations"
+msgstr "Errore durante l'aggiornamento delle informazioni di distribuzione del processo"
+
+msgid "Error when updating user"
+msgstr "Errore durante l'aggiornamento dell'utente"
+
+msgid "Executed by"
+msgstr "Eseguito da"
+
+msgid "Executed by:"
+msgstr "Eseguito da:"
+
+msgid "Export"
+msgstr "Esporta"
+
+msgid "Export the installed organization"
+msgstr "Esporta l'organizzazione installata"
+
+msgid "Failed"
+msgstr "Fallito"
+
+msgid "Failed on"
+msgstr "Fallito il"
+
+msgid "Failed on %task_last_update%"
+msgstr "Fallito il %task_last_update%"
+
+msgid "Failed on:"
+msgstr "Fallito il:"
+
+msgid "Failed tasks"
+msgstr "Task falliti"
+
+msgid "February"
+msgstr "Febbraio"
+
+msgid "Filters are not supported by this API"
+msgstr "I filtri non sono supportati da questa api"
+
+msgid "Finish"
+msgstr "Termina"
+
+msgid "Finish this page"
+msgstr "Termina questa pagina"
+
+msgid "First name"
+msgstr "Nome"
+
+msgid "First name of the user"
+msgstr "Nome dell'utente"
+
+msgid "Firstname"
+msgstr "Nome"
+
+msgid "For each actor, check that each entity (user, group, role, membership) has the relevant user profile in the Portal."
+msgstr "Per ogni attore, controlla che ogni entità (utente, gruppo, ruolo, membership) abbia il corrispondente profilo utente nel Portale."
+
+msgid "Fr"
+msgstr "Fr"
+
+msgid "Getting more information about the specified case"
+msgstr "Ottieni ulteriori informazioni circa il caso specificato"
+
+msgid "Go back to previous view"
+msgstr "Torna alla visualizzazione precedente"
+
+msgid "Go to page %pagenumber%"
+msgstr "Vai a pagina %pagenumber%"
+
+msgid "Go to previous step"
+msgstr "Vai allo step precedente"
+
+msgid "Group"
+msgstr "Gruppo"
+
+msgid "Group (%nb_group%)"
+msgstr "Gruppo (%nb_group%)"
+
+msgid "Groups"
+msgstr "Gruppi"
+
+msgid "Groups mapping"
+msgstr "Mappatura gruppi"
+
+msgid "Groups: %nb_groups%"
+msgstr "Gruppi: %nb_groups%"
+
+msgid "Hidden"
+msgstr "Nascosto"
+
+msgid "Hidden to me"
+msgstr "Nascosto a me"
+
+msgid "Hide"
+msgstr "Nascondi"
+
+msgid "Hide this task so I will no longer see it. Other allowed users will still see it"
+msgstr "Ignora questo task di modo che io non lo veda più. Altri utenti abilitati continueranno a vederlo."
+
+msgid "High"
+msgstr "Alta"
+
+msgid "Highest"
+msgstr "Il più alto"
+
+msgid "Human Task"
+msgstr "Task umano"
+
+msgid "Human task"
+msgstr "Human task"
+
+msgid "ID"
+msgstr "ID"
+
+msgid "Icon"
+msgstr "Icona"
+
+msgid "Id:"
+msgstr "Id:"
+
+msgid "Image files"
+msgstr "File di immagine"
+
+msgid "Import"
+msgstr "Importa"
+
+msgid "Import / Export"
+msgstr "Importa / Esporta"
+
+msgid "Import an existing organization"
+msgstr "Importa un'organizzazione esistente"
+
+msgid "Import or export data"
+msgstr "Importare o esportare dati"
+
+msgid "Import/Export"
+msgstr "Importa/Esporta"
+
+msgid "In case of conflict, priority is given to the imported file"
+msgstr "In caso di conflitto, la priorità è data al file importato"
+
+msgid "Inactive"
+msgstr "Non attivo"
+
+msgid "Inactive Users"
+msgstr "Utenti inattivi"
+
+msgid "Inactive user"
+msgstr "Utente inattivo"
+
+msgid "Install"
+msgstr "Installa"
+
+msgid "Install a process"
+msgstr "Installa un processo"
+
+msgid "Installed by"
+msgstr "Installato da"
+
+msgid "Installed on"
+msgstr "Installato il"
+
+msgid "Item not found"
+msgstr "Elemento non trovato"
+
+msgid "January"
+msgstr "Gennaio"
+
+msgid "Jasper Archive"
+msgstr "Archivio Jasper"
+
+msgid "Job title"
+msgstr "Titolo professionale"
+
+msgid "Job title of the user"
+msgstr "Titolo professionale dell'utente"
+
+msgid "Json can't be mapped to "
+msgstr "Json non può essere mappato su "
+
+msgid "July"
+msgstr "Luglio"
+
+msgid "June"
+msgstr "Giugno"
+
+msgid "Language"
+msgstr "Lingua"
+
+msgid "Last executed task : "
+msgstr "Ultimo task eseguito : "
+
+msgid "Last login"
+msgstr "Ultimo login"
+
+msgid "Last name"
+msgstr "Cognome"
+
+msgid "Last name of the user"
+msgstr "Cognome dell'utente"
+
+msgid "Last update"
+msgstr "Ultimo aggiornamento"
+
+msgid "Last update date"
+msgstr "Ultima data di aggiornamento"
+
+msgid "Last updated"
+msgstr "Ultimo aggiornamento"
+
+msgid "Last updated on"
+msgstr "Ultimo aggiornamento il"
+
+msgid "Lastname"
+msgstr "Cognome"
+
+msgid "Link to the tasks"
+msgstr "Collegamento ai task"
+
+msgid "List memberships of %user%"
+msgstr "Elenco adesioni di %user%"
+
+msgid "Login failed. No profile has been set up for this user. Contact your administrator."
+msgstr "Accesso non riuscito. Nessun profilo è stato configurato per questo utente. Contattare l'amministratore."
+
+msgid "Login form"
+msgstr "Accedi al portale"
+
+msgid "Logout"
+msgstr "Logout"
+
+msgid "Look and Feel"
+msgstr "Look and Feel"
+
+msgid "Loop activity"
+msgstr "Attività di ciclo"
+
+msgid "Loop activity (launches and controls loop execution)"
+msgstr "Activity di iterazione (lancia e controlla le iterazioni di esecuzione)"
+
+msgid "Low"
+msgstr "Bassa"
+
+msgid "Lowest"
+msgstr "Più bassa"
+
+msgid "MM/dd/yyyy"
+msgstr "dd/MM/yyyy"
+
+msgid "MM/dd/yyyy h:mm a"
+msgstr "dd/MM/yyyy 'a' HH:mm"
+
+msgid "MM/dd/yyyy h:mm:ss a"
+msgstr "dd/mm/yyyy hh:MM:ss"
+
+msgid "MMMM dd, yyyy"
+msgstr "dd/MM/yyyy"
+
+msgid "Manage Look and Feel"
+msgstr "Gestire il Look & Feel"
+
+msgid "Manage applications"
+msgstr "Gestire le Applicazioni"
+
+msgid "Manage cases of processes that an entity with this profile can supervise as PM."
+msgstr "Gestisci i casi dei processi che una entità con questo profilo puo' supervisionare come PM."
+
+msgid "Manage custom pages"
+msgstr "Gestire le pagine personalizzate"
+
+msgid "Manage processes that an entity with this profile can supervise as PM."
+msgstr "Gestisci i processi che una entità con questo profilo puo' supervisionare come PM."
+
+msgid "Manage profiles"
+msgstr "Gestisci i profili"
+
+msgid "Manage tasks of processes that an entity with this profile can supervise as PM."
+msgstr "Gestisci i task dei processi che una entità con questo profilo puo' supervisionare come PM."
+
+msgid "Manager"
+msgstr "Manager"
+
+msgid "Manager of the specified user"
+msgstr "Manager dell'utente specificato"
+
+msgid "Mapping"
+msgstr "Mappatura"
+
+msgid "March"
+msgstr "Marzo"
+
+msgid "May"
+msgstr "Maggio"
+
+msgid "Member"
+msgstr "Membro"
+
+msgid "Membership"
+msgstr "Adesione"
+
+msgid "Membership (%nb_membership%)"
+msgstr "Membership (%nb_membership%)"
+
+msgid "Memberships mapping"
+msgstr "Mappatura adesioni"
+
+msgid "Memberships: %nb_memberships%"
+msgstr "Adesioni: %nb_memberships%"
+
+msgid "Mo"
+msgstr "Lu"
+
+msgid "Mobile"
+msgstr "Mobile"
+
+msgid "Monitoring"
+msgstr "Monitoraggio"
+
+msgid "More"
+msgstr "Più"
+
+msgid "Move this element after the next one"
+msgstr "Sposta elemento dopo il successivo"
+
+msgid "Move this element before the previous one"
+msgstr "Sposta elemento prima del precedente"
+
+msgid "Multi-instanciation activity"
+msgstr "Attività di multi-instanziazione"
+
+msgid "Multi-instanciation activity (launches and controls instances execution)"
+msgstr "Activity di istanze multiple (chiama e controlla le esecuzioni delle istanze)"
+
+msgid "My cases"
+msgstr "I miei casi"
+
+msgid "My tasks"
+msgstr "I miei task"
+
+msgid "N/A"
+msgstr "N/A"
+
+msgid "Name"
+msgstr "Nome"
+
+msgid "Name of the role"
+msgstr "Nome del ruolo"
+
+msgid "Name of the user who executed this task"
+msgstr "Nome dell'utente che ha eseguito per ultimo il task"
+
+msgid "Name of the user who started this case"
+msgstr "Nome dell'utente che ha iniziato questo caso"
+
+msgid "Name of the variable"
+msgstr "Nome della variabile"
+
+msgid "Next"
+msgstr "Successivo"
+
+msgid "No"
+msgstr "No"
+
+msgid "No attachments"
+msgstr "Nessun allegato"
+
+msgid "No data"
+msgstr "Nessun dato"
+
+msgid "No description."
+msgstr "Nessuna descrizione."
+
+msgid "No opened task"
+msgstr "Nessun task aperto"
+
+msgid "No response has been received yet, but the background operation might still be in progress. Wait a few seconds then reload the page."
+msgstr "Nessuna risposta è ancora pervenuta, ma l'operazione potrebbe essere ancora in corso in background. Attendere qualche secondo e poi ricaricare la pagina."
+
+msgid "No task done"
+msgstr "Nessun task eseguito"
+
+msgid "Normal"
+msgstr "Normale"
+
+msgid "Not implemented"
+msgstr "Non implementato"
+
+msgid "Notice"
+msgstr "Avviso"
+
+msgid "November"
+msgstr "Novembre"
+
+msgid "Number of attachments : %nb_attachments%"
+msgstr "Numero di allegati : %nb_attachments%"
+
+msgid "Number of cases: %nb_cases%"
+msgstr "Numero di casi: %nb_cases%"
+
+msgid "Number of open tasks : %nb_openTask%"
+msgstr "Numero di task aperti : %nb_openTask%"
+
+msgid "OK"
+msgstr "Ok"
+
+msgid "October"
+msgstr "Ottobre"
+
+msgid "Ok"
+msgstr "Ok"
+
+msgid "Only the value attribute can be updated"
+msgstr "Solo il valore dell'attributo può essere aggiornato"
+
+msgid "Opens a popup to create a group"
+msgstr "Apre un popup per creare un gruppo"
+
+msgid "Opens a popup to create a role"
+msgstr "Apre un popup per creare un ruolo"
+
+msgid "Opens a popup to create a user"
+msgstr "Apre un popup per creare un utente"
+
+msgid "Opens a popup to install a process"
+msgstr "Apre una popup per installare un processo"
+
+msgid "Organisation file"
+msgstr "File di organizzazione"
+
+msgid "Organization"
+msgstr "Organizzazione"
+
+msgid "Organization successfully imported."
+msgstr "Organizzazione importata correttamente."
+
+msgid "Original name"
+msgstr "Nome originale"
+
+msgid "Other"
+msgstr "Altri"
+
+msgid "Oups... This item is not available anymore.\nYou will be redirected to a safest place."
+msgstr "Oups... Questo elemento non è più disponibile. \nVerrai reindirizzato verso un posto più sicuro."
+
+msgid "Overview"
+msgstr "Recap"
+
+msgid "Parameters must be resolved before enabling the Process."
+msgstr "I parametri devono essere risolti prima di attivare il processo."
+
+msgid "Parent Group"
+msgstr "Gruppo padre"
+
+msgid "Parent group"
+msgstr "Gruppo padre"
+
+msgid "Password"
+msgstr "Password"
+
+msgid "Password must be at least %number% characters long"
+msgstr "La password deve contenere almeno %number% caratteri"
+
+msgid "Password must contain at least %number% digits"
+msgstr "La password deve contenere almeno %number% cifre"
+
+msgid "Password must contain at least %number% lower case characters"
+msgstr "La password deve contenere almeno %number% caratteri in minuscolo"
+
+msgid "Password must contain at least %number% special characters"
+msgstr "La password deve contenere almeno %number% caratteri speciali"
+
+msgid "Password must contain at least %number% upper case characters"
+msgstr "La password deve contenere almeno %number% caratteri in maiuscolo"
+
+msgid "Passwords don't match"
+msgstr "Le password non coincidono"
+
+msgid "Pending"
+msgstr "In attesa"
+
+msgid "Pending tasks"
+msgstr "Task in attesa"
+
+msgid "Perform by"
+msgstr "Eseguito da"
+
+msgid "Performed"
+msgstr "Eseguito"
+
+msgid "Performed by:"
+msgstr "Eseguito da:"
+
+msgid "Performed date"
+msgstr "Data di esecuzione"
+
+msgid "Performed on"
+msgstr "Eseguito il"
+
+msgid "Performed on:"
+msgstr "Eseguito il:"
+
+msgid "Personal information"
+msgstr "Informationi personali"
+
+msgid "Phone"
+msgstr "Telefono"
+
+msgid "Please choose a file to import"
+msgstr "Prego scegliere un file da importare"
+
+msgid "Please contact your administrator."
+msgstr "Contatta il tuo amministratore di sistema."
+
+msgid "Please select a file first"
+msgstr "Prego selezionare un file prima"
+
+msgid "Please wait for your files to be uploaded."
+msgstr "AttendI che i tuoi file siano caricati."
+
+msgid "Please, contact your administrator."
+msgstr "Contatta il tuo amministratore di sistema."
+
+msgid "Post time"
+msgstr "Post time"
+
+msgid "Previous"
+msgstr "Precedente"
+
+msgid "Priority"
+msgstr "Priorità"
+
+msgid "Process"
+msgstr "Processo"
+
+msgid "Process %appName% in version %version% already exists"
+msgstr "Il processo %appName% nella versione %version% è già esistente"
+
+msgid "Process definition not found for id %processId%"
+msgstr "La definizione di processo non è stata trovati per l'id %processId%"
+
+msgid "Process management"
+msgstr "Gestione dei processi"
+
+msgid "Process manager"
+msgstr "Process manager"
+
+msgid "Process name"
+msgstr "Nome del processo"
+
+msgid "Process version"
+msgstr "Versione del processo"
+
+msgid "Processes"
+msgstr "Processi"
+
+msgid "Profile"
+msgstr "Privilegi"
+
+msgid "Profiles"
+msgstr "Privilegi"
+
+msgid "RESOLVED"
+msgstr "RISOLTA"
+
+msgid "Ready since %task_last_update%"
+msgstr "Pronto dal %task_last_update%"
+
+msgid "Refresh this table"
+msgstr "Aggiornare questa tabella"
+
+msgid "Release"
+msgstr "Rilascio"
+
+msgid "Remove"
+msgstr "Cancella "
+
+msgid "Remove this category"
+msgstr "Rimuovi questa categoria"
+
+msgid "Reports"
+msgstr "Rapporti"
+
+msgid "Resolved"
+msgstr "Risolto"
+
+msgid "Resolved processes"
+msgstr "Processi risolti"
+
+msgid "Retrieve"
+msgstr "Recupera"
+
+msgid "Role"
+msgstr "Ruolo"
+
+msgid "Role (%nb_role%)"
+msgstr "Ruolo (%nb_role%)"
+
+msgid "Roles"
+msgstr "Ruoli"
+
+msgid "Roles mapping"
+msgstr "Mappatura ruoli"
+
+msgid "Roles: %nb_roles%"
+msgstr "Ruoli: %nb_roles%"
+
+msgid "Sa"
+msgstr "Sa"
+
+msgid "Save"
+msgstr "Salva"
+
+msgid "Save this element"
+msgstr "Salva questo elemento"
+
+msgid "Save this group changes"
+msgstr "Salvare questi cambiamenti di gruppo"
+
+msgid "Save this user modifications"
+msgstr "Salva le modifiche per l'utente"
+
+msgid "Search"
+msgstr "Ricerca"
+
+msgid "Search terms are not supported by this API"
+msgstr "I termini di ricerca non sono supportati da questa api"
+
+msgid "Search..."
+msgstr "Ricerca..."
+
+msgid "Select a group"
+msgstr "Seleziona un gruppo"
+
+msgid "Select a group by typing a part of its name."
+msgstr "Seleziona un gruppo digitando parte del suo nome."
+
+msgid "Select a group to set to this profile"
+msgstr "Seleziona un gruppo da impostare su questo profilo"
+
+msgid "Select a group to set to this user"
+msgstr "Seleziona un gruppo da impostare per questo utente"
+
+msgid "Select a process in the list below to display the available tasks"
+msgstr "Selezionare un processo nell'elenco qui sotto per visualizzare le attività disponibili"
+
+msgid "Select a role"
+msgstr "Seleziona un ruolo"
+
+msgid "Select a role by typing a part of its name."
+msgstr "Seleziona un ruolo digitando parte del suo nome."
+
+msgid "Select a user"
+msgstr "Seleziona un utente"
+
+msgid "Select a user by typing a part of his name."
+msgstr "Seleziona un utente digitando parte del suo nome."
+
+msgid "Select a user to be added to actor"
+msgstr "Selezionare un utente da aggiungere all'attore"
+
+msgid "Select a user to start process %app_name% %app_version%"
+msgstr "Selezionare un utente per avviare il processo %app_name% %app_version%"
+
+msgid "Select an avatar for this group"
+msgstr "Seleziona un avatar per questo gruppo"
+
+msgid "Select an avatar for this role"
+msgstr "Seleziona un avatar per questo ruolo"
+
+msgid "Select an avatar for this user"
+msgstr "Seleziona un avatar per questo utente"
+
+msgid "Select profile"
+msgstr "Seleziona profilo"
+
+msgid "Select the category which the process will be linked to"
+msgstr "Selezionare la categoria alla quale il processo sarà collegato"
+
+msgid "Select the entities (users, groups, roles, memberships) to map to the actors. These entities will do the human tasks in the process."
+msgstr "Seleziona le entità (utenti, gruppi, ruoli, memberships) da mappare sugli attori. Queste entità effettueranno le attività umane nel processo."
+
+msgid "Select the manager of this user"
+msgstr "Seleziona il manager di questo utente"
+
+msgid "Select the parent group"
+msgstr "Seleziona il gruppo padre"
+
+msgid "Select the role of this profile in the selected group"
+msgstr "Seleziona il ruolo di questo profilo nel gruppo selezionato"
+
+msgid "Select the role of this user in the selected group"
+msgstr "Seleziona un ruolo per questo utente nel gruppo selezionato"
+
+msgid "Select user to assign task"
+msgstr "Selezione l'utente a cui assegnare il task"
+
+msgid "September"
+msgstr "Settembre"
+
+msgid "Service task"
+msgstr "Task di servizio"
+
+msgid "Service task (performed automatically)"
+msgstr "Task di servizio (eseguita automaticamente)"
+
+msgid "Settings"
+msgstr "Configurazioni"
+
+msgid "Show all profiles of portal"
+msgstr "Visualizza tutti i profili del portale"
+
+msgid "Show more details about this process"
+msgstr "Visualizza ulteriori dettagli su questo processo"
+
+msgid "Show more details about this profile"
+msgstr "Mostra maggiori dettagli per questo profilo"
+
+msgid "Show more details about this task"
+msgstr "Visualizza ulteriori dettagli su questo task"
+
+msgid "Show more details about this user"
+msgstr "Mostra più dettagli su questo utente"
+
+msgid "Show the group list"
+msgstr "Mostra la lsita dei gruppi"
+
+msgid "Show the role list"
+msgstr "Mostra la lista dei ruoli"
+
+msgid "Show the user list"
+msgstr "Mostra la lista degli utenti"
+
+msgid "Skip"
+msgstr "Salta"
+
+msgid "Skip this task"
+msgstr "Salta questo task"
+
+msgid "Skipped on %task_last_update% by %executed_by%"
+msgstr "Saltato il  %task_last_update% da %executed_by%"
+
+msgid "Sorry the variable %variableName% has a type which is not editable"
+msgstr "Spiacente, la variabile  %variableName% ha un tipo che non è modificabile"
+
+msgid "Sort by"
+msgstr "Ordina per"
+
+msgid "Sorting is not supported by this API"
+msgstr "L'ordinamento non è supportato da questa API"
+
+msgid "Start"
+msgstr "Inizia"
+
+msgid "Start a process on behalf of another user"
+msgstr "Avviare un processo per conto di un altro utente"
+
+msgid "Start an instance of process %app_name%"
+msgstr "Avviare un'istanza di processo %app_name%"
+
+msgid "Start date"
+msgstr "Iniziato il"
+
+msgid "Start this process"
+msgstr "Avviare questo processo"
+
+msgid "Start this process on behalf of selected user"
+msgstr "Avviare questo processo a conto dell'utente selezionato"
+
+msgid "Started by"
+msgstr "Avviato da"
+
+msgid "Started by:"
+msgstr "Avviato da:"
+
+msgid "Started on"
+msgstr "Iniziato il"
+
+msgid "Started on:"
+msgstr "Iniziato il:"
+
+msgid "State"
+msgstr "Stato"
+
+msgid "State:"
+msgstr "Stato:"
+
+msgid "Statistics"
+msgstr "Statistiche"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Stop ignoring this task so I will see it in available tasks"
+msgstr "Smetti di ignorare questo task così lo vedrò fra le attività disponibili"
+
+msgid "Su"
+msgstr "Do"
+
+msgid "Sub groups"
+msgstr "Sottogruppi"
+
+msgid "Subprocess"
+msgstr "Sottoprocesso"
+
+msgid "Subprocess version"
+msgstr "versione del sub-processo"
+
+msgid "Success"
+msgstr "Successo"
+
+msgid "System"
+msgstr "Sistema"
+
+msgid "Take"
+msgstr "Prendere"
+
+msgid "Task name:"
+msgstr "Nome del task:"
+
+msgid "Tasks"
+msgstr "Task"
+
+msgid "Tasks "
+msgstr "Attività "
+
+msgid "Tasks I can do"
+msgstr "Task che posso eseguire"
+
+msgid "Tasks assigned to me"
+msgstr "Task assegnati a me"
+
+msgid "Tasks in failed status: %nb_tasks%"
+msgstr "Task in stato fallito: %nb_tasks%"
+
+msgid "Tasks to do"
+msgstr "Task da fare"
+
+msgid "Technical details"
+msgstr "Dettagli tecnici"
+
+msgid "Technical user warning"
+msgstr "Avviso utente tecnico"
+
+msgid "Th"
+msgstr "Th"
+
+msgid "The Process cannot be enabled"
+msgstr "Il processo non può essere abilitato"
+
+msgid "The Process manager can supervise designated processes, and manage cases and tasks of those processes."
+msgstr "Il process manager può supervisionare i processi per i quali è supervisore, gestendone i casi e le attività."
+
+msgid "The administrator can install a process, manage the organization, and handle some errors (for example, by replaying a task)."
+msgstr "L'amministratore può installare un processo, gestire l'organizzazione e trattare alcuni errori ( ad esempio, rieseguendo un task )."
+
+msgid "The application encountered an error."
+msgstr "L'applicazione ha rilevato un errore."
+
+msgid "The application encountered an unexpected error. Please try again.\nIf the error persists, please contact Bonitasoft support"
+msgstr "L'applicazione ha rilevato un errore imprevisto. Si prega di riprovare. \n se l'errore persiste, contattare il supporto di Bonitasoft"
+
+msgid "The configuration state of the process"
+msgstr "Lo stato di configurazione del processo"
+
+msgid "The current state of the case"
+msgstr "Stato corrente del caso"
+
+msgid "The date of the creation of the group"
+msgstr "Data di creazione del gruppo"
+
+msgid "The date of the creation of the user"
+msgstr "Data di creazione dell'utente"
+
+msgid "The date of the group creation"
+msgstr "Creato il"
+
+msgid "The date of the last connection of the user"
+msgstr "Data di ultima connessione dell'utente"
+
+msgid "The date of the last modification"
+msgstr "Data di ultima modifica"
+
+msgid "The date of the last update of the group"
+msgstr "Data di ultimo aggiornamento del gruppo"
+
+msgid "The date of the last update of the user"
+msgstr "Data di ultimo aggiornamento dell'utente"
+
+msgid "The date when the case was updated"
+msgstr "Dat durante la quale il caso è stato aggiornato"
+
+msgid "The date when the process was updated"
+msgstr "La data in cui il processo è stato aggiornato"
+
+msgid "The date when the task must be finished"
+msgstr "La data durante la quale il task deve terminare"
+
+msgid "The date when the task was assigned"
+msgstr "La data durante la quale il task è stato assegnato"
+
+msgid "The date when this process has been installed"
+msgstr "La data di quando è stato installato questo processo"
+
+msgid "The date while the case has been started"
+msgstr "Data durante la quale il caso è stato avviato"
+
+msgid "The element you try to edit can't be retrieved due to a connection problem."
+msgstr "L'elemento che tenti di modificare non può essere recuperato a causa di un problema di connessione."
+
+msgid "The element you try to edit can't be retrieved due to a server problem."
+msgstr "L'elemento che tenti di modificare non può essere recuperato a causa di un problema del server."
+
+msgid "The element you try to edit doesn't exists."
+msgstr "L'elemento che cerchi di modificare non esiste."
+
+msgid "The elements you try to display can't be retrieved due to a connection problem."
+msgstr "Gli elementi che tenti di modificare non possono essere recuperati a causa di un problema di connessione."
+
+msgid "The elements you try to display can't be retrieved due to a server problem."
+msgstr "Gli elementi che tenti di visualizzare non possono essere recuperati a causa di un problema del server."
+
+msgid "The group parent path"
+msgstr "Il percorso del gruppo padre"
+
+msgid "The id of the related case"
+msgstr "L'id del caso collegato"
+
+msgid "The item you try to edit can't be retrieved due to a connection problem. Please contact your administrator."
+msgstr "L'elemento che tenti di modificare non può essere recuperato a causa di un problema di connessione. Si prega di contattare l'amministratore."
+
+msgid "The number of archived cases."
+msgstr "Numero dei casi archiviati."
+
+msgid "The number of failed tasks."
+msgstr "Numero dei task falliti."
+
+msgid "The number of on going cases."
+msgstr "Numero di casi in progresso."
+
+msgid "The only mandatory filter is %name%"
+msgstr "Il solo filtro  obbligatorio è %name%"
+
+msgid "The openned case will be marked as started by him."
+msgstr "Il caso aperto sarà contrassegnato come avviato da lui."
+
+msgid "The page you try to display is out of range."
+msgstr "La pagina che cerchi di visualizzare è fuori portata."
+
+msgid "The platform already exist !"
+msgstr "Piattaforma già esistente !"
+
+msgid "The priority of the task"
+msgstr "La priorità del task"
+
+msgid "The process responsible for the creation of this task"
+msgstr "Il sotto processo responsabile della creazione di questa attività"
+
+msgid "The server is not available"
+msgstr "Il server non è disponibile"
+
+msgid "The state of the case"
+msgstr "Lo stato del caso"
+
+msgid "The state of the process"
+msgstr "Lo stato del processo di"
+
+msgid "The state of the task"
+msgstr "Lo stato del task"
+
+msgid "The sub process responsible for the creation of this task"
+msgstr "Il sotto processo responsabile della creazione di questa attività"
+
+msgid "The type of the task"
+msgstr "Il tipo di task"
+
+msgid "The user can view and perform tasks and can start a new case of a process."
+msgstr "L'utente può visualizzare ed eseguire dei task e può iniziare un nuovo caso di un processo."
+
+msgid "The user that has started this case"
+msgstr "L'utente che ha avviato questo caso"
+
+msgid "The user that has uploaded this process"
+msgstr "L'utente che ha caricato questo processo"
+
+msgid "The user who did the task."
+msgstr "L'utente che ha eseguito l'attività."
+
+msgid "The username to which the task is assigned."
+msgstr "La user name dell'utente a cui è assegnato il task"
+
+msgid "The version of the process"
+msgstr "La versione del processo"
+
+msgid "The version of the process that created this case"
+msgstr "La versione del processo che ha creato questo caso"
+
+msgid "These %item_name_plural% will be definitively deleted."
+msgstr "Questi %item_name_plural% verranno eliminati definitivamente."
+
+msgid "This %item_name% will be definitively deleted."
+msgstr "Questo %item_name% verrà eliminato definitivamente."
+
+msgid "This category has already been added to this process"
+msgstr "Questa categoria è già stata aggiunta a questo processo"
+
+msgid "This category was not found or this field is mandatory"
+msgstr "Questa categoria non è stata trovata o questo campo è obbligatorio"
+
+msgid "This group has already been mapped to actor"
+msgstr "Questo gruppo è stato già mappato sull'attore"
+
+msgid "This membership has already been mapped to actor"
+msgstr "Questa adesione è stata già mappata sull'attore"
+
+msgid "This membership is already added to user"
+msgstr "Questa adesione è stata già aggiunta all'utente"
+
+msgid "This profile will be available on next login to the users who are mapped. If you mapped the profile to yourself, it will be available after you refresh the page in your browser."
+msgstr "Questo profilo sarà disponibile al prossimo login per gli utenti che vi verranno mappati. Nel caso in cui vi siete mappati voi stessi, il nuovo profilo sarà disponibile non appena la pagina verrà aggiornata."
+
+msgid "This role has already been mapped to actor"
+msgstr "Questo ruolo è stato già mappato sull'attore"
+
+msgid "This service is offline for maintenance. Please try later."
+msgstr "Questo servizio è attualmente offline per manutenzione. Si prega di riprovare più tardi."
+
+msgid "This user has already been mapped to actor"
+msgstr "Questo utente è stato già mappato sull'attore"
+
+msgid "This will export a file containing your whole organization data. "
+msgstr "Questo importerà un file contenente i dati di tutta l'organizzazione. "
+
+msgid "This will import a file containing your whole organization data."
+msgstr "Questo importerà un file contenente i dati di tutta l'organizzazione."
+
+msgid "Title"
+msgstr "Titolo"
+
+msgid "To do"
+msgstr "Da fare"
+
+msgid "To do so, contact your administrator"
+msgstr "A tale scopo, contattare l'amministratore"
+
+msgid "Tu"
+msgstr "Ma"
+
+msgid "Type"
+msgstr "Tipo"
+
+msgid "Type new comment"
+msgstr "Inserisci nuovo commento"
+
+msgid "Type of the variable"
+msgstr "Tipo della variabile"
+
+msgid "Type the new value for %variableName%"
+msgstr "Inserisci il nuovo valore per %variableName%"
+
+msgid "Type to search"
+msgstr "Tipo da ricercare"
+
+msgid "UNRESOLVED"
+msgstr "IRRISOLTA"
+
+msgid "Unable to deploy business archive"
+msgstr "Impossibile fare il deployment dell'archivio aziendale"
+
+msgid "Unable to disable process"
+msgstr "Impossibilità di disattivare il processo"
+
+msgid "Unable to enable process"
+msgstr "Impossibilità di attivare il processo"
+
+msgid "Unable to find data instance %dataName% for activity %activityId%"
+msgstr "IMpossibile trovare l'istanza di dati  %dataName% per l'attività %activityId%"
+
+msgid "Unable to find group %groupId%"
+msgstr "Impossibile trovare il gruppo %groupId%"
+
+msgid "Unable to get group path, group not found"
+msgstr "Impossibile ottenere il percorso del gruppo, gruppo non trovato"
+
+msgid "Unable to get process data definitions, process %processId% not found"
+msgstr "Impossibile ottenere la definizione dei dati di processo, processo %processId% non trovato"
+
+msgid "Unable to log in. Please check your username and password."
+msgstr "Impossibile effettuare il login. Si prega di controllare il nome utente e la password."
+
+msgid "Unassign"
+msgstr "Non assegnato"
+
+msgid "Unassign this task. Other allowed users will see it"
+msgstr "Cancella assegnazione del task. Altri utenti abilitati potranno vederlo"
+
+msgid "Unassigned"
+msgstr "Non assegnato"
+
+msgid "Unassigned tasks I can do"
+msgstr "Task non assegnati che posso eseguire"
+
+msgid "Unresolved"
+msgstr "Non risolto"
+
+msgid "Unresolved processes"
+msgstr "Processi non risolti"
+
+msgid "Unsupported file."
+msgstr "File non supportato."
+
+msgid "Update a group"
+msgstr "Aggiorna un gruppo"
+
+msgid "Update a role"
+msgstr "Aggiornare un ruolo"
+
+msgid "Update date"
+msgstr "Data di aggiornamento"
+
+msgid "Update the user"
+msgstr "Aggiorna l'utente"
+
+msgid "Update this page using the defined search query"
+msgstr "Aggiorna questa pagina utilizzando la query di ricerca definita"
+
+msgid "Update this role"
+msgstr "Aggiornare questo ruolo"
+
+msgid "User"
+msgstr "Utente"
+
+msgid "User (%nb_user%)"
+msgstr "Utente (%nb_user%)"
+
+msgid "User name"
+msgstr "Nome utente"
+
+msgid "User not found"
+msgstr "Utente non trovato"
+
+msgid "Username"
+msgstr "Username"
+
+msgid "Username of the user"
+msgstr "Username dell'utente"
+
+msgid "Users"
+msgstr "Utenti"
+
+msgid "Users mapping"
+msgstr "Mappatura utenti"
+
+msgid "Users: %nb_users%"
+msgstr "Utenti: %nb_users%"
+
+msgid "Value"
+msgstr "Valore"
+
+msgid "Version"
+msgstr "Versione"
+
+msgid "Version of the process"
+msgstr "Versione del processo"
+
+msgid "Warning"
+msgstr "Avviso"
+
+msgid "Warning:"
+msgstr "Attenzione:"
+
+msgid "Warning: you are logged as technical user. This user has limited rights, its purpose is to initialize the organisation."
+msgstr "Attenzione: sei connesso come utente tecnico. Questo utente ha diritti limitati, il suo scopo è quello di inizializzare l'organizzazione."
+
+msgid "We"
+msgstr "Me"
+
+msgid "Welcome to"
+msgstr "Benvenuti su"
+
+msgid "Welcome: "
+msgstr "Benvenuto:"
+
+msgid "Worked on"
+msgstr "Lavorato il"
+
+msgid "Yes"
+msgstr "Sì"
+
+msgid "You risk interrupting one or more processes.\n\nDeactivating the only user able to perform a task(s), will cause the interruption of a Process.\n\nBefore proceeding, you may want to go to the 'More' page of the process and check the actor mapping.\n\nAre you sure you want to deactivate this user now ?"
+msgstr "Si rischia di interrompere una o più applicazioni. \n\n\nDisattivando l'unico utente in grado di eseguire i task, si causerà l'interruzione di un processo.\n\n\nPrima di procedere, si consiglia di andare alla pagina \"More\" e controllare la mappatura degli attori.\n\n\nSicuro di volere disattivare l'utente ora ?"
+
+msgid "You will be rediected"
+msgstr "Sarai reindirizzato"
+
+msgid "Your session has expired. Please log in again and retry."
+msgstr "La tua sessione è scaduta. Si prega di accedere di nuovo e riprovare."
+
+msgid "Zip code"
+msgstr "CAP"
+
+msgid "add"
+msgstr "aggiungi"
+
+msgid "ascending"
+msgstr "ascendente"
+
+msgid "by"
+msgstr "da"
+
+msgid "create"
+msgstr "crea"
+
+msgid "day"
+msgstr "giorno"
+
+msgid "descending"
+msgstr "decrescente"
+
+msgid "false"
+msgstr "falso"
+
+msgid "group"
+msgstr "gruppo"
+
+msgid "groups"
+msgstr "gruppi"
+
+msgid "hr"
+msgstr "hr"
+
+msgid "human task"
+msgstr "human task"
+
+msgid "import/export organization"
+msgstr "Importa/Esporta l'organizzazione"
+
+msgid "in %time%"
+msgstr "in %time%"
+
+msgid "manage cases"
+msgstr "Gestire i casi"
+
+msgid "manage groups"
+msgstr "Gestire i gruppi"
+
+msgid "manage processes"
+msgstr "gestire i processi"
+
+msgid "manage roles"
+msgstr "Gestire i ruoli"
+
+msgid "manage tasks"
+msgstr "Gestire i task"
+
+msgid "manage users"
+msgstr "Gestire gli utenti"
+
+msgid "message"
+msgstr "messaggio"
+
+msgid "min"
+msgstr "min"
+
+msgid "mm/dd/yy"
+msgstr "dd/mm/yy"
+
+msgid "mm/dd/yyyy"
+msgstr "dd/mm/yyyy"
+
+msgid "mo"
+msgstr "mo"
+
+msgid "or"
+msgstr "o"
+
+msgid "process"
+msgstr "processo"
+
+msgid "processes"
+msgstr "Processi"
+
+msgid "remove"
+msgstr "rimuovi"
+
+msgid "sec"
+msgstr "sec"
+
+msgid "system"
+msgstr "sistema"
+
+msgid "the address of the user"
+msgstr "Indirizzo dell'utente"
+
+msgid "the city"
+msgstr "la città"
+
+msgid "the company address of the user"
+msgstr "indirizzo della società dell'utente"
+
+msgid "the country of the user"
+msgstr "Nazione dell'utente"
+
+msgid "the country of the user company"
+msgstr "nazione della società dell'utente"
+
+msgid "the personnal email the user"
+msgstr "Email personale dell'utente"
+
+msgid "the personnal mobile phone number of the user"
+msgstr "Numero di telefono mobile personale dell'utente"
+
+msgid "the personnal phone number of the user"
+msgstr "Numero di telefono personale dell'utente"
+
+msgid "the professional email the user"
+msgstr "Email professionale dell'utente"
+
+msgid "the professional mobile phone number of the user"
+msgstr "Numero di telefono mobile professionale dell'utente"
+
+msgid "the professional phone number of the user"
+msgstr "Numero di telefono professionale dell'utente"
+
+msgid "the state of the user"
+msgstr "Provincia dell'utente"
+
+msgid "the state of the user company"
+msgstr "Stato dell'azienda dell'utente"
+
+msgid "the zip code of the user"
+msgstr "Codice postale dell'utente"
+
+msgid "the zip code of the user company"
+msgstr "il codice postale dell'azienda utente"
+
+msgid "this field"
+msgstr "questo campo"
+
+msgid "true"
+msgstr "vero"
+
+msgid "user privilege settings"
+msgstr "Configurazione dei provilegi utente"
+
+msgid "visualize & do tasks"
+msgstr "Visualizzare ed eseguire i task"
+
+msgid "visualize & start processes"
+msgstr "visualizzare e avviare i processi"
+
+msgid "visualize cases"
+msgstr "Visualizzare i casi"
+
+msgid "yr"
+msgstr "yr"
+
+msgid "zip file"
+msgstr "file zip"
+

@@ -2,10 +2,11 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>bonita-migration-distrib</artifactId>
 
+
     <parent>
         <groupId>org.bonitasoft.migration</groupId>
         <artifactId>bonita-migration</artifactId>
-	<version>1.18.0-SNAPSHOT</version>
+        <version>1.19.0-SNAPSHOT</version>
     </parent>
 
     <properties>
@@ -96,7 +97,14 @@
     <build>
         <!-- Limitation of SonarQube. It does not call the gmaven plugin -->
         <sourceDirectory>src/main/groovy</sourceDirectory>
-
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <excludes>
+                    <exclude>**/*</exclude>
+                </excludes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>

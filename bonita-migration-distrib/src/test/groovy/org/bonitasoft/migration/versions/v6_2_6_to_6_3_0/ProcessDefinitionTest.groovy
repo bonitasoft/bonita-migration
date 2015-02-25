@@ -147,4 +147,26 @@ class ProcessDefinitionTest {
         assertThat(content.trim()).isEqualTo(after)
     }
 
+    @Test
+    public void should_migrate_client_work() {
+        def before = ProcessDefinitionTest.class.getResourceAsStream("client_before.xml").text
+        def after = ProcessDefinitionTest.class.getResourceAsStream("client_after.xml").text
+
+        def processDef = new ProcessDefinition(before, false)
+
+        def transientData = processDef.getTransientData()
+
+        processDef.updateOperatorAndLeftOperandType(transientData)
+
+        assertThat(processDef.id).isEqualTo("")
+
+
+        def content = processDef.getContent()
+        XMLUnit.setIgnoreWhitespace(true)
+        def xmlDiff = new Diff(after, content)
+        assert xmlDiff.identical()
+        //check formatting did not change also
+        assertThat(content.trim()).isEqualTo(after)
+    }
+
 }

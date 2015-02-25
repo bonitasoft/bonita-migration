@@ -34,6 +34,9 @@ import org.bonitasoft.engine.bdm.model.Query;
 import org.bonitasoft.engine.bdm.model.field.FieldType;
 import org.bonitasoft.engine.bdm.model.field.RelationField;
 import org.bonitasoft.engine.bdm.model.field.SimpleField;
+import org.bonitasoft.engine.api.ProcessAPI;
+import org.bonitasoft.engine.bpm.flownode.FlowNodeInstance;
+import org.bonitasoft.engine.bpm.flownode.FlowNodeInstanceSearchDescriptor;
 import org.bonitasoft.engine.bpm.flownode.HumanTaskInstance;
 import org.bonitasoft.engine.bpm.process.ProcessDefinition;
 import org.bonitasoft.engine.bpm.process.ProcessInstance;
@@ -47,6 +50,8 @@ import org.bonitasoft.engine.identity.UserNotFoundException;
 import org.bonitasoft.engine.io.IOUtil;
 import org.bonitasoft.engine.operation.OperationBuilder;
 import org.bonitasoft.engine.test.APITestUtil;
+import org.bonitasoft.engine.search.SearchOptionsBuilder;
+import org.bonitasoft.engine.search.SearchResult;
 import org.bonitasoft.engine.test.BuildTestUtil;
 import org.dom4j.Document;
 import org.dom4j.io.SAXReader;
@@ -95,6 +100,15 @@ public class DatabaseChecker6_5_0 extends SimpleDatabaseChecker6_5_0 {
         assertThat(userWithLoginDate.getLastConnection()).isBefore(new Date());
         assertThat(userWithoutLoginDate.getLastConnection()).isNull();
 
+    }
+
+    @Test
+    public void should_deleted_exists_anymore() throws Exception {
+        final ProcessAPI processAPI = getApiTestUtil().getProcessAPI();
+        final long processId = processAPI.getProcessDefinitionId("SimpleProcessWithDeleted", "1.0");
+        final SearchResult<FlowNodeInstance> flowNodeInstanceSearchResult = processAPI.searchFlowNodeInstances(new SearchOptionsBuilder(0, 10).filter(FlowNodeInstanceSearchDescriptor.PROCESS_DEFINITION_ID, processId).done());
+        assertThat(flowNodeInstanceSearchResult.getCount()).isEqualTo(1);
+        assertThat(flowNodeInstanceSearchResult.getResult().get(0).getName()).isEqualTo("human");
     }
 
     /*
