@@ -284,7 +284,8 @@ version = '1.19.0-SNAPSHOT'
                               "db.server.name":project.serverName,
                               "db.server.port":project.portNumber,
                               "db.database.name":project.databaseName,
-                              "bonita.home":bonitahome])
+                              "bonita.home":bonitahome,
+                              "sysprop.bonita.businessdata.hibernate.dialect": getDbVendorDialect(dbvendor)])
             /*jvmArgs([
                 "-Xdebug",
                 "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000"
