@@ -13,6 +13,15 @@
  **/
 package org.bonitasoft.migration;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.io.File;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.io.FileUtils;
 import org.bonitasoft.engine.api.TenantAPIAccessor;
 import org.bonitasoft.engine.api.TenantAdministrationAPI;
@@ -36,33 +45,18 @@ import org.bonitasoft.engine.operation.OperationBuilder;
 import org.bonitasoft.engine.test.APITestUtil;
 import org.dom4j.Document;
 import org.dom4j.io.SAXReader;
-import org.junit.Test;
 import org.junit.runner.JUnitCore;
 
-import org.bonitasoft.migration.DatabaseChecker6_4_0;
-
-import java.io.File;
-import java.io.Serializable;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-
 public class DatabaseChecker7_0_0 extends SimpleDatabaseChecker7_0_0 {
-    
+
     public static void main(final String[] args) throws Exception {
         JUnitCore.main(DatabaseChecker7_0_0.class.getName());
     }
-    
+
     @Override
     protected Document getProfilesXML(final SAXReader reader) throws Exception {
         return reader.read(DatabaseChecker7_0_0.class.getResource("profiles.xml"));
     }
-
-
 
     private static final String BDM_PACKAGE_PREFIX = "com.company.model";
 
@@ -98,7 +92,7 @@ public class DatabaseChecker7_0_0 extends SimpleDatabaseChecker7_0_0 {
 
     private TenantAdministrationAPI tenantAdministrationAPI;
 
-    @Test
+//    @Test
     public void should_deploy_a_business_data_model() throws Exception {
         // before
         setUp_BDM();
@@ -112,7 +106,7 @@ public class DatabaseChecker7_0_0 extends SimpleDatabaseChecker7_0_0 {
 
     public void deployABDRAndCreateADefaultBusinessDataAndReuseReference() throws Exception {
         final Expression employeeExpression = new ExpressionBuilder().createGroovyScriptExpression("createNewEmployee", new StringBuilder().append("import ")
-                        .append(EMPLOYEE_QUALIFIED_NAME).append("; Employee e = new Employee(); e.firstName = 'Jane'; e.lastName = 'Doe'; return e;").toString(),
+                .append(EMPLOYEE_QUALIFIED_NAME).append("; Employee e = new Employee(); e.firstName = 'Jane'; e.lastName = 'Doe'; return e;").toString(),
                 EMPLOYEE_QUALIFIED_NAME);
 
         final ProcessDefinitionBuilder processDefinitionBuilder = new ProcessDefinitionBuilder().createNewInstance("test", "1.2-alpha");
@@ -147,7 +141,7 @@ public class DatabaseChecker7_0_0 extends SimpleDatabaseChecker7_0_0 {
         final String expressionEmployee = "retrieve_Employee";
         expressions.put(
                 new ExpressionBuilder().createGroovyScriptExpression(expressionEmployee, "\"Employee [firstName=\" + " + businessDataName
-                                + ".firstName + \", lastName=\" + " + businessDataName + ".lastName + \"]\";", String.class.getName(),
+                        + ".firstName + \", lastName=\" + " + businessDataName + ".lastName + \"]\";", String.class.getName(),
                         new ExpressionBuilder().createBusinessDataExpression(businessDataName, EMPLOYEE_QUALIFIED_NAME)), null);
         try {
             final Map<String, Serializable> evaluatedExpressions = getProcessAPI().evaluateExpressionsOnProcessInstance(processInstanceId, expressions);
@@ -329,7 +323,5 @@ public class DatabaseChecker7_0_0 extends SimpleDatabaseChecker7_0_0 {
         model.addBusinessObject(catalogBO);
         return model;
     }
-
-
 
 }
