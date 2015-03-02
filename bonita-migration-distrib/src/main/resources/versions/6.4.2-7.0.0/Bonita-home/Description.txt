@@ -1,0 +1,1 @@
+Replace 6.5.0 configuration files with the 7.0.0 files.

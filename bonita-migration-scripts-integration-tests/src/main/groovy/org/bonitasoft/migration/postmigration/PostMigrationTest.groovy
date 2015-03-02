@@ -49,8 +49,7 @@ class PostMigrationTest extends TestSuite {
     }
 
     protected static List<Class> getTestsList() {
-        // no tests for now in BOS. Only SP.
-        return [];
+        return [BDMPostMigrationTest.class];
     }
 
     public static String getCurrentBonitaVersion() {
