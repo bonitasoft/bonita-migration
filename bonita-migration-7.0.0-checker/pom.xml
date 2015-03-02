@@ -6,7 +6,7 @@
     <groupId>org.bonitasoft.migration</groupId>
     <version>1.19.0-SNAPSHOT</version>
   </parent>
-	<artifactId>bonita-migration-db-filler-7.0.0</artifactId>
+	<artifactId>bonita-migration-7.0.0-checker</artifactId>
 
 	<properties>
 		<bonita.version>7.0.0-SNAPSHOT</bonita.version>

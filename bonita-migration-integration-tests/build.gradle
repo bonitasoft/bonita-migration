@@ -85,10 +85,18 @@ version = '1.19.0-SNAPSHOT'
     }
 
     dependencies {
-        sourcefiller "${group}:bonita-migration-db-filler-${sourceversion}:${version}"
+        if(targetversion.startsWith("7")){
+            sourcefiller "${group}:bonita-migration-${targetversion}-filler:${version}"
+        }else{
+            sourcefiller "${group}:bonita-migration-db-filler-${sourceversion}:${version}"
+        }
         scriptsintegration "${group}:bonita-migration-scripts-integration-tests:${version}"
         homezip  group: 'org.bonitasoft.engine', name: 'bonita-home', version: sourceversion, ext: 'zip'
-        testCompile "${group}:bonita-migration-db-filler-${targetversion}:${version}"
+        if(targetversion.startsWith("7")){
+            testCompile "${group}:bonita-migration-${targetversion}-checker:${version}"
+        }else{
+            testCompile "${group}:bonita-migration-db-filler-${targetversion}:${version}"
+        }
         testCompile group: 'ch.qos.logback', name:'logback-classic', version: '1.0.11'
         migrationdist group: group, name: "bonita-migration-distrib", version: "${version}", ext: 'zip'
         drivers group: 'mysql', name: 'mysql-connector-java', version: '5.1.26'
@@ -290,7 +298,12 @@ version = '1.19.0-SNAPSHOT'
                 "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000"
                 ])*/
             println systemProperties
-            main = "org.bonitasoft.migration.DatabaseFiller${sourceversion.replace('.','_')}"
+
+            if(targetversion.startsWith("7")){
+                main = "org.bonitasoft.migration.DatabaseFillerFor${targetversion.replace('.','_')}"
+            }else{
+                main = "org.bonitasoft.migration.DatabaseFiller${sourceversion.replace('.','_')}"
+            }
         }
         classpath configurations.sourcefiller
 
