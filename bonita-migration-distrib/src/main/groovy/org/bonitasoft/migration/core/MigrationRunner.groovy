@@ -216,7 +216,13 @@ public class MigrationRunner {
 
     public static List<String> getValidReleasedVersions(List<File> migrationFolders) {
         return migrationFolders.findAll {
-            it.exists() && new File(new File(it, "Bonita-home"), "bonita").exists()
+            def bonitaHome = new File(it, "Bonita-home")
+            def f1 = new File(bonitaHome, "bonita")
+            def f2 = new File(bonitaHome, "bonita-efficiency")
+            def f3 = new File(bonitaHome, "bonita-performance")
+            def f4 = new File(bonitaHome, "bonita-performance-cluster")
+            def f5 = new File(bonitaHome, "bonita-teamwork")
+            return f1.exists() || f2.exists() || f3.exists() || f4.exists() || f5.exists()
         }.collect { it.getName() }
     }
 
