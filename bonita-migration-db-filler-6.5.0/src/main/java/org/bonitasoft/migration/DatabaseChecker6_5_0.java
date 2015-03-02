@@ -15,18 +15,15 @@ package org.bonitasoft.migration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
 import java.util.Date;
 
-import org.assertj.core.api.Assertions;
 import org.bonitasoft.engine.api.IdentityAPI;
 import org.bonitasoft.engine.api.ProcessAPI;
 import org.bonitasoft.engine.bpm.flownode.FlowNodeInstance;
 import org.bonitasoft.engine.bpm.flownode.FlowNodeInstanceSearchDescriptor;
 import org.bonitasoft.engine.bpm.flownode.HumanTaskInstance;
 import org.bonitasoft.engine.bpm.process.ProcessDefinition;
-import org.bonitasoft.engine.bpm.process.ProcessInstance;
 import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder;
 import org.bonitasoft.engine.expression.ExpressionBuilder;
 import org.bonitasoft.engine.identity.User;
@@ -51,7 +48,7 @@ public class DatabaseChecker6_5_0 extends SimpleDatabaseChecker6_5_0 {
     }
 
     @Test
-    public void can_creatte_FlowNodeInstance_with_several_non_ascii_characters() throws Exception {
+    public void can_create_FlowNodeInstance_with_several_non_ascii_characters() throws Exception {
         final User user = getApiTestUtil().createUser("tom", "bpm");
 
         final String taskDisplayName = "Žingsnis, kuriame paraiškos teikėjas gali laisvai užpildyti duomenis, ąčęė";
@@ -75,9 +72,9 @@ public class DatabaseChecker6_5_0 extends SimpleDatabaseChecker6_5_0 {
 
     @Test
     public void user_should_keep_there_last_connection_date() throws UserNotFoundException {
-        IdentityAPI identityAPI = getApiTestUtil().getIdentityAPI();
-        User userWithLoginDate = identityAPI.getUserByUserName("userWithLoginDate");
-        User userWithoutLoginDate = identityAPI.getUserByUserName("userWithoutLoginDate");
+        final IdentityAPI identityAPI = getApiTestUtil().getIdentityAPI();
+        final User userWithLoginDate = identityAPI.getUserByUserName("userWithLoginDate");
+        final User userWithoutLoginDate = identityAPI.getUserByUserName("userWithoutLoginDate");
         assertThat(userWithLoginDate.getLastConnection()).isBefore(new Date());
         assertThat(userWithoutLoginDate.getLastConnection()).isNull();
 
@@ -87,7 +84,8 @@ public class DatabaseChecker6_5_0 extends SimpleDatabaseChecker6_5_0 {
     public void should_deleted_exists_anymore() throws Exception {
         final ProcessAPI processAPI = getApiTestUtil().getProcessAPI();
         final long processId = processAPI.getProcessDefinitionId("SimpleProcessWithDeleted", "1.0");
-        final SearchResult<FlowNodeInstance> flowNodeInstanceSearchResult = processAPI.searchFlowNodeInstances(new SearchOptionsBuilder(0, 10).filter(FlowNodeInstanceSearchDescriptor.PROCESS_DEFINITION_ID, processId).done());
+        final SearchResult<FlowNodeInstance> flowNodeInstanceSearchResult = processAPI.searchFlowNodeInstances(new SearchOptionsBuilder(0, 10).filter(
+                FlowNodeInstanceSearchDescriptor.PROCESS_DEFINITION_ID, processId).done());
         assertThat(flowNodeInstanceSearchResult.getCount()).isEqualTo(1);
         assertThat(flowNodeInstanceSearchResult.getResult().get(0).getName()).isEqualTo("human");
     }
