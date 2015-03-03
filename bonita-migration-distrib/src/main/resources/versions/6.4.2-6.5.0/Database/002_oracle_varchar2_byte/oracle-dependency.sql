@@ -2,7 +2,7 @@
 -- pdependency
 -- 
 
-ALTER TABLE pdependency MODIFY name VARCHAR2(50 CHAR) UNIQUE @@
+ALTER TABLE pdependency MODIFY name VARCHAR2(50 CHAR) @@
 ALTER TABLE pdependency MODIFY description VARCHAR2(1024 CHAR) @@
 ALTER TABLE pdependency MODIFY filename VARCHAR2(255 CHAR) @@
 
