@@ -92,7 +92,13 @@ public class DatabaseChecker7_0_0 extends SimpleDatabaseChecker7_0_0 {
 
     private TenantAdministrationAPI tenantAdministrationAPI;
 
-//    @Test
+    @Override
+    // This method is because there is no need to check profile migration anymore, as they are updated at Engine restart.
+    public void check_profiles() throws Exception {
+        System.out.println("Profiles do not need to be migrated anymore (from 7.0.0 on). Nothing to check here.");
+    }
+
+    //    @Test
     public void should_deploy_a_business_data_model() throws Exception {
         // before
         setUp_BDM();

@@ -18,7 +18,6 @@ import org.bonitasoft.engine.api.IdentityAPI;
 import org.bonitasoft.engine.api.PlatformAPI;
 import org.bonitasoft.engine.api.PlatformAPIAccessor;
 import org.bonitasoft.engine.api.ProcessAPI;
-import org.bonitasoft.engine.api.ProfileAPI;
 import org.bonitasoft.engine.api.TenantAPIAccessor;
 import org.bonitasoft.engine.exception.BonitaException;
 import org.bonitasoft.engine.session.APISession;
@@ -36,8 +35,6 @@ import org.junit.BeforeClass;
 public class SimpleDatabaseChecker7_0_0 extends SimpleDatabaseChecker6_4_0 {
 
     private ProcessAPI processAPI;
-
-    private ProfileAPI profileAPI;
 
     private IdentityAPI identityApi;
 
@@ -80,18 +77,12 @@ public class SimpleDatabaseChecker7_0_0 extends SimpleDatabaseChecker6_4_0 {
         session = apiTestUtil.getSession();
         processAPI = TenantAPIAccessor.getProcessAPI(session);
         identityApi = TenantAPIAccessor.getIdentityAPI(session);
-        profileAPI = TenantAPIAccessor.getProfileAPI(session);
         commandApi = TenantAPIAccessor.getCommandAPI(session);
     }
 
     @Override
     public ProcessAPI getProcessAPI() {
         return processAPI;
-    }
-
-    @Override
-    public ProfileAPI getProfileAPI() {
-        return profileAPI;
     }
 
     @Override
