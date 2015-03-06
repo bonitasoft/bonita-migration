@@ -4,10 +4,13 @@ Increase some text columns to a length of 255 on various tables:
 - FIELDS name, displayName on TABLE role
 - FIELDS city, state, country, website on TABLE user_contactinfo
 - FIELDS name, displayName on TABLE flownode_instance
+- FIELD content (512) on TABLE process_comment
 - FIELDS name, displayName on TABLE arch_flownode_instance
+- FIELD content (512) on TABLE arch_process_comment
 
 DROP some fields:
 - FIELD delegeeUserName on TABLE user_
+- FIELD name on TABLE arch_transition_instance
 
 =====================================================================================================================
                                                  /!\ WARNING /!\ 

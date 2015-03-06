@@ -25,4 +25,3 @@ MigrationUtil.executeSqlFile(feature, dbVendor, "report", null, sql, false);
 MigrationUtil.executeSqlFile(feature, dbVendor, "scheduler", null, sql, false);
 MigrationUtil.executeSqlFile(feature, dbVendor, "theme", null, sql, false);
 MigrationUtil.executeSqlFile(feature, dbVendor, "waiting_event", null, sql, false);
-MigrationUtil.executeSqlFile(feature, dbVendor, "recreate_indexes", null, sql, false);

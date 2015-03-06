@@ -27,3 +27,7 @@ ALTER TABLE flownode_instance MODIFY name VARCHAR2(255 CHAR) @@
 ALTER TABLE flownode_instance MODIFY displayName VARCHAR2(255 CHAR) @@
 ALTER TABLE arch_flownode_instance MODIFY name VARCHAR2(255 CHAR) @@
 ALTER TABLE arch_flownode_instance MODIFY displayName VARCHAR2(255 CHAR) @@
+ALTER TABLE arch_transition_instance DROP COLUMN name @@
+
+ALTER TABLE process_comment MODIFY content VARCHAR2(512 CHAR) @@
+ALTER TABLE arch_process_comment MODIFY content VARCHAR2(512 CHAR) @@
