@@ -28,3 +28,6 @@ ALTER TABLE flownode_instance MODIFY COLUMN displayName VARCHAR(255);
 ALTER TABLE arch_flownode_instance MODIFY COLUMN name VARCHAR(255);
 ALTER TABLE arch_flownode_instance MODIFY COLUMN displayName VARCHAR(255);
 ALTER TABLE arch_transition_instance DROP COLUMN name;
+
+ALTER TABLE process_comment MODIFY COLUMN content VARCHAR(512);
+ALTER TABLE arch_process_comment MODIFY COLUMN content VARCHAR(512);
