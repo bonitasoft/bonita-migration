@@ -1,0 +1,2 @@
+Insert new system commands (canStartProcessDefinition, isInvolvedInHumanTask) and delete old system command (getActorIdsForUserIdIncludingTeam).
+If your initial Bonita Engine version is lower than 6.2.3 insert the system command advancedStartProcessCommand.
