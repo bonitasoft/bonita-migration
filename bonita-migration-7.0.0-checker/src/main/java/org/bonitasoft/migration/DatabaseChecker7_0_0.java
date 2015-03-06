@@ -330,4 +330,8 @@ public class DatabaseChecker7_0_0 extends SimpleDatabaseChecker7_0_0 {
         return model;
     }
 
+    @Override
+    public void commands_are_up_to_date() throws Exception {
+        //no check, auto update
+    }
 }
