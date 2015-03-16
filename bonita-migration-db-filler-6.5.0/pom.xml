@@ -9,13 +9,13 @@
 	<artifactId>bonita-migration-db-filler-6.5.0</artifactId>
 
 	<properties>
-		<bonita.version>6.5.0-SNAPSHOT</bonita.version>
+		<bonita.version>6.5.0</bonita.version>
 		<bonita.home>${project.build.directory}/home</bonita.home>
 	</properties>
 
 	<dependencies>
 		<dependency>
-			<artifactId>bonita-migration-db-filler-6.4.0</artifactId>
+			<artifactId>bonita-migration-db-filler-6.4.2</artifactId>
 			<groupId>org.bonitasoft.migration</groupId>
 			<version>${project.version}</version>
 		</dependency>
@@ -32,6 +32,11 @@
         <dependency>
 			<artifactId>bonita-integration-tests-client</artifactId>
 			<groupId>org.bonitasoft.engine.test</groupId>
+			<version>${bonita.version}</version>
+		</dependency>
+        <dependency>
+            <groupId>org.bonitasoft.engine.test</groupId>
+            <artifactId>bonita-server-test-utils</artifactId>
 			<version>${bonita.version}</version>
 		</dependency>
 		<dependency>
