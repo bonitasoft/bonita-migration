@@ -1,0 +1,17 @@
+Increase some text columns to a length of 255 on various tables:
+- FIELDS SearchIndex1, 2, 3, 4, 5 on TABLES "process_instance" and "arch_process_instance"
+- FIELDS name (125 chars), displayName on TABLE group_
+- FIELDS name, displayName on TABLE role
+- FIELDS city, state, country, website on TABLE user_contactinfo
+- FIELDS name, displayName on TABLE flownode_instance
+- FIELDS name, displayName on TABLE arch_flownode_instance
+
+DROP some fields:
+- FIELD delegeeUserName on TABLE user_
+- FIELD name on TABLE arch_transition_instance
+
+=====================================================================================================================
+                                                 /!\ WARNING /!\ 
+Some DB columns have been extended in 6.5.0.
+Please rebuild your DB tables using your administration tool to avoid fragmentation of data after migrating to 6.5.0
+=====================================================================================================================

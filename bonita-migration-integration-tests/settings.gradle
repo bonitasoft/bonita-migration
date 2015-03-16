@@ -6,39 +6,43 @@ rootDir.listFiles(new FilenameFilter() {
     }
 }).each { GFileUtils.deleteDirectory(it) }
 
-//list available version on filesystem
+//determine path to use for steps
+def sourceGlobalVersion = System.getProperty("source.version")
+def targetGlobalVersion = System.getProperty("target.version")
+//steps available version on filesystem
 def availableVersions = new File("../bonita-migration-distrib/src/main/resources/versions").listFiles(new FilenameFilter() {
     @Override
     boolean accept(File file, String s) {
-        return !s.endsWith(".jar")
+        def version = new File(file, s)
+        if(version.isDirectory()){
+            return version.getName().equals(targetGlobalVersion) || new File(new File(version,"Bonita-home"),"bonita").exists();
+        }
+        return false;
     }
 }).collect {
     it.name
 }
 availableVersions.sort()
-//determine path to use for steps
-def sourceGlobalVersion = System.getProperty("source.version")
-def targetGlobalVersion = System.getProperty("target.version")
-def startIndex = -1
-def endIndex = -1
-for (int i = 0; i < availableVersions.size(); i++) {
-    if (availableVersions.get(i).startsWith(sourceGlobalVersion + "-")) {
-        startIndex = i
-    }
-    if (availableVersions.get(i).endsWith("-" + targetGlobalVersion)) {
-        endIndex = i
-    }
-}
-if (startIndex == -1 || endIndex == -1) {
-    throw new IllegalArgumentException("Migration is unknown : startIndex=" + startIndex + ", endIndex=" + endIndex + ", availableVersions=" +availableVersions)
+if ((!sourceGlobalVersion.equals("6.0.2") && !availableVersions.contains(sourceGlobalVersion)) || !availableVersions.contains(targetGlobalVersion)) {
+    throw new IllegalArgumentException("Migration is unknown : source=" + sourceGlobalVersion + ", target=" + targetGlobalVersion + ", availableVersions=" + availableVersions)
 }
 
 //create a project for each migration step to test
-def String[] list = availableVersions.subList(startIndex, endIndex + 1).collect { "build@" + it }
+def steps = [];
+for (int i = availableVersions.indexOf(sourceGlobalVersion) + 1; i <= availableVersions.indexOf(targetGlobalVersion); i++) {
+    def source
+    if (i == 0) {
+        source = "6.0.2"
+    } else {
+        source = availableVersions[i - 1]
+    }
+    def target = availableVersions[i]
+    steps.add("build@" + source + "-" + target)
+}
 //copy src and lib
 def stepSrcDir = new File(rootDir, "src")
 def stepLibDir = new File(rootDir, "lib")
-list.each {
+steps.each {
     def stepDir = new File(rootDir, it)
     copyDirectory(stepSrcDir, new File(stepDir, "src"))
     copyDirectory(stepLibDir, new File(stepDir, "lib"))
@@ -46,10 +50,10 @@ list.each {
     GFileUtils.copyFile(new File(rootDir, "init-sqlserver.sql"), new File(stepDir, "init-sqlserver.sql"))
 
 }
-println "executing steps $list"
-
+println "executing steps $steps"
+def String[] finalSteps = steps.collect{ it };
 //include these steps
-include list
+include finalSteps
 
 def copyDirectory(final File srcDir, final File destDir) throws IOException {
     final File[] srcFiles = srcDir.listFiles();

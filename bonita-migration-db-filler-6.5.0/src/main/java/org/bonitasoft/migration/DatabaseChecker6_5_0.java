@@ -20,10 +20,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
+import org.assertj.core.api.Assertions;
+import org.apache.commons.io.FileUtils;
 import org.bonitasoft.engine.api.IdentityAPI;
 import org.bonitasoft.engine.api.ProcessAPI;
 import org.bonitasoft.engine.bpm.flownode.FlowNodeInstance;
@@ -31,7 +31,6 @@ import org.bonitasoft.engine.bpm.flownode.FlowNodeInstanceSearchDescriptor;
 import org.bonitasoft.engine.bpm.flownode.GatewayType;
 import org.bonitasoft.engine.bpm.flownode.HumanTaskInstance;
 import org.bonitasoft.engine.bpm.process.ProcessDefinition;
-import org.bonitasoft.engine.bpm.process.ProcessInstance;
 import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder;
 import org.bonitasoft.engine.expression.ExpressionBuilder;
 import org.bonitasoft.engine.identity.User;
@@ -56,7 +55,7 @@ public class DatabaseChecker6_5_0 extends SimpleDatabaseChecker6_5_0 {
     }
 
     @Test
-    public void can_creatte_FlowNodeInstance_with_several_non_ascii_characters() throws Exception {
+    public void can_create_FlowNodeInstance_with_several_non_ascii_characters() throws Exception {
         final User user = getApiTestUtil().createUser("tom", "bpm");
 
         final String taskDisplayName = "Žingsnis, kuriame paraiškos teikėjas gali laisvai užpildyti duomenis, ąčęė";
@@ -80,9 +79,9 @@ public class DatabaseChecker6_5_0 extends SimpleDatabaseChecker6_5_0 {
 
     @Test
     public void user_should_keep_there_last_connection_date() throws UserNotFoundException {
-        IdentityAPI identityAPI = getApiTestUtil().getIdentityAPI();
-        User userWithLoginDate = identityAPI.getUserByUserName("userWithLoginDate");
-        User userWithoutLoginDate = identityAPI.getUserByUserName("userWithoutLoginDate");
+        final IdentityAPI identityAPI = getApiTestUtil().getIdentityAPI();
+        final User userWithLoginDate = identityAPI.getUserByUserName("userWithLoginDate");
+        final User userWithoutLoginDate = identityAPI.getUserByUserName("userWithoutLoginDate");
         assertThat(userWithLoginDate.getLastConnection()).isBefore(new Date());
         assertThat(userWithoutLoginDate.getLastConnection()).isNull();
 
