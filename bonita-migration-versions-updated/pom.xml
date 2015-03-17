@@ -14,7 +14,7 @@
 
     <properties>
         <versions.folder>../bonita-migration-distrib/src/main/resources/versions</versions.folder>
-        <last.migration.folder.name>${last.version.to.migrate}-${last.bonita.version}</last.migration.folder.name>
+        <last.migration.folder.name>${last.bonita.version}</last.migration.folder.name>
         <last.migration.folder.path>${versions.folder}/${last.migration.folder.name}</last.migration.folder.path>
         <next.migration.folder.path>${versions.folder}/${next.bonita.version}</next.migration.folder.path>
         <if.task>net.sf.antcontrib.logic.IfTask</if.task>
