@@ -43,7 +43,7 @@
         <!-- at the same version number that is the version number that will be released -->
         <!-- -->
         <!-- specify the previous version of that is migrated -->
-        <previous.bonita.version>6.4.2</previous.bonita.version>
+        <previous.bonita.version>6.5.0</previous.bonita.version>
         <!-- specify the in developpement version of bonita -->
 		<current.bonita.version>7.0.0-SNAPSHOT</current.bonita.version>
         <!-- specify the name of the release next release of bonita that will be migrated -->
