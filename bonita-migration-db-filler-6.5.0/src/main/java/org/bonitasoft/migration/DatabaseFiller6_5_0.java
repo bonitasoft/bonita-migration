@@ -15,7 +15,7 @@ package org.bonitasoft.migration;
 
 import java.io.InputStream;
 
-public class DatabaseFiller6_5_0 extends SimpleDatabaseFiller6_4_0 {
+public class DatabaseFiller6_5_0 extends DatabaseFiller6_4_2{
 
     public static void main(final String[] args) throws Exception {
         final DatabaseFiller6_5_0 databaseFiller = new DatabaseFiller6_5_0();
