@@ -15,7 +15,7 @@
 
     <dependencies>
         <dependency>
-            <artifactId>bonita-migration-db-filler-6.4.1</artifactId>
+            <artifactId>bonita-migration-db-filler-6.5.0</artifactId>
             <groupId>org.bonitasoft.migration</groupId>
             <version>${project.version}</version>
         </dependency>
@@ -44,7 +44,11 @@
             <artifactId>junit</artifactId>
             <scope>compile</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>compile</scope>
+        </dependency>
         <!-- Transaction -->
         <dependency>
             <groupId>org.codehaus.btm</groupId>
@@ -59,12 +63,6 @@
         <dependency>
             <groupId>com.jolbox</groupId>
             <artifactId>bonecp</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 
