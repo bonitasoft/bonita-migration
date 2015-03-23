@@ -2,14 +2,12 @@ package org.bonitasoft.migration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.File;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
 import org.bonitasoft.engine.api.TenantAPIAccessor;
 import org.bonitasoft.engine.api.TenantAdministrationAPI;
 import org.bonitasoft.engine.bdm.BusinessObjectModelConverter;
@@ -27,7 +25,6 @@ import org.bonitasoft.engine.expression.ExpressionBuilder;
 import org.bonitasoft.engine.expression.ExpressionEvaluationException;
 import org.bonitasoft.engine.expression.InvalidExpressionException;
 import org.bonitasoft.engine.identity.User;
-import org.bonitasoft.engine.io.IOUtil;
 import org.bonitasoft.engine.operation.OperationBuilder;
 import org.bonitasoft.engine.test.APITestUtil;
 
@@ -36,55 +33,51 @@ import org.bonitasoft.engine.test.APITestUtil;
  */
 public class BDMDataBaseChecker7_0_0 {
 
-    private static final String BDM_PACKAGE_PREFIX = "com.company.model";
+    public static final String PROCESS_WITH_BDM_NAME = "processWithBdm";
 
-    private static final String COUNTRY_QUALIFIED_NAME = BDM_PACKAGE_PREFIX + ".Country";
+    protected static final String BDM_PACKAGE_PREFIX = "com.company.model";
 
-    private static final String ADDRESS_QUALIFIED_NAME = BDM_PACKAGE_PREFIX + ".Address";
+    protected static final String COUNTRY_QUALIFIED_NAME = BDM_PACKAGE_PREFIX + ".Country";
 
-    private static final String EMPLOYEE_QUALIFIED_NAME = BDM_PACKAGE_PREFIX + ".Employee";
+    protected static final String ADDRESS_QUALIFIED_NAME = BDM_PACKAGE_PREFIX + ".Address";
 
-    private static final String PRODUCT_QUALIFIED_NAME = BDM_PACKAGE_PREFIX + ".Product";
+    protected static final String EMPLOYEE_QUALIFIED_NAME = BDM_PACKAGE_PREFIX + ".Employee";
 
-    private static final String PRODUCT_CATALOG_QUALIFIED_NAME = BDM_PACKAGE_PREFIX + ".ProductCatalog";
+    protected static final String PRODUCT_QUALIFIED_NAME = BDM_PACKAGE_PREFIX + ".Product";
 
-    private static final String PERSON_QUALIFIED_NAME = BDM_PACKAGE_PREFIX + ".Person";
+    protected static final String PRODUCT_CATALOG_QUALIFIED_NAME = BDM_PACKAGE_PREFIX + ".ProductCatalog";
 
-    private static final String GET_EMPLOYEE_BY_LAST_NAME_QUERY_NAME = "findByLastName";
+    protected static final String PERSON_QUALIFIED_NAME = BDM_PACKAGE_PREFIX + ".Person";
 
-    private static final String GET_EMPLOYEE_BY_PHONE_NUMBER_QUERY_NAME = "findByPhoneNumber";
+    protected static final String GET_EMPLOYEE_BY_LAST_NAME_QUERY_NAME = "findByLastName";
 
-    private static final String FIND_BY_FIRST_NAME_FETCH_ADDRESSES = "findByFirstNameFetchAddresses";
+    protected static final String GET_EMPLOYEE_BY_PHONE_NUMBER_QUERY_NAME = "findByPhoneNumber";
 
-    private static final String FIND_BY_FIRST_NAME_AND_LAST_NAME_NEW_ORDER = "findByFirstNameAndLastNameNewOrder";
+    protected static final String FIND_BY_FIRST_NAME_FETCH_ADDRESSES = "findByFirstNameFetchAddresses";
 
-    private static final String COUNT_EMPLOYEE = "countEmployee";
+    protected static final String FIND_BY_FIRST_NAME_AND_LAST_NAME_NEW_ORDER = "findByFirstNameAndLastNameNewOrder";
 
-    public static final String FIND_BY_HIRE_DATE_RANGE = "findByHireDateRange";
+    protected static final String COUNT_EMPLOYEE = "countEmployee";
 
-    public static final String ACTOR_NAME = "Employee actor";
+    protected static final String FIND_BY_HIRE_DATE_RANGE = "findByHireDateRange";
 
-    private File clientFolder;
-
-    private TenantAdministrationAPI tenantAdministrationAPI;
-    private APITestUtil apiTestUtil;
-    private User user;
+    protected static final String ACTOR_NAME = "Employee actor";
+    public static final String STEP_1 = "bdmProcessStep1";
+    public static final String STEP_2 = "bdmProcessStep2";
 
     public void should_deploy_a_business_data_model(APITestUtil apiTestUtil, User user) throws Exception {
-        this.apiTestUtil = apiTestUtil;
-        this.user = user;
 
         // before
-        setUp_BDM();
+        setUp_BDM(apiTestUtil);
 
         // test itself
-        deployABDRAndCreateADefaultBusinessDataAndReuseReference();
+        deployABDRAndCreateADefaultBusinessDataAndReuseReference(apiTestUtil, user);
 
         // after
-        tearDown_BDM();
+        tearDown_BDM(apiTestUtil);
     }
 
-    public void deployABDRAndCreateADefaultBusinessDataAndReuseReference() throws Exception {
+    protected void deployABDRAndCreateADefaultBusinessDataAndReuseReference(APITestUtil apiTestUtil, User user) throws Exception {
         final Expression employeeExpression = new ExpressionBuilder().createGroovyScriptExpression("createNewEmployee", new StringBuilder().append("import ")
                 .append(EMPLOYEE_QUALIFIED_NAME).append("; Employee e = new Employee(); e.firstName = 'Jane'; e.lastName = 'Doe'; return e;").toString(),
                 EMPLOYEE_QUALIFIED_NAME);
@@ -94,29 +87,30 @@ public class BDMDataBaseChecker7_0_0 {
         final String secondBizData = "people";
         processDefinitionBuilder.addBusinessData(secondBizData, EMPLOYEE_QUALIFIED_NAME, null);
         processDefinitionBuilder.addActor(ACTOR_NAME);
-        processDefinitionBuilder.addUserTask("step1", ACTOR_NAME).addOperation(
+        processDefinitionBuilder.addUserTask(STEP_1, ACTOR_NAME).addOperation(
                 new OperationBuilder().attachBusinessDataSetAttributeOperation(secondBizData, new ExpressionBuilder().createQueryBusinessDataExpression(
                         "oneEmployee", "Employee." + GET_EMPLOYEE_BY_LAST_NAME_QUERY_NAME, EMPLOYEE_QUALIFIED_NAME,
                         new ExpressionBuilder().createConstantStringExpression("lastName", "Doe"))));
-        processDefinitionBuilder.addUserTask("step2", ACTOR_NAME);
-        processDefinitionBuilder.addTransition("step1", "step2");
+        processDefinitionBuilder.addUserTask(STEP_2, ACTOR_NAME);
+        processDefinitionBuilder.addTransition(STEP_1, STEP_2);
 
-        final ProcessDefinition definition = getApiTestUtil().deployAndEnableProcessWithActor(processDefinitionBuilder.done(), ACTOR_NAME, user);
-        final ProcessInstance processInstance = getApiTestUtil().getProcessAPI().startProcess(definition.getId());
+        final ProcessDefinition definition = apiTestUtil.deployAndEnableProcessWithActor(processDefinitionBuilder.done(), ACTOR_NAME, user);
+        final ProcessInstance processInstance = apiTestUtil.getProcessAPI().startProcess(definition.getId());
 
-        final long step1Id = getApiTestUtil().waitForUserTask(processInstance.getId(), "step1");
-        final String employeeToString = getEmployeeToString("myEmployee", processInstance.getId());
+        final long stepId = apiTestUtil.waitForUserTask(processInstance.getId(), STEP_1);
+        final String employeeToString = getEmployeeToString(apiTestUtil, "myEmployee", processInstance.getId());
         assertThat(employeeToString).isEqualTo("Employee [firstName=Jane, lastName=Doe]");
 
-        getApiTestUtil().assignAndExecuteStep(step1Id, user);
-        getApiTestUtil().waitForUserTask(processInstance, "step2");
-        final String people = getEmployeeToString(secondBizData, processInstance.getId());
+        apiTestUtil.assignAndExecuteStep(stepId, user);
+        apiTestUtil.waitForUserTask(processInstance, STEP_2);
+        final String people = getEmployeeToString(apiTestUtil, secondBizData, processInstance.getId());
         assertThat(people).isEqualTo("Employee [firstName=Jane, lastName=Doe]");
 
-        getApiTestUtil().disableAndDeleteProcess(definition.getId());
+        apiTestUtil.disableAndDeleteProcess(definition.getId());
     }
 
-    private String getEmployeeToString(final String businessDataName, final long processInstanceId) throws InvalidExpressionException {
+    protected String getEmployeeToString(APITestUtil apiTestUtil, final String businessDataName, final long processInstanceId)
+            throws InvalidExpressionException {
         final Map<Expression, Map<String, Serializable>> expressions = new HashMap<Expression, Map<String, Serializable>>(5);
         final String expressionEmployee = "retrieve_Employee";
         expressions.put(
@@ -124,7 +118,7 @@ public class BDMDataBaseChecker7_0_0 {
                         + ".firstName + \", lastName=\" + " + businessDataName + ".lastName + \"]\";", String.class.getName(),
                         new ExpressionBuilder().createBusinessDataExpression(businessDataName, EMPLOYEE_QUALIFIED_NAME)), null);
         try {
-            final Map<String, Serializable> evaluatedExpressions = getApiTestUtil().getProcessAPI().evaluateExpressionsOnProcessInstance(processInstanceId,
+            final Map<String, Serializable> evaluatedExpressions = apiTestUtil.getProcessAPI().evaluateExpressionsOnProcessInstance(processInstanceId,
                     expressions);
             return (String) evaluatedExpressions.get(expressionEmployee);
         } catch (final ExpressionEvaluationException eee) {
@@ -133,36 +127,26 @@ public class BDMDataBaseChecker7_0_0 {
         }
     }
 
-    public void setUp_BDM() throws Exception {
-        clientFolder = IOUtil.createTempDirectoryInDefaultTempDirectory("bdr_it_client");
+    protected void setUp_BDM(APITestUtil apiTestUtil) throws Exception {
+        TenantAdministrationAPI tenantAdministrationAPI = TenantAPIAccessor.getTenantAdministrationAPI(apiTestUtil.getSession());
 
-        getApiTestUtil().loginOnDefaultTenantWith(APITestUtil.DEFAULT_TECHNICAL_LOGGER_USERNAME, APITestUtil.DEFAULT_TECHNICAL_LOGGER_PASSWORD);
-
-        tenantAdministrationAPI = TenantAPIAccessor.getTenantAdministrationAPI(getApiTestUtil().getSession());
-
-        final BusinessObjectModelConverter converter = new BusinessObjectModelConverter();
-        final byte[] zip = converter.zip(buildBOM());
+        final byte[] zip = new BusinessObjectModelConverter().zip(buildBOM());
         tenantAdministrationAPI.pause();
         tenantAdministrationAPI.installBusinessDataModel(zip);
         tenantAdministrationAPI.resume();
     }
 
-    public void tearDown_BDM() throws Exception {
-        try {
-            FileUtils.deleteDirectory(clientFolder);
-        } catch (final Exception e) {
-            clientFolder.deleteOnExit();
-        }
+    protected void tearDown_BDM(APITestUtil apiTestUtil) throws Exception {
+        TenantAdministrationAPI tenantAdministrationAPI = TenantAPIAccessor.getTenantAdministrationAPI(apiTestUtil.getSession());
+
         if (!tenantAdministrationAPI.isPaused()) {
             tenantAdministrationAPI.pause();
             tenantAdministrationAPI.cleanAndUninstallBusinessDataModel();
             tenantAdministrationAPI.resume();
         }
-
-        getApiTestUtil().logoutOnTenant();
     }
 
-    private BusinessObjectModel buildBOM() {
+    protected BusinessObjectModel buildBOM() {
         final SimpleField name = new SimpleField();
         name.setName("name");
         name.setType(FieldType.STRING);
@@ -303,7 +287,4 @@ public class BDMDataBaseChecker7_0_0 {
         return model;
     }
 
-    public APITestUtil getApiTestUtil() {
-        return apiTestUtil;
-    }
 }
