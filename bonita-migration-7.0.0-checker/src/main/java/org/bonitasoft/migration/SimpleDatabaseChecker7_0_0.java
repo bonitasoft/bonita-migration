@@ -34,6 +34,7 @@ import org.bonitasoft.engine.bpm.process.ProcessInstance;
 import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder;
 import org.bonitasoft.engine.exception.BonitaException;
 import org.bonitasoft.engine.form.FormMapping;
+import org.bonitasoft.engine.form.FormMappingTarget;
 import org.bonitasoft.engine.form.FormMappingType;
 import org.bonitasoft.engine.identity.User;
 import org.bonitasoft.engine.search.SearchOptionsBuilder;
@@ -153,15 +154,15 @@ public class SimpleDatabaseChecker7_0_0 extends SimpleDatabaseChecker6_4_0 {
         final FormMapping formMapping = getProcessConfigurationAPI().getTaskForm(pDef.getId(), taskName);
         assertThat(formMapping.getTask()).isEqualTo(taskName);
         final String taskForm = "http://www.appli-form.org/step1";
-        processConfigurationAPI.updateFormMapping(formMapping.getId(), taskForm, true);
+        processConfigurationAPI.updateFormMapping(formMapping.getId(), taskForm, FormMappingTarget.URL);
 
         final SearchResult<FormMapping> searchResult = getProcessConfigurationAPI().searchFormMappings(new SearchOptionsBuilder(0, 10).done());
         assertThat(searchResult.getCount()).as("search results retrived are not what they should be : %s", searchResult.getResult()).isEqualTo(3);
         assertThat(searchResult.getResult()).as("search results retrived are not what they should be : %s", searchResult.getResult()).hasSize(3)
-                .extracting("task", "processDefinitionId", "type", "form", "external").contains(
-                tuple(taskName, pDef.getId(), FormMappingType.TASK, taskForm, true),
-                tuple(null, pDef.getId(), FormMappingType.PROCESS_START, null, false),
-                tuple(null, pDef.getId(), FormMappingType.PROCESS_OVERVIEW, null, false)
+                .extracting("task", "processDefinitionId", "type", "form", "target").contains(
+                tuple(taskName, pDef.getId(), FormMappingType.TASK, taskForm, FormMappingTarget.URL),
+                tuple(null, pDef.getId(), FormMappingType.PROCESS_START, null, FormMappingTarget.INTERNAL),
+                tuple(null, pDef.getId(), FormMappingType.PROCESS_OVERVIEW, null, FormMappingTarget.INTERNAL)
                 );
     }
 
