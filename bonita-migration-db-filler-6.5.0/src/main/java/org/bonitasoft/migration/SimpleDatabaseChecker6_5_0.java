@@ -33,7 +33,7 @@ import org.junit.BeforeClass;
 /**
  * @author Celine Souchet
  */
-public class SimpleDatabaseChecker6_5_0 extends SimpleDatabaseChecker6_4_0 {
+public class SimpleDatabaseChecker6_5_0 extends DatabaseChecker6_4_2 {
 
     private ProcessAPI processAPI;
 
@@ -116,5 +116,11 @@ public class SimpleDatabaseChecker6_5_0 extends SimpleDatabaseChecker6_4_0 {
     public static APITestUtil getApiTestUtil() {
         return apiTestUtil;
     }
+
+    @Override
+    public void commands_are_up_to_date() throws Exception {
+        // from version 6.5.0 commands are automatically updated by command service.. this test is no longer necessary
+    }
+
 
 }

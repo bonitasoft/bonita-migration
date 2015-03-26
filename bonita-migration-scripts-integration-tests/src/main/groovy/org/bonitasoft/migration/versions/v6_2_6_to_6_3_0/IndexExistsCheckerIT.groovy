@@ -60,7 +60,7 @@ class IndexExistsCheckerIT extends GroovyTestCase {
         def indexFound=false
 
         //when
-        def feature = new File("build/dist/versions/6.2.6-6.3.0/Database/000_checkDatabase/${DBVENDOR}.sql")
+        def feature = new File("build/dist/versions/6.3.0/Database/000_checkDatabase/${DBVENDOR}.sql")
 
         //then
         sql.eachRow(feature.text) {row ->
@@ -79,7 +79,7 @@ class IndexExistsCheckerIT extends GroovyTestCase {
         sql.execute(CREATE_BAD_INDEX.text);
 
         //when
-        def feature = new File("build/dist/versions/6.2.6-6.3.0/Database/000_checkDatabase/${DBVENDOR}.sql")
+        def feature = new File("build/dist/versions/6.3.0/Database/000_checkDatabase/${DBVENDOR}.sql")
 
 
         //then

@@ -36,7 +36,9 @@ class PostMigrationTest extends TestSuite {
         for (clazz in tests) {
             def method = clazz.getMethod("runFromVersion");
             Integer fromVersion = method.invoke(null);
-            if (fromVersion <= getCurrentNumericVersion(getCurrentBonitaVersion())) {
+            Integer untilVersion = clazz.getMethod("runUntilVersion").invoke(null);
+            def currentVersion = getCurrentNumericVersion(getCurrentBonitaVersion())
+            if (fromVersion <= currentVersion && currentVersion <= untilVersion) {
                 suite.addTestSuite(clazz);
             }
         }
@@ -45,11 +47,11 @@ class PostMigrationTest extends TestSuite {
 
     protected static int getCurrentNumericVersion(String version) {
         // Keep only the first 3 digits of the numeric part of the version;
-        Integer.parseInt(version.replaceAll("\\.", "").substring(0,3))
+        Integer.parseInt(version.replaceAll("\\.", "").substring(0, 3))
     }
 
     protected static List<Class> getTestsList() {
-        return [BDMPostMigrationTest.class];
+        return [];
     }
 
     public static String getCurrentBonitaVersion() {

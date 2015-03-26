@@ -138,12 +138,16 @@ public class DatabaseFiller6_0_2 {
     public void execute(final int nbProcessesDefinitions, final int nbProcessInstances, final int nbWaitingEvents, final int nbDocuments) throws Exception {
         // copyBonitaHome();
         setup();
+        executeWhenPlatformIsUp(nbProcessesDefinitions, nbProcessInstances, nbWaitingEvents, nbDocuments);
+        shutdown();
+        logger.info("Resulting bonita home is " + System.getProperty("bonita.home"));
+    }
+
+    protected void executeWhenPlatformIsUp(int nbProcessesDefinitions, int nbProcessInstances, int nbWaitingEvents, int nbDocuments) throws Exception {
         Map<String, String> stats = fillDatabase(nbProcessesDefinitions, nbProcessInstances, nbWaitingEvents, nbDocuments);
         for (Entry<String, String> entry : stats.entrySet()) {
             logger.info(entry.getKey() + ": " + entry.getValue());
         }
-        shutdown();
-        logger.info("Resulting bonita home is " + System.getProperty("bonita.home"));
     }
 
     public void copyBonitaHome() throws Exception {
