@@ -13,17 +13,12 @@
  **/
 package org.bonitasoft.migration;
 
-public class DatabaseFiller6_5_1 extends SimpleDatabaseFiller6_4_0 {
+public class DatabaseFiller6_5_1 extends DatabaseFiller6_4_2 {
 
     public static void main(final String[] args) throws Exception {
         DatabaseFiller6_5_1 databaseFiller = new DatabaseFiller6_5_1();
         databaseFiller.execute(1, 1, 1, 1);
     }
     
-//    @Override
-//    protected InputStream getProfilesXMLStream() {
-//        return DatabaseFiller6_5_1.class.getResourceAsStream("profiles.xml");
-//    }
 
-    
 }
