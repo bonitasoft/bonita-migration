@@ -116,6 +116,7 @@ abstract class DatabaseMigrationStep {
         sqlServerStatement = sqlServerStatement.replaceAll("DEFAULT FALSE", "DEFAULT 0")
         sqlServerStatement = sqlServerStatement.replaceAll("BOOLEAN", " BIT")
         sqlServerStatement = sqlServerStatement.replaceAll("false", "0")
+        sqlServerStatement = sqlServerStatement.replaceAll("true", "1")
         sqlServerStatement = sqlServerStatement.replaceAll(";", "\nGO")
         return sqlServerStatement;
     }
