@@ -13,30 +13,50 @@
  **/
 package org.bonitasoft.migration;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.tuple;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.bonitasoft.engine.api.CommandAPI;
 import org.bonitasoft.engine.api.IdentityAPI;
+import org.bonitasoft.engine.api.PageAPI;
 import org.bonitasoft.engine.api.PlatformAPI;
 import org.bonitasoft.engine.api.PlatformAPIAccessor;
 import org.bonitasoft.engine.api.ProcessAPI;
 import org.bonitasoft.engine.api.ProcessConfigurationAPI;
 import org.bonitasoft.engine.api.TenantAPIAccessor;
+import org.bonitasoft.engine.bpm.bar.BusinessArchive;
+import org.bonitasoft.engine.bpm.bar.BusinessArchiveBuilder;
+import org.bonitasoft.engine.bpm.bar.form.model.FormMappingModel;
 import org.bonitasoft.engine.bpm.contract.ContractViolationException;
 import org.bonitasoft.engine.bpm.contract.Type;
+import org.bonitasoft.engine.bpm.flownode.ActivityDefinition;
 import org.bonitasoft.engine.bpm.flownode.HumanTaskInstance;
+import org.bonitasoft.engine.bpm.flownode.UserTaskDefinition;
+import org.bonitasoft.engine.bpm.form.FormMappingDefinitionBuilder;
+import org.bonitasoft.engine.bpm.process.DesignProcessDefinition;
 import org.bonitasoft.engine.bpm.process.ProcessDefinition;
 import org.bonitasoft.engine.bpm.process.ProcessInstance;
 import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder;
 import org.bonitasoft.engine.exception.BonitaException;
 import org.bonitasoft.engine.form.FormMapping;
+import org.bonitasoft.engine.form.FormMappingSearchDescriptor;
 import org.bonitasoft.engine.form.FormMappingTarget;
 import org.bonitasoft.engine.form.FormMappingType;
 import org.bonitasoft.engine.identity.User;
+import org.bonitasoft.engine.page.ContentType;
+import org.bonitasoft.engine.page.Page;
+import org.bonitasoft.engine.page.PageAssert;
+import org.bonitasoft.engine.page.PageCreator;
+import org.bonitasoft.engine.search.SearchOptions;
 import org.bonitasoft.engine.search.SearchOptionsBuilder;
 import org.bonitasoft.engine.search.SearchResult;
 import org.bonitasoft.engine.session.APISession;
@@ -54,6 +74,15 @@ import org.junit.Test;
  */
 public class SimpleDatabaseChecker7_0_0 extends SimpleDatabaseChecker6_4_0 {
 
+    public static final long PROCESS_DEFINITION_ID = 5846L;
+
+    private static final String DISPLAY_NAME = "My Päge";
+
+    private static final String CONTENT_NAME = "content.zip";
+
+    private static final String PAGE_DESCRIPTION = "page description";
+    public static final String HTTP_SOME_URL_COM = "http://someUrl.com";
+
     private ProcessAPI processAPI;
 
     private IdentityAPI identityApi;
@@ -67,6 +96,8 @@ public class SimpleDatabaseChecker7_0_0 extends SimpleDatabaseChecker6_4_0 {
     private static PlatformTestUtil platformTestUtil = new PlatformTestUtil();
 
     private static APITestUtil apiTestUtil = new APITestUtil();
+
+    private PageAPI pageAPI;
 
     @BeforeClass
     public static void setup() throws BonitaException {
@@ -100,6 +131,7 @@ public class SimpleDatabaseChecker7_0_0 extends SimpleDatabaseChecker6_4_0 {
         processAPI = TenantAPIAccessor.getProcessAPI(session);
         identityApi = TenantAPIAccessor.getIdentityAPI(session);
         commandApi = TenantAPIAccessor.getCommandAPI(session);
+        pageAPI = TenantAPIAccessor.getCustomPageAPI(session);
     }
 
     @Test
@@ -111,11 +143,16 @@ public class SimpleDatabaseChecker7_0_0 extends SimpleDatabaseChecker6_4_0 {
         final String taskName = "step1";
         final String inputName = "input";
         builder.addUserTask(taskName, "mainActor").addContract().addSimpleInput(inputName, Type.TEXT, "should fail")
-        .addConstraint("firstConstraint", "input != null", "mandatory", inputName);
+                .addConstraint("firstConstraint", "input != null", "mandatory", inputName);
 
         //when
         final User user = getIdentityApi().getUserByUserName("william.jobs");
-        final ProcessDefinition pDef = getProcessAPI().deploy(builder.done());
+        final DesignProcessDefinition designProcessDefinition = builder.done();
+        final BusinessArchive businessArchive = new BusinessArchiveBuilder().createNewBusinessArchive()
+                .setFormMappings(createDefaultProcessFormMapping(designProcessDefinition))
+                .setProcessDefinition(designProcessDefinition)
+                .done();
+        final ProcessDefinition pDef = getProcessAPI().deploy(businessArchive);
         getProcessAPI().addUserToActor("mainActor", pDef, user.getId());
         getProcessAPI().enableProcess(pDef.getId());
         final ProcessInstance pi = getProcessAPI().startProcess(user.getId(), pDef.getId());
@@ -138,32 +175,71 @@ public class SimpleDatabaseChecker7_0_0 extends SimpleDatabaseChecker6_4_0 {
 
     @Test
     public void checkFormMapping() throws Exception {
-        final ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("ProcessWithContract", "1.1");
+        final ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("ProcessWithFormMapping", "1.1");
         builder.addActor("mainActor");
         //given
         final String taskName = "step1";
         final String inputName = "input";
         builder.addUserTask(taskName, "mainActor").addContract().addSimpleInput(inputName, Type.TEXT, "should fail")
-        .addConstraint("firstConstraint", "input != null", "mandatory", inputName);
+                .addConstraint("firstConstraint", "input != null", "mandatory", inputName);
 
         final User user = getIdentityApi().getUserByUserName("william.jobs");
-        final ProcessDefinition pDef = getProcessAPI().deploy(builder.done());
+
+        final BusinessArchive businessArchive = new BusinessArchiveBuilder().createNewBusinessArchive()
+                .setFormMappings(createDefaultProcessFormMapping(builder.getProcess()))
+                .setProcessDefinition(builder.getProcess())
+                .done();
+        final ProcessDefinition pDef = getProcessAPI().deploy(businessArchive);
         getProcessAPI().addUserToActor("mainActor", pDef, user.getId());
         getProcessAPI().enableProcess(pDef.getId());
 
-        final FormMapping formMapping = getProcessConfigurationAPI().getTaskForm(pDef.getId(), taskName);
+        final SearchOptions searchOptions = new SearchOptionsBuilder(0, 10)
+                .filter(FormMappingSearchDescriptor.PROCESS_DEFINITION_ID, pDef.getId())
+                .filter(FormMappingSearchDescriptor.TASK, "step1")
+                .done();
+        final FormMapping formMapping = getProcessConfigurationAPI().searchFormMappings(searchOptions).getResult().get(0);
         assertThat(formMapping.getTask()).isEqualTo(taskName);
         final String taskForm = "http://www.appli-form.org/step1";
-        processConfigurationAPI.updateFormMapping(formMapping.getId(), taskForm, FormMappingTarget.URL);
+
+        processConfigurationAPI.updateFormMapping(formMapping.getId(), taskForm, null);
 
         final SearchResult<FormMapping> searchResult = getProcessConfigurationAPI().searchFormMappings(new SearchOptionsBuilder(0, 10).done());
         assertThat(searchResult.getCount()).as("search results retrived are not what they should be : %s", searchResult.getResult()).isEqualTo(3);
         assertThat(searchResult.getResult()).as("search results retrived are not what they should be : %s", searchResult.getResult()).hasSize(3)
                 .extracting("task", "processDefinitionId", "type", "form", "target").contains(
-                tuple(taskName, pDef.getId(), FormMappingType.TASK, taskForm, FormMappingTarget.URL),
-                tuple(null, pDef.getId(), FormMappingType.PROCESS_START, null, FormMappingTarget.INTERNAL),
-                tuple(null, pDef.getId(), FormMappingType.PROCESS_OVERVIEW, null, FormMappingTarget.INTERNAL)
+                        tuple(taskName, pDef.getId(), FormMappingType.TASK, taskForm, FormMappingTarget.URL),
+                        tuple(null, pDef.getId(), FormMappingType.PROCESS_START, null, FormMappingTarget.INTERNAL),
+                        tuple(null, pDef.getId(), FormMappingType.PROCESS_OVERVIEW, null, FormMappingTarget.INTERNAL)
                 );
+    }
+
+    @Test
+    public void should_create_custom_page_with_type_and_process_definition() throws Exception {
+        String pageName = "custompage_migration";
+        final Page pageWithTenantScope = getPageAPI().createPage(
+                new PageCreator(pageName, CONTENT_NAME).setDescription(PAGE_DESCRIPTION).setDisplayName(DISPLAY_NAME).setContentType(ContentType.PAGE),
+                createTestPageContent(pageName, DISPLAY_NAME, PAGE_DESCRIPTION));
+
+        final Page pageWithProcessScope = getPageAPI().createPage(
+                new PageCreator(pageName, CONTENT_NAME).setDescription(PAGE_DESCRIPTION).setDisplayName(DISPLAY_NAME).setContentType(ContentType.FORM)
+                        .setProcessDefinitionId(PROCESS_DEFINITION_ID),
+                createTestPageContent(pageName, DISPLAY_NAME, PAGE_DESCRIPTION));
+
+        // when
+        final Page pageByName = getPageAPI().getPageByName(pageName);
+        final Page pageByNameAndProcessDefinitionId  = getPageAPI().getPageByNameAndProcessDefinitionId(pageName,PROCESS_DEFINITION_ID);
+
+        // then
+        assertThat(pageByNameAndProcessDefinitionId).isEqualToComparingFieldByField(pageWithProcessScope);
+        assertThat(pageByName).isEqualToComparingFieldByField(pageWithTenantScope);
+        PageAssert.assertThat(pageByNameAndProcessDefinitionId)
+                .hasProcessDefinitionId(PROCESS_DEFINITION_ID)
+                .hasContentType(ContentType.FORM);
+
+        // clean up
+        getPageAPI().deletePage(pageWithTenantScope.getId());
+        getPageAPI().deletePage(pageWithProcessScope.getId());
+
     }
 
     public ProcessConfigurationAPI getProcessConfigurationAPI() throws Exception {
@@ -201,4 +277,48 @@ public class SimpleDatabaseChecker7_0_0 extends SimpleDatabaseChecker6_4_0 {
         return apiTestUtil;
     }
 
+    public static FormMappingModel createDefaultProcessFormMapping(DesignProcessDefinition designProcessDefinition) {
+        FormMappingModel formMappingModel = new FormMappingModel();
+        formMappingModel.addFormMapping(FormMappingDefinitionBuilder.buildFormMapping(HTTP_SOME_URL_COM, FormMappingType.PROCESS_START, FormMappingTarget.URL).build());
+        formMappingModel.addFormMapping(FormMappingDefinitionBuilder.buildFormMapping(HTTP_SOME_URL_COM, FormMappingType.PROCESS_OVERVIEW, FormMappingTarget.URL).build());
+        for (ActivityDefinition activityDefinition : designProcessDefinition.getFlowElementContainer().getActivities()) {
+            if (activityDefinition instanceof UserTaskDefinition) {
+                formMappingModel.addFormMapping(FormMappingDefinitionBuilder.buildFormMapping(HTTP_SOME_URL_COM, FormMappingType.TASK, FormMappingTarget.URL)
+                        .withTaskname(activityDefinition.getName()).build());
+            }
+        }
+        return formMappingModel;
+    }
+
+    public PageAPI getPageAPI() {
+        return pageAPI;
+    }
+
+    protected byte[] createTestPageContent(final String pageName, final String displayName, final String description)
+            throws Exception {
+        try {
+            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            final ZipOutputStream zos = new ZipOutputStream(baos);
+            zos.putNextEntry(new ZipEntry("Index.groovy"));
+            zos.write("return \"\";".getBytes());
+
+            zos.putNextEntry(new ZipEntry("page.properties"));
+            final StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("name=");
+            stringBuilder.append(pageName);
+            stringBuilder.append("\n");
+            stringBuilder.append("displayName=");
+            stringBuilder.append(displayName);
+            stringBuilder.append("\n");
+            stringBuilder.append("description=");
+            stringBuilder.append(description);
+            stringBuilder.append("\n");
+            zos.write(stringBuilder.toString().getBytes());
+
+            zos.closeEntry();
+            return baos.toByteArray();
+        } catch (final IOException e) {
+            throw new BonitaException(e);
+        }
+    }
 }
