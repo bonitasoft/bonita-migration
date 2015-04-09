@@ -22,7 +22,7 @@ ALTER TABLE page2 ADD CONSTRAINT pk_page PRIMARY KEY (tenantid, id)
 ALTER TABLE page2 ADD CONSTRAINT uk_page UNIQUE (tenantId, name, processDefinitionId)
 @@
 
-ALTER TABLE business_app_page DROP CONSTRAINT fk_page_id
+ALTER TABLE business_app_page DROP FOREIGN KEY fk_page_id
 @@
 
 INSERT INTO page2(tenantid, id, name, displayName, description, installationDate, installedBy,
