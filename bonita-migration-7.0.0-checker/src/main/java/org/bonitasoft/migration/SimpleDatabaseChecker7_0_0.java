@@ -13,9 +13,7 @@
  **/
 package org.bonitasoft.migration;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
-import static org.assertj.core.api.Assertions.tuple;
+import static org.assertj.core.api.Assertions.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -199,17 +197,17 @@ public class SimpleDatabaseChecker7_0_0 extends SimpleDatabaseChecker6_4_0 {
                 .done();
         final FormMapping formMapping = getProcessConfigurationAPI().searchFormMappings(searchOptions).getResult().get(0);
         assertThat(formMapping.getTask()).isEqualTo(taskName);
-        final String taskForm = "http://www.appli-form.org/step1";
+        final String taskFormUrl = "http://www.appli-form.org/step1";
 
-        processConfigurationAPI.updateFormMapping(formMapping.getId(), taskForm, null);
+        processConfigurationAPI.updateFormMapping(formMapping.getId(), taskFormUrl, null);
 
         final SearchResult<FormMapping> searchResult = getProcessConfigurationAPI().searchFormMappings(new SearchOptionsBuilder(0, 10).done());
         assertThat(searchResult.getCount()).as("search results retrived are not what they should be : %s", searchResult.getResult()).isEqualTo(3);
         assertThat(searchResult.getResult()).as("search results retrived are not what they should be : %s", searchResult.getResult()).hasSize(3)
-                .extracting("task", "processDefinitionId", "type", "form", "target").contains(
-                        tuple(taskName, pDef.getId(), FormMappingType.TASK, taskForm, FormMappingTarget.URL),
-                        tuple(null, pDef.getId(), FormMappingType.PROCESS_START, null, FormMappingTarget.INTERNAL),
-                        tuple(null, pDef.getId(), FormMappingType.PROCESS_OVERVIEW, null, FormMappingTarget.INTERNAL)
+                .extracting("task", "processDefinitionId", "type", "target").contains(
+                        tuple(taskName, pDef.getId(), FormMappingType.TASK, FormMappingTarget.URL),
+                        tuple(null, pDef.getId(), FormMappingType.PROCESS_START, FormMappingTarget.INTERNAL),
+                        tuple(null, pDef.getId(), FormMappingType.PROCESS_OVERVIEW, FormMappingTarget.INTERNAL)
                 );
     }
 
@@ -227,7 +225,7 @@ public class SimpleDatabaseChecker7_0_0 extends SimpleDatabaseChecker6_4_0 {
 
         // when
         final Page pageByName = getPageAPI().getPageByName(pageName);
-        final Page pageByNameAndProcessDefinitionId  = getPageAPI().getPageByNameAndProcessDefinitionId(pageName,PROCESS_DEFINITION_ID);
+        final Page pageByNameAndProcessDefinitionId = getPageAPI().getPageByNameAndProcessDefinitionId(pageName, PROCESS_DEFINITION_ID);
 
         // then
         assertThat(pageByNameAndProcessDefinitionId).isEqualToComparingFieldByField(pageWithProcessScope);
@@ -279,8 +277,10 @@ public class SimpleDatabaseChecker7_0_0 extends SimpleDatabaseChecker6_4_0 {
 
     public static FormMappingModel createDefaultProcessFormMapping(DesignProcessDefinition designProcessDefinition) {
         FormMappingModel formMappingModel = new FormMappingModel();
-        formMappingModel.addFormMapping(FormMappingDefinitionBuilder.buildFormMapping(HTTP_SOME_URL_COM, FormMappingType.PROCESS_START, FormMappingTarget.URL).build());
-        formMappingModel.addFormMapping(FormMappingDefinitionBuilder.buildFormMapping(HTTP_SOME_URL_COM, FormMappingType.PROCESS_OVERVIEW, FormMappingTarget.URL).build());
+        formMappingModel.addFormMapping(FormMappingDefinitionBuilder.buildFormMapping(HTTP_SOME_URL_COM, FormMappingType.PROCESS_START, FormMappingTarget.URL)
+                .build());
+        formMappingModel.addFormMapping(FormMappingDefinitionBuilder.buildFormMapping(HTTP_SOME_URL_COM, FormMappingType.PROCESS_OVERVIEW,
+                FormMappingTarget.URL).build());
         for (ActivityDefinition activityDefinition : designProcessDefinition.getFlowElementContainer().getActivities()) {
             if (activityDefinition instanceof UserTaskDefinition) {
                 formMappingModel.addFormMapping(FormMappingDefinitionBuilder.buildFormMapping(HTTP_SOME_URL_COM, FormMappingType.TASK, FormMappingTarget.URL)

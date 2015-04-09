@@ -1,9 +1,9 @@
-CREATE TABLE page2 (
+CREATE TABLE page (
   tenantId BIGINT NOT NULL,
   id BIGINT NOT NULL,
   name VARCHAR(50) NOT NULL,
   displayName VARCHAR(255) NOT NULL,
-  description LONGVARCHAR,
+  description TEXT,
   installationDate BIGINT NOT NULL,
   installedBy BIGINT NOT NULL,
   provided BOOLEAN,
@@ -13,7 +13,7 @@ CREATE TABLE page2 (
   content LONGBLOB,
   contentType VARCHAR(50) NOT NULL,
   processDefinitionId BIGINT
-)ENGINE = INNODB
+) ENGINE = INNODB
 @@
 
 ALTER TABLE page2 ADD CONSTRAINT pk_page PRIMARY KEY (tenantid, id)
