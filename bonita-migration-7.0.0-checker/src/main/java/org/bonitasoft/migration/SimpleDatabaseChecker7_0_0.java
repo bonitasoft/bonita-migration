@@ -133,46 +133,7 @@ public class SimpleDatabaseChecker7_0_0 extends SimpleDatabaseChecker6_4_0 {
     }
 
     @Test
-    public void checkStepContractWorks() throws Exception {
-        final ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("ProcessWithContract", "1.0");
-        builder.addActor("mainActor");
-
-        //given
-        final String taskName = "step1";
-        final String inputName = "input";
-        builder.addUserTask(taskName, "mainActor").addContract().addSimpleInput(inputName, Type.TEXT, "should fail")
-                .addConstraint("firstConstraint", "input != null", "mandatory", inputName);
-
-        //when
-        final User user = getIdentityApi().getUserByUserName("william.jobs");
-        final DesignProcessDefinition designProcessDefinition = builder.done();
-        final BusinessArchive businessArchive = new BusinessArchiveBuilder().createNewBusinessArchive()
-                .setFormMappings(createDefaultProcessFormMapping(designProcessDefinition))
-                .setProcessDefinition(designProcessDefinition)
-                .done();
-        final ProcessDefinition pDef = getProcessAPI().deploy(businessArchive);
-        getProcessAPI().addUserToActor("mainActor", pDef, user.getId());
-        getProcessAPI().enableProcess(pDef.getId());
-        final ProcessInstance pi = getProcessAPI().startProcess(user.getId(), pDef.getId());
-        final HumanTaskInstance task = waitForUserTask(taskName, pi.getId(), 2000);
-        try {
-            getProcessAPI().assignUserTask(task.getId(), user.getId());
-            getProcessAPI().executeUserTask(task.getId(), new HashMap<String, Serializable>());
-            fail("a Constraint failed exception should have been raised");
-        } catch (final ContractViolationException e) {
-            System.out.println(e.getExplanations());
-        }
-        try {
-            getProcessAPI().executeUserTask(task.getId(), Collections.singletonMap(inputName, (Serializable) ""));
-        } catch (final ContractViolationException e) {
-            e.printStackTrace();
-            fail("Cause: " + e.getMessage() + "\n" + e.getExplanations());
-        }
-        waitForProcessToFinish(pi.getId(), 3000);
-    }
-
-    @Test
-    public void checkFormMapping() throws Exception {
+    public void ensureFormMappingsAndStepContractWorks() throws Exception {
         final ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("ProcessWithFormMapping", "1.1");
         builder.addActor("mainActor");
         //given
@@ -206,9 +167,26 @@ public class SimpleDatabaseChecker7_0_0 extends SimpleDatabaseChecker6_4_0 {
         assertThat(searchResult.getResult()).as("search results retrived are not what they should be : %s", searchResult.getResult()).hasSize(3)
                 .extracting("task", "processDefinitionId", "type", "target").contains(
                         tuple(taskName, pDef.getId(), FormMappingType.TASK, FormMappingTarget.URL),
-                        tuple(null, pDef.getId(), FormMappingType.PROCESS_START, FormMappingTarget.INTERNAL),
-                        tuple(null, pDef.getId(), FormMappingType.PROCESS_OVERVIEW, FormMappingTarget.INTERNAL)
+                        tuple(null, pDef.getId(), FormMappingType.PROCESS_START, FormMappingTarget.LEGACY),
+                        tuple(null, pDef.getId(), FormMappingType.PROCESS_OVERVIEW, FormMappingTarget.LEGACY)
                 );
+
+        final ProcessInstance pi = getProcessAPI().startProcess(user.getId(), pDef.getId());
+        final HumanTaskInstance task = waitForUserTask(taskName, pi.getId(), 2000);
+        try {
+            getProcessAPI().assignUserTask(task.getId(), user.getId());
+            getProcessAPI().executeUserTask(task.getId(), new HashMap<String, Serializable>());
+            fail("a Constraint failed exception should have been raised");
+        } catch (final ContractViolationException e) {
+            System.out.println(e.getExplanations());
+        }
+        try {
+            getProcessAPI().executeUserTask(task.getId(), Collections.singletonMap(inputName, (Serializable) ""));
+        } catch (final ContractViolationException e) {
+            e.printStackTrace();
+            fail("Cause: " + e.getMessage() + "\n" + e.getExplanations());
+        }
+        waitForProcessToFinish(pi.getId(), 3000);
     }
 
     @Test
@@ -237,7 +215,6 @@ public class SimpleDatabaseChecker7_0_0 extends SimpleDatabaseChecker6_4_0 {
         // clean up
         getPageAPI().deletePage(pageWithTenantScope.getId());
         getPageAPI().deletePage(pageWithProcessScope.getId());
-
     }
 
     public ProcessConfigurationAPI getProcessConfigurationAPI() throws Exception {
@@ -277,10 +254,10 @@ public class SimpleDatabaseChecker7_0_0 extends SimpleDatabaseChecker6_4_0 {
 
     public static FormMappingModel createDefaultProcessFormMapping(DesignProcessDefinition designProcessDefinition) {
         FormMappingModel formMappingModel = new FormMappingModel();
-        formMappingModel.addFormMapping(FormMappingDefinitionBuilder.buildFormMapping(HTTP_SOME_URL_COM, FormMappingType.PROCESS_START, FormMappingTarget.URL)
+        formMappingModel.addFormMapping(FormMappingDefinitionBuilder.buildFormMapping(null, FormMappingType.PROCESS_START, FormMappingTarget.LEGACY)
                 .build());
-        formMappingModel.addFormMapping(FormMappingDefinitionBuilder.buildFormMapping(HTTP_SOME_URL_COM, FormMappingType.PROCESS_OVERVIEW,
-                FormMappingTarget.URL).build());
+        formMappingModel.addFormMapping(FormMappingDefinitionBuilder.buildFormMapping(null, FormMappingType.PROCESS_OVERVIEW,
+                FormMappingTarget.LEGACY).build());
         for (ActivityDefinition activityDefinition : designProcessDefinition.getFlowElementContainer().getActivities()) {
             if (activityDefinition instanceof UserTaskDefinition) {
                 formMappingModel.addFormMapping(FormMappingDefinitionBuilder.buildFormMapping(HTTP_SOME_URL_COM, FormMappingType.TASK, FormMappingTarget.URL)

@@ -1,4 +1,4 @@
-CREATE TABLE page (
+CREATE TABLE page2 (
   tenantId BIGINT NOT NULL,
   id BIGINT NOT NULL,
   name VARCHAR(50) NOT NULL,
