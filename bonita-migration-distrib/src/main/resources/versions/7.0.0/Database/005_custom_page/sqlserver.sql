@@ -1,7 +1,7 @@
 CREATE TABLE page2 (
   tenantId NUMERIC(19, 0) NOT NULL,
   id NUMERIC(19, 0) NOT NULL,
-  name NVARCHAR(512) NOT NULL,
+  name NVARCHAR(50) NOT NULL,
   displayName NVARCHAR(255) NOT NULL,
   description NVARCHAR(MAX),
   installationDate NUMERIC(19, 0) NOT NULL,

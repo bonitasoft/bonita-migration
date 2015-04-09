@@ -1,7 +1,7 @@
 CREATE TABLE page2 (
   tenantId NUMBER(19, 0) NOT NULL,
   id NUMBER(19, 0) NOT NULL,
-  name VARCHAR2(512 CHAR) NOT NULL,
+  name VARCHAR2(50 CHAR) NOT NULL,
   displayName VARCHAR2(255 CHAR) NOT NULL,
   description VARCHAR2(1024 CHAR),
   installationDate NUMBER(19, 0) NOT NULL,
@@ -11,8 +11,8 @@ CREATE TABLE page2 (
   lastUpdatedBy NUMBER(19, 0) NOT NULL,
   contentName VARCHAR2(50 CHAR) NOT NULL,
   content BLOB,
-  contentType VARCHAR(50 CHAR),
-  processDefinitionId BIGINT
+  contentType VARCHAR2(50 CHAR),
+  processDefinitionId NUMBER(19, 0)
 )
 @@
 
