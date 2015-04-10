@@ -6,6 +6,8 @@ def currentDir = ""
 def File newClientBonitaHome = new File(newBonitaHome, "/client/")
 def File oldClientBonitaHome = new File(bonitaHome, "/client/")
 
+IOUtil.copyDirectory(new File(newBonitaHome,"/engine-client/"),new File(bonitaHome,"/engine-client/"))
+
 //deactivate the security if it was not active
 println "Check if security was enabled"
 def oldSecurityFile = new File(oldClientBonitaHome.path + "/platform/tenant-template/conf/security-config.properties")

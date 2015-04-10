@@ -3,18 +3,25 @@ import org.bonitasoft.migration.core.MigrationUtil
 
 def currentDir = ""
 
-def File newServerBonitaHome = new File(newBonitaHome, "/server/");
-def File oldServerBonitaHome = new File(bonitaHome, "/server/");
+def File newBonitaHome = new File(newBonitaHome, "/engine-server/")
+def File newBonitaHomeDestination = new File(bonitaHome, "/engine-server/")
+def File bonitaHomeToMigrate = new File(bonitaHome, "/server/")
+
+IOUtil.copyDirectory(bonitaHomeToMigrate, newBonitaHomeDestination)
+IOUtil.deleteDirectory(bonitaHomeToMigrate)
+bonitaHomeToMigrate = newBonitaHomeDestination
+MigrationUtil.migrateDirectory(newBonitaHome.path + currentDir, bonitaHomeToMigrate.path + currentDir, true)
+
 
 
 currentDir = "/platform/conf"
-MigrationUtil.migrateDirectory(newServerBonitaHome.path + currentDir, oldServerBonitaHome.path + currentDir, true)
+MigrationUtil.migrateDirectory(newBonitaHome.path + currentDir, bonitaHomeToMigrate.path + currentDir, true)
 
 currentDir = "/platform/tenant-template"
-MigrationUtil.migrateDirectory(newServerBonitaHome.path + currentDir, oldServerBonitaHome.path + currentDir, true)
+MigrationUtil.migrateDirectory(newBonitaHome.path + currentDir, bonitaHomeToMigrate.path + currentDir, true)
 
 println "Detecting tenants..."
-def tenantsServerDir = new File(oldServerBonitaHome, "/tenants")
+def tenantsServerDir = new File(bonitaHomeToMigrate, "/tenants")
 if (tenantsServerDir.exists()) {
     def tenants = Arrays.asList(tenantsServerDir.listFiles());
     if (tenants.empty) {
@@ -24,7 +31,7 @@ if (tenantsServerDir.exists()) {
         tenantsServerDir.eachFile { tenant ->
             println "For tenant : " + tenant.name
             IOUtil.executeWrappedWithTabs {
-                MigrationUtil.migrateDirectory(newServerBonitaHome.path + "/platform/tenant-template/conf", tenant.path + "/conf", true)
+                MigrationUtil.migrateDirectory(newBonitaHome.path + "/platform/tenant-template/conf", tenant.path + "/conf", true)
             }
         }
     }
