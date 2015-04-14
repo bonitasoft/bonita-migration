@@ -162,7 +162,7 @@ public class SimpleDatabaseChecker7_0_0 extends SimpleDatabaseChecker6_4_0 {
         final SearchResult<FormMapping> searchResult = getProcessConfigurationAPI().searchFormMappings(new SearchOptionsBuilder(0, 10).done());
         assertThat(searchResult.getCount()).as("search results retrieved are not what they should be : %s", searchResult.getResult()).isEqualTo(3);
         assertThat(searchResult.getResult()).as("search results retrieved are not what they should be : %s", searchResult.getResult()).hasSize(3)
-                .extracting("task", "processDefinitionId", "type", "target", "pageURL").contains(
+                .extracting("task", "processDefinitionId", "type", "target", "URL").contains(
                         tuple(taskName, pDef.getId(), FormMappingType.TASK, FormMappingTarget.URL, HTTP_SOME_URL_COM),
                         tuple(null, pDef.getId(), FormMappingType.PROCESS_START, FormMappingTarget.LEGACY, null),
                         tuple(null, pDef.getId(), FormMappingType.PROCESS_OVERVIEW, FormMappingTarget.LEGACY, null)
