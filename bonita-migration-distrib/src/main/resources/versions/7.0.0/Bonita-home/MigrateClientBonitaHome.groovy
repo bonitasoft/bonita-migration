@@ -3,7 +3,8 @@ import org.bonitasoft.migration.core.IOUtil;
 
 def currentDir = ""
 
-def File newClientBonitaHome = new File(newBonitaHome, "/client/")
+def File newWebClientBonitaHome = new File(newBonitaHome, "/client/")
+def File newEngineClientBonitaHome = new File(newBonitaHome, "/engine-client/")
 def File oldClientBonitaHome = new File(bonitaHome, "/client/")
 
 IOUtil.copyDirectory(new File(newBonitaHome,"/engine-client/"),new File(bonitaHome,"/engine-client/"))
