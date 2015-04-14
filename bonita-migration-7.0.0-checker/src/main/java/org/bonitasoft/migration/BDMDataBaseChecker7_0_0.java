@@ -17,6 +17,8 @@ import org.bonitasoft.engine.bdm.model.Query;
 import org.bonitasoft.engine.bdm.model.field.FieldType;
 import org.bonitasoft.engine.bdm.model.field.RelationField;
 import org.bonitasoft.engine.bdm.model.field.SimpleField;
+import org.bonitasoft.engine.bpm.bar.BusinessArchive;
+import org.bonitasoft.engine.bpm.bar.BusinessArchiveBuilder;
 import org.bonitasoft.engine.bpm.process.ProcessDefinition;
 import org.bonitasoft.engine.bpm.process.ProcessInstance;
 import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder;
@@ -82,7 +84,7 @@ public class BDMDataBaseChecker7_0_0 {
                 .append(EMPLOYEE_QUALIFIED_NAME).append("; Employee e = new Employee(); e.firstName = 'Jane'; e.lastName = 'Doe'; return e;").toString(),
                 EMPLOYEE_QUALIFIED_NAME);
 
-        final ProcessDefinitionBuilder processDefinitionBuilder = new ProcessDefinitionBuilder().createNewInstance("test", "1.2-alpha");
+        final ProcessDefinitionBuilder processDefinitionBuilder = new ProcessDefinitionBuilder().createNewInstance("processWithBdm", "7.0.0");
         processDefinitionBuilder.addBusinessData("myEmployee", EMPLOYEE_QUALIFIED_NAME, employeeExpression);
         final String secondBizData = "people";
         processDefinitionBuilder.addBusinessData(secondBizData, EMPLOYEE_QUALIFIED_NAME, null);
@@ -94,7 +96,13 @@ public class BDMDataBaseChecker7_0_0 {
         processDefinitionBuilder.addUserTask(STEP_2, ACTOR_NAME);
         processDefinitionBuilder.addTransition(STEP_1, STEP_2);
 
-        final ProcessDefinition definition = apiTestUtil.deployAndEnableProcessWithActor(processDefinitionBuilder.done(), ACTOR_NAME, user);
+        final BusinessArchive businessArchive = new BusinessArchiveBuilder().createNewBusinessArchive()
+                .setFormMappings(SimpleDatabaseChecker7_0_0.createDefaultProcessFormMapping(processDefinitionBuilder.getProcess()))
+                .setProcessDefinition(processDefinitionBuilder.getProcess())
+                .done();
+        final ProcessDefinition definition = apiTestUtil.getProcessAPI().deploy(businessArchive);
+        apiTestUtil.getProcessAPI().addUserToActor(ACTOR_NAME, definition, user.getId());
+        apiTestUtil.getProcessAPI().enableProcess(definition.getId());
         final ProcessInstance processInstance = apiTestUtil.getProcessAPI().startProcess(definition.getId());
 
         final long stepId = apiTestUtil.waitForUserTask(processInstance.getId(), STEP_1);
