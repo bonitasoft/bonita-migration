@@ -18,6 +18,7 @@ import static org.assertj.core.api.Assertions.*;
 import org.bonitasoft.engine.bpm.flownode.HumanTaskInstance;
 import org.bonitasoft.engine.bpm.process.ProcessInstance;
 import org.bonitasoft.engine.bpm.process.ProcessInstanceSearchDescriptor;
+import org.bonitasoft.engine.exception.SearchException;
 import org.bonitasoft.engine.identity.User;
 import org.bonitasoft.engine.search.SearchOptionsBuilder;
 import org.bonitasoft.engine.search.SearchResult;
@@ -40,9 +41,7 @@ public class SimpleDatabaseChecker6_3_1 extends DatabaseCheckerInitiliazer6_3_1 
         getProcessAPI().startProcess(processDefinitionId);
 
         //when
-        final SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 10);
-        builder.filter(ProcessInstanceSearchDescriptor.PROCESS_DEFINITION_ID, processDefinitionId);
-        final SearchResult<ProcessInstance> searchResult = getProcessAPI().searchProcessInstances(builder.done());
+        final SearchResult<ProcessInstance> searchResult = getProcessInstancesOfDefinition(processDefinitionId);
 
         //then (there are two instance, one created before migration and one created after migration)
         assertThat(searchResult.getCount()).isEqualTo(2);
@@ -59,6 +58,12 @@ public class SimpleDatabaseChecker6_3_1 extends DatabaseCheckerInitiliazer6_3_1 
         for (final ProcessInstance processInstance : searchResult.getResult()) {
             waitForProcessToFinish(processInstance.getId(), APITestUtil.DEFAULT_TIMEOUT);
         }
+    }
+
+    protected SearchResult<ProcessInstance> getProcessInstancesOfDefinition(final long processDefinitionId) throws SearchException {
+        final SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 100);
+        builder.filter(ProcessInstanceSearchDescriptor.PROCESS_DEFINITION_ID, processDefinitionId);
+        return getProcessAPI().searchProcessInstances(builder.done());
     }
 
 }

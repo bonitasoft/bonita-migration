@@ -122,5 +122,10 @@ public class SimpleDatabaseChecker6_5_0 extends DatabaseChecker6_4_2 {
         // from version 6.5.0 commands are automatically updated by command service.. this test is no longer necessary
     }
 
+    @Override
+    public void check_profiles() throws Exception {
+        //no need to check profiles
+    }
+
 
 }
