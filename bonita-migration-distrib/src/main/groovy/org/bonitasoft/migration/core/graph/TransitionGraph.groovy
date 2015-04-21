@@ -33,7 +33,7 @@ public class TransitionGraph {
     List<Transition> transitions = [];
 
     TransitionGraph(List<String> transitionNames){
-        transitions = transitionNames.collect {
+        transitions = transitionNames.findAll { it.contains("-") }.collect {
             def split = it.split("-")
             new Transition(source:split[0], target:split[1])
         }
