@@ -1,0 +1,15 @@
+CREATE TABLE tenant (
+  id BIGINT NOT NULL,
+  PRIMARY KEY (id)
+) ENGINE = INNODB;
+
+CREATE TABLE flownode_instance (
+tenantid BIGINT NOT NULL,
+id BIGINT NOT NULL,
+kind VARCHAR(25) NOT NULL,
+stateId INT NOT NULL,
+stateName VARCHAR(50),
+terminal BOOLEAN NOT NULL,
+stable BOOLEAN ,
+PRIMARY KEY (tenantid, id)
+) ENGINE = INNODB;
