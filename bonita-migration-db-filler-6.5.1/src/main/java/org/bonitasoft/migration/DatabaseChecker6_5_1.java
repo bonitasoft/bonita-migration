@@ -18,7 +18,7 @@ import org.dom4j.io.SAXReader;
 import org.junit.runner.JUnitCore;
 
 
-public class DatabaseChecker6_5_1 extends DatabaseChecker6_5_0 {
+public class DatabaseChecker6_5_1 extends SimpleDatabaseChecker6_5_0 {
     
     public static void main(final String[] args) throws Exception {
         JUnitCore.main(DatabaseChecker6_5_1.class.getName());
@@ -29,8 +29,4 @@ public class DatabaseChecker6_5_1 extends DatabaseChecker6_5_0 {
         return reader.read(DatabaseChecker6_5_0.class.getResource("profiles.xml"));
     }
 
-    @Override
-    public void check_profiles() throws Exception {
-        //no need to check profiles
-    }
 }
