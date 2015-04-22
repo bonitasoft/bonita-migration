@@ -1,0 +1,1 @@
+remove foreign key to improve tenant resume process (mysql only)
