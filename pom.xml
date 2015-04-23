@@ -33,6 +33,8 @@
         <module>bonita-migration-db-filler-6.5.0</module>
         <module>bonita-migration-db-filler-6.5.1</module>
         <module>bonita-migration-db-filler-6.5.2</module>
+        <module>bonita-migration-7.0.0-filler</module>
+        <module>bonita-migration-7.0.0-checker</module>
         <module>bonita-migration-scripts-integration-tests</module>
   </modules>
 
@@ -45,9 +47,9 @@
         <!-- specify the previous version of that is migrated -->
         <previous.bonita.version>6.5.1</previous.bonita.version>
         <!-- specify the in developpement version of bonita -->
-		<current.bonita.version>6.5.1-SNAPSHOT</current.bonita.version>
+		<current.bonita.version>7.0.0-SNAPSHOT</current.bonita.version>
         <!-- specify the name of the release next release of bonita that will be migrated -->
-		<next.bonita.version>6.5.2</next.bonita.version>
+		<next.bonita.version>7.0.0</next.bonita.version>
     </properties>
 
     <dependencyManagement>
@@ -152,7 +154,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
-                    <version>1.2</version>
+                    <version>1.3.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

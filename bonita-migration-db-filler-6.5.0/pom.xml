@@ -39,6 +39,11 @@
             <artifactId>bonita-server-test-utils</artifactId>
 			<version>${bonita.version}</version>
 		</dependency>
+        <dependency>
+            <groupId>org.bonitasoft.engine.test</groupId>
+            <artifactId>bonita-server-test-utils</artifactId>
+            <version>${bonita.version}</version>
+        </dependency>
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>

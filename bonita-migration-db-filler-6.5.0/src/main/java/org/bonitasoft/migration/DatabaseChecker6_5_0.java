@@ -56,7 +56,7 @@ public class DatabaseChecker6_5_0 extends SimpleDatabaseChecker6_5_0 {
     }
 
     @Test
-    public void can_creatte_FlowNodeInstance_with_several_non_ascii_characters() throws Exception {
+    public void can_create_FlowNodeInstance_with_several_non_ascii_characters() throws Exception {
         final User user = getApiTestUtil().createUser("tom", "bpm");
 
         final String taskDisplayName = "Žingsnis, kuriame paraiškos teikėjas gali laisvai užpildyti duomenis, ąčęė";
@@ -80,9 +80,9 @@ public class DatabaseChecker6_5_0 extends SimpleDatabaseChecker6_5_0 {
 
     @Test
     public void user_should_keep_there_last_connection_date() throws UserNotFoundException {
-        IdentityAPI identityAPI = getApiTestUtil().getIdentityAPI();
-        User userWithLoginDate = identityAPI.getUserByUserName("userWithLoginDate");
-        User userWithoutLoginDate = identityAPI.getUserByUserName("userWithoutLoginDate");
+        final IdentityAPI identityAPI = getApiTestUtil().getIdentityAPI();
+        final User userWithLoginDate = identityAPI.getUserByUserName("userWithLoginDate");
+        final User userWithoutLoginDate = identityAPI.getUserByUserName("userWithoutLoginDate");
         assertThat(userWithLoginDate.getLastConnection()).isBefore(new Date());
         assertThat(userWithoutLoginDate.getLastConnection()).isNull();
 

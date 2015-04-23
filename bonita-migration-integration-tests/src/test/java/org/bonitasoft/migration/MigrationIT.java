@@ -1,5 +1,7 @@
 package org.bonitasoft.migration;
 
+import java.lang.System;
+
 import junit.framework.JUnit4TestAdapter;
 import junit.framework.TestSuite;
 
