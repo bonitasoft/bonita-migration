@@ -69,8 +69,12 @@ class DBUnitHelper {
     }
 
     def static String[] createTables(sql, String feature) {
+        createTables(sql, "6_4_0", feature);
+    }
+
+    def static String[] createTables(sql, String version, String feature) {
         println "Create tables of $feature"
-        getCreateTables("6_4_0", feature).text.split("@@").each({ stmt ->
+        getCreateTables(version, feature).text.split("@@").each({ stmt ->
             sql.execute(stmt)
         })
     }
