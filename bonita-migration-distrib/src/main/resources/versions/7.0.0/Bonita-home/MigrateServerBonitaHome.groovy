@@ -29,10 +29,8 @@ tenantsFolder.listFiles().each { tenantFolder ->
     //Copy:  X -> engine-server/conf/tenants/template/* -> engine-server/conf/tenants/X/.
     IOUtil.copyDirectory(new File(newBonitaHomeDestination.path + "/conf/tenants/template"), new File(newBonitaHomeDestination.path + "/conf/tenants/$tenantId"));
 }
-def File licensesFolder = new File(bonitaHomeToMigrate.path + "/server/licenses");
-if(licensesFolder.exists()){
-    IOUtil.copyDirectory(licensesFolder, new File(newBonitaHomeDestination.path + "/server/licenses"))
-}
+IOUtil.deleteDirectory(tenantsFolder)
+IOUtil.deleteDirectory(new File(bonitaHomeToMigrate.path + "/platform/"))
 
 def move(File src, File dest) {
     if (src.exists()) {
@@ -44,4 +42,3 @@ def move(File src, File dest) {
     }
 }
 
-IOUtil.deleteDirectory(bonitaHomeToMigrate)
