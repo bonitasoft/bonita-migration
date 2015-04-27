@@ -8,7 +8,6 @@ def File bonitaHomeToMigrate = new File(bonitaHome, "/server/")
 
 //Copy original engine-server
 IOUtil.copyDirectory(newBonitaHome, newBonitaHomeDestination);
-IOUtil.copyDirectory(bonitaHomeToMigrate, new File(bonitaHome, "server_6.x") );
 
 
 move(new File(bonitaHomeToMigrate.path + "/platform/work"), new File(newBonitaHomeDestination.path + "/work/platform"))
@@ -29,6 +28,10 @@ tenantsFolder.listFiles().each { tenantFolder ->
     IOUtil.copyDirectory(new File(newBonitaHomeDestination.path + "/work/tenants/template"), new File(newBonitaHomeDestination.path + "/work/tenants/$tenantId"));
     //Copy:  X -> engine-server/conf/tenants/template/* -> engine-server/conf/tenants/X/.
     IOUtil.copyDirectory(new File(newBonitaHomeDestination.path + "/conf/tenants/template"), new File(newBonitaHomeDestination.path + "/conf/tenants/$tenantId"));
+}
+def File licensesFolder = new File(bonitaHomeToMigrate.path + "/server/licenses");
+if(licensesFolder.exists()){
+    IOUtil.copyDirectory(licensesFolder, new File(newBonitaHomeDestination.path + "/server/licenses"))
 }
 
 def move(File src, File dest) {
