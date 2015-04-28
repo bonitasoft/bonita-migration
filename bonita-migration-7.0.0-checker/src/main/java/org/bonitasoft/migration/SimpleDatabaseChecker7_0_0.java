@@ -10,10 +10,12 @@
  * You should have received a copy of the GNU Lesser General Public License along with this
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
- **/
+ */
 package org.bonitasoft.migration;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.tuple;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -23,6 +25,7 @@ import java.util.HashMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.bonitasoft.engine.LocalServerTestsInitializer;
 import org.bonitasoft.engine.api.CommandAPI;
 import org.bonitasoft.engine.api.IdentityAPI;
 import org.bonitasoft.engine.api.PageAPI;
@@ -37,14 +40,16 @@ import org.bonitasoft.engine.bpm.bar.form.model.FormMappingModel;
 import org.bonitasoft.engine.bpm.contract.ContractViolationException;
 import org.bonitasoft.engine.bpm.contract.Type;
 import org.bonitasoft.engine.bpm.flownode.ActivityDefinition;
-import org.bonitasoft.engine.bpm.flownode.HumanTaskInstance;
+import org.bonitasoft.engine.bpm.flownode.ActivityInstanceCriterion;
 import org.bonitasoft.engine.bpm.flownode.UserTaskDefinition;
 import org.bonitasoft.engine.bpm.form.FormMappingDefinitionBuilder;
 import org.bonitasoft.engine.bpm.process.DesignProcessDefinition;
 import org.bonitasoft.engine.bpm.process.ProcessDefinition;
 import org.bonitasoft.engine.bpm.process.ProcessInstance;
+import org.bonitasoft.engine.bpm.process.ProcessInstanceSearchDescriptor;
 import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder;
 import org.bonitasoft.engine.exception.BonitaException;
+import org.bonitasoft.engine.exception.SearchException;
 import org.bonitasoft.engine.form.FormMapping;
 import org.bonitasoft.engine.form.FormMappingSearchDescriptor;
 import org.bonitasoft.engine.form.FormMappingTarget;
@@ -70,36 +75,25 @@ import org.junit.Test;
 /**
  * @author Celine Souchet
  */
-public class SimpleDatabaseChecker7_0_0 extends SimpleDatabaseChecker6_4_0 {
+public class SimpleDatabaseChecker7_0_0 {
 
     public static final long PROCESS_DEFINITION_ID = 5846L;
-
-    private static final String DISPLAY_NAME = "My Päge";
-
-    private static final String CONTENT_NAME = "content.zip";
-
-    private static final String PAGE_DESCRIPTION = "page description";
     public static final String HTTP_SOME_URL_COM = "http://someUrl.com";
-
-    private ProcessAPI processAPI;
-
-    private IdentityAPI identityApi;
-
-    private CommandAPI commandApi;
-
-    private APISession session;
-
+    private static final String DISPLAY_NAME = "My Päge";
+    private static final String CONTENT_NAME = "content.zip";
+    private static final String PAGE_DESCRIPTION = "page description";
+    private static final PlatformTestUtil platformTestUtil = new PlatformTestUtil();
+    private static final APITestUtil apiTestUtil = new APITestUtil();
     protected volatile ProcessConfigurationAPI processConfigurationAPI;
-
-    private static PlatformTestUtil platformTestUtil = new PlatformTestUtil();
-
-    private static APITestUtil apiTestUtil = new APITestUtil();
-
+    private ProcessAPI processAPI;
+    private IdentityAPI identityApi;
+    private CommandAPI commandApi;
+    private APISession session;
     private PageAPI pageAPI;
 
     @BeforeClass
-    public static void setup() throws BonitaException {
-        setupSpringContext();
+    public static void setup() throws Exception {
+        LocalServerTestsInitializer.getInstance().prepareEnvironment();
         final PlatformSession platformSession = platformTestUtil.loginOnPlatform();
         final PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(platformSession);
         platformAPI.startNode();
@@ -112,16 +106,37 @@ public class SimpleDatabaseChecker7_0_0 extends SimpleDatabaseChecker6_4_0 {
     }
 
     @AfterClass
-    public static void teardown() throws BonitaException {
+    public static void teardown() throws Exception {
         apiTestUtil.logoutOnTenant();
         final PlatformSession pSession = apiTestUtil.loginOnPlatform();
         final PlatformAPI platformAPI = PlatformAPIAccessor.getPlatformAPI(pSession);
         apiTestUtil.stopPlatformAndTenant(platformAPI, false);
         apiTestUtil.logoutOnPlatform(pSession);
-        closeSpringContext();
     }
 
-    @Override
+    public static PlatformTestUtil getPlatformTestUtil() {
+        return platformTestUtil;
+    }
+
+    public static APITestUtil getApiTestUtil() {
+        return apiTestUtil;
+    }
+
+    public static FormMappingModel createDefaultProcessFormMapping(DesignProcessDefinition designProcessDefinition) {
+        FormMappingModel formMappingModel = new FormMappingModel();
+        formMappingModel.addFormMapping(FormMappingDefinitionBuilder.buildFormMapping(null, FormMappingType.PROCESS_START, FormMappingTarget.LEGACY)
+                .build());
+        formMappingModel.addFormMapping(FormMappingDefinitionBuilder.buildFormMapping(null, FormMappingType.PROCESS_OVERVIEW,
+                FormMappingTarget.LEGACY).build());
+        for (ActivityDefinition activityDefinition : designProcessDefinition.getFlowElementContainer().getActivities()) {
+            if (activityDefinition instanceof UserTaskDefinition) {
+                formMappingModel.addFormMapping(FormMappingDefinitionBuilder.buildFormMapping(HTTP_SOME_URL_COM, FormMappingType.TASK, FormMappingTarget.URL)
+                        .withTaskname(activityDefinition.getName()).build());
+            }
+        }
+        return formMappingModel;
+    }
+
     @Before
     public void before() throws BonitaException {
         getApiTestUtil().loginOnDefaultTenantWithDefaultTechnicalUser();
@@ -159,31 +174,31 @@ public class SimpleDatabaseChecker7_0_0 extends SimpleDatabaseChecker6_4_0 {
         final FormMapping formMapping = getProcessConfigurationAPI().searchFormMappings(searchOptions).getResult().get(0);
         assertThat(formMapping.getTask()).isEqualTo(taskName);
 
-        final SearchResult<FormMapping> searchResult = getProcessConfigurationAPI().searchFormMappings(new SearchOptionsBuilder(0, 10).done());
+        final SearchResult<FormMapping> searchResult = getProcessConfigurationAPI().searchFormMappings(new SearchOptionsBuilder(0, 10).filter(FormMappingSearchDescriptor.PROCESS_DEFINITION_ID, pDef.getId()).done());
         assertThat(searchResult.getCount()).as("search results retrieved are not what they should be : %s", searchResult.getResult()).isEqualTo(3);
         assertThat(searchResult.getResult()).as("search results retrieved are not what they should be : %s", searchResult.getResult()).hasSize(3)
                 .extracting("task", "processDefinitionId", "type", "target", "URL").contains(
-                        tuple(taskName, pDef.getId(), FormMappingType.TASK, FormMappingTarget.URL, HTTP_SOME_URL_COM),
-                        tuple(null, pDef.getId(), FormMappingType.PROCESS_START, FormMappingTarget.LEGACY, null),
-                        tuple(null, pDef.getId(), FormMappingType.PROCESS_OVERVIEW, FormMappingTarget.LEGACY, null)
-                );
+                tuple(taskName, pDef.getId(), FormMappingType.TASK, FormMappingTarget.URL, HTTP_SOME_URL_COM),
+                tuple(null, pDef.getId(), FormMappingType.PROCESS_START, FormMappingTarget.LEGACY, null),
+                tuple(null, pDef.getId(), FormMappingType.PROCESS_OVERVIEW, FormMappingTarget.LEGACY, null)
+        );
 
         final ProcessInstance pi = getProcessAPI().startProcess(user.getId(), pDef.getId());
-        final HumanTaskInstance task = waitForUserTask(taskName, pi.getId(), 2000);
+        final long task = apiTestUtil.waitForUserTask(pi.getId(), taskName);
         try {
-            getProcessAPI().assignUserTask(task.getId(), user.getId());
-            getProcessAPI().executeUserTask(task.getId(), new HashMap<String, Serializable>());
+            getProcessAPI().assignUserTask(task, user.getId());
+            getProcessAPI().executeUserTask(task, new HashMap<String, Serializable>());
             fail("a Constraint failed exception should have been raised");
         } catch (final ContractViolationException e) {
             System.out.println(e.getExplanations());
         }
         try {
-            getProcessAPI().executeUserTask(task.getId(), Collections.singletonMap(inputName, (Serializable) ""));
+            getProcessAPI().executeUserTask(task, Collections.singletonMap(inputName, (Serializable) ""));
         } catch (final ContractViolationException e) {
             e.printStackTrace();
             fail("Cause: " + e.getMessage() + "\n" + e.getExplanations());
         }
-        waitForProcessToFinish(pi.getId(), 3000);
+        apiTestUtil.waitForProcessToFinish(pi.getId());
     }
 
     @Test
@@ -214,6 +229,47 @@ public class SimpleDatabaseChecker7_0_0 extends SimpleDatabaseChecker6_4_0 {
         getPageAPI().deletePage(pageWithProcessScope.getId());
     }
 
+    @Test
+    public void can_complete_the_execution_of_previous_started_process_and_start_a_new_one() throws Exception {
+        //given
+        final User user = getIdentityApi().getUserByUserName("william.jobs");
+        final long processDefinitionId = getProcessAPI().getProcessDefinitionId(SimpleDatabaseFiller6_0_2.PROCESS_NAME,
+                SimpleDatabaseFiller6_0_2.PROCESS_VERSION);
+
+        //when
+        final SearchResult<ProcessInstance> searchResult = getProcessInstancesOfDefinition(processDefinitionId);
+
+        //then (there are two instance, one created before migration and one created after migration)
+        assertThat(searchResult.getCount()).isEqualTo(1);
+        ProcessInstance processInstance = searchResult.getResult().get(0);
+
+
+        //check the process started before migration is ok
+        long taskInstance = getProcessAPI().getOpenActivityInstances(processInstance.getId(), 0, 1, ActivityInstanceCriterion.DEFAULT).get(0).getId();
+        getProcessAPI().assignUserTask(taskInstance, user.getId());
+        getProcessAPI().executeFlowNode(taskInstance);
+
+        //then
+        apiTestUtil.waitForProcessToFinish(processInstance.getId());
+
+        //check we can still start this process after migration
+        processInstance = getProcessAPI().startProcess(processDefinitionId);
+
+        //when
+        taskInstance = apiTestUtil.waitForUserTask(processInstance.getId(), SimpleDatabaseFiller6_0_2.USER_TASK_NAME);
+        getProcessAPI().assignUserTask(taskInstance, user.getId());
+        getProcessAPI().executeFlowNode(taskInstance);
+
+        //then
+        apiTestUtil.waitForProcessToFinish(processInstance.getId());
+    }
+
+    protected SearchResult<ProcessInstance> getProcessInstancesOfDefinition(final long processDefinitionId) throws SearchException {
+        final SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 100);
+        builder.filter(ProcessInstanceSearchDescriptor.PROCESS_DEFINITION_ID, processDefinitionId);
+        return getProcessAPI().searchProcessInstances(builder.done());
+    }
+
     public ProcessConfigurationAPI getProcessConfigurationAPI() throws Exception {
         if (processConfigurationAPI == null) {
             processConfigurationAPI = TenantAPIAccessor.getProcessConfigurationAPI(getSession());
@@ -221,47 +277,20 @@ public class SimpleDatabaseChecker7_0_0 extends SimpleDatabaseChecker6_4_0 {
         return processConfigurationAPI;
     }
 
-    @Override
     public ProcessAPI getProcessAPI() {
         return processAPI;
     }
 
-    @Override
     public IdentityAPI getIdentityApi() {
         return identityApi;
     }
 
-    @Override
     public CommandAPI getCommandApi() {
         return commandApi;
     }
 
-    @Override
     public APISession getSession() {
         return session;
-    }
-
-    public static PlatformTestUtil getPlatformTestUtil() {
-        return platformTestUtil;
-    }
-
-    public static APITestUtil getApiTestUtil() {
-        return apiTestUtil;
-    }
-
-    public static FormMappingModel createDefaultProcessFormMapping(DesignProcessDefinition designProcessDefinition) {
-        FormMappingModel formMappingModel = new FormMappingModel();
-        formMappingModel.addFormMapping(FormMappingDefinitionBuilder.buildFormMapping(null, FormMappingType.PROCESS_START, FormMappingTarget.LEGACY)
-                .build());
-        formMappingModel.addFormMapping(FormMappingDefinitionBuilder.buildFormMapping(null, FormMappingType.PROCESS_OVERVIEW,
-                FormMappingTarget.LEGACY).build());
-        for (ActivityDefinition activityDefinition : designProcessDefinition.getFlowElementContainer().getActivities()) {
-            if (activityDefinition instanceof UserTaskDefinition) {
-                formMappingModel.addFormMapping(FormMappingDefinitionBuilder.buildFormMapping(HTTP_SOME_URL_COM, FormMappingType.TASK, FormMappingTarget.URL)
-                        .withTaskname(activityDefinition.getName()).build());
-            }
-        }
-        return formMappingModel;
     }
 
     public PageAPI getPageAPI() {
@@ -277,17 +306,7 @@ public class SimpleDatabaseChecker7_0_0 extends SimpleDatabaseChecker6_4_0 {
             zos.write("return \"\";".getBytes());
 
             zos.putNextEntry(new ZipEntry("page.properties"));
-            final StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("name=");
-            stringBuilder.append(pageName);
-            stringBuilder.append("\n");
-            stringBuilder.append("displayName=");
-            stringBuilder.append(displayName);
-            stringBuilder.append("\n");
-            stringBuilder.append("description=");
-            stringBuilder.append(description);
-            stringBuilder.append("\n");
-            zos.write(stringBuilder.toString().getBytes());
+            zos.write(("name=" + pageName + "\n" + "displayName=" + displayName + "\n" + "description=" + description + "\n").getBytes());
 
             zos.closeEntry();
             return baos.toByteArray();
