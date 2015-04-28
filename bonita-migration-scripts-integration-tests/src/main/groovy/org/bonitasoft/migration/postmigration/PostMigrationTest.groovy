@@ -56,7 +56,10 @@ class PostMigrationTest extends TestSuite {
 
     public static String getCurrentBonitaVersion() {
         def s = File.separator;
-        def File versionFile = new File(System.getProperty("bonita.home"), "server${s}platform${s}conf${s}VERSION");
+        def File versionFile = new File(System.getProperty("bonita.home"), "engine-server${s}work${s}platform${s}VERSION");
+        if(!versionFile.exists()){
+            versionFile = new File(System.getProperty("bonita.home"), "server${s}platform${s}conf${s}VERSION");
+        }
         return versionFile.exists() ? versionFile.text : null;
     }
 }
