@@ -49,25 +49,35 @@ public class DatabaseChecker7_0_0 extends SimpleDatabaseChecker7_0_0 {
         getApiTestUtil().loginOnDefaultTenantWithDefaultTechnicalUser();
         long processWithForms = getApiTestUtil().getProcessAPI().getProcessDefinitionId("ProcessWithLegacyForms", "5.0");
 
-        final SearchResult<FormMapping> formMappingSearchResult = getApiTestUtil().getProcessConfigurationAPI().searchFormMappings(new SearchOptionsBuilder(0, 10).filter(FormMappingSearchDescriptor.PROCESS_DEFINITION_ID, processWithForms).done());
+        final SearchResult<FormMapping> formMappingSearchResult = getApiTestUtil().getProcessConfigurationAPI().searchFormMappings(
+                new SearchOptionsBuilder(0, 10).filter(FormMappingSearchDescriptor.PROCESS_DEFINITION_ID, processWithForms).done());
         assertThat(formMappingSearchResult.getCount()).isEqualTo(3);
 
         final ProcessInstance processInstance = getProcessAPI().startProcess(processWithForms);
         Thread.sleep(2000);
-        final ActivityInstance activityInstance = getProcessAPI().getOpenActivityInstances(processInstance.getId(), 0, 1, ActivityInstanceCriterion.DEFAULT).get(0);
+        final ActivityInstance activityInstance = getProcessAPI().getOpenActivityInstances(processInstance.getId(), 0, 1, ActivityInstanceCriterion.DEFAULT)
+                .get(0);
 
-
-        final String url = getProcessConfigurationAPI().resolvePageOrURL("processInstance/ProcessWithLegacyForms/5.0", getStringSerializableMap(processInstance.getId())).getUrl();
-        final String url1 = getProcessConfigurationAPI().resolvePageOrURL("process/ProcessWithLegacyForms/5.0", getStringSerializableMap(processWithForms)).getUrl();
-        final String url2 = getProcessConfigurationAPI().resolvePageOrURL("taskInstance/ProcessWithLegacyForms/5.0/myUserTask", getStringSerializableMap(activityInstance.getId())).getUrl();
-        assertThat(url).isEqualTo("/bonita/portal/homepage?ui=form&locale=en&theme=" + processWithForms + "#mode=form&form=ProcessWithLegacyForms--5.0%24recap&instance=" + processInstance.getId() + "&recap=true");
-        assertThat(url1).isEqualTo("/bonita/portal/homepage?ui=form&locale=en&theme=" + processWithForms + "#mode=form&form=ProcessWithLegacyForms--5.0%24entry&process=" + processWithForms);
-        assertThat(url2).isEqualTo("/bonita/portal/homepage?ui=form&locale=en&theme=" + processWithForms + "#mode=form&form=ProcessWithLegacyForms--5.0--myUserTask%24entry&task=" + activityInstance.getId());
+        final String url = getProcessConfigurationAPI().resolvePageOrURL("processInstance/ProcessWithLegacyForms/5.0",
+                getStringSerializableMap(processInstance.getId()), true).getUrl();
+        final String url1 = getProcessConfigurationAPI().resolvePageOrURL("process/ProcessWithLegacyForms/5.0", getStringSerializableMap(processWithForms),
+                true).getUrl();
+        final String url2 = getProcessConfigurationAPI().resolvePageOrURL("taskInstance/ProcessWithLegacyForms/5.0/myUserTask",
+                getStringSerializableMap(activityInstance.getId()), true).getUrl();
+        assertThat(url).isEqualTo(
+                "/bonita/portal/homepage?ui=form&locale=en&theme=" + processWithForms + "#mode=form&form=ProcessWithLegacyForms--5.0%24recap&instance="
+                        + processInstance.getId() + "&recap=true");
+        assertThat(url1).isEqualTo(
+                "/bonita/portal/homepage?ui=form&locale=en&theme=" + processWithForms + "#mode=form&form=ProcessWithLegacyForms--5.0%24entry&process="
+                        + processWithForms);
+        assertThat(url2).isEqualTo(
+                "/bonita/portal/homepage?ui=form&locale=en&theme=" + processWithForms + "#mode=form&form=ProcessWithLegacyForms--5.0--myUserTask%24entry&task="
+                        + activityInstance.getId());
     }
 
     Map<String, Serializable> getStringSerializableMap(long id) {
         final Map<String, Serializable> map = new HashMap<String, Serializable>();
-        map.put("queryParameters", (Serializable) Collections.<String, Serializable>singletonMap("id", new String[]{String.valueOf(id)}));
+        map.put("queryParameters", (Serializable) Collections.<String, Serializable> singletonMap("id", new String[] { String.valueOf(id) }));
         map.put("contextPath", "/bonita");
         map.put("locale", "en");
         return map;
