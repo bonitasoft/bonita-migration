@@ -101,11 +101,11 @@ class ChangeDocumentsStructure extends DatabaseMigrationStep {
                     def version = "1";
                     sql.eachRow("SELECT id from arch_document_mapping WHERE tenantid = $tenantId AND sourceobjectid = $row.sourceobjectid ORDER BY documentCreationDate ASC") { archmapping ->
                         if (version == "1") {
-                            version++
+                            version = "2"
                             return
                         }
                         executeUpdate("UPDATE arch_document_mapping SET version = $version WHERE tenantid = $tenantId AND id = $archmapping.id ")
-                        version++
+                        version = String.valueOf(Integer.valueOf(version)+1)
                     }
                     if (version != "1") {
                         executeUpdate("UPDATE document_mapping SET version = $version WHERE tenantid = $tenantId AND id = $row.sourceobjectid ")
