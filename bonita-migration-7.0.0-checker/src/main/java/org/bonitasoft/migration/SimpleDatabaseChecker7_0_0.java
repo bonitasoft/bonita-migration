@@ -154,7 +154,7 @@ public class SimpleDatabaseChecker7_0_0 {
         //given
         final String taskName = "step1";
         final String inputName = "input";
-        builder.addUserTask(taskName, "mainActor").addContract().addSimpleInput(inputName, Type.TEXT, "should fail")
+        builder.addUserTask(taskName, "mainActor").addContract().addInput(inputName, Type.TEXT, "should fail")
                 .addConstraint("firstConstraint", "input != null", "mandatory", inputName);
 
         final User user = getIdentityApi().getUserByUserName("william.jobs");
