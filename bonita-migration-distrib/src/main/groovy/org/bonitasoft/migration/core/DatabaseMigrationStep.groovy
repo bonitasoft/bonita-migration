@@ -47,6 +47,9 @@ abstract class DatabaseMigrationStep {
     def boolean execute(String statement) {
         return sql.execute(adaptFor(statement))
     }
+    def boolean execute(String statement, List<Object> params) {
+        return sql.execute(adaptFor(statement), params)
+    }
 
     def int executeUpdate(GString statement) {
         return sql.executeUpdate(adaptFor(statement))
