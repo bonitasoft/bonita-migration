@@ -13,10 +13,11 @@
  **/
 package org.bonitasoft.migration;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.bonitasoft.engine.business.application.Application;
+import org.bonitasoft.engine.business.application.ApplicationCreator;
 import org.bonitasoft.engine.identity.User;
-import org.dom4j.Document;
-import org.dom4j.io.SAXReader;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
 
@@ -33,4 +34,14 @@ public class DatabaseChecker7_0_0 extends SimpleDatabaseChecker7_0_0 {
         getIdentityApi().deleteUser(user.getId());
     }
 
+    @Test
+    public void should_be_able_to_create_an_application_after_migration() throws Exception {
+        //when
+        Application application = getApplicationAPI().createApplication(new ApplicationCreator("app", "my application", "1.0"));
+
+        //then
+        assertThat(application).isNotNull();
+        assertThat(application.getLayoutId()).isNotNull();
+        assertThat(application.getThemeId()).isNotNull();
+    }
 }
