@@ -15,8 +15,6 @@ package org.bonitasoft.migration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.bonitasoft.engine.business.application.Application;
-import org.bonitasoft.engine.business.application.ApplicationCreator;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,12 +23,11 @@ import java.util.Map;
 import org.bonitasoft.engine.bpm.flownode.ActivityInstance;
 import org.bonitasoft.engine.bpm.flownode.ActivityInstanceCriterion;
 import org.bonitasoft.engine.bpm.process.ProcessInstance;
+import org.bonitasoft.engine.business.application.Application;
+import org.bonitasoft.engine.business.application.ApplicationCreator;
 import org.bonitasoft.engine.form.FormMapping;
 import org.bonitasoft.engine.form.FormMappingSearchDescriptor;
 import org.bonitasoft.engine.identity.User;
-import org.dom4j.Document;
-import org.dom4j.io.SAXReader;
-import org.junit.Ignore;
 import org.bonitasoft.engine.search.SearchOptionsBuilder;
 import org.bonitasoft.engine.search.SearchResult;
 import org.junit.Test;
@@ -60,7 +57,7 @@ public class DatabaseChecker7_0_0 extends SimpleDatabaseChecker7_0_0 {
         assertThat(application.getThemeId()).isNotNull();
     }
 
-	@Test
+    @Test
     public void verify_migration_of_legacy_form_add_form_mapping() throws Exception {
         getApiTestUtil().loginOnDefaultTenantWithDefaultTechnicalUser();
         long processWithForms = getApiTestUtil().getProcessAPI().getProcessDefinitionId("ProcessWithLegacyForms", "5.0");
