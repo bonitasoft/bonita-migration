@@ -26,6 +26,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.bonitasoft.engine.LocalServerTestsInitializer;
+import org.bonitasoft.engine.api.ApplicationAPI;
 import org.bonitasoft.engine.api.CommandAPI;
 import org.bonitasoft.engine.api.IdentityAPI;
 import org.bonitasoft.engine.api.PageAPI;
@@ -90,6 +91,7 @@ public class SimpleDatabaseChecker7_0_0 {
     private CommandAPI commandApi;
     private APISession session;
     private PageAPI pageAPI;
+    private ApplicationAPI applicationAPI;
 
     @BeforeClass
     public static void setup() throws Exception {
@@ -145,6 +147,7 @@ public class SimpleDatabaseChecker7_0_0 {
         identityApi = TenantAPIAccessor.getIdentityAPI(session);
         commandApi = TenantAPIAccessor.getCommandAPI(session);
         pageAPI = TenantAPIAccessor.getCustomPageAPI(session);
+        applicationAPI = TenantAPIAccessor.getLivingApplicationAPI(session);
     }
 
     @Test
@@ -295,6 +298,10 @@ public class SimpleDatabaseChecker7_0_0 {
 
     public PageAPI getPageAPI() {
         return pageAPI;
+    }
+
+    public ApplicationAPI getApplicationAPI() {
+        return applicationAPI;
     }
 
     protected byte[] createTestPageContent(final String pageName, final String displayName, final String description)
