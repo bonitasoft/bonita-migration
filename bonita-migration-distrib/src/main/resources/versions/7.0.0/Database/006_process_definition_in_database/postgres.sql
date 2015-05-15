@@ -1,0 +1,1 @@
+ALTER TABLE process_definition ADD COLUMN designContent TEXT;
