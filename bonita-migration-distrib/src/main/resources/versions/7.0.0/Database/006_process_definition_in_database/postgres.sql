@@ -1,1 +1,1 @@
-ALTER TABLE process_definition ADD designContent TEXT;
+ALTER TABLE process_definition ADD COLUMN designContent TEXT;

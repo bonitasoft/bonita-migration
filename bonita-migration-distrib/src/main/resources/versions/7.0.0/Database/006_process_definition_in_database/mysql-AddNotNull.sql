@@ -1,0 +1,1 @@
+ALTER TABLE process_definition MODIFY designContent CLOB NOT NULL;

@@ -1,0 +1,1 @@
+ALTER TABLE process_definition ALTER COLUMN designContent SET NOT NULL;
