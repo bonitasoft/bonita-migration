@@ -39,17 +39,17 @@ class ProcessDefinitionInDatabaseMigration extends DatabaseMigrationStep {
             def id = row[2]
             def long tenantIdAsLong = tenantId instanceof BigDecimal ? tenantId.longValue() : tenantId
             def long idAsLong = id instanceof BigDecimal ? id.longValue() : id
-            migrateProcess tenantId, id, tenantIdAsLong, idAsLong
+            migrateProcess tenantIdAsLong, idAsLong
         }
     }
 
-    private void migrateProcess(tenantId, id, long tenantIdAsLong, long idAsLong) {
+    def migrateProcess(long tenantId, long id) {
         def clientProcessDefinitionFile = new File(bonitaHome.getAbsolutePath() + "${s}server${s}tenants${s}${tenantId}${s}work${s}processes${s}${id}${s}process-design.xml")
         def String processContent = clientProcessDefinitionFile.text
         //add if on expressions
         processContent = addGeneratedIdsToExpressions processContent
         //put in database
-        putInDatabase processContent, tenantIdAsLong, idAsLong
+        putInDatabase processContent, tenantId, id
         //update on FS
         clientProcessDefinitionFile.write processContent
         //delete server process definition
@@ -58,7 +58,7 @@ class ProcessDefinitionInDatabaseMigration extends DatabaseMigrationStep {
 
     def putInDatabase(String processContent, long tenantId, long id) {
         execute("UPDATE process_definition SET designcontent=? WHERE tenantid=? AND processid=?", [processContent, tenantId, id])
-        println "Update process definition $id of tenant $tenantId with content ${processContent.length()}"
+        println "Put in database process definition $id of tenant $tenantId"
     }
 
     String addGeneratedIdsToExpressions(String processDefinitionContent) {
