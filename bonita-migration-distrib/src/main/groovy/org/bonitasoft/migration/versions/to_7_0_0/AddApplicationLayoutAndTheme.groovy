@@ -97,7 +97,9 @@ class AddApplicationLayoutAndTheme extends DatabaseMigrationStep {
                     ?,
                     '$contentType'
                 )"""
-        sql.executeUpdate(adaptFor(insertPageQuery), [new byte[0]])
+        //the page content will be automatically updated when the engine starts. Use a temporary value.
+        def temporaryContent = [97] as byte[]
+        sql.executeUpdate(adaptFor(insertPageQuery), [temporaryContent])
         println "page $pageName inserted on tenant $tenantId"
         return nextPageId
     }
