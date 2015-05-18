@@ -1,1 +1,1 @@
-ALTER TABLE process_definition ADD designContent CLOB;
+ALTER TABLE process_definition ADD designContent MEDIUMTEXT;
