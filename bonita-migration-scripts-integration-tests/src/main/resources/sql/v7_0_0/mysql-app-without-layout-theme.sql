@@ -29,7 +29,7 @@ CREATE TABLE page (
 
 ALTER TABLE page ADD CONSTRAINT pk_page PRIMARY KEY (tenantid, id);
 
-ess_app (
+CREATE TABLE business_app (
   tenantId BIGINT NOT NULL,
   id BIGINT NOT NULL,
   token VARCHAR(50) NOT NULL,
