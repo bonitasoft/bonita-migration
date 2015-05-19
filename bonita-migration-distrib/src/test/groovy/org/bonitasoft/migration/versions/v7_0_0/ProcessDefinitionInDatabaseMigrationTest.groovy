@@ -14,6 +14,7 @@
 
 package org.bonitasoft.migration.versions.v7_0_0
 
+import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import org.junit.Before
 import org.junit.Rule
@@ -39,6 +40,7 @@ class ProcessDefinitionInDatabaseMigrationTest {
     String dbVendor = "postgres"
     File bonitaHome
     ProcessDefinitionInDatabaseMigration migration
+    def returnId = { long id -> new GroovyRowResult(["nextId": id]) }
 
     @Before
     void before(){
@@ -59,6 +61,10 @@ class ProcessDefinitionInDatabaseMigrationTest {
 
     @Test
     public void migrate_write_migrated_content_from_database() {
+        def tenantId = 12l
+        def processId = 25l
+        when(sql.firstRow(any(GString.class))).thenReturn(returnId(555l));
+
         def processFolder = new File(bonitaHome.getAbsolutePath() + "/server/tenants/12/work/processes/25/")
         processFolder.mkdirs()
         def xmlFile = new File(processFolder, "process-design.xml")
@@ -68,12 +74,14 @@ class ProcessDefinitionInDatabaseMigrationTest {
         serverProcessDef.text = "the server process definition"
 
 
-        migration.migrateProcess(12, 25)
+
+        migration.migrateProcess(tenantId, processId)
 
         assert !serverProcessDef.exists()
         assert xmlFile.exists()
         assert !xmlFile.text.equals(processBeforeMigration)
-        verify(sql).execute("UPDATE process_definition SET designcontent=? WHERE tenantid=? AND processid=?",[xmlFile.text, 12l, 25l])
+        verify(sql).execute("INSERT INTO process_content (tenantId, id, content) VALUES (?, ?, ?)",[tenantId, 555l, xmlFile.text])
+        verify(sql).execute("UPDATE process_definition SET content_tenantid=?, content_id=?  WHERE tenantid=? AND processid=?",[tenantId, 555l, tenantId, processId])
     }
 
 }

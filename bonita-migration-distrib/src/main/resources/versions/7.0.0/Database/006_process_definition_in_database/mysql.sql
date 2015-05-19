@@ -1,1 +1,0 @@
-ALTER TABLE process_definition ADD designContent MEDIUMTEXT;
