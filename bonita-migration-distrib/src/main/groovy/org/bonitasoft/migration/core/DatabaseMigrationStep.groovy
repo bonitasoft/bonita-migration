@@ -206,28 +206,6 @@ END""")
                 execute("ALTER TABLE $table DROP CONSTRAINT $name")
         }
     }
-/*
-    def addForeignKey(String table, String name, String[] columns, String otherTables, String[] otherColumns, boolean onDeleteCascade) {
-        switch (dbVendor) {
-            case "mysql":
-                execute("ALTER TABLE $table DROP FOREIGN KEY $name")
-                break;
-            default:
-                execute("ALTER TABLE $table ADD CONSTRAINT $name FOREIGN KEY ${parenthesize(columns)} REFERENCES ${otherTables}${parenthesize(otherColumns)} ${onDeleteCascade?"ON DELETE CASCADE":""}")
-
-        }
-    }
-
-    def String parenthesize(String[] list){
-        def res= "(";
-        list.eachWithIndex { String entry, int i ->
-            res += "entry"
-            if(i<list.size()-1){
-                res += ", "
-            }
-        }
-        return res + ")"
-    }*/
 
 
 
