@@ -16,6 +16,7 @@ package org.bonitasoft.migration.versions.v7_0_0
 
 import groovy.sql.Sql
 import org.bonitasoft.migration.core.DatabaseMigrationStep
+import org.bonitasoft.migration.core.MigrationUtil
 import org.codehaus.groovy.runtime.InvokerHelper
 
 /**
@@ -23,6 +24,7 @@ import org.codehaus.groovy.runtime.InvokerHelper
  */
 class ProcessDefinitionInDatabaseMigration extends DatabaseMigrationStep {
 
+    static long SEQUENCE_ID = 10310
     File bonitaHome
     String s = File.separator
 
@@ -33,6 +35,11 @@ class ProcessDefinitionInDatabaseMigration extends DatabaseMigrationStep {
 
     @Override
     def migrate() {
+        sql.eachRow "SELECT id FROM tenant ORDER BY id ASC" ,{row ->
+            def tenantId = row[0]
+            def long tenantIdAsLong = tenantId instanceof BigDecimal ? tenantId.longValue() : tenantId
+            execute("INSERT INTO sequence VALUES(?, 10310, 1)",[tenantIdAsLong])
+        }
         //migrate processes
         sql.eachRow "SELECT * from process_definition", { row ->
             def tenantId = row[0]
@@ -57,8 +64,10 @@ class ProcessDefinitionInDatabaseMigration extends DatabaseMigrationStep {
     }
 
     def putInDatabase(String processContent, long tenantId, long id) {
-        execute("UPDATE process_definition SET designcontent=? WHERE tenantid=? AND processid=?", [processContent, tenantId, id])
-        println "Put in database process definition $id of tenant $tenantId"
+        def processContentId = getAndUpdateNextSequenceId(SEQUENCE_ID, tenantId)
+        execute("INSERT INTO process_content (tenantId, id, content) VALUES (?, ?, ?)", [tenantId, processContentId, processContent])
+        execute("UPDATE process_definition SET content_tenantid=?, content_id=?  WHERE tenantid=? AND processid=?", [tenantId, processContentId, tenantId, id])
+        println "Create process content with id $processContentId for  process definition $id of tenant $tenantId"
     }
 
     String addGeneratedIdsToExpressions(String processDefinitionContent) {
