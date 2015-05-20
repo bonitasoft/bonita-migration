@@ -8,4 +8,4 @@ CREATE TABLE process_content (
   content NVARCHAR(MAX) NOT NULL,
   PRIMARY KEY (tenantid, id)
 )
-GO
+@@
