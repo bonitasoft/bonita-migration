@@ -1,4 +1,4 @@
-import org.bonitasoft.migration.versions.to_7_0_0.AddApplicationLayoutAndThemeColumns
+import org.bonitasoft.migration.versions.to_7_0_0.AddApplicationLayoutAndTheme
 
-new AddApplicationLayoutAndThemeColumns(sql, dbVendor).migrate()
+new AddApplicationLayoutAndTheme(sql, dbVendor).migrate()
 
