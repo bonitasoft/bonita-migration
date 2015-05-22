@@ -15,21 +15,11 @@ package ${package};
 
 import java.io.InputStream;
 
-import org.bonitasoft.engine.exception.BonitaException;
-import org.bonitasoft.engine.test.PlatformTestUtil;
-import org.bonitasoft.migration.DatabaseFiller6_4_0;
-
-public class DatabaseFiller${db-filler-suffix} extends SimpleDatabaseFiller6_4_0 {
+public class DatabaseFiller${db-filler-suffix} extends DatabaseFiller6_4_2 {
 
     public static void main(final String[] args) throws Exception {
         DatabaseFiller${db-filler-suffix} databaseFiller = new DatabaseFiller${db-filler-suffix}();
         databaseFiller.execute(1, 1, 1, 1);
     }
-    
-    @Override
-    protected InputStream getProfilesXMLStream() {
-        return DatabaseFiller${db-filler-suffix}.class.getResourceAsStream("profiles.xml");
-    }
-
     
 }

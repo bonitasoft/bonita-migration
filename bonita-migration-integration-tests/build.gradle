@@ -7,7 +7,7 @@ subprojects {
     apply plugin: 'maven'
 
 group = 'org.bonitasoft.migration'
-version = '1.19.0-SNAPSHOT'
+version = '1.22.0-SNAPSHOT'
 
     sourceCompatibility = 1.6
     targetCompatibility = 1.6
@@ -38,21 +38,6 @@ version = '1.19.0-SNAPSHOT'
         databaseName = "migration"
         serverName="localhost"
         portNumber="5432"
-    }
-
-    def getDbVendorDialect = { dbvendor ->
-        if(dbvendor.equals("postgres")){
-            return "org.hibernate.dialect.PostgreSQLDialect"
-        }
-        if(dbvendor.equals("oracle")){
-            return "org.hibernate.dialect.Oracle10gDialect"
-        }
-        if(dbvendor.equals("mysql")){
-            return "org.hibernate.dialect.MySQL5InnoDBDialect"
-        }
-        if(dbvendor.equals("sqlserver")){
-            return "org.hibernate.dialect.SQLServerDialect"
-        }
     }
 
     configurations {
@@ -119,7 +104,7 @@ version = '1.19.0-SNAPSHOT'
 //drop and create the database
     task cleardb<<{
         println "Migration of $dbvendor"
-        println "dbvendor business data dialect is " + getDbVendorDialect(dbvendor)
+        println "dbvendor business data dialect is $dbvendor"
         if(dbvendor.equals("oracle")){
             println "cleaning oracle database $dbuser"
             if(dbRootUser == null || dbRootUser.isEmpty() || dbRootPassword == null || dbRootPassword.isEmpty()){
@@ -293,7 +278,7 @@ version = '1.19.0-SNAPSHOT'
                               "db.server.port":project.portNumber,
                               "db.database.name":project.databaseName,
                               "bonita.home":bonitahome,
-                              "sysprop.bonita.businessdata.hibernate.dialect": getDbVendorDialect(dbvendor)])
+                              "sysprop.bonita.bdm.db.vendor":dbvendor])
             /*jvmArgs([
                 "-Xdebug",
                 "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000"
@@ -356,7 +341,7 @@ version = '1.19.0-SNAPSHOT'
                               "bonita.home":bonitahome,
                               "target.version":targetversion,
                               "logback.configurationFile":file("logback.xml").getAbsolutePath(),
-                              "sysprop.bonita.businessdata.hibernate.dialect":getDbVendorDialect(dbvendor)])
+                              "sysprop.bonita.bdm.db.vendor":dbvendor])
             /*jvmArgs([
                 "-Xdebug",
                 "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000"

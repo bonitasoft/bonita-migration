@@ -47,6 +47,9 @@ abstract class DatabaseMigrationStep {
     def boolean execute(String statement) {
         return sql.execute(adaptFor(statement))
     }
+    def boolean execute(String statement, List<Object> params) {
+        return sql.execute(adaptFor(statement), params)
+    }
 
     def int executeUpdate(GString statement) {
         return sql.executeUpdate(adaptFor(statement))
@@ -95,28 +98,30 @@ abstract class DatabaseMigrationStep {
     }
 
     def static String adaptForMysql(String statement) {
-        def oracleStatement = statement;
-        oracleStatement = oracleStatement.replaceAll("BYTEA", "BLOB")
-        oracleStatement = oracleStatement.replaceAll("INT8", "BIGINT")
-        return oracleStatement;
+        def mysqlStatement = statement;
+        mysqlStatement = mysqlStatement.replaceAll("BYTEA", "BLOB")
+        mysqlStatement = mysqlStatement.replaceAll("INT8", "BIGINT")
+        return mysqlStatement;
     }
 
     def static String adaptForSqlServer(String statement) {
-        def oracleStatement = statement;
-        oracleStatement = oracleStatement.replaceAll("BYTEA", "VARBINARY(MAX)")
-        oracleStatement = oracleStatement.replaceAll("BLOB", "VARBINARY(MAX)")
-        oracleStatement = oracleStatement.replaceAll("BIGINT", "NUMERIC(19, 0)")
-        oracleStatement = oracleStatement.replaceAll("INT8", "NUMERIC(19, 0)")
-        oracleStatement = oracleStatement.replaceAll("VARCHAR", "NVARCHAR")
-        oracleStatement = oracleStatement.replaceAll("TEXT", "NVARCHAR(MAX)")
-        oracleStatement = oracleStatement.replaceAll("LONGVARBINARY", "BLOB")
-        oracleStatement = oracleStatement.replaceAll("DEFAULT true", "DEFAULT 1")
-        oracleStatement = oracleStatement.replaceAll("DEFAULT TRUE", "DEFAULT 1")
-        oracleStatement = oracleStatement.replaceAll("DEFAULT false", "DEFAULT 0")
-        oracleStatement = oracleStatement.replaceAll("DEFAULT FALSE", "DEFAULT 0")
-        oracleStatement = oracleStatement.replaceAll("BOOLEAN", " BIT")
-        oracleStatement = oracleStatement.replaceAll(";", "\nGO")
-        return oracleStatement;
+        def sqlServerStatement = statement;
+        sqlServerStatement = sqlServerStatement.replaceAll("BYTEA", "VARBINARY(MAX)")
+        sqlServerStatement = sqlServerStatement.replaceAll("BLOB", "VARBINARY(MAX)")
+        sqlServerStatement = sqlServerStatement.replaceAll("BIGINT", "NUMERIC(19, 0)")
+        sqlServerStatement = sqlServerStatement.replaceAll("INT8", "NUMERIC(19, 0)")
+        sqlServerStatement = sqlServerStatement.replaceAll("VARCHAR", "NVARCHAR")
+        sqlServerStatement = sqlServerStatement.replaceAll("TEXT", "NVARCHAR(MAX)")
+        sqlServerStatement = sqlServerStatement.replaceAll("LONGVARBINARY", "BLOB")
+        sqlServerStatement = sqlServerStatement.replaceAll("DEFAULT true", "DEFAULT 1")
+        sqlServerStatement = sqlServerStatement.replaceAll("DEFAULT TRUE", "DEFAULT 1")
+        sqlServerStatement = sqlServerStatement.replaceAll("DEFAULT false", "DEFAULT 0")
+        sqlServerStatement = sqlServerStatement.replaceAll("DEFAULT FALSE", "DEFAULT 0")
+        sqlServerStatement = sqlServerStatement.replaceAll("BOOLEAN", " BIT")
+        sqlServerStatement = sqlServerStatement.replaceAll("false", "0")
+        sqlServerStatement = sqlServerStatement.replaceAll("true", "1")
+        sqlServerStatement = sqlServerStatement.replaceAll(";", "\nGO")
+        return sqlServerStatement;
     }
 
     def renameColumn(String table, String oldName, String newName, String newType) {
