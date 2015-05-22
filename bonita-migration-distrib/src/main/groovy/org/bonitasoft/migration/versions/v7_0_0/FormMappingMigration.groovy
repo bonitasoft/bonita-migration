@@ -42,7 +42,6 @@ public class FormMappingMigration extends DatabaseMigrationStep {
 
     @Override
     def migrate() {
-        MigrationUtil.getNexIdsForTable(sql, PAGE_MAPPING_SEQUENCE)
         sql.eachRow "SELECT * from process_definition", { row ->
             def tenantId = row[0]
             def id = row[2]
