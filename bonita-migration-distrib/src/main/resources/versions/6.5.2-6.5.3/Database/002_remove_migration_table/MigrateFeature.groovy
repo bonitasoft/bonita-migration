@@ -1,6 +1,6 @@
 def shouldDropTable = false
 try {
-    sql.firstRow("SELECT * FROM migration_plan WHERE id=1").size()
+    sql.execute("SELECT id FROM migration_plan WHERE id=1")
     shouldDropTable = true
 } catch (Exception e) {
     // the table do not exists do nothing
