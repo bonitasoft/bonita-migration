@@ -1,2 +1,3 @@
 ALTER TABLE "PROCESS_DEFINITION" MODIFY "CONTENT_TENANTID" NUMBER(19, 0) NOT NULL@@
 ALTER TABLE "PROCESS_DEFINITION" MODIFY "CONTENT_ID" NUMBER(19, 0) NOT NULL@@
+ALTER TABLE process_definition ADD CONSTRAINT fk_process_definition_content FOREIGN KEY (content_tenantid, content_id) REFERENCES process_content(tenantid, id)@@

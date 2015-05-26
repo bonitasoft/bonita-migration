@@ -16,7 +16,6 @@ package org.bonitasoft.migration.versions.v7_0_0
 
 import groovy.sql.Sql
 import org.bonitasoft.migration.core.DatabaseMigrationStep
-import org.bonitasoft.migration.core.MigrationUtil
 import org.codehaus.groovy.runtime.InvokerHelper
 
 /**
@@ -35,10 +34,10 @@ class ProcessDefinitionInDatabaseMigration extends DatabaseMigrationStep {
 
     @Override
     def migrate() {
-        sql.eachRow "SELECT id FROM tenant ORDER BY id ASC" ,{row ->
+        sql.eachRow "SELECT id FROM tenant ORDER BY id ASC", { row ->
             def tenantId = row[0]
             def long tenantIdAsLong = tenantId instanceof BigDecimal ? tenantId.longValue() : tenantId
-            execute("INSERT INTO sequence VALUES(?, 10310, 1)",[tenantIdAsLong])
+            execute("INSERT INTO sequence VALUES(?, 10310, 1)", [tenantIdAsLong])
         }
         //migrate processes
         sql.eachRow "SELECT * from process_definition", { row ->
