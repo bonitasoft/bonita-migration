@@ -12,9 +12,8 @@
  * Floor, Boston, MA 02110-1301, USA.
  **/
 package org.bonitasoft.migration
-
 import junit.framework.TestSuite
-
+import org.bonitasoft.migration.versions.to_7_0_0.AddApplicationLayoutAndThemeIT
 import org.bonitasoft.migration.versions.v6_2_2to_6_2_3.BoundaryTokensMigrationIT
 import org.bonitasoft.migration.versions.v6_2_6_to_6_3_0.IndexExistsCheckerIT
 import org.bonitasoft.migration.versions.v6_2_6_to_6_3_0.UpdateDataMappingContraintIT
@@ -29,8 +28,6 @@ import org.bonitasoft.migration.versions.v6_4_0_to_6_4_1.AddArchDocumentMappingI
 import org.bonitasoft.migration.versions.v6_4_0_to_6_4_1.MigrateDateDataInstancesFromWrongXMLObjectIT
 import org.bonitasoft.migration.versions.v6_5_1_to_6_5_2.UpdateEventSubProcessStableFlagIT
 import org.junit.runner.JUnitCore
-
-
 /**
  * @author Elias Ricken de Medeiros
  *
@@ -56,6 +53,7 @@ class DBUnitTestSuite extends TestSuite {
         suite.addTestSuite(AddArchDocumentMappingIndexIT.class);
         suite.addTestSuite(MigrateDateDataInstancesFromWrongXMLObjectIT.class);
         suite.addTestSuite(UpdateEventSubProcessStableFlagIT.class);
-        return suite;
+        suite.addTestSuite(AddApplicationLayoutAndThemeIT.class)
+        return suite
     }
 }
