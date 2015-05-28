@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<processDefinition xmlns="http://www.bonitasoft.org/ns/process/client/6.3" bos_version="6.0-SNAPSHOT" description="" displayDescription="" name="Delete a Business Database" version="1.2">
+  <stringIndexes>
+    <stringIndex index="1"/>
+    <stringIndex index="2"/>
+    <stringIndex index="3"/>
+    <stringIndex index="4"/>
+    <stringIndex index="5"/>
+  </stringIndexes>
+  <flowElements>
+    <transitions>
+      <transition id="1294898839527472835" name="wait 30min_-&gt;_Terminate" source="-4872416875456486300" target="-8837629009284150643"/>
+      <transition id="5019577933864547075" name="Branchement1_-&gt;_Terminate" source="-9058916321716962796" target="-8837629009284150643"/>
+      <transition id="3105731682890005601" name="Search databases available_-&gt;_Branchement1" source="-8922581578157589106" target="-9058916321716962796"/>
+      <transition id="1050063645488496063" name="Start_-&gt;_Search databases available" source="-8579924808594634055" target="-8922581578157589106"/>
+      <transition id="1957774790126516614" name="Branchement1_-&gt;_Delete the business database" source="-9058916321716962796" target="-7320455753101457487">
+        <condition expressionType="TYPE_VARIABLE" name="isOK" returnType="java.lang.Boolean">
+          <content>isOK</content>
+        </condition>
+      </transition>
+      <transition id="5838959144673719999" name="Delete the business database_-&gt;_Terminate" source="-7320455753101457487" target="-8837629009284150643"/>
+    </transitions>
+    <connectors/>
+    <dataDefinitions>
+      <dataDefinition className="java.lang.Boolean" name="isOK" transient="false">
+        <defaultValue expressionType="TYPE_CONSTANT" interpreter="" name="false" returnType="java.lang.Boolean">
+          <content>false</content>
+        </defaultValue>
+      </dataDefinition>
+      <textDataDefinition className="java.lang.String" longText="true" name="dbName" transient="false"/>
+    </dataDefinitions>
+    <documentDefinitions/>
+    <flowNodes>
+      <userTask actorName="Employee actor" expectedDuration="3600000" id="-8922581578157589106" name="Search databases available" priority="NORMAL">
+        <incomingTransition idref="1050063645488496063"/>
+        <outgoingTransition idref="3105731682890005601"/>
+        <dataDefinitions>
+          <textDataDefinition className="java.lang.String" longText="true" name="userName" transient="true">
+            <defaultValue expressionType="TYPE_READ_ONLY_SCRIPT" interpreter="GROOVY" name="get userName" returnType="java.lang.String">
+              <content>BonitaUsers.getProcessInstanceInitiator(apiAccessor,rootProcessInstanceId).getUserName()</content>
+              <expression expressionType="TYPE_ENGINE_CONSTANT" interpreter="" name="apiAccessor" returnType="com.bonitasoft.engine.api.APIAccessor">
+                <content>apiAccessor</content>
+              </expression>
+              <expression expressionType="TYPE_ENGINE_CONSTANT" interpreter="" name="rootProcessInstanceId" returnType="java.lang.Long">
+                <content>rootProcessInstanceId</content>
+              </expression>
+            </defaultValue>
+          </textDataDefinition>
+        </dataDefinitions>
+        <operations/>
+        <boundaryEvents>
+          <boundaryEvent id="-4872416875456486300" interrupting="true" name="wait 30min">
+            <outgoingTransition idref="1294898839527472835"/>
+            <timerEventTrigger type="DURATION">
+              <expression expressionType="TYPE_READ_ONLY_SCRIPT" interpreter="GROOVY" name="00:30:00" returnType="java.lang.Long">
+                <content>1800000L</content>
+              </expression>
+            </timerEventTrigger>
+          </boundaryEvent>
+        </boundaryEvents>
+      </userTask>
+      <automaticTask id="-7320455753101457487" name="Delete the business database">
+        <incomingTransition idref="1957774790126516614"/>
+        <outgoingTransition idref="5838959144673719999"/>
+        <connector activationEvent="ON_FINISH" connectorId="scripting-shell" failAction="IGNORE" name="delete_business_database.py" version="1.0.0">
+          <inputs>
+            <input name="parameter">
+              <expression expressionType="TYPE_CONSTANT" interpreter="" name="-c" returnType="java.lang.String">
+                <content>-c</content>
+              </expression>
+            </input>
+            <input name="interpreter">
+              <expression expressionType="TYPE_CONSTANT" interpreter="" name="/bin/bash" returnType="java.lang.String">
+                <content>/bin/bash</content>
+              </expression>
+            </input>
+            <input name="script">
+              <expression expressionType="TYPE_PATTERN" interpreter="" name="&lt;pattern-expression&gt;" returnType="java.lang.String">
+                <content>${pathToScript}/delete_business_database.py --env ${environment} --db_name ${dbName} 2&gt;&amp;1</content>
+                <expression expressionType="TYPE_PARAMETER" name="environment" returnType="java.lang.String">
+                  <content>environment</content>
+                </expression>
+                <expression expressionType="TYPE_PARAMETER" name="pathToScript" returnType="java.lang.String">
+                  <content>pathToScript</content>
+                </expression>
+                <expression expressionType="TYPE_VARIABLE" name="dbName" returnType="java.lang.String">
+                  <content>dbName</content>
+                </expression>
+              </expression>
+            </input>
+          </inputs>
+          <outputs>
+            <operation operatorType="ASSIGNMENT">
+              <leftOperand name="tmpresult" type="TRANSIENT_DATA"/>
+              <rightOperand expressionType="TYPE_READ_ONLY_SCRIPT" interpreter="GROOVY" name="result" returnType="java.lang.String">
+                <content>if(exitStatus!=0) {
+	throw new Exception("ERROR: "+result.trim()+" (exitStatus="+exitStatus+")");
+	}
+return result.trim();</content>
+                <expression expressionType="TYPE_INPUT" name="result" returnType="java.lang.Object">
+                  <content>result</content>
+                </expression>
+                <expression expressionType="TYPE_INPUT" name="exitStatus" returnType="java.lang.Object">
+                  <content>exitStatus</content>
+                </expression>
+              </rightOperand>
+            </operation>
+          </outputs>
+        </connector>
+        <dataDefinitions>
+          <textDataDefinition className="java.lang.String" longText="true" name="tmpresult" transient="true"/>
+        </dataDefinitions>
+        <operations/>
+        <boundaryEvents/>
+      </automaticTask>
+      <gateway gatewayType="EXCLUSIVE" id="-9058916321716962796" name="Branchement1">
+        <incomingTransition idref="3105731682890005601"/>
+        <outgoingTransition idref="1957774790126516614"/>
+        <defaultTransition idref="5019577933864547075"/>
+      </gateway>
+      <startEvent id="-8579924808594634055" interrupting="true" name="Start">
+        <outgoingTransition idref="1050063645488496063"/>
+      </startEvent>
+      <endEvent id="-8837629009284150643" name="Terminate">
+        <incomingTransition idref="1294898839527472835"/>
+        <incomingTransition idref="5019577933864547075"/>
+        <incomingTransition idref="5838959144673719999"/>
+        <terminateEventTrigger/>
+      </endEvent>
+    </flowNodes>
+  </flowElements>
+  <dependencies>
+    <parameters>
+      <parameter name="datasource" type="java.lang.String">
+        <description/>
+      </parameter>
+      <parameter name="pathToScript" type="java.lang.String">
+        <description/>
+      </parameter>
+      <parameter name="environment" type="java.lang.String">
+        <description/>
+      </parameter>
+    </parameters>
+    <actors>
+      <actor name="Employee actor">
+        <description>Il s'agit d'un exemple d'acteur qui est associé à tous les utilisateurs d'ACME</description>
+      </actor>
+      <actor name="Employee actor"/>
+    </actors>
+  </dependencies>
+  <actorInitiator name="Employee actor"/>
+</processDefinition>

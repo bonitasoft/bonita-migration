@@ -23,6 +23,8 @@ import java.util.Map;
 import org.bonitasoft.engine.bpm.flownode.ActivityInstance;
 import org.bonitasoft.engine.bpm.flownode.ActivityInstanceCriterion;
 import org.bonitasoft.engine.bpm.process.ProcessInstance;
+import org.bonitasoft.engine.business.application.Application;
+import org.bonitasoft.engine.business.application.ApplicationCreator;
 import org.bonitasoft.engine.form.FormMapping;
 import org.bonitasoft.engine.form.FormMappingSearchDescriptor;
 import org.bonitasoft.engine.identity.User;
@@ -42,6 +44,17 @@ public class DatabaseChecker7_0_0 extends SimpleDatabaseChecker7_0_0 {
         final User user = getApiTestUtil().createUser("matti", "bpm");
         new BDMDataBaseChecker7_0_0().should_deploy_a_business_data_model(getApiTestUtil(), user);
         getIdentityApi().deleteUser(user.getId());
+    }
+
+    @Test
+    public void should_be_able_to_create_an_application_after_migration() throws Exception {
+        //when
+        Application application = getApplicationAPI().createApplication(new ApplicationCreator("app", "my application", "1.0"));
+
+        //then
+        assertThat(application).isNotNull();
+        assertThat(application.getLayoutId()).isNotNull();
+        assertThat(application.getThemeId()).isNotNull();
     }
 
     @Test

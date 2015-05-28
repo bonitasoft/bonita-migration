@@ -1,0 +1,1 @@
+add columns 'layoutId' and 'themeId' to table 'business_app'
