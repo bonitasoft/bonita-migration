@@ -17,7 +17,23 @@ package org.bonitasoft.migration.core
 /**
  * @author Baptiste Mesta
  */
-class MigrationRunner {
+class Migration {
+
+
+    public static void main(String[] args) {
+        new Migration().run()
+    }
+
+    public void run() {
+        setupOutputs()
+        execute()
+    }
+
+    private void setupOutputs() {
+        def logInFile = new FileOutputStream(new File("migration-" + new Date().format("yyyy-MM-dd-HHmmss") + ".log"))
+        System.setOut(new PrintStream(new SplitPrintStream(System.out, logInFile)))
+        System.setErr(new PrintStream(new SplitPrintStream(System.err, logInFile)))
+    }
 
     def execute(){
         println ''
