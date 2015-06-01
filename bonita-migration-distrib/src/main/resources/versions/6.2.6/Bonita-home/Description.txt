@@ -1,1 +1,0 @@
-Replace 6.2.5 configuration files with the 6.2.6 files. 

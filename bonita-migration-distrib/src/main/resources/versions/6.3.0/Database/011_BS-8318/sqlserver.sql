@@ -1,1 +1,0 @@
-CREATE INDEX idx_ci_container_activation ON connector_instance (tenantid, containerId, containerType, activationEvent)

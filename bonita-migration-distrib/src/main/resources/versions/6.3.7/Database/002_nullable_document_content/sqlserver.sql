@@ -1,1 +1,0 @@
-ALTER TABLE document_content ALTER COLUMN content VARBINARY(MAX) NULL

@@ -1,1 +1,0 @@
-Clean old and not used tables (p_metadata_def and p_metadata_val) and create new tables to store the custom user info (custom_usr_inf_def and custom_usr_inf_val) 

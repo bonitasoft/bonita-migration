@@ -1,7 +1,0 @@
---
--- Page
--- 
-ALTER TABLE page MODIFY name VARCHAR2(50 CHAR) @@
-ALTER TABLE page MODIFY description VARCHAR2(1024 CHAR) @@
-ALTER TABLE page MODIFY displayName VARCHAR2(255 CHAR) @@
-ALTER TABLE page MODIFY contentName VARCHAR2(50 CHAR) @@

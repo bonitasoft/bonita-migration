@@ -1,1 +1,0 @@
-SELECT * from theme WHERE isDefault = false AND type = 'PORTAL'

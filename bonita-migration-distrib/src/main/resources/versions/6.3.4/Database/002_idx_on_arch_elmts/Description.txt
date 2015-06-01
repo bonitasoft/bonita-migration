@@ -1,1 +1,0 @@
-BS-8957 : Add new indexes on archived elements table in order to delete process instances faster
