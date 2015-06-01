@@ -62,7 +62,7 @@ public class DatabaseChecker7_0_0 extends SimpleDatabaseChecker7_0_0 {
         getApiTestUtil().loginOnDefaultTenantWithDefaultTechnicalUser();
         long processWithForms = getApiTestUtil().getProcessAPI().getProcessDefinitionId("ProcessWithLegacyForms", "5.0");
 
-        final SearchResult<FormMapping> formMappingSearchResult = getApiTestUtil().getProcessConfigurationAPI().searchFormMappings(
+        final SearchResult<FormMapping> formMappingSearchResult = getApiTestUtil().getProcessAPI().searchFormMappings(
                 new SearchOptionsBuilder(0, 10).filter(FormMappingSearchDescriptor.PROCESS_DEFINITION_ID, processWithForms).done());
         assertThat(formMappingSearchResult.getCount()).isEqualTo(3);
 
@@ -71,11 +71,11 @@ public class DatabaseChecker7_0_0 extends SimpleDatabaseChecker7_0_0 {
         final ActivityInstance activityInstance = getProcessAPI().getOpenActivityInstances(processInstance.getId(), 0, 1, ActivityInstanceCriterion.DEFAULT)
                 .get(0);
 
-        final String url = getProcessConfigurationAPI().resolvePageOrURL("processInstance/ProcessWithLegacyForms/5.0",
+        final String url = getPageAPI().resolvePageOrURL("processInstance/ProcessWithLegacyForms/5.0",
                 getStringSerializableMap(processInstance.getId()), true).getUrl();
-        final String url1 = getProcessConfigurationAPI().resolvePageOrURL("process/ProcessWithLegacyForms/5.0", getStringSerializableMap(processWithForms),
+        final String url1 = getPageAPI().resolvePageOrURL("process/ProcessWithLegacyForms/5.0", getStringSerializableMap(processWithForms),
                 true).getUrl();
-        final String url2 = getProcessConfigurationAPI().resolvePageOrURL("taskInstance/ProcessWithLegacyForms/5.0/myUserTask",
+        final String url2 = getPageAPI().resolvePageOrURL("taskInstance/ProcessWithLegacyForms/5.0/myUserTask",
                 getStringSerializableMap(activityInstance.getId()), true).getUrl();
         assertThat(url).isEqualTo(
                 "/bonita/portal/homepage?ui=form&locale=en&theme=" + processWithForms + "#mode=form&form=ProcessWithLegacyForms--5.0%24recap&instance="

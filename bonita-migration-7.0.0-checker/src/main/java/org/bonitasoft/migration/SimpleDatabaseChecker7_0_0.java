@@ -33,7 +33,6 @@ import org.bonitasoft.engine.api.PageAPI;
 import org.bonitasoft.engine.api.PlatformAPI;
 import org.bonitasoft.engine.api.PlatformAPIAccessor;
 import org.bonitasoft.engine.api.ProcessAPI;
-import org.bonitasoft.engine.api.ProcessConfigurationAPI;
 import org.bonitasoft.engine.api.TenantAPIAccessor;
 import org.bonitasoft.engine.bpm.bar.BusinessArchive;
 import org.bonitasoft.engine.bpm.bar.BusinessArchiveBuilder;
@@ -85,7 +84,6 @@ public class SimpleDatabaseChecker7_0_0 {
     private static final String PAGE_DESCRIPTION = "page description";
     private static final PlatformTestUtil platformTestUtil = new PlatformTestUtil();
     private static final APITestUtil apiTestUtil = new APITestUtil();
-    protected volatile ProcessConfigurationAPI processConfigurationAPI;
     private ProcessAPI processAPI;
     private IdentityAPI identityApi;
     private CommandAPI commandApi;
@@ -174,17 +172,18 @@ public class SimpleDatabaseChecker7_0_0 {
                 .filter(FormMappingSearchDescriptor.PROCESS_DEFINITION_ID, pDef.getId())
                 .filter(FormMappingSearchDescriptor.TASK, "step1")
                 .done();
-        final FormMapping formMapping = getProcessConfigurationAPI().searchFormMappings(searchOptions).getResult().get(0);
+        final FormMapping formMapping = getProcessAPI().searchFormMappings(searchOptions).getResult().get(0);
         assertThat(formMapping.getTask()).isEqualTo(taskName);
 
-        final SearchResult<FormMapping> searchResult = getProcessConfigurationAPI().searchFormMappings(new SearchOptionsBuilder(0, 10).filter(FormMappingSearchDescriptor.PROCESS_DEFINITION_ID, pDef.getId()).done());
+        final SearchResult<FormMapping> searchResult = getProcessAPI().searchFormMappings(
+                new SearchOptionsBuilder(0, 10).filter(FormMappingSearchDescriptor.PROCESS_DEFINITION_ID, pDef.getId()).done());
         assertThat(searchResult.getCount()).as("search results retrieved are not what they should be : %s", searchResult.getResult()).isEqualTo(3);
         assertThat(searchResult.getResult()).as("search results retrieved are not what they should be : %s", searchResult.getResult()).hasSize(3)
                 .extracting("task", "processDefinitionId", "type", "target", "URL").contains(
-                tuple(taskName, pDef.getId(), FormMappingType.TASK, FormMappingTarget.URL, HTTP_SOME_URL_COM),
-                tuple(null, pDef.getId(), FormMappingType.PROCESS_START, FormMappingTarget.LEGACY, null),
-                tuple(null, pDef.getId(), FormMappingType.PROCESS_OVERVIEW, FormMappingTarget.LEGACY, null)
-        );
+                        tuple(taskName, pDef.getId(), FormMappingType.TASK, FormMappingTarget.URL, HTTP_SOME_URL_COM),
+                        tuple(null, pDef.getId(), FormMappingType.PROCESS_START, FormMappingTarget.LEGACY, null),
+                        tuple(null, pDef.getId(), FormMappingType.PROCESS_OVERVIEW, FormMappingTarget.LEGACY, null)
+                );
 
         final ProcessInstance pi = getProcessAPI().startProcess(user.getId(), pDef.getId());
         final long task = apiTestUtil.waitForUserTask(pi.getId(), taskName);
@@ -246,7 +245,6 @@ public class SimpleDatabaseChecker7_0_0 {
         assertThat(searchResult.getCount()).isEqualTo(1);
         ProcessInstance processInstance = searchResult.getResult().get(0);
 
-
         //check the process started before migration is ok
         long taskInstance = getProcessAPI().getOpenActivityInstances(processInstance.getId(), 0, 1, ActivityInstanceCriterion.DEFAULT).get(0).getId();
         getProcessAPI().assignUserTask(taskInstance, user.getId());
@@ -271,13 +269,6 @@ public class SimpleDatabaseChecker7_0_0 {
         final SearchOptionsBuilder builder = new SearchOptionsBuilder(0, 100);
         builder.filter(ProcessInstanceSearchDescriptor.PROCESS_DEFINITION_ID, processDefinitionId);
         return getProcessAPI().searchProcessInstances(builder.done());
-    }
-
-    public ProcessConfigurationAPI getProcessConfigurationAPI() throws Exception {
-        if (processConfigurationAPI == null) {
-            processConfigurationAPI = TenantAPIAccessor.getProcessConfigurationAPI(getSession());
-        }
-        return processConfigurationAPI;
     }
 
     public ProcessAPI getProcessAPI() {
