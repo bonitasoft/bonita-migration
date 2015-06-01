@@ -26,7 +26,8 @@ class Migration {
 
     public void run() {
         setupOutputs()
-        execute()
+        printWarning()
+        ;
     }
 
     private void setupOutputs() {
@@ -35,7 +36,8 @@ class Migration {
         System.setErr(new PrintStream(new SplitPrintStream(System.err, logInFile)))
     }
 
-    def execute(){
+
+    def printWarning() {
         println ''
         IOUtil.printInRectangle("", "Bonita BPM migration tool", "",
                 "This tool will migrate your installation of Bonita BPM.",
