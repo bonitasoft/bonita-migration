@@ -2,7 +2,7 @@ bonita-migration
 =================
 What it does?
 -------------
-this project migrate an installed bonita open solution from one version to an other
+this project migrate an installed bonita open solution from one version to another
 Configuration
 --------------
 
@@ -11,7 +11,7 @@ First change the configuration of the tool located in **Config.properties**
 
 ###Parameters required
 >     bonita.home <path to bonita home>
->     db.vendor <the kind on you database, can be [mysql,postgres,sqlserver,oracle]
+>     db.vendor <the kind of your database>, can be [mysql,postgres,sqlserver,oracle]
 >     db.url <the url of the database>
 >     db.driverclass <the class of the jdbc driver>
 >     db.user <the username to connect to the database>
