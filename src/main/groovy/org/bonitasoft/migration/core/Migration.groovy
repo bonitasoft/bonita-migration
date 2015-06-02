@@ -27,7 +27,6 @@ class Migration {
     public void run() {
         setupOutputs()
         printWarning()
-        ;
     }
 
     private void setupOutputs() {
