@@ -57,8 +57,19 @@ task addBonitaHomes(type: Copy) {
         }
     }
     //TODO add it in the real dist
-    into 'build/distributions'
+    into 'build/homes'
 
+}
+
+
+distributions {
+    main {
+        contents {
+            from('build/homes') {
+                into "bonita-home"
+            }
+        }
+    }
 }
 tasks.addBonitaHomes.dependsOn tasks.putMigrationPathsInDist
 tasks.distZip.dependsOn tasks.addBonitaHomes
