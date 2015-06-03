@@ -14,13 +14,19 @@
 
 package org.bonitasoft.migration.versions.to_7_0_0
 
+import spock.lang.Specification
+
 /**
  * @author Elias Ricken de Medeiros
  */
-interface ApplicationRetriever {
+class InvalidApplicationTokenRetrieverTest extends Specification {
 
-    String getHeader()
+    private InvalidApplicationTokenRetriever retriever  = new InvalidApplicationTokenRetriever(null, null)
 
-    List<TenantApplications> retrieveApplications()
+    def "GetHeader should return header for invalid application token"() {
+
+        expect: retriever.getHeader() == MessageUtil.buildInvalidApplicationTokenHeader()
+
+    }
 
 }

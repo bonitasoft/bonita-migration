@@ -14,13 +14,16 @@
 
 package org.bonitasoft.migration.versions.to_7_0_0
 
+import spock.lang.Specification
+
 /**
  * @author Elias Ricken de Medeiros
  */
-interface ApplicationRetriever {
+class InvalidApplicationPageTokenRetrieverTest extends Specification {
 
-    String getHeader()
+    private InvalidApplicationPageTokenRetriever retriever = new InvalidApplicationPageTokenRetriever(null, null)
 
-    List<TenantApplications> retrieveApplications()
-
+    def "GetHeader should return header for invalid application page URL token"() {
+        expect: retriever.getHeader() == MessageUtil.buildInvalidApplicationPageTokenHeader()
+    }
 }

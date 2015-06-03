@@ -84,7 +84,7 @@ class ApplicationPageRetrieverIT extends GroovyTestCase {
 
 
     public void testMigrate_should_retrieve_applications_with_forbidden_token() throws Exception {
-        def applicationWithInvalidPages = new ApplicationPageRetriever(sql, dbVendor()).retrieveApplicationsWithInvalidPages()
+        def applicationWithInvalidPages = new InvalidApplicationPageTokenRetriever(sql, dbVendor()).retrieveApplicationsWithInvalidPages()
         Assertions.assertThat(applicationWithInvalidPages).containsExactly(
                 new TenantApplications(tenantId: 1, applications:
                         [new Application(tenantId: 1, id: 10, token: "app", version: "1.0", displayName: "Application", applicationPages: [

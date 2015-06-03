@@ -22,21 +22,17 @@ import org.bonitasoft.migration.core.Reporter
 class ApplicationTokenChecker {
 
     private Reporter reporter
-    private ApplicationMessageBuilder applicationMessageBuilder
-    private ApplicationPageMessageBuilder applicationPageMessageBuilder
+    private GlobalApplicationsMessageBuilder applicationMessageBuilder
 
     ApplicationTokenChecker(
             final Reporter reporter,
-            final ApplicationMessageBuilder applicationMessageBuilder,
-            final ApplicationPageMessageBuilder applicationPageMessageBuilder) {
+            final GlobalApplicationsMessageBuilder applicationMessageBuilder) {
         this.reporter = reporter
         this.applicationMessageBuilder = applicationMessageBuilder
-        this.applicationPageMessageBuilder = applicationPageMessageBuilder
     }
 
     void processInvalidTokens() {
         handleWarning(applicationMessageBuilder.buildMessage())
-        handleWarning(applicationPageMessageBuilder.buildMessage())
     }
 
     private void handleWarning(String invalidAppTokensMsg) {

@@ -72,7 +72,7 @@ class ApplicationRetrieverIT extends GroovyTestCase {
 
 
     public void testMigrate_should_retrieve_applications_with_forbidden_token() throws Exception {
-        def invalidApplications = new ApplicationRetriever(sql, dbVendor()).retrieveInvalidApplications()
+        def invalidApplications = new InvalidApplicationTokenRetriever(sql, dbVendor()).retrieveInvalidApplications()
         Assertions.assertThat(invalidApplications).containsExactly(
                 new TenantApplications(tenantId: 1, applications:
                         [new Application(tenantId: 1, id: 12, token: "content", version: "1.0", displayName: "Content"),

@@ -22,26 +22,22 @@ import spock.lang.Specification
 class ApplicationTokenCheckerTest extends Specification {
 
     def reporter = Mock(Reporter)
-    def appMessageBuilder = Mock(ApplicationMessageBuilder)
-    def appPageMessageBuilder = Mock(ApplicationPageMessageBuilder)
+    def appMessageBuilder = Mock(GlobalApplicationsMessageBuilder)
 
-    private ApplicationTokenChecker checker = new ApplicationTokenChecker(reporter, appMessageBuilder, appPageMessageBuilder)
+    private ApplicationTokenChecker checker = new ApplicationTokenChecker(reporter, appMessageBuilder)
 
     def "process invalid tokens should add invalid tokens to reporter list"() {
         appMessageBuilder.buildMessage() >> {"invalid apps"}
-        appPageMessageBuilder.buildMessage() >> {"invalid app pages"}
 
         when:
         checker.processInvalidTokens()
 
         then:
         1 * reporter.addWarning("invalid apps")
-        1 * reporter.addWarning("invalid app pages")
     }
 
     def "does not add warning when message is empty"() {
         appMessageBuilder.buildMessage() >> {""}
-        appPageMessageBuilder.buildMessage() >> {""}
 
         when:
         checker.processInvalidTokens()
@@ -53,7 +49,6 @@ class ApplicationTokenCheckerTest extends Specification {
 
     def "does not add warning when message is null"() {
         appMessageBuilder.buildMessage() >> {null}
-        appPageMessageBuilder.buildMessage() >> {null}
 
         when:
         checker.processInvalidTokens()

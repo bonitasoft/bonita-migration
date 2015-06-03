@@ -17,17 +17,22 @@ import groovy.sql.Sql
 /**
  * @author Elias Ricken de Medeiros
  */
-class ApplicationPageRetriever  {
+class InvalidApplicationPageTokenRetriever implements ApplicationRetriever {
 
     private final String dbVendor
     private final Sql sql
 
-    ApplicationPageRetriever(final Sql sql, final String dbVendor) {
+    InvalidApplicationPageTokenRetriever(final Sql sql, final String dbVendor) {
         this.sql = sql
         this.dbVendor = dbVendor
     }
 
-    def retrieveApplicationsWithInvalidPages() {
+    @Override
+    String getHeader() {
+        return MessageUtil.buildInvalidApplicationPageTokenHeader()
+    }
+
+    List<TenantApplications> retrieveApplications() {
         def allApplications = []
         sql.eachRow("SELECT id FROM tenant", { tenantRow ->
             Map<?, Application>  idToApplicationMap = [:]

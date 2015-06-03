@@ -1,7 +1,15 @@
-import org.bonitasoft.migration.versions.to_7_0_0.*
+import org.bonitasoft.migration.versions.to_7_0_0.ApplicationTokenChecker
+import org.bonitasoft.migration.versions.to_7_0_0.GlobalApplicationsMessageBuilder
+import org.bonitasoft.migration.versions.to_7_0_0.InvalidApplicationPageTokenRetriever
+import org.bonitasoft.migration.versions.to_7_0_0.InvalidApplicationTokenRetriever
+import org.bonitasoft.migration.versions.to_7_0_0.TenantApplicationsMessageBuilder
 
-new ApplicationTokenChecker(reporter,
-        new ApplicationMessageBuilder(new ApplicationRetriever(sql, dbVendor)),
-                new ApplicationPageMessageBuilder(new ApplicationPageRetriever(sql, dbVendor))).processInvalidTokens()
+def messageBuilder = new GlobalApplicationsMessageBuilder(
+        [
+                new InvalidApplicationTokenRetriever(sql, dbVendor),
+                new InvalidApplicationPageTokenRetriever(sql, dbVendor)
+        ], new TenantApplicationsMessageBuilder()
+)
+new ApplicationTokenChecker(reporter, messageBuilder).processInvalidTokens()
 
 

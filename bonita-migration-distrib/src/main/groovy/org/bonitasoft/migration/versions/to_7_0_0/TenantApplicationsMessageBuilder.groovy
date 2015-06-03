@@ -17,32 +17,21 @@ package org.bonitasoft.migration.versions.to_7_0_0
 /**
  * @author Elias Ricken de Medeiros
  */
-class ApplicationMessageBuilder {
+class TenantApplicationsMessageBuilder {
 
-    private def ApplicationRetriever retriever
+    def static lineSeparator = System.getProperty("line.separator")
 
-    ApplicationMessageBuilder(final ApplicationRetriever retriever) {
-        this.retriever = retriever
-    }
-
-    def String buildMessage() {
-        List<TenantApplications> allInvalidApplications = retriever.retrieveInvalidApplications()
-        if(allInvalidApplications == null || allInvalidApplications.isEmpty()){
-            return ""
-        }
-        StringBuilder stb = new StringBuilder()
-        stb.append(MessageUtil.buildInvalidApplicationTokenHeader())
-        allInvalidApplications.each { tenantInvalidApplications ->
-            stb.append(buildMessageForApplicationsOfTenant(tenantInvalidApplications))
-        }
-        return stb.toString()
-    }
-
-    private String buildMessageForApplicationsOfTenant(TenantApplications tenantInvalidApplications) {
+    String buildMessage(TenantApplications tenantInvalidApplications) {
         StringBuilder stb = new StringBuilder()
         stb.append(MessageUtil.buildTenantMessage(tenantInvalidApplications.tenantId))
-        tenantInvalidApplications.applications.each { invalidApplication ->
-            stb.append(MessageUtil.buildApplicationMessage(invalidApplication))
+        tenantInvalidApplications.applications.each { application ->
+            stb.append(MessageUtil.buildApplicationMessage(application))
+            application.applicationPages.each { appPage ->
+                stb.append(MessageUtil.buildApplicationPageMessage(appPage))
+            }
+            if(!application.applicationPages.isEmpty()){
+                stb.append(lineSeparator)
+            }
         }
         return stb.toString()
     }
