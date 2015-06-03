@@ -27,20 +27,19 @@ class MessageUtil {
 
     static String buildInvalidApplicationTokenHeader() {
         """
-------------------------------------------------------------------------------------------------------------------------------------------------
-  /!\\ From version 7.0.0 the following words are reserved keywords and can not be used as part of Application URL: 'API', 'content', 'theme'.
-  --> The following applications have invalid URL token. Update the current application URL token in order to solve the issue :
-------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------------
+  /!\\ From version 7.0.0 the following words are reserved keywords and must not be used as part of an application URL: 'API', 'content', 'theme'.
+  --> The following applications have invalid URL tokens. Update these application URL tokens:
+--------------------------------------------------------------------------------------------------------------------------------------------------
  """
     }
 
     static String buildInvalidApplicationPageTokenHeader() {
         """
-----------------------------------------------------------------------------------------------------------------------------------------------------
-  /!\\ From version 7.0.0 the following words are reserved keywords and can not be used as part of Application page URL: 'API', 'content', 'theme'.
-  --> The following application pages have invalid URL token. Delete the page association in your application and recreate it with a different URL
-      token in order to solve the issue:
-----------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  /!\\ From version 7.0.0 the following words are reserved keywords and must not be used as part of an application page URL: 'API', 'content', 'theme'.
+  --> The following application pages have invalid URL tokens. Delete each page association and recreate it with a different URL token:
+-------------------------------------------------------------------------------------------------------------------------------------------------------
   """
     }
 
