@@ -37,6 +37,7 @@ public class MigrationRunner {
     private def String sourceVersion
     private def String targetVersion
     private def TransitionGraph graph
+    private Reporter reporter = new Reporter()
 
     private def startMigrationDate
 
@@ -91,6 +92,7 @@ public class MigrationRunner {
         println "The version of your Bonita BPM installation is now: " + MigrationUtil.getPlatformVersion(dburl, user, pwd, driverClass);
         println "Now, you must to reapply the customizations of your bonita home."
         println ""
+        reporter.printReport()
     }
 
     Path initPropertiesAndChooseMigrationPath() {
@@ -246,7 +248,7 @@ public class MigrationRunner {
                 def feature = result.replace(0, 1, result.substring(0, 1).toUpperCase()).toString()
                 println "[ Migrating <" + feature + "> " + (idx + 1) + "/" + features.size() + " ]"
 
-                def binding = new Binding(["sql": sql, "dbVendor": dbVendor, "bonitaHome": bonitaHome, "feature": file, "newBonitaHome": newBonitaHome, "gse": gse]);
+                def binding = new Binding(["sql": sql, "dbVendor": dbVendor, "bonitaHome": bonitaHome, "feature": file, "newBonitaHome": newBonitaHome, "gse": gse, "reporter": reporter]);
                 sql.withTransaction {
                     migrateFeature(gse, file, binding);
                 }
