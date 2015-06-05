@@ -40,6 +40,7 @@ public class DatabaseFillerFor7_0_0 extends DatabaseFiller6_5_0 {
         final ProcessDefinition processDefinition = apiTestUtil.getProcessAPI().deploy(processDefinitionBuilder.done());
         apiTestUtil.getProcessAPI().addUserToActor("john",processDefinition, user.getId());
         apiTestUtil.getProcessAPI().enableProcess(processDefinition.getId());
+        apiTestUtil.logoutOnTenant();
     }
 
 
