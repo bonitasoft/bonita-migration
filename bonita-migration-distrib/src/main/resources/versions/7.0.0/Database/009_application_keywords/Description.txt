@@ -1,0 +1,1 @@
+Look for applications and applications pages using reserved keywords ['API', 'content', 'theme']
