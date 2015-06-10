@@ -28,12 +28,12 @@ to be set with -Dkey=value
 All parameters can be overriden with system properties
 
 ### Database configuration
-For MySql : use allowMultiQueries=true in db url
-For Oracle :  In sql scripts, don't use ";" after each request, but "@@"
-For SQLServer :  In sql scripts, don't use "GO" after each request, but "@@"
+* For MySql : use allowMultiQueries=true in db url
+* For Oracle :  In sql scripts, don't use ";" after each request, but "@@"
+* For SQLServer :  In sql scripts, don't use "GO" after each request, but "@@"
 
 
-Also not that the jdbc driver must be put in the lib folder. Create "lib" folder in root of project.
+Also note that the jdbc driver must be put in the lib folder. Create "lib" folder in root of project.
 
 Run the migration
 -----------------
