@@ -1,0 +1,4 @@
+include 'migration_7_0_1', 'dist'
+
+include 'migration_7_0_0'
+
