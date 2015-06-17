@@ -44,7 +44,6 @@ configure(subprojects.findAll { it.name.startsWith('migration') }) {
         testCompile "org.bonitasoft.engine:bonita-client:${bonitaVersionResolved}"
     }
 
-
     task(setupSourceEngine, dependsOn: 'classes', type: JavaExec) {
         doFirst {
             println "bonita version declared = $bonitaVersionUnderScore or $bonitaVersion"
@@ -54,4 +53,6 @@ configure(subprojects.findAll { it.name.startsWith('migration') }) {
         classpath = sourceSets.main.runtimeClasspath
     }
     tasks.setupSourceEngine.dependsOn tasks.jar
+
+
 }

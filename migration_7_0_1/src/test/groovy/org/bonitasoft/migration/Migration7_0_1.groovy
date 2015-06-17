@@ -13,11 +13,9 @@
  **/
 
 package org.bonitasoft.migration
-
 import org.bonitasoft.engine.api.ApiAccessType
 import org.bonitasoft.engine.util.APITypeManager
 import org.junit.Test
-
 /**
  * @author Baptiste Mesta
  */
@@ -26,6 +24,6 @@ class Migration7_0_1 {
     @Test
     def void theTest() {
         APITypeManager.setAPITypeAndParams(ApiAccessType.HTTP, Collections.<String, String>emptyMap())
-        println "test"
+        println "the test is running"
     }
 }

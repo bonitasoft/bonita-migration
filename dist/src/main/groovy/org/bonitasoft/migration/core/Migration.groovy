@@ -27,6 +27,22 @@ class Migration {
     public void run() {
         setupOutputs()
         printWarning()
+        def List<VersionMigration> versionMigrations = versions.collect {
+            def versionUnderscored = it.replace(".", "_")
+            def versionMigrationClass = Class.forName("org.bonitasoft.migration.version.v${versionUnderscored}.MigrationV$versionUnderscored")
+            return versionMigrationClass.newInstance()
+        } as List<VersionMigration>
+        versionMigrations.each {
+
+            it.getMigrationSteps().each { step ->
+                println "execute "+ step.description
+                step.execute(null, null)
+            }
+        }
+    }
+
+    def List<String> getVersions() {
+        ["7.0.1"]
     }
 
     private void setupOutputs() {
@@ -47,6 +63,5 @@ class Migration {
                 "Back up the database AND the bonita home before migrating",
                 "If you have a custom Look & Feel, test and update it, if it's necessary when the migration is finished.",
                 "If you have customized the configuration of your bonita home, reapply the customizations when the migration is finished.", "")
-        IOUtil.askIfWeContinue();
     }
 }
