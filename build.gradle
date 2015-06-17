@@ -1,111 +1,57 @@
-apply plugin: 'groovy'
-apply plugin: 'application'
+//define bonita version for all projects
+allprojects {
 
+    version = '2.0.0-SNAPSHOT'
 
-version = '2.0.0-SNAPSHOT'
-mainClassName = "org.bonitasoft.migration.core.Migration"
-
-
-def String[] bonitaVersions = [
-        '6.5.2',
-        '7.0.0-SNAPSHOT'
-]
-def source = System.getProperty("source.version", bonitaVersions[bonitaVersions.size() - 2])
-def target = System.getProperty("target.version", bonitaVersions.last())
-println "source = $source"
-println "target = $target"
-
-configurations {
-    filler
-    bonitaVersions.collect { "config_$it" }.each {create it}
+    ext.bonitaVersions = [
+            '7.0.0',
+            '7.0.1'
+    ]
+    ext.overridedVersions = [
+            '7.0.1': '7.0.0-SNAPSHOT'
+    ]
+    ext.source = System.getProperty("source.version", bonitaVersions[bonitaVersions.size() - 2])
+    ext.target = System.getProperty("target.version", bonitaVersions.last())
 }
-
-repositories {
-    mavenLocal()
-    def customMavenRepo = System.getProperty("maven.repository")
-    //used in jenkins: add in system property $ {JENKINS_HOME}/userContent/m2_repo and archiva
-    if (customMavenRepo != null) {
-        println "using custom maven.repository: " + customMavenRepo
-        maven { url customMavenRepo }
-    }
-    mavenCentral()
-}
-dependencies {
-    compile 'org.codehaus.groovy:groovy-all:2.3.10'
-    filler "org.bonitasoft.engine:bonita-client:${source}"
-    filler "org.bonitasoft.engine:bonita-home:${source}"
-    testCompile 'junit:junit:4.12'
-    testCompile "org.bonitasoft.engine:bonita-client:${target}"
-    bonitaVersions.each {
-        add "config_$it", "org.bonitasoft.engine:bonita-home:$it@zip"
-    }
-
-}
-/*
-    TODO prepare sources:
-    put the version list in the sources
-    add all bonita homes
- */
-task putMigrationPathsInDist << {
-    println "TODO"
-}
-task addBonitaHomes(type: Copy) {
-    from {
-        bonitaVersions.collect {
-            def conf = configurations."config_$it"
-            conf.files[0].getAbsolutePath()
+//define dependencies for sub projects
+subprojects {
+    apply plugin: 'groovy'
+    repositories {
+        mavenLocal()
+        def customMavenRepo = System.getProperty("maven.repository")
+        //used in jenkins: add in system property $ {JENKINS_HOME}/userContent/m2_repo and archiva
+        if (customMavenRepo != null) {
+            println "using custom maven.repository: " + customMavenRepo
+            maven { url customMavenRepo }
         }
+        mavenCentral()
     }
-    //TODO add it in the real dist
-    into 'build/homes'
-
+    dependencies {
+        compile 'org.codehaus.groovy:groovy-all:2.3.10'
+        testCompile "junit:junit:4.12"
+    }
 }
+//configure migration filler/checker projects
+configure(subprojects.findAll { it.name.startsWith('migration') }) {
+
+    ext {
+        bonitaVersionUnderScore = name.substring('migration'.length() + 1)
+        bonitaVersion = bonitaVersionUnderScore.replace('_', '.')
+        bonitaVersionResolved = overridedVersions.containsKey(bonitaVersion) ? overridedVersions.get(bonitaVersion) : bonitaVersion
+    }
+
+    dependencies {
+        testCompile "org.bonitasoft.engine:bonita-client:${bonitaVersionResolved}"
+    }
 
 
-distributions {
-    main {
-        contents {
-            from('build/homes') {
-                into "bonita-home"
-            }
+    task(setupSourceEngine, dependsOn: 'classes', type: JavaExec) {
+        doFirst {
+            println "bonita version declared = $bonitaVersionUnderScore or $bonitaVersion"
+            println "bonita version resolved = $bonitaVersionResolved"
         }
+        main "org.bonitasoft.migration.MigrationFiller" + bonitaVersionUnderScore
+        classpath = sourceSets.main.runtimeClasspath
     }
+    tasks.setupSourceEngine.dependsOn tasks.jar
 }
-tasks.addBonitaHomes.dependsOn tasks.putMigrationPathsInDist
-tasks.distZip.dependsOn tasks.addBonitaHomes
-/*
-    TODO prepare test resource: create the installation with the source version
-    clean and create the database
-    unpack the source bonita home
-    start an engine in source version
-    launch the classes to execute processes in source version
- */
-
-task cleanAndCreateDatabase << {
-    println "TODO"
-}
-tasks.cleanAndCreateDatabase.dependsOn tasks.addBonitaHomes
-task unpackBonitaHomeSource << {
-    println "TODO"
-}
-tasks.unpackBonitaHomeSource.dependsOn tasks.cleanAndCreateDatabase
-task runEngineSource << {
-    println "TODO"
-}
-tasks.runEngineSource.dependsOn tasks.unpackBonitaHomeSource
-/*
-    Migration from source to target version
- */
-
-task migrate( type: JavaExec) {
-    main = "org.bonitasoft.migration.core.Migration"
-    classpath = sourceSets.main.runtimeClasspath
-}
-tasks.migrate.dependsOn tasks.runEngineSource
-
-tasks.test.dependsOn tasks.migrate
-tasks.test.dependsOn tasks.distZip
-
-/*
-    TODO Test, compile only what is necessary
- */
