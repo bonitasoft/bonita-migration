@@ -36,42 +36,43 @@ class ChangeDocumentsStructure extends DatabaseMigrationStep {
 
     @Override
     public migrate() {
-
+        def falseValue = dbVendor == "oracle" ? 0 : false;
+        def trueValue = dbVendor == "oracle" ? 1 : true;
         def tenantsId = MigrationUtil.getTenantsId(dbVendor, sql)
         IOUtil.executeWrappedWithTabs {
 
             /*
              *     remove foreign key
              */
-            if(!dbVendor.equals("oracle")){//not on oracle
-                dropForeignKey("document_content","fk_document_content_tenantId")
+            if (!dbVendor.equals("oracle")) {//not on oracle
+                dropForeignKey("document_content", "fk_document_content_tenantId")
             }
 
             /*
              *     rename table
              */
-            renameTable("document_content","document")
+            renameTable("document_content", "document")
 
             /*
              *     add columns
              */
             //document_mapping
-            addColumn("document_mapping","documentid","BIGINT","0","NOT NULL")
-            addColumn("document_mapping","description","TEXT",null,null)
-            addColumn("document_mapping","version","VARCHAR(10)","'1'","NOT NULL")
-            renameColumn("document_mapping", "documentName", "name","VARCHAR(50) NOT NULL")
+            addColumn("document_mapping", "documentid", "BIGINT", "0", "NOT NULL")
+            addColumn("document_mapping", "description", "TEXT", null, null)
+            addColumn("document_mapping", "version", "VARCHAR(10)", "'1'", "NOT NULL")
+            renameColumn("document_mapping", "documentName", "name", "VARCHAR(50) NOT NULL")
             //arch_document_mapping
-            addColumn("arch_document_mapping","documentid","BIGINT","0","NOT NULL")
-            addColumn("arch_document_mapping","description","TEXT",null,null)
-            addColumn("arch_document_mapping","version","VARCHAR(10)","'1'","NOT NULL")
+            addColumn("arch_document_mapping", "documentid", "BIGINT", "0", "NOT NULL")
+            addColumn("arch_document_mapping", "description", "TEXT", null, null)
+            addColumn("arch_document_mapping", "version", "VARCHAR(10)", "'1'", "NOT NULL")
             renameColumn("arch_document_mapping", "documentName", "name", "VARCHAR(50) NOT NULL")
             //document
-            addColumn("document","author","BIGINT",null,null)
-            addColumn("document","creationdate","BIGINT","0","NOT NULL")
-            addColumn("document","hascontent","BOOLEAN","true","NOT NULL")
-            addColumn("document","filename","VARCHAR(255)",null,null)
-            addColumn("document","mimetype","VARCHAR(255)",null,null)
-            addColumn("document","url","VARCHAR(1024)",null,"NULL")
+            addColumn("document", "author", "BIGINT", null, null)
+            addColumn("document", "creationdate", "BIGINT", "0", "NOT NULL")
+            addColumn("document", "hascontent", "BOOLEAN", "true", "NOT NULL")
+            addColumn("document", "filename", "VARCHAR(255)", null, null)
+            addColumn("document", "mimetype", "VARCHAR(255)", null, null)
+            addColumn("document", "url", "VARCHAR(1024)", null, "NULL")
 
             /*
              *     move data
@@ -86,15 +87,18 @@ class ChangeDocumentsStructure extends DatabaseMigrationStep {
                 //get max id for document (=10090)
                 def nextId = sql.firstRow("SELECT nextid FROM sequence WHERE tenantid = $tenantId AND id = 10090").nextid
                 //create new document when mapping is an url
-                sql.eachRow("SELECT * FROM document_mapping WHERE tenantid = $tenantId AND documentURL IS NOT NULL") { row ->
+                sql.eachRow("SELECT * FROM document_mapping WHERE tenantid = $tenantId AND documentHasContent = $falseValue") { row ->
                     sql.executeInsert("INSERT INTO document (tenantid,id,author,creationdate,hascontent,filename,mimetype,url,documentid) VALUES ($tenantId,$nextId,$row.documentAuthor,$row.documentCreationDate,$row.documentHasContent,$row.documentContentFileName,$row.documentContentMimeType,$row.documentURL,'temp')")
                     executeUpdate("UPDATE document_mapping SET documentid = $nextId WHERE document_mapping.id = $row.id AND document_mapping.tenantid = $tenantId")
                     nextId++
                 }
-                sql.eachRow("SELECT * FROM arch_document_mapping WHERE tenantid = $tenantId AND documentURL IS NOT NULL") { row ->
+                sql.eachRow("SELECT * FROM arch_document_mapping WHERE tenantid = $tenantId AND documentHasContent = $falseValue") { row ->
                     sql.executeInsert("INSERT INTO document (tenantid,id,author,creationdate,hascontent,filename,mimetype,url,documentid) VALUES ($tenantId,$nextId,$row.documentAuthor,$row.documentCreationDate,$row.documentHasContent,$row.documentContentFileName,$row.documentContentMimeType,$row.documentURL,'temp')")
                     executeUpdate("UPDATE arch_document_mapping SET documentid = $nextId WHERE arch_document_mapping.id = $row.id AND arch_document_mapping.tenantid = $tenantId")
                     nextId++
+                }
+                sql.eachRow("SELECT * FROM document WHERE tenantid = $tenantId AND hascontent = $trueValue") { row ->
+                    executeUpdate("UPDATE document SET url = null WHERE document.id = $row.id AND document.tenantid = $tenantId")
                 }
                 executeUpdate("UPDATE sequence SET nextid = $nextId WHERE tenantid=$tenantId AND id = 10090")
                 sql.eachRow("SELECT DISTINCT sourceobjectid FROM arch_document_mapping WHERE tenantid = $tenantId") { row ->
@@ -105,7 +109,7 @@ class ChangeDocumentsStructure extends DatabaseMigrationStep {
                             return
                         }
                         executeUpdate("UPDATE arch_document_mapping SET version = $version WHERE tenantid = $tenantId AND id = $archmapping.id ")
-                        version = String.valueOf(Integer.valueOf(version)+1)
+                        version = String.valueOf(Integer.valueOf(version) + 1)
                     }
                     if (version != "1") {
                         executeUpdate("UPDATE document_mapping SET version = $version WHERE tenantid = $tenantId AND id = $row.sourceobjectid ")
@@ -117,36 +121,36 @@ class ChangeDocumentsStructure extends DatabaseMigrationStep {
              *     remove old columns
              */
             //document
-            dropColumn("document","documentId")
+            dropColumn("document", "documentId")
 
             //document_mapping
-            dropColumn("document_mapping","documentAuthor")
-            dropColumn("document_mapping","documentCreationDate")
-            dropColumn("document_mapping","documentHasContent")
-            dropColumn("document_mapping","documentContentFileName")
-            dropColumn("document_mapping","documentContentMimeType")
-            dropColumn("document_mapping","contentStorageId")
-            dropColumn("document_mapping","documentURL")
+            dropColumn("document_mapping", "documentAuthor")
+            dropColumn("document_mapping", "documentCreationDate")
+            dropColumn("document_mapping", "documentHasContent")
+            dropColumn("document_mapping", "documentContentFileName")
+            dropColumn("document_mapping", "documentContentMimeType")
+            dropColumn("document_mapping", "contentStorageId")
+            dropColumn("document_mapping", "documentURL")
             //arch_document_mapping
-            dropColumn("arch_document_mapping","documentAuthor")
-            dropColumn("arch_document_mapping","documentCreationDate")
-            dropColumn("arch_document_mapping","documentHasContent")
-            dropColumn("arch_document_mapping","documentContentFileName")
-            dropColumn("arch_document_mapping","documentContentMimeType")
-            dropColumn("arch_document_mapping","contentStorageId")
-            dropColumn("arch_document_mapping","documentURL")
+            dropColumn("arch_document_mapping", "documentAuthor")
+            dropColumn("arch_document_mapping", "documentCreationDate")
+            dropColumn("arch_document_mapping", "documentHasContent")
+            dropColumn("arch_document_mapping", "documentContentFileName")
+            dropColumn("arch_document_mapping", "documentContentMimeType")
+            dropColumn("arch_document_mapping", "contentStorageId")
+            dropColumn("arch_document_mapping", "documentURL")
 
             /*
              *     add new foreign keys
              */
             execute("ALTER TABLE document_mapping ADD CONSTRAINT fk_docmap_docid FOREIGN KEY (tenantid, documentid) REFERENCES document(tenantid, id) ON DELETE CASCADE")
             execute("ALTER TABLE arch_document_mapping ADD CONSTRAINT fk_archdocmap_docid FOREIGN KEY (tenantid, documentid) REFERENCES document(tenantid, id) ON DELETE CASCADE")
-            if(!dbVendor.equals("oracle")) {//not on oracle
+            if (!dbVendor.equals("oracle")) {//not on oracle
                 execute("ALTER TABLE document ADD CONSTRAINT fk_document_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id)")
             }
 
-            addColumn("document_mapping","index_","INT","'-1'","NOT NULL")
-            addColumn("arch_document_mapping","index_","INT","'-1'","NOT NULL")
+            addColumn("document_mapping", "index_", "INT", "'-1'", "NOT NULL")
+            addColumn("arch_document_mapping", "index_", "INT", "'-1'", "NOT NULL")
 
         }
 
