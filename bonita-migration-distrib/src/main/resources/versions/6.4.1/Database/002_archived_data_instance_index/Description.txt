@@ -1,1 +1,0 @@
-BS-10462 : Add an index to improve archived data search performance.

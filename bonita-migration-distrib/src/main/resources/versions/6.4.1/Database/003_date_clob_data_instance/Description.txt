@@ -1,1 +1,0 @@
-Migrate data instances of type CLOB (as XML) to timestamps (as Long) 

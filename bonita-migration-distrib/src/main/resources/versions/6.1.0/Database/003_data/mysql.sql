@@ -1,2 +1,0 @@
-ALTER TABLE arch_data_instance MODIFY COLUMN blobValue MEDIUMBLOB NULL;
-ALTER TABLE data_instance MODIFY COLUMN blobValue MEDIUMBLOB NULL;
