@@ -1,6 +1,19 @@
 import groovy.sql.Sql
 
+buildscript {
+    repositories {
+        mavenLocal()
+    }
+    dependencies {
+        classpath group: 'org.bonitasoft.migration.plugin', name: 'clean-db',
+                version: '1.0-SNAPSHOT'
+    }
+}
+
 apply plugin: 'application'
+apply plugin: 'clean-db'
+apply plugin: 'toto'
+
 
 
 mainClassName = "org.bonitasoft.migration.core.Migration"
@@ -23,7 +36,7 @@ repositories {
     mavenCentral()
 }
 dependencies {
-    compile 'org.codehaus.groovy:groovy-all:2.3.10'
+    compile gradleApi()
     filler "org.bonitasoft.engine:bonita-client:${source}"
     filler "org.bonitasoft.engine:bonita-home:${source}"
     bonitaVersions.each {
