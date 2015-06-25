@@ -9,7 +9,7 @@
     <artifactId>bonita-migration-7.0.1-filler</artifactId>
 
     <properties>
-        <bonita.version>${previous.bonita.version}</bonita.version>
+        <bonita.version>7.0.0</bonita.version>
         <bonita.home>${project.build.directory}/home</bonita.home>
     </properties>
 
