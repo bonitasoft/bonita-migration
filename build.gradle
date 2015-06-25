@@ -1,7 +1,10 @@
 //define bonita version for all projects
 allprojects {
 
-    version = '2.0.0-SNAPSHOT'
+    apply plugin: 'maven'
+
+    version '2.0.0-SNAPSHOT'
+    group 'org.bonitasoft.migration'
 
     ext.bonitaVersions = [
             '7.0.0',
@@ -12,6 +15,16 @@ allprojects {
     ]
     ext.source = System.getProperty("source.version", bonitaVersions[bonitaVersions.size() - 2])
     ext.target = System.getProperty("target.version", bonitaVersions.last())
+
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                repository url: 'file://' + new File(
+                        System.getProperty('user.home'), '.m2/repository').absolutePath
+            }
+        }
+    }
+
 }
 //define dependencies for sub projects
 subprojects {
