@@ -150,31 +150,12 @@ public class MigrationRunner {
     String checkSourceVersion(String platformVersionInDatabase, String platformVersionInBonitaHome, String givenSourceVersion) {
         def String sourceVersion = null
         def String detectedVersion = null;
-        if (!platformVersionInDatabase.startsWith("6")) {
-            //[6.0,6.1[
-            if (givenSourceVersion != null) {
-                println "No version detected: using given version $givenSourceVersion"
-                detectedVersion = givenSourceVersion
-            } else {
-                println "Your bonita version is below 6.1.0, because of this we can't determine the exact version of your installation\nPlease choose your version in the following list: "
-                def possibleVersion = graph.getStartNodes().findAll { it.startsWith("6.0") }
-                detectedVersion = MigrationUtil.askForOptions(possibleVersion)
-            }
-            //pre 6.1 --> use given version, but check that it start's with 6.0
-            if (!detectedVersion.startsWith("6.0")) {
-                println "sorry the but you're installation seems to be between 6.0.0 included and 6.1.0 excluded"
-                return null;
-            }
-            return detectedVersion
-        } else if (platformVersionInBonitaHome == null) {
-            //[6.1,6.2[ -> use database version, but check that given version starts with 6.1
-            if (givenSourceVersion != null && !givenSourceVersion.equals(platformVersionInDatabase)) {
-                println "Sorry,your installation is $platformVersionInDatabase but you specified $givenSourceVersion"
-                return null;
-            }
-            return platformVersionInDatabase;
+        if (!platformVersionInDatabase.startsWith("7")) {
+            println "sorry the but this tool can't manage version under 7.0.0"
+            return null;
+
         } else {
-            // > 6.2
+            // >=7.0.0
             if (platformVersionInBonitaHome != platformVersionInDatabase || (givenSourceVersion != null && !platformVersionInDatabase.startsWith(givenSourceVersion))) {
                 //invalid case: given source (if any) not the same as version in db and as version in bonita home
                 println "The versions are not consistent:"
@@ -211,9 +192,9 @@ public class MigrationRunner {
         parent.eachDir {
             migrationFolders.add(it);
         }
-        def validVersions = ["6.0.2"]
+        def validVersions = ["7.0.0"]
         validVersions.addAll(getValidReleasedVersions(migrationFolders));
-        return new TransitionGraph("6.0.2", validVersions);
+        return new TransitionGraph("7.0.0", validVersions);
     }
 
     public static List<String> getValidReleasedVersions(List<File> migrationFolders) {
