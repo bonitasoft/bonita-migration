@@ -5,7 +5,7 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath group: 'org.bonitasoft.migration.plugin', name: 'clean-db',
+        classpath group: 'org.bonitasoft.migration.plugin', name: 'bonita-migration-plugins',
                 version: '1.0-SNAPSHOT'
     }
 }
@@ -42,14 +42,25 @@ dependencies {
     bonitaVersions.each {
         add "config_$it", "org.bonitasoft.engine:bonita-home:${overridedVersions.containsKey(it) ? overridedVersions.get(it) : it}@zip"
     }
-    drivers group: 'mysql', name: 'mysql-connector-java', version: '5.1.26'
     drivers group: 'org.postgresql', name: 'postgresql', version: '9.3-1102-jdbc41'
-    //drivers name:'ojdbc6'
-    //drivers name:'sqljdbc-4.0.2206.100'
+    //drivers group: 'mysql', name: 'mysql-connector-java', version: '5.1.26'
 
 }
+
+
+database {
+    dbvendor = System.getProperty("db.vendor", "postgres")
+    dburl = System.getProperty("db.url","jdbc:postgresql://localhost:5432/migration");
+    dbuser=System.getProperty("db.user","bonita")
+    dbpassword=System.getProperty("db.password", "bpm")
+    dbdriverClass=System.getProperty("db.driverClass","org.postgresql.Driver")
+    dbRootUser = System.getProperty("db.root.user","postgres")
+    dbRootPassword = System.getProperty("db.root.password","admin")
+    classpath = configurations.drivers
+}
+
 task putMigrationPathsInDist << {
-    new File(projectDir, 'src/main/dist/bin/migration_paths').write(bonitaVersions.toString())
+    //new File(projectDir, 'src/main/dist/bin/migration_paths').write(bonitaVersions.toString())
 }
 task addBonitaHomes(type: Copy) {
     from {
