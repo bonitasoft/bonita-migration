@@ -26,7 +26,7 @@ version = '1.23.0-SNAPSHOT'
         dbuser=System.getProperty("db.user","bonita")
         dbpassword=System.getProperty("db.password", "bpm")
         dbdriverClass=System.getProperty("db.driverClass","org.postgresql.Driver")
-        bonitahome="${buildDir.path}/home"
+        bonitahome="${buildDir.path}/bonita-home"
         distDir="${buildDir.path}/dist"
         devMode = project.hasProperty('devMode')
         //used for oracle: creates table not the same way
