@@ -15,85 +15,83 @@ package org.bonitasoft.migration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.Properties;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
-import org.bonitasoft.engine.bpm.flownode.ActivityInstance;
-import org.bonitasoft.engine.bpm.flownode.ActivityInstanceCriterion;
-import org.bonitasoft.engine.bpm.process.ProcessInstance;
-import org.bonitasoft.engine.business.application.Application;
-import org.bonitasoft.engine.business.application.ApplicationCreator;
-import org.bonitasoft.engine.form.FormMapping;
-import org.bonitasoft.engine.form.FormMappingSearchDescriptor;
-import org.bonitasoft.engine.identity.User;
-import org.bonitasoft.engine.search.SearchOptionsBuilder;
-import org.bonitasoft.engine.search.SearchResult;
+import org.bonitasoft.engine.business.application.ApplicationService;
+import org.bonitasoft.engine.page.Page;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
 
 public class DatabaseChecker7_0_1 extends SimpleDatabaseChecker7_0_0 {
 
+    public static final String PAGE_PROPERTIES_FILE_NAME = "page.properties";
+    private static String UTF8 = "UTF-8";
+
     public static void main(final String[] args) throws Exception {
-        JUnitCore.main(DatabaseChecker7_0_0.class.getName());
+        JUnitCore.main(DatabaseChecker7_0_1.class.getName());
     }
 
     @Test
-    public void should_deploy_a_business_data_model() throws Exception {
-        final User user = getApiTestUtil().createUser("matti", "bpm");
-        new BDMDataBaseChecker7_0_0().should_deploy_a_business_data_model(getApiTestUtil(), user);
-        getIdentityApi().deleteUser(user.getId());
+    public void should_update_default_theme_content() throws Exception {
+        Page page = getPageAPI().getPageByName(ApplicationService.DEFAULT_THEME_NAME);
+        assertThat(page).isNotNull();
+        byte[] pageContent = getPageAPI().getPageContent(page.getId());
+        assertThat(pageContent).isNotNull();
+
+        Properties properties = loadPageProperties(pageContent);
+        assertThat(properties.getProperty("name")).isEqualTo("custompage_bootstrapdefaulttheme");
+        assertThat(properties.getProperty("displayName")).isEqualTo("Bootstrap default theme");
+        assertThat(properties.getProperty("description")).isEqualTo("Application theme based on bootstrap \"Default\" theme. (see http://bootswatch.com/default/)");
+        assertThat(properties.getProperty("contentType")).isEqualTo("theme");
     }
 
-    @Test
-    public void should_be_able_to_create_an_application_after_migration() throws Exception {
-        //when
-        Application application = getApplicationAPI().createApplication(new ApplicationCreator("app", "my application", "1.0"));
+    private Properties loadPageProperties(final byte[] content) throws Exception {
+        String pagePropertiesContent = retrievePagePropertiesContent(content);
+        final Properties props = new Properties();
+        try (StringReader reader = new StringReader(pagePropertiesContent)) {
+            props.load(reader);
+        }
 
-        //then
-        assertThat(application).isNotNull();
-        assertThat(application.getLayoutId()).isNotNull();
-        assertThat(application.getThemeId()).isNotNull();
+        return props;
     }
 
-    @Test
-    public void verify_migration_of_legacy_form_add_form_mapping() throws Exception {
-        getApiTestUtil().loginOnDefaultTenantWithDefaultTechnicalUser();
-        long processWithForms = getApiTestUtil().getProcessAPI().getProcessDefinitionId("ProcessWithLegacyForms", "5.0");
+    private final String retrievePagePropertiesContent(final byte[] zipFile) throws Exception {
+        try (
+                ByteArrayInputStream bais = new ByteArrayInputStream(zipFile);
+                final ZipInputStream zipInputstream = new ZipInputStream(bais)) {
 
-        final SearchResult<FormMapping> formMappingSearchResult = getApiTestUtil().getProcessAPI().searchFormMappings(
-                new SearchOptionsBuilder(0, 10).filter(FormMappingSearchDescriptor.PROCESS_DEFINITION_ID, processWithForms).done());
-        assertThat(formMappingSearchResult.getCount()).isEqualTo(3);
-
-        final ProcessInstance processInstance = getProcessAPI().startProcess(processWithForms);
-        Thread.sleep(2000);
-        final ActivityInstance activityInstance = getProcessAPI().getOpenActivityInstances(processInstance.getId(), 0, 1, ActivityInstanceCriterion.DEFAULT)
-                .get(0);
-
-        final String url = getPageAPI().resolvePageOrURL("processInstance/ProcessWithLegacyForms/5.0",
-                getStringSerializableMap(processInstance.getId()), true).getUrl();
-        final String url1 = getPageAPI().resolvePageOrURL("process/ProcessWithLegacyForms/5.0", getStringSerializableMap(processWithForms),
-                true).getUrl();
-        final String url2 = getPageAPI().resolvePageOrURL("taskInstance/ProcessWithLegacyForms/5.0/myUserTask",
-                getStringSerializableMap(activityInstance.getId()), true).getUrl();
-        assertThat(url).isEqualTo(
-                "/bonita/portal/homepage?ui=form&locale=en&theme=" + processWithForms + "#mode=form&form=ProcessWithLegacyForms--5.0%24recap&instance="
-                        + processInstance.getId() + "&recap=true");
-        assertThat(url1).isEqualTo(
-                "/bonita/portal/homepage?ui=form&locale=en&theme=" + processWithForms + "#mode=form&form=ProcessWithLegacyForms--5.0%24entry&process="
-                        + processWithForms);
-        assertThat(url2).isEqualTo(
-                "/bonita/portal/homepage?ui=form&locale=en&theme=" + processWithForms + "#mode=form&form=ProcessWithLegacyForms--5.0--myUserTask%24entry&task="
-                        + activityInstance.getId());
+            String content = null;
+            ZipEntry pageProperties = findPagePropertiesEntry(zipInputstream);
+            if (pageProperties != null) {
+                content = readContent(zipInputstream);
+            }
+            return content;
+        }
     }
 
-    Map<String, Serializable> getStringSerializableMap(long id) {
-        final Map<String, Serializable> map = new HashMap<String, Serializable>();
-        map.put("queryParameters", (Serializable) Collections.<String, Serializable> singletonMap("id", new String[] { String.valueOf(id) }));
-        map.put("contextPath", "/bonita");
-        map.put("locale", "en");
-        return map;
+    private String readContent(final ZipInputStream zipInputstream) throws IOException {
+        try (final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+            int bytesRead;
+            final byte[] buffer = new byte[4096];
+            while ((bytesRead = zipInputstream.read(buffer)) > 0) {
+                byteArrayOutputStream.write(buffer, 0, bytesRead);
+            }
+            return new String(byteArrayOutputStream.toByteArray(), UTF8);
+        }
+    }
+
+    private ZipEntry findPagePropertiesEntry(final ZipInputStream zipInputstream) throws IOException {
+        ZipEntry pageProperties;
+        do {
+            pageProperties = zipInputstream.getNextEntry();
+        } while (pageProperties != null && !pageProperties.getName().equals(PAGE_PROPERTIES_FILE_NAME));
+        return pageProperties;
     }
 
 }

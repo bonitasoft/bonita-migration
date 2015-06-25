@@ -13,35 +13,16 @@
  */
 package org.bonitasoft.migration;
 
-import org.bonitasoft.engine.bpm.process.ProcessDefinition;
-import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder;
-import org.bonitasoft.engine.exception.BonitaException;
-import org.bonitasoft.engine.identity.User;
-
 public class DatabaseFillerFor7_0_1 extends DatabaseFillerFor7_0_0 {
 
     public static void main(final String[] args) throws Exception {
-        final DatabaseFillerFor7_0_0 databaseFiller = new DatabaseFillerFor7_0_0();
+        final DatabaseFillerFor7_0_1 databaseFiller = new DatabaseFillerFor7_0_1();
         databaseFiller.execute(1, 1, 1, 1);
     }
 
     @Override
     protected void executeWhenPlatformIsUp(int nbProcessesDefinitions, int nbProcessInstances, int nbWaitingEvents, int nbDocuments) throws Exception {
         super.executeWhenPlatformIsUp(nbProcessesDefinitions, nbProcessInstances, nbWaitingEvents, nbDocuments);
-        fillProcessWithUserTask();
     }
-
-    public void fillProcessWithUserTask() throws BonitaException {
-        apiTestUtil.loginOnDefaultTenantWithDefaultTechnicalUser();
-        final User user = apiTestUtil.createUser("userForForm", "bpm");
-        ProcessDefinitionBuilder processDefinitionBuilder = new ProcessDefinitionBuilder().createNewInstance("ProcessWithLegacyForms", "5.0");
-        processDefinitionBuilder.addUserTask("myUserTask", "john");
-        processDefinitionBuilder.addActor("john");
-        final ProcessDefinition processDefinition = apiTestUtil.getProcessAPI().deploy(processDefinitionBuilder.done());
-        apiTestUtil.getProcessAPI().addUserToActor("john",processDefinition, user.getId());
-        apiTestUtil.getProcessAPI().enableProcess(processDefinition.getId());
-        apiTestUtil.logoutOnTenant();
-    }
-
 
 }
