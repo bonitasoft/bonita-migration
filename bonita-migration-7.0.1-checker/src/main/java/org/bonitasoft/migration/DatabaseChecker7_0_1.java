@@ -30,7 +30,7 @@ import org.junit.runner.JUnitCore;
 
 public class DatabaseChecker7_0_1 extends SimpleDatabaseChecker7_0_0 {
 
-    public static final String PAGE_PROPERTIES_FILE_NAME = "page.properties";
+    public static final String README_NAME = "README.txt";
     private static String UTF8 = "UTF-8";
 
     public static void main(final String[] args) throws Exception {
@@ -44,14 +44,14 @@ public class DatabaseChecker7_0_1 extends SimpleDatabaseChecker7_0_0 {
         byte[] pageContent = getPageAPI().getPageContent(page.getId());
         assertThat(pageContent).isNotNull();
 
-        Properties properties = loadPageProperties(pageContent);
+        Properties properties = loadReadme(pageContent);
         assertThat(properties.getProperty("name")).isEqualTo("custompage_bootstrapdefaulttheme");
         assertThat(properties.getProperty("displayName")).isEqualTo("Bootstrap default theme");
         assertThat(properties.getProperty("description")).isEqualTo("Application theme based on bootstrap \"Default\" theme. (see http://bootswatch.com/default/)");
         assertThat(properties.getProperty("contentType")).isEqualTo("theme");
     }
 
-    private Properties loadPageProperties(final byte[] content) throws Exception {
+    private Properties loadReadme(final byte[] content) throws Exception {
         String pagePropertiesContent = retrievePagePropertiesContent(content);
         final Properties props = new Properties();
         try (StringReader reader = new StringReader(pagePropertiesContent)) {
@@ -67,7 +67,7 @@ public class DatabaseChecker7_0_1 extends SimpleDatabaseChecker7_0_0 {
                 final ZipInputStream zipInputstream = new ZipInputStream(bais)) {
 
             String content = null;
-            ZipEntry pageProperties = findPagePropertiesEntry(zipInputstream);
+            ZipEntry pageProperties = findReadmeEntry(zipInputstream);
             if (pageProperties != null) {
                 content = readContent(zipInputstream);
             }
@@ -86,11 +86,11 @@ public class DatabaseChecker7_0_1 extends SimpleDatabaseChecker7_0_0 {
         }
     }
 
-    private ZipEntry findPagePropertiesEntry(final ZipInputStream zipInputstream) throws IOException {
+    private ZipEntry findReadmeEntry(final ZipInputStream zipInputstream) throws IOException {
         ZipEntry pageProperties;
         do {
             pageProperties = zipInputstream.getNextEntry();
-        } while (pageProperties != null && !pageProperties.getName().equals(PAGE_PROPERTIES_FILE_NAME));
+        } while (pageProperties != null && !pageProperties.getName().equals(README_NAME));
         return pageProperties;
     }
 
