@@ -3,8 +3,6 @@ target
 .project
 .classpath
 .settings
-bonita-migration-distrib/src/main/resources/Config.mine
-dependency-reduced-pom.xml
 build
 bin
 .gradle

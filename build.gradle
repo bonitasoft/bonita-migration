@@ -1,11 +1,16 @@
+buildscript {
+    repositories {
+        mavenLocal()
+    }
+    dependencies {
+        classpath group: 'org.bonitasoft.migration.plugin', name: 'bonita-migration-plugins',
+                version: '1.0-SNAPSHOT'
+    }
+}
 //define bonita version for all projects
 allprojects {
-
-    apply plugin: 'maven'
-
     version '2.0.0-SNAPSHOT'
     group 'org.bonitasoft.migration'
-
     ext.bonitaVersions = [
             '7.0.0',
             '7.0.1'
@@ -13,59 +18,7 @@ allprojects {
     ext.overridedVersions = [
             '7.0.1': '7.0.0-SNAPSHOT'
     ]
-    ext.source = System.getProperty("source.version", bonitaVersions[bonitaVersions.size() - 2])
-    ext.target = System.getProperty("target.version", bonitaVersions.last())
-
-    uploadArchives {
-        repositories {
-            mavenDeployer {
-                repository url: 'file://' + new File(
-                        System.getProperty('user.home'), '.m2/repository').absolutePath
-            }
-        }
-    }
-
 }
-//define dependencies for sub projects
-subprojects {
-    apply plugin: 'groovy'
-    repositories {
-        mavenLocal()
-        def customMavenRepo = System.getProperty("maven.repository")
-        //used in jenkins: add in system property $ {JENKINS_HOME}/userContent/m2_repo and archiva
-        if (customMavenRepo != null) {
-            println "using custom maven.repository: " + customMavenRepo
-            maven { url customMavenRepo }
-        }
-        mavenCentral()
-    }
-    dependencies {
-        compile localGroovy()
-        testCompile "junit:junit:4.12"
-    }
-}
-//configure migration filler/checker projects
-configure(subprojects.findAll { it.name.startsWith('migration') }) {
 
-    ext {
-        bonitaVersionUnderScore = name.substring('migration'.length() + 1)
-        bonitaVersion = bonitaVersionUnderScore.replace('_', '.')
-        bonitaVersionResolved = overridedVersions.containsKey(bonitaVersion) ? overridedVersions.get(bonitaVersion) : bonitaVersion
-    }
+apply plugin: 'migration-project'
 
-    dependencies {
-        testCompile "org.bonitasoft.engine:bonita-client:${bonitaVersionResolved}"
-    }
-
-    task(setupSourceEngine, dependsOn: 'classes', type: JavaExec) {
-        doFirst {
-            println "bonita version declared = $bonitaVersionUnderScore or $bonitaVersion"
-            println "bonita version resolved = $bonitaVersionResolved"
-        }
-        main "org.bonitasoft.migration.MigrationFiller" + bonitaVersionUnderScore
-        classpath = sourceSets.main.runtimeClasspath
-    }
-    tasks.setupSourceEngine.dependsOn tasks.jar
-
-
-}
