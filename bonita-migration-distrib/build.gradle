@@ -10,11 +10,10 @@ buildscript {
 
 apply plugin: 'application'
 apply plugin: 'clean-db'
-apply plugin: 'toto'
+apply plugin: 'migration-dist'
 
 
 
-mainClassName = "org.bonitasoft.migration.core.Migration"
 
 
 configurations {
