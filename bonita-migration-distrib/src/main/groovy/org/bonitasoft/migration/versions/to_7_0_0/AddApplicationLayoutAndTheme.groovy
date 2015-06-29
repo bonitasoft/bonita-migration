@@ -53,15 +53,16 @@ class AddApplicationLayoutAndTheme extends DatabaseMigrationStep {
     }
 
     private insertDefaultLayout(long tenantId) {
-        return insertPage(tenantId, "custompage_layout", "Application layout page",
-                "This is a layout page dedicated to new born living applications. It is created and editable using the UI designer.", System.currentTimeMillis(),
-                "bonita-layout-page.zip", "layout")
+        return insertPage(tenantId, "custompage_defaultlayout", "Default layout",
+                "This is the default layout definition for a newly-created application. It was created using the UI designer, so you can export it and edit it with the UI designer. It contains a horizontal menu widget and an iframe widget. The menu structure is defined in the application navigation. The application pages are displayed in the iframe.",
+                System.currentTimeMillis(),
+                "bonita-default-layout.zip", "layout")
     }
 
     private insertDefaultTheme(long tenantId) {
-        return insertPage(tenantId, "custompage_theme", "Application theme",
-                "Application theme based on bootstrap \"Default\" theme. (see https://bootswatch.com/default/)", System.currentTimeMillis(),
-                "bonita-theme-page.zip", "theme")
+        return insertPage(tenantId, "custompage_defaulttheme", "Default theme",
+                "Application theme based on Bootstrap \"Simplex\" theme. (see http://bootswatch.com/simplex/)", System.currentTimeMillis(),
+                "bonita-default-theme.zip", "theme")
     }
 
     private insertPage(long tenantId, String pageName, String pageDisplayName, String pageDescription, def installationDate, String pageContentName, String contentType) {

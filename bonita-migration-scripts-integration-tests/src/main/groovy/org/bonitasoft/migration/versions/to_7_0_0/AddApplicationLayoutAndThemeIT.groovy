@@ -76,27 +76,27 @@ class AddApplicationLayoutAndThemeIT extends GroovyTestCase {
 
             //tenant 1
             //layout
-            page tenantId:1, id:50, name:"custompage_layout", displayName:"Application layout page",
-                    description: "This is a layout page dedicated to new born living applications. It is created and editable using the UI designer.",
+            page tenantId:1, id:50, name:"custompage_defaultlayout", displayName:"Default layout",
+                    description: "This is the default layout definition for a newly-created application. It was created using the UI designer, so you can export it and edit it with the UI designer. It contains a horizontal menu widget and an iframe widget. The menu structure is defined in the application navigation. The application pages are displayed in the iframe.",
                     installationDate:"<skip>", installedBy:-1 , provided: trueValue(), lastModificationDate:"<skip>", lastUpdatedBy: -1,
-                    contentName:"bonita-layout-page.zip", content:"<skip>", contentType:"layout", processDefinitionId:"<skip>"
+                    contentName:"bonita-default-layout.zip", content:"<skip>", contentType:"layout", processDefinitionId:"<skip>"
             //theme
-            page tenantId:1, id:51, name:"custompage_theme", displayName:"Application theme",
-                    description: "Application theme based on bootstrap \"Default\" theme. (see https://bootswatch.com/default/)",
+            page tenantId:1, id:51, name:"custompage_defaulttheme", displayName:"Default theme",
+                    description: "Application theme based on Bootstrap \"Simplex\" theme. (see http://bootswatch.com/simplex/)",
                     installationDate:"<skip>", installedBy:-1 , provided: trueValue(), lastModificationDate:"<skip>", lastUpdatedBy: -1,
-                    contentName:"bonita-theme-page.zip", content:"<skip>", contentType:"theme", processDefinitionId:"<skip>"
+                    contentName:"bonita-default-theme.zip", content:"<skip>", contentType:"theme", processDefinitionId:"<skip>"
 
             //tenant 2
             //layout
-            page tenantId:2, id:100, name:"custompage_layout", displayName:"Application layout page",
-                    description: "This is a layout page dedicated to new born living applications. It is created and editable using the UI designer.",
+            page tenantId:2, id:100, name:"custompage_defaultlayout", displayName:"Default layout",
+                    description: "This is the default layout definition for a newly-created application. It was created using the UI designer, so you can export it and edit it with the UI designer. It contains a horizontal menu widget and an iframe widget. The menu structure is defined in the application navigation. The application pages are displayed in the iframe.",
                     installationDate:"<skip>", installedBy:-1 , provided: trueValue(), lastModificationDate:"<skip>", lastUpdatedBy: -1,
-                    contentName:"bonita-layout-page.zip", content:"<skip>", contentType:"layout", processDefinitionId:"<skip>"
+                    contentName:"bonita-default-layout.zip", content:"<skip>", contentType:"layout", processDefinitionId:"<skip>"
             //theme
-            page tenantId:2, id:101, name:"custompage_theme", displayName:"Application theme",
-                    description: "Application theme based on bootstrap \"Default\" theme. (see https://bootswatch.com/default/)",
+            page tenantId:2, id:101, name:"custompage_defaulttheme", displayName:"Default theme",
+                    description: "Application theme based on Bootstrap \"Simplex\" theme. (see http://bootswatch.com/simplex/)",
                     installationDate:"<skip>", installedBy:-1 , provided: trueValue(), lastModificationDate:"<skip>", lastUpdatedBy: -1,
-                    contentName:"bonita-theme-page.zip", content:"<skip>", contentType:"theme", processDefinitionId:"<skip>"
+                    contentName:"bonita-default-theme.zip", content:"<skip>", contentType:"theme", processDefinitionId:"<skip>"
 
             //tenant 1
             business_app tenantId: 1, id: 10, token: "app10", version: "1.0", description: "The 10th application", iconPath: "/icon.png", creationDate: "<skip>",
