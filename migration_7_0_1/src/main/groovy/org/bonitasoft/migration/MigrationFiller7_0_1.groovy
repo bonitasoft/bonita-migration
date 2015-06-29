@@ -12,7 +12,7 @@
  * Floor, Boston, MA 02110-1301, USA.
  **/
 package org.bonitasoft.migration
-
+import org.bonitasoft.engine.LocalServerTestsInitializer
 /**
  * @author Baptiste Mesta
  */
@@ -20,10 +20,13 @@ class MigrationFiller7_0_1 {
 
 
     public static void main(String... args){
-        new MigrationFiller7_0_1().fill()
+        println new File("").getAbsolutePath()
+        LocalServerTestsInitializer.beforeAll();
+        fill();
+        LocalServerTestsInitializer.getInstance().shutdown();
     }
 
-    void fill() {
+    static void fill() {
         println "fill"
     }
 

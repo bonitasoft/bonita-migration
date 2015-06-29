@@ -18,7 +18,12 @@ allprojects {
     ext.overridedVersions = [
             '7.0.1': '7.0.0-SNAPSHOT'
     ]
+
 }
 
 apply plugin: 'migration-project'
 
+migrationConfiguration {
+    bonitaHomePath = new File(project.buildDir.absolutePath +"/bonita-home")
+    println bonitaHomePath
+}

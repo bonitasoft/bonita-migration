@@ -13,8 +13,8 @@
  **/
 
 package org.bonitasoft.migration
-import org.bonitasoft.engine.api.ApiAccessType
-import org.bonitasoft.engine.util.APITypeManager
+
+import org.bonitasoft.engine.api.TenantAPIAccessor
 import org.junit.Test
 /**
  * @author Baptiste Mesta
@@ -23,7 +23,6 @@ class Migration7_0_1 {
 
     @Test
     def void theTest() {
-        APITypeManager.setAPITypeAndParams(ApiAccessType.HTTP, Collections.<String, String>emptyMap())
-        println "the test is running"
+        TenantAPIAccessor.getLoginAPI().login("john","bpm");
     }
 }
