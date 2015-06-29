@@ -25,4 +25,6 @@ import groovy.transform.ToString
 class Page {
     def name
     def displayName
+    def description
+    def contentName
 }

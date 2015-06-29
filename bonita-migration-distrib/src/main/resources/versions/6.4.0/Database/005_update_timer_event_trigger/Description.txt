@@ -1,1 +1,0 @@
-Modify the table event_trigger_instance to store the new informations to update a timer event trigger.

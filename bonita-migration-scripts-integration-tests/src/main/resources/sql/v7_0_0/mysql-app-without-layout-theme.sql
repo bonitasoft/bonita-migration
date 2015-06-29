@@ -28,6 +28,7 @@ CREATE TABLE page (
 ) ENGINE = INNODB;
 
 ALTER TABLE page ADD CONSTRAINT pk_page PRIMARY KEY (tenantid, id);
+ALTER TABLE page ADD CONSTRAINT uk_page UNIQUE (tenantid, name, processDefinitionId);
 
 CREATE TABLE business_app (
   tenantId BIGINT NOT NULL,
