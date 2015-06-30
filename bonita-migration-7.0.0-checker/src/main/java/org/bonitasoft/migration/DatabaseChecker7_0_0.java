@@ -91,7 +91,9 @@ public class DatabaseChecker7_0_0 extends SimpleDatabaseChecker7_0_0 {
                 .setFormMappings(createDefaultProcessFormMapping(builder.getProcess()));
 
         // Add task here to have no form
-        builder.addUserTask("noFormAssociatedTask", mainActor);
+        final String noFormAssociatedTask = "noFormAssociatedTask";
+        builder.addUserTask(noFormAssociatedTask, mainActor);
+        builder.addTransition(taskName, noFormAssociatedTask);
 
         final BusinessArchive businessArchive = businessArchiveBuilder.setProcessDefinition(builder.getProcess()).done();
         final ProcessDefinition pDef = getProcessAPI().deploy(businessArchive);
@@ -107,12 +109,13 @@ public class DatabaseChecker7_0_0 extends SimpleDatabaseChecker7_0_0 {
 
         final SearchResult<FormMapping> searchResult = getProcessAPI().searchFormMappings(
                 new SearchOptionsBuilder(0, 10).filter(FormMappingSearchDescriptor.PROCESS_DEFINITION_ID, pDef.getId()).done());
-        assertThat(searchResult.getCount()).as("search results retrieved are not what they should be : %s", searchResult.getResult()).isEqualTo(3);
-        assertThat(searchResult.getResult()).as("search results retrieved are not what they should be : %s", searchResult.getResult()).hasSize(3)
+        assertThat(searchResult.getCount()).as("search results retrieved are not what they should be : %s", searchResult.getResult()).isEqualTo(4);
+        assertThat(searchResult.getResult()).as("search results retrieved are not what they should be : %s", searchResult.getResult()).hasSize(4)
                 .extracting("task", "processDefinitionId", "type", "target", "URL").contains(
                         tuple(taskName, pDef.getId(), FormMappingType.TASK, FormMappingTarget.URL, HTTP_SOME_URL_COM),
                         tuple(null, pDef.getId(), FormMappingType.PROCESS_START, FormMappingTarget.LEGACY, null),
-                        tuple(null, pDef.getId(), FormMappingType.PROCESS_OVERVIEW, FormMappingTarget.LEGACY, null)
+                        tuple(null, pDef.getId(), FormMappingType.PROCESS_OVERVIEW, FormMappingTarget.LEGACY, null),
+                        tuple(noFormAssociatedTask, pDef.getId(), FormMappingType.TASK, FormMappingTarget.UNDEFINED, null)
                 );
 
         final ProcessInstance pi = getProcessAPI().startProcess(user.getId(), pDef.getId());
@@ -126,6 +129,9 @@ public class DatabaseChecker7_0_0 extends SimpleDatabaseChecker7_0_0 {
         }
         try {
             getProcessAPI().executeUserTask(task, Collections.singletonMap(inputName, (Serializable) ""));
+            final long task2 = getApiTestUtil().waitForUserTask(pi.getId(), noFormAssociatedTask);
+            getProcessAPI().assignUserTask(task2, user.getId());
+            getProcessAPI().executeFlowNode(task2);
         } catch (final ContractViolationException e) {
             e.printStackTrace();
             fail("Cause: " + e.getMessage() + "\n" + e.getExplanations());
