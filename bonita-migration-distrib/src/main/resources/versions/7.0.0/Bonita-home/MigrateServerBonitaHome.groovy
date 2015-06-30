@@ -23,8 +23,10 @@ tenantsFolder.listFiles().each { tenantFolder ->
     def tenantPropertiesFile = new File(tenantProperties)
     if (tenantPropertiesFile.exists()) {
         println "Write file $tenantProperties"
-        tenantPropertiesFile.write("tenantId=$tenantId")
+    } else {
+        tenantPropertiesFile.parentFile.mkdirs()
     }
+    tenantPropertiesFile.write("tenantId=$tenantId")
     //Copy:  X -> engine-server/work/tenants/template/* -> engine-server/work/tenants/X/.
     IOUtil.copyDirectory(new File(newBonitaHomeDestination.path + "/work/tenants/template"), new File(newBonitaHomeDestination.path + "/work/tenants/$tenantId"));
     //Copy:  X -> engine-server/conf/tenants/template/* -> engine-server/conf/tenants/X/.
