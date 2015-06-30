@@ -1,7 +1,5 @@
 import org.bonitasoft.migration.core.IOUtil
 
-import java.nio.file.Path
-
 def File newBonitaHome = new File(newBonitaHome, "/engine-server/")
 def File newBonitaHomeDestination = new File(bonitaHome, "/engine-server/")
 def File bonitaHomeToMigrate = new File(bonitaHome, "/server/")
@@ -22,8 +20,11 @@ tenantsFolder.listFiles().each { tenantFolder ->
     //Create:  X -> engine-server/work/tenants/X/bonita-tenant-id.properties that contains tenantId=X
 
     def tenantProperties = newBonitaHomeDestination.path + "/work/tenants/$tenantId/bonita-tenant-id.properties"
-    println "Write file $tenantProperties"
-    new File(tenantProperties).write("tenantId=$tenantId")
+    def tenantPropertiesFile = new File(tenantProperties)
+    if (tenantPropertiesFile.exists()) {
+        println "Write file $tenantProperties"
+        tenantPropertiesFile.write("tenantId=$tenantId")
+    }
     //Copy:  X -> engine-server/work/tenants/template/* -> engine-server/work/tenants/X/.
     IOUtil.copyDirectory(new File(newBonitaHomeDestination.path + "/work/tenants/template"), new File(newBonitaHomeDestination.path + "/work/tenants/$tenantId"));
     //Copy:  X -> engine-server/conf/tenants/template/* -> engine-server/conf/tenants/X/.
@@ -37,7 +38,7 @@ def move(File src, File dest) {
         println "Move $src to $dest"
         IOUtil.copyDirectory(src, dest)
         IOUtil.deleteDirectory(src)
-    }else {
+    } else {
         println "src file $src does not exists"
     }
 }
