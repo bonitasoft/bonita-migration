@@ -36,7 +36,7 @@
 			<directoryMode>0644</directoryMode>
 		</fileSet>
 		<fileSet>
-			<outputDirectory>versions/${next.bonita.version}/Bonita-home/bonita</outputDirectory>
+			<outputDirectory>versions/${next.bonita.version}/Bonita-home/bonita-home</outputDirectory>
 			<directory>target/bonita-home/bonita-home</directory>
 		</fileSet>
 		<fileSet>

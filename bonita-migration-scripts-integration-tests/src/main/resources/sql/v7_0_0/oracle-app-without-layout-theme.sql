@@ -29,6 +29,7 @@ CREATE TABLE page (
 )@@
 
 ALTER TABLE page ADD CONSTRAINT pk_page PRIMARY KEY (tenantid, id)@@
+ALTER TABLE page ADD CONSTRAINT uk_page UNIQUE (tenantId, name, processDefinitionId)@@
 
 CREATE TABLE business_app (
   tenantId NUMBER(19, 0) NOT NULL,
