@@ -4,8 +4,8 @@ CREATE TABLE form_mapping (
   process INT8 NOT NULL,
   type INT NOT NULL,
   task VARCHAR(255),
-  page_mapping_tenant_id INT8 NULL,
-  page_mapping_id INT8 NULL,
+  page_mapping_tenant_id INT8 NOT NULL,
+  page_mapping_id INT8 NOT NULL,
   lastUpdateDate INT8 NULL,
   lastUpdatedBy INT8 NULL,
   PRIMARY KEY (tenantId, id)
