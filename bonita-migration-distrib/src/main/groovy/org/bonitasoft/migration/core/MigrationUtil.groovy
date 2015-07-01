@@ -89,7 +89,7 @@ public class MigrationUtil {
     
     public static String getBonitaVersionFromBonitaHome() {
         def s = File.separator;
-        def File versionFile = new File(getBonitaHome(), "server${s}platform${s}conf${s}VERSION");
+        def File versionFile = new File(getBonitaHome(), "engine-server${s}work${s}platform${s}VERSION");
         return versionFile.exists() ? versionFile.text : null;
     }
 

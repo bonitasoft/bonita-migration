@@ -1,1 +1,0 @@
-To fix the bug BS-296, add a column (tenantId) in the unique constraint.

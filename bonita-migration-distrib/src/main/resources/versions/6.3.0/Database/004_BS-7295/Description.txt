@@ -1,1 +1,0 @@
-Add indexes on waiting_event & message_instance tables.

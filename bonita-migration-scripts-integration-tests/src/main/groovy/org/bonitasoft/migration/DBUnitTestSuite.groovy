@@ -12,22 +12,12 @@
  * Floor, Boston, MA 02110-1301, USA.
  **/
 package org.bonitasoft.migration
+
 import junit.framework.TestSuite
 import org.bonitasoft.migration.versions.to_7_0_0.AddApplicationLayoutAndThemeIT
-import org.bonitasoft.migration.versions.v6_2_2to_6_2_3.BoundaryTokensMigrationIT
-import org.bonitasoft.migration.versions.v6_2_6_to_6_3_0.IndexExistsCheckerIT
-import org.bonitasoft.migration.versions.v6_2_6_to_6_3_0.UpdateDataMappingContraintIT
-import org.bonitasoft.migration.versions.v6_3_1_to_6_3_2.UpdatedDefaultCommandsIT
-import org.bonitasoft.migration.versions.v6_3_2_to_6_3_3.ArchivedDataInstancesIT
-import org.bonitasoft.migration.versions.v6_3_2_to_6_3_3.ResetFailedGatewaysIT
-import org.bonitasoft.migration.versions.v6_3_x_to_6_4_0.ChangeDocumentsStructureIT
-import org.bonitasoft.migration.versions.v6_3_x_to_6_4_0.CreateApplicationTablesIT
-import org.bonitasoft.migration.versions.v6_3_x_to_6_4_0.UpdateDefaultProfilesIT
-import org.bonitasoft.migration.versions.v6_3_x_to_6_4_0.UpdateProfileEntriesIT
-import org.bonitasoft.migration.versions.v6_4_0_to_6_4_1.AddArchDocumentMappingIndexIT
-import org.bonitasoft.migration.versions.v6_4_0_to_6_4_1.MigrateDateDataInstancesFromWrongXMLObjectIT
-import org.bonitasoft.migration.versions.v6_5_1_to_6_5_2.UpdateEventSubProcessStableFlagIT
+import org.bonitasoft.migration.versions.to_7_0_1.UpdateDefaultApplicationThemeIT
 import org.junit.runner.JUnitCore
+
 /**
  * @author Elias Ricken de Medeiros
  *
@@ -40,20 +30,8 @@ class DBUnitTestSuite extends TestSuite {
 
     public static TestSuite suite() throws Exception {
         TestSuite suite = new TestSuite();
-        suite.addTestSuite(UpdateDataMappingContraintIT.class);
-        suite.addTestSuite(IndexExistsCheckerIT.class);
-        suite.addTestSuite(BoundaryTokensMigrationIT.class);
-        suite.addTestSuite(UpdatedDefaultCommandsIT.class);
-        suite.addTestSuite(ArchivedDataInstancesIT.class);
-        suite.addTestSuite(ResetFailedGatewaysIT.class);
-        suite.addTestSuite(CreateApplicationTablesIT.class);
-        suite.addTestSuite(ChangeDocumentsStructureIT.class);
-        suite.addTestSuite(UpdateDefaultProfilesIT.class);
-        suite.addTestSuite(UpdateProfileEntriesIT.class);
-        suite.addTestSuite(AddArchDocumentMappingIndexIT.class);
-        suite.addTestSuite(MigrateDateDataInstancesFromWrongXMLObjectIT.class);
-        suite.addTestSuite(UpdateEventSubProcessStableFlagIT.class);
         suite.addTestSuite(AddApplicationLayoutAndThemeIT.class)
+        suite.addTestSuite(UpdateDefaultApplicationThemeIT.class)
         return suite
     }
 }
