@@ -23,7 +23,7 @@ def availableVersions = new File("../bonita-migration-distrib/src/main/resources
     it.name
 }
 availableVersions.sort()
-if ((!sourceGlobalVersion.equals("6.0.2") && !availableVersions.contains(sourceGlobalVersion)) || !availableVersions.contains(targetGlobalVersion)) {
+if ((!sourceGlobalVersion.equals("7.0.0") && !availableVersions.contains(sourceGlobalVersion)) || !availableVersions.contains(targetGlobalVersion)) {
     throw new IllegalArgumentException("Migration is unknown : source=" + sourceGlobalVersion + ", target=" + targetGlobalVersion + ", availableVersions=" + availableVersions)
 }
 
@@ -32,7 +32,7 @@ def steps = [];
 for (int i = availableVersions.indexOf(sourceGlobalVersion) + 1; i <= availableVersions.indexOf(targetGlobalVersion); i++) {
     def source
     if (i == 0) {
-        source = "6.0.2"
+        source = "7.0.0"
     } else {
         source = availableVersions[i - 1]
     }

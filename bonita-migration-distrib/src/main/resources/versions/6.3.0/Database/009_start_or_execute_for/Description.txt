@@ -1,3 +1,0 @@
-Rename :
-- In the process instance table, StartedByDelegate in StartedBySubstitute
-- In the flow node instance table, ExecutedByDelegate in ExecutedBySubstitute

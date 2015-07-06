@@ -1,1 +1,0 @@
-BS-12863, update value of flag 'stable' for event sub-process in state 'executing'.

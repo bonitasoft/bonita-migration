@@ -1,1 +1,0 @@
-Add a column (tenantId) in the unique constraint in order to fix the bug BS-296 for users that migrated from version 6.1.2 to version 6.2.0 using the migration tool in a version lower than 1.4.0.  

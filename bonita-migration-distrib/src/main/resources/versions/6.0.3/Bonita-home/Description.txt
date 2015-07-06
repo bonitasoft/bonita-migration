@@ -1,2 +1,0 @@
-Replace 6.0.2 configuration files with the 6.0.3 files. Some folder will be deleted. Make a backup of your bonita_home before migrating.
-If you have customized the configuration, reapply the customizations when the migration is finished.

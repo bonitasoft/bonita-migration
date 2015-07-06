@@ -1,1 +1,0 @@
-Replace all empty parent path for the groups by null.

@@ -1,4 +1,0 @@
---
--- ACTOR
--- 
-ALTER TABLE actor MODIFY name VARCHAR2(50 CHAR) @@

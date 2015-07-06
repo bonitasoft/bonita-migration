@@ -1,1 +1,0 @@
-BS-8991 : change max length from 50 to 255 for columns user_.firstName, user_.lastName, user_.jobTitle, user_.userName, user_contactinfo.address 
