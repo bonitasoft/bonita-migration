@@ -1,5 +1,5 @@
-FAQ bonita-migration
-====================
+FAQ bonita migration v2
+=======================
 
 Tools
 -----
@@ -35,10 +35,25 @@ Projects
 * bonita-migration
 * bonita-migration-sp
 
-
 Build plugins
 -------------
 ```
 cd bonita-migration-plugins
 gradle install
+```
+
+
+Build migration
+---------------
+```
+cd bonita-migration
+gradle testMigration
+cd bonita-migration
+gradle testMigration
+```
+
+Other tasks
+-----------
+```
+gradle tasks
 ```
