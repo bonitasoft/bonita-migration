@@ -9,14 +9,21 @@ buildscript {
 }
 //define bonita version for all projects
 allprojects {
+    repositories {
+        mavenLocal()
+        maven { url 'http://repositories.rd.lan/archiva/repository/releases/' }
+        mavenCentral()
+    }
+
     version '2.0.0-SNAPSHOT'
     group 'org.bonitasoft.migration'
     ext.bonitaVersions = [
             '7.0.0',
-            '7.0.1'
+            '7.0.1',
+            '7.0.2'
     ]
     ext.overridedVersions = [
-            '7.0.1': '7.0.0-SNAPSHOT'
+            '7.0.2': '7.0.2-SNAPSHOT'
     ]
 
 }
@@ -24,6 +31,5 @@ allprojects {
 apply plugin: 'migration-project'
 
 migrationConfiguration {
-    bonitaHomePath = new File(project.buildDir.absolutePath +"/bonita-home")
-    println bonitaHomePath
+    bonitaHomePath = new File(project.buildDir.absolutePath + "/bonita-home")
 }

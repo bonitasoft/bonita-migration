@@ -1,2 +1,2 @@
-include 'migration_7_0_1', 'bonita-migration-distrib'
+include 'migrateTo_7_0_1','migrateTo_7_0_2', 'bonita-migration-distrib'
 
