@@ -1,1 +1,0 @@
-Migrate quartz table and update serialized job data

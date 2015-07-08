@@ -1,1 +1,0 @@
-Update profile table: remove iconPath column

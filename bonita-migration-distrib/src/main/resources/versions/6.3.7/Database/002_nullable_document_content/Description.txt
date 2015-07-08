@@ -1,1 +1,0 @@
-BS-9397 : [6.2.6] Uploading an empty file throws an error when connected to Oracle server

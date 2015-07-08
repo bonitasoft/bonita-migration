@@ -1,1 +1,0 @@
-Remove the table transition and migrate transition into next flow node to be executed

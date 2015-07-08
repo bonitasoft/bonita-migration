@@ -1,1 +1,0 @@
-Remove column version, change scope names of dependencies and rename dependencies with wrong name

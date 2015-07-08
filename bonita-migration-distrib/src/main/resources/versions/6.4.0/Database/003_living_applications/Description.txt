@@ -1,1 +1,0 @@
-Create tables used to store Bonita Living Applications

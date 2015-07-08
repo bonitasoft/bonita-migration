@@ -1,1 +1,0 @@
-Insert a token for each boundary event without token (states initializing, waiting and executing) and update the tokenRefId for non-interrupting events in the completed state
