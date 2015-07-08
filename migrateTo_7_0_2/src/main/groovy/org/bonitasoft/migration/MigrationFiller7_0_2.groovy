@@ -13,21 +13,31 @@
  **/
 package org.bonitasoft.migration
 import org.bonitasoft.engine.LocalServerTestsInitializer
+import org.bonitasoft.migration.filler.FillAction
+import org.bonitasoft.migration.filler.FillerInitializer
+import org.bonitasoft.migration.filler.FillerShutdown
 /**
  * @author Baptiste Mesta
  */
 class MigrationFiller7_0_2 {
 
 
-    public static void main(String... args){
-        println new File("").getAbsolutePath()
+    @FillerInitializer
+    public void init(){
+        System.setProperty("sysprop.bonita.db.vendor",System.getProperty("dbvendor"));
         LocalServerTestsInitializer.beforeAll();
-        fill();
-        LocalServerTestsInitializer.getInstance().shutdown();
     }
 
-    static void fill() {
-        println "fill"
+
+    @FillAction
+    public void fillSomething() {
+
+    }
+
+
+    @FillerShutdown
+    public void shutdown(){
+        LocalServerTestsInitializer.getInstance().shutdown();
     }
 
 }

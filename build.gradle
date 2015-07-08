@@ -25,7 +25,6 @@ allprojects {
     ext.overridedVersions = [
             '7.0.2': '7.0.2-SNAPSHOT'
     ]
-
 }
 
 apply plugin: 'migration-project'
