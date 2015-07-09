@@ -14,15 +14,28 @@
 
 package org.bonitasoft.migration
 
+import org.bonitasoft.engine.LocalServerTestsInitializer
 import org.bonitasoft.engine.api.TenantAPIAccessor
+import org.junit.AfterClass
+import org.junit.BeforeClass
 import org.junit.Test
 /**
  * @author Baptiste Mesta
  */
 class Migration7_0_2 {
 
+    @BeforeClass
+    public static void beforeClass(){
+        LocalServerTestsInitializer.beforeAll();
+    }
+
     @Test
     def void theTest() {
         TenantAPIAccessor.getLoginAPI().login("john","bpm");
+    }
+
+    @AfterClass
+    public static void afterClass(){
+        LocalServerTestsInitializer.getInstance().shutdown();
     }
 }

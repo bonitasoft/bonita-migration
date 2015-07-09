@@ -23,10 +23,9 @@ class FillerRunner {
 
     private static Method[] executeAllMethodsHaving(Class<?> fillerClass, clazz, instance) {
         return fillerClass.getMethods().each { method ->
-
-
             def annotation = method.getAnnotation(clazz)
             if (annotation != null) {
+                println("FillerRunner: Executing "+clazz.getName()+"."+annotation)
                 method.invoke(instance)
             }
         }

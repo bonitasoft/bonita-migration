@@ -12,10 +12,12 @@
  * Floor, Boston, MA 02110-1301, USA.
  **/
 package org.bonitasoft.migration
+
 import org.bonitasoft.engine.LocalServerTestsInitializer
 import org.bonitasoft.migration.filler.FillAction
 import org.bonitasoft.migration.filler.FillerInitializer
 import org.bonitasoft.migration.filler.FillerShutdown
+
 /**
  * @author Baptiste Mesta
  */
@@ -23,8 +25,12 @@ class MigrationFiller7_0_2 {
 
 
     @FillerInitializer
-    public void init(){
-        System.setProperty("sysprop.bonita.db.vendor",System.getProperty("dbvendor"));
+    public void init() {
+        System.setProperty("sysprop.bonita.db.vendor", System.getProperty("dbvendor"));
+        System.setProperty("db.url", System.getProperty("dburl"));
+        System.setProperty("db.user", System.getProperty("dbuser"));
+        System.setProperty("db.password", System.getProperty("dbpassword"));
+        System.setProperty("db.database.name", "migration");
         LocalServerTestsInitializer.beforeAll();
     }
 
@@ -36,7 +42,7 @@ class MigrationFiller7_0_2 {
 
 
     @FillerShutdown
-    public void shutdown(){
+    public void shutdown() {
         LocalServerTestsInitializer.getInstance().shutdown();
     }
 
