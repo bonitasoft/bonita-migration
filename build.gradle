@@ -3,8 +3,7 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath group: 'org.bonitasoft.migration.plugin', name: 'bonita-migration-plugins',
-                version: '1.0-SNAPSHOT'
+        classpath 'org.bonitasoft.migration.plugin:bonita-migration-plugins:1.0-SNAPSHOT'
     }
 }
 //define bonita version for all projects
@@ -20,14 +19,23 @@ allprojects {
     ext.bonitaVersions = [
             '7.0.0',
             '7.0.1',
-            '7.0.2'
+            '7.0.2',
+            '7.1.0'
+
     ]
     ext.overridedVersions = [
-            '7.0.2': '7.0.2-SNAPSHOT'
+            '7.0.2': '7.0.2-SNAPSHOT',
+            '7.1.0': '7.1.0-SNAPSHOT'
     ]
 }
 
 apply plugin: 'migration-project'
+
+dependencies {
+    'org.postgresql:postgresql:9.3-1102-jdbc41'
+}
+
+
 
 migrationConfiguration {
     bonitaHomePath = new File(project.buildDir.absolutePath + "/bonita-home")

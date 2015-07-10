@@ -1,33 +1,34 @@
 package org.bonitasoft.migration.filler
-
-import java.lang.reflect.Method
-
 /**
  * @author Baptiste Mesta
  */
 class FillerRunner {
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         def className = args[0]
 
+        println  "FillerRunner: fill with class name:"+className
+
         def fillerClass = Class.forName(className)
-
-
         def instance = fillerClass.newInstance()
 
         executeAllMethodsHaving(fillerClass, FillerInitializer, instance)
         executeAllMethodsHaving(fillerClass, FillAction, instance)
         executeAllMethodsHaving(fillerClass, FillerShutdown, instance)
 
+        println  "FillerRunner: finished "
+
+
     }
 
-    private static Method[] executeAllMethodsHaving(Class<?> fillerClass, clazz, instance) {
-        return fillerClass.getMethods().each { method ->
+    private static void executeAllMethodsHaving(Class<?> fillerClass,Class clazz, instance) {
+        fillerClass.getMethods().each { method ->
             def annotation = method.getAnnotation(clazz)
             if (annotation != null) {
-                println("FillerRunner: Executing "+clazz.getName()+"."+annotation)
+                println ("FillerRunner: Executing " + method.class.name + "." + annotation)
                 method.invoke(instance)
             }
         }
+        println ( "FillerRunner: finished " + clazz.name)
     }
 }

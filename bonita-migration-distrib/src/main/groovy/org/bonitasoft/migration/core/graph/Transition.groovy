@@ -11,23 +11,29 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
-package org.bonitasoft.migration
-import org.bonitasoft.engine.LocalServerTestsInitializer
+package org.bonitasoft.migration.core.graph
+
+import groovy.transform.EqualsAndHashCode
+
+
+
+
 /**
+ *
+ * Launched by Migration.groovy
+ *
  * @author Baptiste Mesta
+ *
  */
-class MigrationFiller7_0_1 {
+@EqualsAndHashCode
+public class Transition {
+
+    String source;
+    String target
 
 
-    public static void main(String... args){
-        println new File("").getAbsolutePath()
-        LocalServerTestsInitializer.beforeAll();
-        fill();
-        LocalServerTestsInitializer.getInstance().shutdown();
+    @Override
+    public String toString() {
+        return "[$source -> $target]";
     }
-
-    static void fill() {
-        println "fill"
-    }
-
 }

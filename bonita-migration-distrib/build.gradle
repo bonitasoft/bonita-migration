@@ -12,7 +12,6 @@ apply plugin: 'application'
 apply plugin: 'clean-db'
 apply plugin: 'migration-dist'
 
-
 database {
     dbvendor = System.getProperty("db.vendor", "postgres")
     dburl = System.getProperty("db.url", "jdbc:postgresql://localhost:5432/migration");
