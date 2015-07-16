@@ -17,6 +17,7 @@
 package org.bonitasoft.migration.versions.v6_3_9_to_6_4_0
 
 import groovy.sql.Sql
+import org.bonitasoft.migration.core.ConfigurableSQL
 import org.bonitasoft.migration.core.DatabaseMigrationStep
 import org.bonitasoft.migration.core.IOUtil
 import org.bonitasoft.migration.core.MigrationUtil
@@ -31,7 +32,7 @@ import org.bonitasoft.migration.core.MigrationUtil
 class ChangeDocumentsStructure extends DatabaseMigrationStep {
 
     ChangeDocumentsStructure(Sql sql, String dbVendor) {
-        super(sql, dbVendor)
+        super(new ConfigurableSQL(sql), dbVendor)
     }
 
     @Override
