@@ -10,3 +10,4 @@ bin
 *.orig
 *.mine
 migration*.log
+bonita-migration-distrib/Config.properties
