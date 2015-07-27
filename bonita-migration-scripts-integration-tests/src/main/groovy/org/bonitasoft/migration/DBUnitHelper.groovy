@@ -84,7 +84,7 @@ class DBUnitHelper {
             public IDatabaseConnection getConnection() {
                 if (dbVendor() == "oracle") {
                     def conn = DriverManager.getConnection(getUrl(),getUser(), getPassword());
-                    return new OracleConnection(conn, null);
+                    return new OracleConnection(conn, getUser());
                 } else {
                     return super.getConnection();
                 }

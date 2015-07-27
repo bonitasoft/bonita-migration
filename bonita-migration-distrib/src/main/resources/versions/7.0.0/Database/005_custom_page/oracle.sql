@@ -19,8 +19,6 @@ CREATE TABLE page2 (
 ALTER TABLE page2 ADD CONSTRAINT pk_page PRIMARY KEY (tenantid, id)
 @@
 
-ALTER TABLE page DROP CONSTRAINT uk_page
-@@
 ALTER TABLE page2 ADD CONSTRAINT uk_page UNIQUE (tenantId, name, processDefinitionId)
 @@
 
