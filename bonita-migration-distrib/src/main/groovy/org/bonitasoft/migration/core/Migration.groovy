@@ -50,15 +50,12 @@ class Migration {
         println "using db url: " + dburl
         println "migrate from version ${sourceVersion} to version ${targetVersion}"
         def sql = MigrationUtil.getSqlConnection(dburl, user, pwd, driverClass)
-        def steps = getMigrationSteps(sql, sourceVersion, targetVersion)
-        steps.each {
-            println "Execute migration to version " + it.getClass().getSimpleName()
-            it.getMigrationSteps().each { step ->
-                println "execute " + step.description
-                step.execute(sql, MigrationStep.DBVendor.valueOf(dbVendor.toUpperCase()))
-            }
-        }
+        def versionMigrations = getMigrationVersionsToRun(sql, sourceVersion, targetVersion)
+        Logger logger = new Logger()
+        def runner = new MigrationRunner(versionMigrations: versionMigrations, sql: sql, dbVendor: dbVendor, logger: logger)
+        runner.run()
     }
+
 
     def initializeProperties() {
         def properties = MigrationUtil.properties
@@ -94,7 +91,7 @@ class Migration {
         }
     }
 
-    def List<VersionMigration> getMigrationSteps(Sql sql, String sourceVersion, String targetVersion) {
+    def List<VersionMigration> getMigrationVersionsToRun(Sql sql, String sourceVersion, String targetVersion) {
         def versions = getAllVersions()
         verifySourceVersionIsValid(sql, sourceVersion, versions);
         verifyTargetVersionIsValid(sql, sourceVersion, targetVersion, versions)
