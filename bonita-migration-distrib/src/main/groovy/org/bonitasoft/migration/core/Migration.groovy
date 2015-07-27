@@ -117,7 +117,7 @@ class Migration {
 
     private Properties getMigrationProperties() {
         def migrationProperties = new Properties()
-        this.class.getResourceAsStream("/migration.properties").withStream {
+        this.class.getResourceAsStream("/bonita-versions.properties").withStream {
             migrationProperties.load(it)
         }
         return migrationProperties
