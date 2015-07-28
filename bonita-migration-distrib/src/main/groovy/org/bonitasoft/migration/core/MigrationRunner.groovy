@@ -9,6 +9,7 @@ class MigrationRunner {
     Logger logger
 
     def run() {
+        context.openSqlConnection()
         versionMigrations.each {
             logger.info "Execute migration to version " + it.getVersion()
             it.context = context
@@ -18,6 +19,7 @@ class MigrationRunner {
                 step.execute(context)
             }
         }
+        context.claseSqlConnection()
     }
 
 }

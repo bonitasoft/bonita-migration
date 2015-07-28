@@ -13,26 +13,33 @@
  **/
 
 package org.bonitasoft.migration.core
-
-import groovy.sql.Sql
-
 /**
+ *
+ * Get all versions and steps to execute and launch the migration runner with it
+ *
  * @author Baptiste Mesta
  */
 class Migration {
 
     Logger logger = new Logger()
-    private String dbVendor
-    private def dburl
-    private def user
-    private def pwd
-    private def driverClass
-    private def sourceVersion
-    private def targetVersion
-    private def File bonitaHome
+    MigrationContext context
 
     public static void main(String[] args) {
         new Migration().run()
+    }
+
+
+    public void run() {
+        context = new MigrationContext();
+        setupOutputs()
+        printWarning()
+        println "using db vendor: " + context.dbVendor
+        println "using db url: " + context.dburl
+        println "migrate from version ${context.sourceVersion} to version ${context.targetVersion}"
+
+        def versionMigrations = getMigrationVersionsToRun()
+        def runner = new MigrationRunner(versionMigrations: versionMigrations, context: context, logger: logger)
+        runner.run()
     }
 
     /**
@@ -44,65 +51,38 @@ class Migration {
         return versionMigrationClass.newInstance(version: it, logger: logger)
     }
 
-    public void run() {
-        initializeProperties();
-        setupOutputs()
-        printWarning()
-        println "using db vendor: " + dbVendor
-        println "using db url: " + dburl
-        println "migrate from version ${sourceVersion} to version ${targetVersion}"
-        def sql = MigrationUtil.getSqlConnection(dburl, user, pwd, driverClass)
-        def versionMigrations = getMigrationVersionsToRun(sql, sourceVersion, targetVersion)
-        def context = new MigrationContext(dbVendor: MigrationStep.DBVendor.valueOf(dbVendor.toUpperCase()), sql: sql, bonitaHome: bonitaHome)
-        def runner = new MigrationRunner(versionMigrations: versionMigrations, context: context, logger: logger)
-        runner.run()
-    }
 
-
-    def initializeProperties() {
-        def properties = MigrationUtil.properties
-        dbVendor = properties.getProperty("db.vendor")
-        dburl = properties.getProperty("db.url")
-        user = properties.getProperty("db.user")
-        pwd = properties.getProperty("db.password")
-        driverClass = properties.getProperty("db.driverClass")
-        bonitaHome = new File(properties.getProperty("bonita.home"))
-
-        sourceVersion = properties.getProperty("source.version")
-        targetVersion = properties.getProperty("target.version")
-    }
-
-    def verifySourceVersionIsValid(Sql sql, String sourceVersion, List<String> versions) {
-        if (!versions.contains(sourceVersion)) {
-            throw new IllegalStateException("The source version $sourceVersion is not valid")
+    def verifySourceVersionIsValid(List<String> versions) {
+        if (!versions.contains(context.sourceVersion)) {
+            throw new IllegalStateException("The source version $context.sourceVersion is not valid")
         }
         //get version in sources
-        def String platformVersionInDatabase = MigrationUtil.getPlatformVersion(dburl, user, pwd, driverClass)
-        def String platformVersionInBonitaHome = MigrationUtil.getBonitaVersionFromBonitaHome()
-        if (!checkSourceVersion(platformVersionInDatabase, platformVersionInBonitaHome, sourceVersion)) {
+        def String platformVersionInDatabase = MigrationUtil.getPlatformVersion(context.dburl, context.dbUser, context.dbPassword, context.dbDriverClassName)
+        def String platformVersionInBonitaHome = MigrationUtil.getBonitaVersionFromBonitaHome(context)
+        if (!checkSourceVersion(platformVersionInDatabase, platformVersionInBonitaHome, context.sourceVersion)) {
             throw new IllegalStateException("Your installation is not consistent, verify all parameters are correctly set")
         }
     }
 
-    def verifyTargetVersionIsValid(Sql sql, String sourceVersion, String targetVersion, List<String> versions) {
-        if (!versions.contains(targetVersion)) {
-            throw new IllegalStateException("the target version $targetVersion is not a valid version")
+    def verifyTargetVersionIsValid(List<String> versions) {
+        if (!versions.contains(context.targetVersion)) {
+            throw new IllegalStateException("the target version $context.targetVersion is not a valid version")
         }
-        if (versions.indexOf(sourceVersion) >= versions.indexOf(targetVersion)) {
-            throw new IllegalStateException("the target version $targetVersion must be after the source version $sourceVersion")
+        if (versions.indexOf(context.sourceVersion) >= versions.indexOf(context.targetVersion)) {
+            throw new IllegalStateException("the target version $context.targetVersion must be after the source version $context.sourceVersion")
 
         }
     }
 
-    def List<VersionMigration> getMigrationVersionsToRun(Sql sql, String sourceVersion, String targetVersion) {
+    def List<VersionMigration> getMigrationVersionsToRun() {
         def versions = getAllVersions()
-        verifySourceVersionIsValid(sql, sourceVersion, versions);
-        verifyTargetVersionIsValid(sql, sourceVersion, targetVersion, versions)
-        return getVersionsToExecute(versions, sourceVersion, targetVersion)
+        verifySourceVersionIsValid(versions);
+        verifyTargetVersionIsValid(versions)
+        return getVersionsToExecute(versions)
     }
 
-    private List<VersionMigration> getVersionsToExecute(List<String> versions, String sourceVersion, String targetVersion) {
-        return versions.subList(versions.indexOf(sourceVersion) + 1, versions.indexOf(targetVersion) + 1).collect(toVersionMigrationInstance) as List<VersionMigration>
+    private List<VersionMigration> getVersionsToExecute(List<String> versions) {
+        return versions.subList(versions.indexOf(context.sourceVersion) + 1, versions.indexOf(context.targetVersion) + 1).collect(toVersionMigrationInstance) as List<VersionMigration>
     }
 
     private List<String> getAllVersions() {

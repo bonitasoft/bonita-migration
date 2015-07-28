@@ -34,9 +34,3 @@ apply plugin: 'migration-project'
 dependencies {
     'org.postgresql:postgresql:9.3-1102-jdbc41'
 }
-
-
-
-migrationConfiguration {
-    bonitaHomePath = new File(project.buildDir.absolutePath + "/bonita-home")
-}
