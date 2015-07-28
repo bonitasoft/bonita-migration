@@ -23,6 +23,9 @@ import org.bonitasoft.migration.CustomAssertion
 import org.dbunit.JdbcDatabaseTester
 import org.dbunit.dataset.xml.FlatXmlDataSet
 
+import static org.bonitasoft.migration.DBUnitHelper.createSqlConnection
+import static org.bonitasoft.migration.DBUnitHelper.createTables
+import static org.bonitasoft.migration.DBUnitHelper.createTester
 
 
 /**
@@ -31,11 +34,9 @@ import org.dbunit.dataset.xml.FlatXmlDataSet
  */
 class CreateApplicationTablesIT  extends GroovyTestCase {
     final static String DBVENDOR
-    final static CREATE_TABLES
 
     static{
         DBVENDOR = System.getProperty("db.vendor");
-        CREATE_TABLES = CreateApplicationTablesIT.class.getClassLoader().getResource("sql/v6_4_0/${DBVENDOR}-createAppRelatedTables.sql");
     }
 
 
@@ -94,17 +95,10 @@ class CreateApplicationTablesIT  extends GroovyTestCase {
 
     @Override
     void setUp() {
-        String driverClass =  System.getProperty("jdbc.driverClass")
+        sql = createSqlConnection();
+        tester = createTester()
 
-        def config = [System.getProperty("jdbc.url"), System.getProperty("jdbc.user"), System.getProperty("jdbc.password")]
-        sql = Sql.newInstance(*config, driverClass);
-        tester = new JdbcDatabaseTester(driverClass, *config)
-
-        CREATE_TABLES.text.split("@@").each({ stmt ->
-            println "executing stmt $stmt for ${DBVENDOR}"
-            sql.execute(stmt)
-        })
-
+        createTables(sql, "6_4_0", "createAppRelatedTables");
         println ("setUp: populating table")
         tester.dataSet = dataSet {
             tenant id:1

@@ -20,7 +20,9 @@ import org.bonitasoft.migration.CustomAssertion
 import org.dbunit.JdbcDatabaseTester
 import org.dbunit.dataset.xml.FlatXmlDataSet
 
-
+import static org.bonitasoft.migration.DBUnitHelper.createSqlConnection
+import static org.bonitasoft.migration.DBUnitHelper.createTables
+import static org.bonitasoft.migration.DBUnitHelper.createTester
 
 
 /**
@@ -29,11 +31,9 @@ import org.dbunit.dataset.xml.FlatXmlDataSet
  */
 class UpdatedDefaultCommandsIT extends GroovyTestCase {
     final static String DBVENDOR
-    final static CREATE_TABLE_6_3_1
 
     static{
         DBVENDOR = System.getProperty("db.vendor");
-        CREATE_TABLE_6_3_1 = UpdatedDefaultCommandsIT.class.getClassLoader().getResource("sql/v6_3_1/${DBVENDOR}-createTables.sql");
     }
 
     JdbcDatabaseTester tester
@@ -60,22 +60,10 @@ class UpdatedDefaultCommandsIT extends GroovyTestCase {
 
     @Override
     void setUp() {
-        String driverClass =  System.getProperty("jdbc.driverClass")
-
-        def config = [
-            System.getProperty("jdbc.url"),
-            System.getProperty("jdbc.user"),
-            System.getProperty("jdbc.password")
-        ]
-        sql = Sql.newInstance(*config, driverClass);
-        tester = new JdbcDatabaseTester(driverClass, *config)
-
-        def int i = 0
-        CREATE_TABLE_6_3_1.text.split("@@").each({ stmt ->
-            println "executing stmt ${i++} for ${DBVENDOR}"
-            sql.execute(stmt)
-        })
+        sql = createSqlConnection()
+        tester = createTester()
         println ("setUp: create tables")
+        createTables(sql, "6_3_1", "createTables");
 
         tester.dataSet = dataSet {
             //tenants
