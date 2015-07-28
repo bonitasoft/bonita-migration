@@ -13,13 +13,30 @@
  **/
 
 package org.bonitasoft.migration
-
+import org.bonitasoft.engine.LocalServerTestsInitializer
 import org.bonitasoft.engine.api.TenantAPIAccessor
+import org.bonitasoft.engine.test.PlatformTestUtil
+import org.junit.BeforeClass
 import org.junit.Test
 /**
  * @author Baptiste Mesta
  */
 class CheckMigratedTo7_0_1 {
+
+    @BeforeClass
+    public static void beforeClass(){
+        System.setProperty("sysprop.bonita.db.vendor", System.getProperty("dbvendor"));
+        System.setProperty("db.url", System.getProperty("dburl"));
+        System.setProperty("db.user", System.getProperty("dbuser"));
+        System.setProperty("db.password", System.getProperty("dbpassword"));
+        System.setProperty("db.database.name", "migration");
+        LocalServerTestsInitializer.instance.prepareEnvironment()
+        def platformTestUtil = new PlatformTestUtil()
+        def platform = platformTestUtil.loginOnPlatform()
+        def platformApi = platformTestUtil.getPlatformAPI(platform)
+        platformApi.startNode()
+        platformTestUtil.logoutOnPlatform(platform)
+    }
 
     @Test
     def void theTest() {
