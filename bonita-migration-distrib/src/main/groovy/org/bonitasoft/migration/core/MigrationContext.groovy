@@ -1,8 +1,6 @@
 package org.bonitasoft.migration.core
 
 import groovy.sql.Sql
-import org.bonitasoft.migration.core.exception.MigrationException
-import org.bonitasoft.migration.core.exception.NotFoundException
 
 /**
  * @author Baptiste Mesta
@@ -40,35 +38,44 @@ class MigrationContext {
      */
     public void loadProperties() {
         properties = new Properties();
-        def fileInputStream = null;
-
+        def configFile = new File("Config.properties")
         try {
-            fileInputStream = new FileInputStream("Config.properties");
-            println "using file " + (new File("Config.properties")).absolutePath
-            properties.load(fileInputStream);
-        } catch (FileNotFoundException e) {
-            throw new NotFoundException("File Config.properties not found : " + e);
-        } catch (IOException e) {
-            throw new MigrationException("Can't get all properties to migrate : " + e);
-        } finally {
-            if (fileInputStream != null) {
-                fileInputStream.close();
+            new FileInputStream(configFile).withStream {
+                println "using file " + configFile.absolutePath
+                properties.load(it);
             }
+        } catch (IOException ignored) {
+            println "failed to load $configFile.absolutePath"
         }
-        dbVendor = MigrationStep.DBVendor.valueOf(properties.getProperty(DB_VENDOR).toUpperCase())
-        dburl = properties.getProperty(DB_URL)
-        dbDriverClassName = properties.getProperty(DB_DRIVERCLASS)
-        dbUser = properties.getProperty(DB_USER)
-        dbPassword = properties.getProperty(DB_PASSWORD)
-        sourceVersion = properties.getProperty(SOURCE_VERSION)
-        targetVersion = properties.getProperty(TARGET_VERSION)
-        bonitaHome = new File(properties.getProperty(BONITA_HOME))
+        dbVendor = MigrationStep.DBVendor.valueOf(getSystemPropertyOrFromConfigFile(DB_VENDOR, properties).toUpperCase())
+        dburl = getSystemPropertyOrFromConfigFile(DB_URL, properties)
+        dbDriverClassName = getSystemPropertyOrFromConfigFile(DB_DRIVERCLASS, properties)
+        dbUser = getSystemPropertyOrFromConfigFile(DB_USER, properties)
+        dbPassword = getSystemPropertyOrFromConfigFile(DB_PASSWORD, properties)
+        sourceVersion = getSystemPropertyOrFromConfigFile(SOURCE_VERSION, properties)
+        targetVersion = getSystemPropertyOrFromConfigFile(TARGET_VERSION, properties)
+        bonitaHome = new File(getSystemPropertyOrFromConfigFile(BONITA_HOME, properties))
+    }
+
+    private static String getSystemPropertyOrFromConfigFile(String property, Properties properties) {
+        def systemProp = System.getProperty(property)
+        def propertyFromFile = properties.getProperty(property)
+        if (systemProp != null) {
+            println "Using property $property overrided by system property (instead of $propertyFromFile): $systemProp"
+            return systemProp
+        }
+        if (propertyFromFile != null) {
+            println "Using property $property from configuration file: $propertyFromFile"
+            return propertyFromFile
+        }
+        throw new IllegalStateException("The property $property is neither set in system property nor inthe configuration file ")
     }
 
     def openSqlConnection() {
         sql = MigrationUtil.getSqlConnection(dburl, dbUser, dbPassword, dbDriverClassName)
     }
-    def claseSqlConnection() {
+
+    def closeSqlConnection() {
         sql.close()
         sql = null
     }

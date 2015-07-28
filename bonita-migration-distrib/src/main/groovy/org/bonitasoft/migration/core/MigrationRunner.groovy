@@ -19,7 +19,7 @@ class MigrationRunner {
                 step.execute(context)
             }
         }
-        context.claseSqlConnection()
+        context.closeSqlConnection()
     }
 
 }
