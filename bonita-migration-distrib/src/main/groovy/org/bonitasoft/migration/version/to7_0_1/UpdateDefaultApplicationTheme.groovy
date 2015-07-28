@@ -15,6 +15,7 @@
 package org.bonitasoft.migration.version.to7_0_1
 
 import groovy.sql.Sql
+import org.bonitasoft.migration.core.MigrationContext
 import org.bonitasoft.migration.core.MigrationStep
 
 /**
@@ -23,8 +24,8 @@ import org.bonitasoft.migration.core.MigrationStep
 class UpdateDefaultApplicationTheme extends MigrationStep {
 
     @Override
-    def execute(Sql sql, DBVendor dbVendor) {
-
+    def execute(MigrationContext context) {
+        Sql sql = context.sql
         def updatedRows = 0;
         updatedRows += sql.executeUpdate("""
 update page set NAME='custompage_simplextheme',

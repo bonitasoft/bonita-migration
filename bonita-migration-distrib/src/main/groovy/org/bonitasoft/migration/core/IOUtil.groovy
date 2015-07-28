@@ -12,6 +12,10 @@
  * Floor, Boston, MA 02110-1301, USA.
  **/
 package org.bonitasoft.migration.core
+
+import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
+
 /**
  *
  * Util classes that contains common methods for I/O
@@ -198,4 +202,30 @@ public class IOUtil {
             }
         }
     }
+    public static void unzip(InputStream inputStream, File outputDirectory) {
+
+        byte[] buff = new byte[1024]
+        inputStream.withStream { stream ->
+            println "bonita home zip = " + stream
+
+            def zipStream = new ZipInputStream(stream)
+            def ZipEntry entry
+            while ((entry = zipStream.getNextEntry()) != null) {
+                def file = new File(outputDirectory, entry.getName())
+                if (entry.isDirectory()) {
+                    file.mkdirs();
+                } else {
+                    file.createNewFile()
+                    file.withOutputStream { os ->
+                        int read
+                        while ((read = zipStream.read(buff)) != -1) {
+                            os.write(buff, 0, read);
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+
 }

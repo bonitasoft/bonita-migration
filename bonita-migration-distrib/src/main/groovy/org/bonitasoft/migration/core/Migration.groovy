@@ -21,6 +21,7 @@ import groovy.sql.Sql
  */
 class Migration {
 
+    Logger logger = new Logger()
     private String dbVendor
     private def dburl
     private def user
@@ -28,6 +29,7 @@ class Migration {
     private def driverClass
     private def sourceVersion
     private def targetVersion
+    private def File bonitaHome
 
     public static void main(String[] args) {
         new Migration().run()
@@ -39,7 +41,7 @@ class Migration {
     def Closure toVersionMigrationInstance = { String it ->
         def versionUnderscored = it.replace(".", "_")
         def versionMigrationClass = Class.forName("org.bonitasoft.migration.version.to${versionUnderscored}.MigrateTo$versionUnderscored")
-        return versionMigrationClass.newInstance()
+        return versionMigrationClass.newInstance(version: it, logger: logger)
     }
 
     public void run() {
@@ -51,8 +53,8 @@ class Migration {
         println "migrate from version ${sourceVersion} to version ${targetVersion}"
         def sql = MigrationUtil.getSqlConnection(dburl, user, pwd, driverClass)
         def versionMigrations = getMigrationVersionsToRun(sql, sourceVersion, targetVersion)
-        Logger logger = new Logger()
-        def runner = new MigrationRunner(versionMigrations: versionMigrations, sql: sql, dbVendor: dbVendor, logger: logger)
+        def context = new MigrationContext(dbVendor: MigrationStep.DBVendor.valueOf(dbVendor.toUpperCase()), sql: sql, bonitaHome: bonitaHome)
+        def runner = new MigrationRunner(versionMigrations: versionMigrations, context: context, logger: logger)
         runner.run()
     }
 
@@ -64,6 +66,7 @@ class Migration {
         user = properties.getProperty("db.user")
         pwd = properties.getProperty("db.password")
         driverClass = properties.getProperty("db.driverClass")
+        bonitaHome = new File(properties.getProperty("bonita.home"))
 
         sourceVersion = properties.getProperty("source.version")
         targetVersion = properties.getProperty("target.version")
