@@ -18,7 +18,6 @@ First change the configuration of the tool located in **Config.properties**
 >     db.password <the password to connect to the database>
 
 ###Optional parameters
->     source.version <the current version of your installation>
 >     target.version <the version your installation will be in>
 
 ###Additional system properties 

@@ -39,7 +39,6 @@ class FillBeforeMigratingTo7_0_1 {
 
     @FillAction
     public void fillSomething() {
-
         def session = TenantAPIAccessor.getLoginAPI().login("install", "install");
         def identityAPI = TenantAPIAccessor.getIdentityAPI(session)
         identityAPI.createUser("john", "bpm")

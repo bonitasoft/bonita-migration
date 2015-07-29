@@ -15,7 +15,10 @@
 package org.bonitasoft.migration
 
 import org.bonitasoft.engine.LocalServerTestsInitializer
+import org.bonitasoft.engine.api.PlatformAPIAccessor
 import org.bonitasoft.engine.api.TenantAPIAccessor
+import org.bonitasoft.engine.test.PlatformTestUtil
+import org.bonitasoft.migration.filler.FillerUtils
 import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.Test
@@ -24,9 +27,20 @@ import org.junit.Test
  */
 class CheckMigratedTo7_0_2 {
 
+
     @BeforeClass
     public static void beforeClass(){
-        LocalServerTestsInitializer.beforeAll();
+        FillerUtils.initializeEngineSystemProperties()
+        startNode()
+    }
+
+    private static void startNode() {
+        LocalServerTestsInitializer.instance.prepareEnvironment()
+        def platformTestUtil = new PlatformTestUtil()
+        def platform = platformTestUtil.loginOnPlatform()
+        def platformApi = platformTestUtil.getPlatformAPI(platform)
+        platformApi.startNode()
+        platformTestUtil.logoutOnPlatform(platform)
     }
 
     @Test
@@ -36,6 +50,6 @@ class CheckMigratedTo7_0_2 {
 
     @AfterClass
     public static void afterClass(){
-//        LocalServerTestsInitializer.getInstance().shutdown();
+        new PlatformTestUtil().stopPlatformAndTenant(PlatformAPIAccessor.getPlatformAPI(new PlatformTestUtil().loginOnPlatform()), true)
     }
 }

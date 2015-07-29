@@ -14,6 +14,9 @@
 package org.bonitasoft.migration
 
 import org.bonitasoft.engine.LocalServerTestsInitializer
+import org.bonitasoft.engine.api.PlatformAPIAccessor
+import org.bonitasoft.engine.api.TenantAPIAccessor
+import org.bonitasoft.engine.test.PlatformTestUtil
 import org.bonitasoft.migration.filler.FillAction
 import org.bonitasoft.migration.filler.FillerInitializer
 import org.bonitasoft.migration.filler.FillerShutdown
@@ -32,15 +35,20 @@ class FillBeforeMigratingTo7_0_2 {
     }
 
 
+
+
     @FillAction
     public void fillSomething() {
-        println "fillSomething"
+        def session = TenantAPIAccessor.getLoginAPI().login("install", "install");
+        def identityAPI = TenantAPIAccessor.getIdentityAPI(session)
+        identityAPI.createUser("john", "bpm")
+        TenantAPIAccessor.getLoginAPI().logout(session)
     }
 
 
     @FillerShutdown
     public void shutdown() {
-        return
+        new PlatformTestUtil().stopPlatformAndTenant(PlatformAPIAccessor.getPlatformAPI(new PlatformTestUtil().loginOnPlatform()), true)
     }
 
 }

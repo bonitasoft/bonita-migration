@@ -14,15 +14,42 @@
 
 package org.bonitasoft.migration
 
+import org.bonitasoft.engine.LocalServerTestsInitializer
+import org.bonitasoft.engine.api.PlatformAPIAccessor
 import org.bonitasoft.engine.api.TenantAPIAccessor
+import org.bonitasoft.engine.test.PlatformTestUtil
+import org.bonitasoft.migration.filler.FillerUtils
+import org.junit.AfterClass
+import org.junit.BeforeClass
 import org.junit.Test
 /**
  * @author Baptiste Mesta
  */
 class CheckMigratedTo7_1_0 {
 
+
+    @BeforeClass
+    public static void beforeClass(){
+        FillerUtils.initializeEngineSystemProperties()
+        startNode()
+    }
+
+    private static void startNode() {
+        LocalServerTestsInitializer.instance.prepareEnvironment()
+        def platformTestUtil = new PlatformTestUtil()
+        def platform = platformTestUtil.loginOnPlatform()
+        def platformApi = platformTestUtil.getPlatformAPI(platform)
+        platformApi.startNode()
+        platformTestUtil.logoutOnPlatform(platform)
+    }
+
     @Test
     def void theTest() {
         TenantAPIAccessor.getLoginAPI().login("john","bpm");
+    }
+
+    @AfterClass
+    public static void afterClass(){
+        new PlatformTestUtil().stopPlatformAndTenant(PlatformAPIAccessor.getPlatformAPI(new PlatformTestUtil().loginOnPlatform()), true)
     }
 }

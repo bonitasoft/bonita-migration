@@ -15,6 +15,13 @@ abstract class VersionMigration {
         def dir = File.createTempDir()
 
         def stream1 = this.class.getResourceAsStream("/homes/bonita-home-${version}-full.zip")
+        if(stream1 == null){
+            logger.warn("Using snapshot version of the migration tool.")
+            stream1 = this.class.getResourceAsStream("/homes/bonita-home-${version}-SNAPSHOT-full.zip")
+        }
+        if(stream1 == null){
+            throw new IllegalStateException("There is no bonita home available for the version $version")
+        }
         IOUtil.unzip(stream1, dir)
 
         File newBonitaHome = new File(dir, "bonita-home")

@@ -20,5 +20,4 @@ Can be useful for automation
     db.password   : password of the user
     db.driverClass: class of the database driver to user
     bonita.home   : the path of the bonita home to migrate
-    source.version: the current version to migrate // TODO useful ?
     target.version: the version in which to migrate

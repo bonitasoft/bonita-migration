@@ -7,7 +7,6 @@ import groovy.sql.Sql
  */
 class MigrationContext {
 
-    public final static String SOURCE_VERSION = "source.version"
     public final static String TARGET_VERSION = "target.version"
     public final static String BONITA_HOME = "bonita.home"
     public final static String DB_URL = "db.url"
@@ -52,7 +51,6 @@ class MigrationContext {
         dbDriverClassName = getSystemPropertyOrFromConfigFile(DB_DRIVERCLASS, properties)
         dbUser = getSystemPropertyOrFromConfigFile(DB_USER, properties)
         dbPassword = getSystemPropertyOrFromConfigFile(DB_PASSWORD, properties)
-        sourceVersion = getSystemPropertyOrFromConfigFile(SOURCE_VERSION, properties)
         targetVersion = getSystemPropertyOrFromConfigFile(TARGET_VERSION, properties)
         bonitaHome = new File(getSystemPropertyOrFromConfigFile(BONITA_HOME, properties))
     }

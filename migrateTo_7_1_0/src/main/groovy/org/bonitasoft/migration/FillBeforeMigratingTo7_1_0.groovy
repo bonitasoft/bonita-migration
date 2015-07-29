@@ -14,10 +14,13 @@
 package org.bonitasoft.migration
 import org.bonitasoft.engine.LocalServerTestsInitializer
 import org.bonitasoft.engine.api.PlatformAPIAccessor
+import org.bonitasoft.engine.api.TenantAPIAccessor
 import org.bonitasoft.engine.test.PlatformTestUtil
 import org.bonitasoft.migration.filler.FillAction
 import org.bonitasoft.migration.filler.FillerInitializer
 import org.bonitasoft.migration.filler.FillerShutdown
+import org.bonitasoft.migration.filler.FillerUtils
+
 /**
  * @author Baptiste Mesta
  */
@@ -26,24 +29,25 @@ class FillBeforeMigratingTo7_1_0 {
 
     @FillerInitializer
     public void init() {
-        System.setProperty("sysprop.bonita.db.vendor", System.getProperty("dbvendor"));
-        System.setProperty("db.url", System.getProperty("dburl"));
-        System.setProperty("db.user", System.getProperty("dbuser"));
-        System.setProperty("db.password", System.getProperty("dbpassword"));
-        System.setProperty("db.database.name", "migration");
+        FillerUtils.initializeEngineSystemProperties()
         LocalServerTestsInitializer.beforeAll();
     }
 
 
+
+
     @FillAction
     public void fillSomething() {
-        println "fillSomething"
+        def session = TenantAPIAccessor.getLoginAPI().login("install", "install");
+        def identityAPI = TenantAPIAccessor.getIdentityAPI(session)
+        identityAPI.createUser("john", "bpm")
+        TenantAPIAccessor.getLoginAPI().logout(session)
     }
 
 
     @FillerShutdown
     public void shutdown() {
-        new PlatformTestUtil().stopPlatformAndTenant(PlatformAPIAccessor.getPlatformAPI(new PlatformTestUtil().loginOnPlatform()),true)
+        new PlatformTestUtil().stopPlatformAndTenant(PlatformAPIAccessor.getPlatformAPI(new PlatformTestUtil().loginOnPlatform()), true)
     }
 
 }

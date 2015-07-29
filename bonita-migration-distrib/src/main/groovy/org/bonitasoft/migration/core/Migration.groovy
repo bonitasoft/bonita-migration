@@ -35,7 +35,6 @@ class Migration {
         printWarning()
         println "using db vendor: " + context.dbVendor
         println "using db url: " + context.dburl
-        println "migrate from version ${context.sourceVersion} to version ${context.targetVersion}"
 
         def versionMigrations = getMigrationVersionsToRun()
         def runner = new MigrationRunner(versionMigrations: versionMigrations, context: context, logger: logger)
@@ -52,10 +51,7 @@ class Migration {
     }
 
 
-    def verifySourceVersionIsValid(List<String> versions) {
-        if (!versions.contains(context.sourceVersion)) {
-            throw new IllegalStateException("The source version $context.sourceVersion is not valid")
-        }
+    def verifyPlatformIsValid() {
         //get version in sources
         def String platformVersionInDatabase = MigrationUtil.getPlatformVersion(context.dburl, context.dbUser, context.dbPassword, context.dbDriverClassName)
         def String platformVersionInBonitaHome = MigrationUtil.getBonitaVersionFromBonitaHome(context)
@@ -64,20 +60,18 @@ class Migration {
         }
     }
 
-    def verifyTargetVersionIsValid(List<String> versions) {
-        if (!versions.contains(context.targetVersion)) {
+    def verifyTargetVersionIsValidAndSetSourceVersion(List<String> versions) {
+        def versionIndex = versions.indexOf(context.targetVersion)
+        if (!(versionIndex > 0)) {
             throw new IllegalStateException("the target version $context.targetVersion is not a valid version")
         }
-        if (versions.indexOf(context.sourceVersion) >= versions.indexOf(context.targetVersion)) {
-            throw new IllegalStateException("the target version $context.targetVersion must be after the source version $context.sourceVersion")
-
-        }
+        context.sourceVersion = versions.get(versionIndex - 1)
     }
 
     def List<VersionMigration> getMigrationVersionsToRun() {
         def versions = getAllVersions()
-        verifySourceVersionIsValid(versions);
-        verifyTargetVersionIsValid(versions)
+        verifyTargetVersionIsValidAndSetSourceVersion(versions)
+        verifyPlatformIsValid()
         return getVersionsToExecute(versions)
     }
 
@@ -106,21 +100,21 @@ class Migration {
 
     String checkSourceVersion(String platformVersionInDatabase, String platformVersionInBonitaHome, String givenSourceVersion) {
         if (!platformVersionInDatabase.startsWith("7")) {
-            println "sorry the but this tool can't manage version under 7.0.0"
-            return null;
+            logger.error("sorry the but this tool can't manage version under 7.0.0")
+            throw new IllegalStateException("sorry the but this tool can't manage version under 7.0.0")
 
         } else {
             // >=7.0.0
             if (platformVersionInBonitaHome != platformVersionInDatabase || (givenSourceVersion != null && !platformVersionInDatabase.startsWith(givenSourceVersion))) {
                 //invalid case: given source (if any) not the same as version in db and as version in bonita home
-                println "The versions are not consistent:"
-                println "The version of the database is $platformVersionInDatabase"
-                println "The version of the bonita home is $platformVersionInBonitaHome"
+                logger.error("The versions are not consistent:")
+                logger.error("The version of the database is $platformVersionInDatabase")
+                logger.error("The version of the bonita home is $platformVersionInBonitaHome")
                 if (givenSourceVersion != null) {
-                    println "The declared version is $givenSourceVersion"
+                    logger.error("The declared version is $givenSourceVersion")
                 }
-                println "Check that you configuration is correct and restart the migration"
-                return null;
+                logger.error("Check that you configuration is correct and restart the migration")
+                throw new IllegalStateException("Versions are not consistent, see logs")
             }
             return givenSourceVersion != null ? givenSourceVersion : platformVersionInBonitaHome
         }
