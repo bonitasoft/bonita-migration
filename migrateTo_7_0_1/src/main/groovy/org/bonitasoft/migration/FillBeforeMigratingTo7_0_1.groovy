@@ -12,6 +12,7 @@
  * Floor, Boston, MA 02110-1301, USA.
  **/
 package org.bonitasoft.migration
+
 import org.bonitasoft.engine.LocalServerTestsInitializer
 import org.bonitasoft.engine.api.PlatformAPIAccessor
 import org.bonitasoft.engine.api.TenantAPIAccessor
@@ -19,6 +20,8 @@ import org.bonitasoft.engine.test.PlatformTestUtil
 import org.bonitasoft.migration.filler.FillAction
 import org.bonitasoft.migration.filler.FillerInitializer
 import org.bonitasoft.migration.filler.FillerShutdown
+import org.bonitasoft.migration.filler.FillerUtils
+
 /**
  * @author Baptiste Mesta
  */
@@ -27,13 +30,11 @@ class FillBeforeMigratingTo7_0_1 {
 
     @FillerInitializer
     public void init() {
-        System.setProperty("sysprop.bonita.db.vendor", System.getProperty("dbvendor"));
-        System.setProperty("db.url", System.getProperty("dburl"));
-        System.setProperty("db.user", System.getProperty("dbuser"));
-        System.setProperty("db.password", System.getProperty("dbpassword"));
-        System.setProperty("db.database.name", "migration");
+        FillerUtils.initializeEngineSystemProperties()
         LocalServerTestsInitializer.beforeAll();
     }
+
+
 
 
     @FillAction
@@ -41,7 +42,7 @@ class FillBeforeMigratingTo7_0_1 {
 
         def session = TenantAPIAccessor.getLoginAPI().login("install", "install");
         def identityAPI = TenantAPIAccessor.getIdentityAPI(session)
-        identityAPI.createUser("john","bpm")
+        identityAPI.createUser("john", "bpm")
         TenantAPIAccessor.getLoginAPI().logout(session)
     }
 

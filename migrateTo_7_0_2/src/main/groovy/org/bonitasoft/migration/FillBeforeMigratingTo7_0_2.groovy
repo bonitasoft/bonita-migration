@@ -17,6 +17,7 @@ import org.bonitasoft.engine.LocalServerTestsInitializer
 import org.bonitasoft.migration.filler.FillAction
 import org.bonitasoft.migration.filler.FillerInitializer
 import org.bonitasoft.migration.filler.FillerShutdown
+import org.bonitasoft.migration.filler.FillerUtils
 
 /**
  * @author Baptiste Mesta
@@ -26,11 +27,7 @@ class FillBeforeMigratingTo7_0_2 {
 
     @FillerInitializer
     public void init() {
-        System.setProperty("sysprop.bonita.db.vendor", System.getProperty("dbvendor"));
-        System.setProperty("db.url", System.getProperty("dburl"));
-        System.setProperty("db.user", System.getProperty("dbuser"));
-        System.setProperty("db.password", System.getProperty("dbpassword"));
-        System.setProperty("db.database.name", "migration");
+        FillerUtils.initializeEngineSystemProperties()
         LocalServerTestsInitializer.beforeAll();
     }
 

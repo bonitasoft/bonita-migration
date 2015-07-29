@@ -34,3 +34,5 @@ apply plugin: 'migration-project'
 dependencies {
     'org.postgresql:postgresql:9.3-1102-jdbc41'
 }
+migrationConf {
+}

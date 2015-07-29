@@ -68,7 +68,7 @@ class MigrationContext {
             println "Using property $property from configuration file: $propertyFromFile"
             return propertyFromFile
         }
-        throw new IllegalStateException("The property $property is neither set in system property nor inthe configuration file ")
+        throw new IllegalStateException("The property $property is neither set in system property nor in the configuration file ")
     }
 
     def openSqlConnection() {
