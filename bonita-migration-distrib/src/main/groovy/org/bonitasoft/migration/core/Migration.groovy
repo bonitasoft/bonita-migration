@@ -65,11 +65,16 @@ class Migration {
         if (!(versionIndex > 0)) {
             throw new IllegalStateException("the target version $context.targetVersion is not a valid version")
         }
+        //FIXME not the previous version, get from db
         context.sourceVersion = versions.get(versionIndex - 1)
     }
 
     def List<VersionMigration> getMigrationVersionsToRun() {
         def versions = getAllVersions()
+        if(context.targetVersion == null){
+            println "enter the target version"
+            context.targetVersion = MigrationUtil.askForOptions(versions)
+        }
         verifyTargetVersionIsValidAndSetSourceVersion(versions)
         verifyPlatformIsValid()
         return getVersionsToExecute(versions)

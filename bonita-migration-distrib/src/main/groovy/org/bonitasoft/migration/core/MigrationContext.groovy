@@ -19,7 +19,6 @@ class MigrationContext {
     def Sql sql
     def File bonitaHome
     def String dburl
-    def private Properties properties
     String dbDriverClassName
     String dbUser
     String dbPassword
@@ -36,7 +35,7 @@ class MigrationContext {
      * @return the properties of the migration distribution
      */
     public void loadProperties() {
-        properties = new Properties();
+        Properties properties = new Properties();
         def configFile = new File("Config.properties")
         try {
             new FileInputStream(configFile).withStream {
@@ -46,16 +45,17 @@ class MigrationContext {
         } catch (IOException ignored) {
             println "failed to load $configFile.absolutePath"
         }
-        dbVendor = MigrationStep.DBVendor.valueOf(getSystemPropertyOrFromConfigFile(DB_VENDOR, properties).toUpperCase())
-        dburl = getSystemPropertyOrFromConfigFile(DB_URL, properties)
-        dbDriverClassName = getSystemPropertyOrFromConfigFile(DB_DRIVERCLASS, properties)
-        dbUser = getSystemPropertyOrFromConfigFile(DB_USER, properties)
-        dbPassword = getSystemPropertyOrFromConfigFile(DB_PASSWORD, properties)
-        targetVersion = getSystemPropertyOrFromConfigFile(TARGET_VERSION, properties)
-        bonitaHome = new File(getSystemPropertyOrFromConfigFile(BONITA_HOME, properties))
+        dbVendor = MigrationStep.DBVendor.valueOf(getSystemPropertyOrFromConfigFile(DB_VENDOR, properties, true).toUpperCase())
+        dburl = getSystemPropertyOrFromConfigFile(DB_URL, properties, true)
+        dbDriverClassName = getSystemPropertyOrFromConfigFile(DB_DRIVERCLASS, properties, true)
+        dbUser = getSystemPropertyOrFromConfigFile(DB_USER, properties, true)
+        dbPassword = getSystemPropertyOrFromConfigFile(DB_PASSWORD, properties, true)
+        //if not set it will be ask later
+        targetVersion = getSystemPropertyOrFromConfigFile(TARGET_VERSION, properties, false)
+        bonitaHome = new File(getSystemPropertyOrFromConfigFile(BONITA_HOME, properties, true))
     }
 
-    private static String getSystemPropertyOrFromConfigFile(String property, Properties properties) {
+    private static String getSystemPropertyOrFromConfigFile(String property, Properties properties, boolean mandatory) {
         def systemProp = System.getProperty(property)
         def propertyFromFile = properties.getProperty(property)
         if (systemProp != null) {
@@ -66,7 +66,10 @@ class MigrationContext {
             println "Using property $property from configuration file: $propertyFromFile"
             return propertyFromFile
         }
-        throw new IllegalStateException("The property $property is neither set in system property nor in the configuration file ")
+        if (mandatory) {
+            throw new IllegalStateException("The property $property is neither set in system property nor in the configuration file ")
+        }
+        return null;
     }
 
     def openSqlConnection() {
