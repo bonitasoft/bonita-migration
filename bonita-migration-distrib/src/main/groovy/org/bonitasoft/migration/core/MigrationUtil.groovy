@@ -41,11 +41,6 @@ public class MigrationUtil {
     }
 
 
-    public static String getBonitaVersionFromBonitaHome(MigrationContext context) {
-        def s = File.separator;
-        def File versionFile = new File(context.bonitaHome, "engine-server${s}work${s}platform${s}VERSION");
-        return versionFile.exists() ? versionFile.text : null;
-    }
 
     /**
      * Get a single property and print it

@@ -51,43 +51,72 @@ class Migration {
     }
 
 
-    def verifyPlatformIsValid() {
-        //get version in sources
-        def String platformVersionInDatabase = MigrationUtil.getPlatformVersion(context.dburl, context.dbUser, context.dbPassword, context.dbDriverClassName)
-        def String platformVersionInBonitaHome = MigrationUtil.getBonitaVersionFromBonitaHome(context)
-        if (!checkSourceVersion(platformVersionInDatabase, platformVersionInBonitaHome, context.sourceVersion)) {
-            throw new IllegalStateException("Your installation is not consistent, verify all parameters are correctly set")
-        }
-    }
-
-    def verifyTargetVersionIsValidAndSetSourceVersion(List<String> versions) {
-        def versionIndex = versions.indexOf(context.targetVersion)
-        if (!(versionIndex > 0)) {
-            throw new IllegalStateException("the target version $context.targetVersion is not a valid version")
-        }
-        //FIXME not the previous version, get from db
-        context.sourceVersion = versions.get(versionIndex - 1)
-    }
-
     def List<VersionMigration> getMigrationVersionsToRun() {
-        def versions = getAllVersions()
-        if(context.targetVersion == null){
+        String platformVersionInBonitaHome = getBonitaHomeVersion()
+        verifyPlatformIsValid(platformVersionInBonitaHome)
+        context.sourceVersion = platformVersionInBonitaHome
+        def versions = getVersionsAfter(platformVersionInBonitaHome)
+        if (context.targetVersion == null) {
             println "enter the target version"
             context.targetVersion = MigrationUtil.askForOptions(versions)
         }
-        verifyTargetVersionIsValidAndSetSourceVersion(versions)
-        verifyPlatformIsValid()
+        verifyTargetVersionIsValid(versions)
         return getVersionsToExecute(versions)
+    }
+
+    def verifyPlatformIsValid(String platformVersionInBonitaHome) {
+        String platformVersionInDatabase = getPlatformVersion()
+        if (!platformVersionInDatabase.startsWith("7")) {
+            logger.error("sorry the but this tool can't manage version under 7.0.0")
+            throw new IllegalStateException("sorry the but this tool can't manage version under 7.0.0")
+
+        } else {
+            // >=7.0.0
+            if (platformVersionInBonitaHome != platformVersionInDatabase) {
+                //invalid case: given source (if any) not the same as version in db and as version in bonita home
+                logger.error("The versions are not consistent:")
+                logger.error("The version of the database is ${platformVersionInDatabase}")
+                logger.error("The version of the bonita home is ${platformVersionInBonitaHome}")
+                logger.error("Check that you configuration is correct and restart the migration")
+                throw new IllegalStateException("Versions are not consistent, see logs")
+            }
+        }
+    }
+
+    private String getPlatformVersion() {
+        return MigrationUtil.getPlatformVersion(context.dburl, context.dbUser, context.dbPassword, context.dbDriverClassName)
+    }
+
+    private String getBonitaHomeVersion() {
+        def s = File.separator
+        def File versionFile = new File(context.bonitaHome, "engine-server${s}work${s}platform${s}VERSION")
+        if (!versionFile.exists()) {
+            throw new IllegalStateException("The bonita home does not exists or is not consistent, the file $versionFile.path does not exists")
+        }
+        return versionFile.text
+    }
+
+    def verifyTargetVersionIsValid(List<String> versions) {
+        def targetVersionIndex = versions.indexOf(context.targetVersion)
+        def sourceVersionIndex = versions.indexOf(context.sourceVersion)
+        if (!(targetVersionIndex > sourceVersionIndex) && sourceVersionIndex >= 0) {
+            throw new IllegalStateException("the target version $context.targetVersion is not a valid version or is not reachable from $context.sourceVersion")
+        }
     }
 
     private List<VersionMigration> getVersionsToExecute(List<String> versions) {
         return versions.subList(versions.indexOf(context.sourceVersion) + 1, versions.indexOf(context.targetVersion) + 1).collect(toVersionMigrationInstance) as List<VersionMigration>
     }
 
-    private List<String> getAllVersions() {
+    private List<String> getVersionsAfter(String sourceVersion) {
         Properties migrationProperties = getMigrationProperties()
         def versionsAsString = migrationProperties.getProperty("versions")
-        return parseVersionsFromMigrationProperties(versionsAsString)
+        def allVersions = parseVersionsFromMigrationProperties(versionsAsString)
+        def indexOfSourceVersion = allVersions.indexOf(sourceVersion)
+        if (indexOfSourceVersion == -1) {
+            throw new IllegalStateException("Sorry the version $sourceVersion can not be migrated using this migration tool")
+        }
+        return allVersions.subList(indexOfSourceVersion + 1, allVersions.size())
     }
 
     private List<String> parseVersionsFromMigrationProperties(String versionsAsString) {
@@ -102,28 +131,6 @@ class Migration {
         return migrationProperties
     }
 
-
-    String checkSourceVersion(String platformVersionInDatabase, String platformVersionInBonitaHome, String givenSourceVersion) {
-        if (!platformVersionInDatabase.startsWith("7")) {
-            logger.error("sorry the but this tool can't manage version under 7.0.0")
-            throw new IllegalStateException("sorry the but this tool can't manage version under 7.0.0")
-
-        } else {
-            // >=7.0.0
-            if (platformVersionInBonitaHome != platformVersionInDatabase || (givenSourceVersion != null && !platformVersionInDatabase.startsWith(givenSourceVersion))) {
-                //invalid case: given source (if any) not the same as version in db and as version in bonita home
-                logger.error("The versions are not consistent:")
-                logger.error("The version of the database is $platformVersionInDatabase")
-                logger.error("The version of the bonita home is $platformVersionInBonitaHome")
-                if (givenSourceVersion != null) {
-                    logger.error("The declared version is $givenSourceVersion")
-                }
-                logger.error("Check that you configuration is correct and restart the migration")
-                throw new IllegalStateException("Versions are not consistent, see logs")
-            }
-            return givenSourceVersion != null ? givenSourceVersion : platformVersionInBonitaHome
-        }
-    }
 
     static def setupOutputs() {
         def logInFile = new FileOutputStream(new File("migration-" + new Date().format("yyyy-MM-dd-HHmmss") + ".log"))
