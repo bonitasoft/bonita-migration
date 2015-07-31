@@ -15,7 +15,7 @@ def availableVersions = new File("../bonita-migration-distrib/src/main/resources
     boolean accept(File file, String s) {
         def version = new File(file, s)
         if(version.isDirectory()){
-            return version.getName().equals(targetGlobalVersion) || new File(new File(version,"Bonita-home"),"bonita").exists();
+            return version.getName().equals(targetGlobalVersion) || new File(new File(version,"Bonita-home"),"bonita-home").exists();
         }
         return false;
     }
