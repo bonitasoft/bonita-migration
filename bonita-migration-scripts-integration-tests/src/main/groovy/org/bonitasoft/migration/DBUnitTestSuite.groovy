@@ -12,12 +12,9 @@
  * Floor, Boston, MA 02110-1301, USA.
  **/
 package org.bonitasoft.migration
-
 import junit.framework.TestSuite
-import org.bonitasoft.migration.versions.to_7_0_0.AddApplicationLayoutAndThemeIT
 import org.bonitasoft.migration.versions.to_7_0_1.UpdateDefaultApplicationThemeIT
 import org.junit.runner.JUnitCore
-
 /**
  * @author Elias Ricken de Medeiros
  *
@@ -30,7 +27,6 @@ class DBUnitTestSuite extends TestSuite {
 
     public static TestSuite suite() throws Exception {
         TestSuite suite = new TestSuite();
-        suite.addTestSuite(AddApplicationLayoutAndThemeIT.class)
         suite.addTestSuite(UpdateDefaultApplicationThemeIT.class)
         return suite
     }
