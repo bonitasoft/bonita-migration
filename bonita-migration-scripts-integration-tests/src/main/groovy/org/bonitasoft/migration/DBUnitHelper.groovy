@@ -69,7 +69,7 @@ class DBUnitHelper {
     }
 
     def static String[] createTables(sql, String feature) {
-        createTables(sql, "6_4_0", feature);
+        createTables(sql, "7_0_0", feature);
     }
 
     def static String[] createTables(sql, String version, String feature) {
@@ -84,7 +84,7 @@ class DBUnitHelper {
             public IDatabaseConnection getConnection() {
                 if (dbVendor() == "oracle") {
                     def conn = DriverManager.getConnection(getUrl(),getUser(), getPassword());
-                    return new OracleConnection(conn, null);
+                    return new OracleConnection(conn, getUser());
                 } else {
                     return super.getConnection();
                 }

@@ -13,12 +13,14 @@
  **/
 
 package org.bonitasoft.migration.versions.to_7_0_1
+
 import groovy.sql.Sql
 import org.assertj.core.api.Assertions
 import org.bonitasoft.migration.CustomAssertion
 import org.dbunit.JdbcDatabaseTester
 
 import static org.bonitasoft.migration.DBUnitHelper.*
+
 /**
  * @author Elias Ricken de Medeiros
  */
@@ -79,6 +81,10 @@ class UpdateDefaultApplicationThemeIT extends GroovyTestCase {
         dropTables(sql, strings)
     }
 
+    int runUntilVersion() {
+        return 701
+    }
+
     void test_default_theme_should_be_renamed() {
         //when
         def updatedRows = new UpdateDefaultApplicationTheme(sql, dbVendor()).migrate()
@@ -89,27 +95,26 @@ class UpdateDefaultApplicationThemeIT extends GroovyTestCase {
 
         CustomAssertion.assertEquals dataSet {
             //tenant 1
-            page tenantId:1, id:40, name:"custompage_any", displayName:"Any", description:"just a page", installationDate: "<skip>", installedBy: -1,
-                    provided:trueValue(), lastModificationDate: "<skip>", lastUpdatedBy: -1, contentName:"any.zip", content: "<skip>",
-                    contentType:"theme", processDefinitionId:"<skip>"
-            page tenantId:1, id:41, name:"custompage_bootstrapdefaulttheme", displayName:"Bootstrap default theme",
-                    description:"Application theme based on bootstrap \"Default\" theme. (see http://bootswatch.com/default/)", installationDate: "<skip>",
-                    installedBy: -1, provided:trueValue(), lastModificationDate: "<skip>", lastUpdatedBy: -1, contentName:"bonita-bootstrap-default-theme.zip",
-                    content: "<skip>", contentType:"theme", processDefinitionId:"<skip>"
+            page tenantId: 1, id: 40, name: "custompage_any", displayName: "Any", description: "just a page", installationDate: "<skip>", installedBy: -1,
+                    provided: trueValue(), lastModificationDate: "<skip>", lastUpdatedBy: -1, contentName: "any.zip", content: "<skip>",
+                    contentType: "theme", processDefinitionId: "<skip>"
+            page tenantId: 1, id: 41, name: "custompage_bootstrapdefaulttheme", displayName: "Bootstrap default theme",
+                    description: "Application theme based on bootstrap \"Default\" theme. (see http://bootswatch.com/default/)", installationDate: "<skip>",
+                    installedBy: -1, provided: trueValue(), lastModificationDate: "<skip>", lastUpdatedBy: -1, contentName: "bonita-bootstrap-default-theme.zip",
+                    content: "<skip>", contentType: "theme", processDefinitionId: "<skip>"
 
             //tenant 2
-            page tenantId:2, id:60, name:"custompage_bootstrapdefaulttheme", displayName:"Bootstrap default theme",
-                    description:"Application theme based on bootstrap \"Default\" theme. (see http://bootswatch.com/default/)", installationDate: "<skip>",
-                    installedBy: -1, provided:trueValue(), lastModificationDate: "<skip>", lastUpdatedBy: -1, contentName:"bonita-bootstrap-default-theme.zip",
-                    content: "<skip>", contentType:"theme", processDefinitionId:"<skip>"
-            page tenantId:2, id:61, name:"custompage_any", displayName:"Any", description:"just a page", installationDate: "<skip>", installedBy: -1,
-                    provided:trueValue(), lastModificationDate: "<skip>", lastUpdatedBy: -1, contentName:"any.zip", content: "<skip>",
-                    contentType:"theme", processDefinitionId:"<skip>"
-            page tenantId:2, id:62, name:"custompage_simplextheme", displayName:"Simplex theme",
-                    description:"Application theme based on Bootstrap \"Simplex\" theme. (see http://bootswatch.com/simplex/)", installationDate: "<skip>",
-                    installedBy: -1, provided:trueValue(), lastModificationDate: "<skip>", lastUpdatedBy: -1, contentName:"bonita-simplex-theme.zip",
-                    content: "<skip>", contentType:"theme", processDefinitionId:"<skip>"
-
+            page tenantId: 2, id: 60, name: "custompage_bootstrapdefaulttheme", displayName: "Bootstrap default theme",
+                    description: "Application theme based on bootstrap \"Default\" theme. (see http://bootswatch.com/default/)", installationDate: "<skip>",
+                    installedBy: -1, provided: trueValue(), lastModificationDate: "<skip>", lastUpdatedBy: -1, contentName: "bonita-bootstrap-default-theme.zip",
+                    content: "<skip>", contentType: "theme", processDefinitionId: "<skip>"
+            page tenantId: 2, id: 61, name: "custompage_any", displayName: "Any", description: "just a page", installationDate: "<skip>", installedBy: -1,
+                    provided: trueValue(), lastModificationDate: "<skip>", lastUpdatedBy: -1, contentName: "any.zip", content: "<skip>",
+                    contentType: "theme", processDefinitionId: "<skip>"
+            page tenantId: 2, id: 62, name: "custompage_simplextheme", displayName: "Simplex theme",
+                    description: "Application theme based on Bootstrap \"Simplex\" theme. (see http://bootswatch.com/simplex/)", installationDate: "<skip>",
+                    installedBy: -1, provided: trueValue(), lastModificationDate: "<skip>", lastUpdatedBy: -1, contentName: "bonita-simplex-theme.zip",
+                    content: "<skip>", contentType: "theme", processDefinitionId: "<skip>"
 
 
         }, updatedData
