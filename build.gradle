@@ -23,6 +23,7 @@ allprojects {
 
     ]
     ext.overridedVersions = [
+            :
     ]
 }
 
