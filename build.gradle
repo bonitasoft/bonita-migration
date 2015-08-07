@@ -31,6 +31,10 @@ apply plugin: 'migration-project'
 
 dependencies {
     'org.postgresql:postgresql:9.3-1102-jdbc41'
+    'mysql:mysql-connector-java:5.1.26'
+    'com.oracle:ojdbc:6'
+    'com.microsoft.jdbc:sqlserver:4.0.2206.100'
 }
+
 migrationConf {
 }
