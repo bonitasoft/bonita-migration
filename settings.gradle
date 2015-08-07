@@ -1,3 +1,4 @@
+rootProject.name = 'bonita-migration'
 include 'migrateTo_7_0_1',
         'migrateTo_7_0_2',
         'migrateTo_7_1_0',
