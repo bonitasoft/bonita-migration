@@ -15,11 +15,11 @@ abstract class VersionMigration {
         def dir = File.createTempDir()
 
         def stream1 = this.class.getResourceAsStream("/homes/bonita-home-${version}-full.zip")
-        if(stream1 == null){
+        if (stream1 == null) {
             logger.warn("Using snapshot version of the migration tool.")
             stream1 = this.class.getResourceAsStream("/homes/bonita-home-${version}-SNAPSHOT-full.zip")
         }
-        if(stream1 == null){
+        if (stream1 == null) {
             throw new IllegalStateException("There is no bonita home available for the version $version")
         }
         IOUtil.unzip(stream1, dir)
@@ -74,8 +74,8 @@ abstract class VersionMigration {
         currentDir = "/platform/work"
         MigrationUtil.migrateDirectory(newWebClientBonitaHome.path + currentDir, oldClientBonitaHome.path + currentDir, false)
 
-        println "Checking for tenants."
         def tenantsClientDir = new File(oldClientBonitaHome, "/tenants")
+        println "Checking for tenants in $tenantsClientDir"
         if (tenantsClientDir.exists()) {
             def tenants = Arrays.asList(tenantsClientDir.listFiles())
             if (tenants.empty) {
@@ -105,13 +105,16 @@ abstract class VersionMigration {
     }
 
     def migrateBonitaHomeServer(File newBonitaHome) {
-        def bonitaHomeToMigrate = context.bonitaHome
+        println "migration bonita home server"
+        def bonitaHomeToMigrate = new File(context.bonitaHome, "engine-server");
 //Copy original engine-server
-        IOUtil.copyDirectory(newBonitaHome, bonitaHomeToMigrate);
+        IOUtil.copyDirectory(new File(newBonitaHome, "engine-server"), bonitaHomeToMigrate);
 
 
         def tenantsFolder = new File(bonitaHomeToMigrate, "work/tenants")
+        println " tenants folder is $tenantsFolder"
         tenantsFolder.listFiles().each { tenantFolder ->
+            println "executing migration on tenant $tenantFolder"
             if (!tenantFolder.getName().equals("template")) {
                 def tenantId = Long.valueOf(tenantFolder.getName())
                 println "migrating tenant: " + tenantId
