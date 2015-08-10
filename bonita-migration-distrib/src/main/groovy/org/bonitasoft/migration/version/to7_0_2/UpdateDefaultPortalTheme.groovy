@@ -30,7 +30,7 @@ class UpdateDefaultPortalTheme extends MigrationStep {
 
         def type = "PORTAL"
         context.sql.executeUpdate("UPDATE theme SET lastUpdateDate = $currentTime WHERE isDefault = ${true} AND type = $type")
-        context.sql.executeUpdate("UPDATE theme SET lastUpdateDate = ${currentTime + 1} WHERE isDefault = ${false} AND type = $type;")
+        context.sql.executeUpdate("UPDATE theme SET lastUpdateDate = ${currentTime + 1} WHERE isDefault = ${false} AND type = $type")
         context.sql.executeUpdate("UPDATE theme SET content = $zip.bytes, cssContent = $css.bytes WHERE isDefault = ${true} AND type = $type")
     }
 
