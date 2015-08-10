@@ -20,6 +20,8 @@ First change the configuration of the tool located in **Config.properties**
 ###Optional parameters
 >     target.version <the version your installation will be in>
 
+by default the target.version is the last one available
+
 ###Additional system properties 
 to be set with -Dkey=value
 >     auto.accept <true|false> will answer yes to every questions, default = false
@@ -41,3 +43,20 @@ just run the **migration.sh** or **migration.bat**
 example:
 >     ./migration.sh
 
+
+
+How to tag
+----------
+
+* in the build.gradle remove in the overrided version list the SNAPSHOT version
+* remove all others SNAPSHOT version from the bonita versions
+* keep at least [:] inside overrided versions
+
+
+Add a migration step
+--------------------
+
+* add in the build.gradle the new version
+* add this version in the overrided versions like this `[7.X.Y:7.X.Y-SNAPSHOT]`
+* add a new folder `migrateTo_7_X_Y` containing the filler and tests like in other steps
+* add a new Migration step in bonita-migration-distrib (class must be `org.bonitasoft.migration.version.to7_X_Y.MigrateTo7_X_Y`)
