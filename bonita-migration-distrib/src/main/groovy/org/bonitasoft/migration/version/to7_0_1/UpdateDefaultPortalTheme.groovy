@@ -37,6 +37,6 @@ class UpdateDefaultPortalTheme extends MigrationStep {
 
     @Override
     String getDescription() {
-        "update default application theme"
+        "update default portal theme"
     }
 }
