@@ -9,6 +9,7 @@ import org.bonitasoft.migration.core.VersionMigration
 class MigrateTo7_0_1 extends VersionMigration {
     @Override
     def List<MigrationStep> getMigrationSteps() {
-        return [new UpdateDefaultApplicationTheme()]
+        return [new UpdateDefaultPortalTheme(),
+                new UpdateDefaultApplicationTheme()]
     }
 }
