@@ -52,7 +52,7 @@
         <!-- specify the previous version of that is migrated -->
         <previous.bonita.version>7.0.1</previous.bonita.version>
         <!-- specify the in developpement version of bonita -->
-		<current.bonita.version>7.0.2-SNAPSHOT</current.bonita.version>
+		<current.bonita.version>7.0.2</current.bonita.version>
         <!-- specify the name of the release next release of bonita that will be migrated -->
 		<next.bonita.version>7.0.2</next.bonita.version>
         <groovy.version>1.8.6</groovy.version>

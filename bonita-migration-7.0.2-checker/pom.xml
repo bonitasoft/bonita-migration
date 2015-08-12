@@ -9,7 +9,7 @@
 	<artifactId>bonita-migration-7.0.2-checker</artifactId>
 
 	<properties>
-		<bonita.version>7.0.2-SNAPSHOT</bonita.version>
+		<bonita.version>7.0.2</bonita.version>
 		<bonita.home>${project.build.directory}/home</bonita.home>
 	</properties>
 
