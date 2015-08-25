@@ -220,26 +220,6 @@
                             <outputDirectory>${project.build.directory}/bonita-theme</outputDirectory>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>unpack-theme-css</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>unpack</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>org.bonitasoft.console</groupId>
-                                    <artifactId>looknfeel</artifactId>
-                                    <version>${current.bonita.version}</version>
-                                    <classifier>css</classifier>
-                                    <type>zip</type>
-                                    <overWrite>true</overWrite>
-                                </artifactItem>
-                            </artifactItems>
-                            <outputDirectory>${project.build.directory}/bonita-theme</outputDirectory>
-                        </configuration>
-                    </execution>
                 </executions>
             </plugin>
         </plugins>
