@@ -47,7 +47,15 @@ class Migration {
      */
     def Closure toVersionMigrationInstance = { String it ->
         def versionUnderscored = it.replace(".", "_")
-        def versionMigrationClass = Class.forName("org.bonitasoft.migration.version.to${versionUnderscored}.MigrateTo$versionUnderscored")
+        def versionMigrationClass
+        def className = "com.bonitasoft.migration.version.to${versionUnderscored}.MigrateTo$versionUnderscored"
+        try {
+            logger.debug("Trying to find " + className)
+            versionMigrationClass = Thread.currentThread().contextClassLoader.loadClass(className)
+        } catch (ClassNotFoundException ignored) {
+            logger.debug("Unable to find " + className)
+            versionMigrationClass = Thread.currentThread().contextClassLoader.loadClass("org.bonitasoft.migration.version.to${versionUnderscored}.MigrateTo$versionUnderscored")
+        }
         return versionMigrationClass.newInstance(version: it, logger: logger)
     }
 

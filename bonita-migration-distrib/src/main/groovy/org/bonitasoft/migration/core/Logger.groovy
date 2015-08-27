@@ -5,14 +5,20 @@ package org.bonitasoft.migration.core
  */
 class Logger {
 
-    def info(String message){
-        println message
+    def debug(String message) {
+        println "[DEBUG] " + message
     }
-    def warn(String message){
-        println message
+
+    def info(String message) {
+        println "[INFO] " + message
     }
-    def error(String message){
-        println message
+
+    def warn(String message) {
+        println "[WARN] " + message
+    }
+
+    def error(String message) {
+        println "[ERROR] " + message
     }
 
 }

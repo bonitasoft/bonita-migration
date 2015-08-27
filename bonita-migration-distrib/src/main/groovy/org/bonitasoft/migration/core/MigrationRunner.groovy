@@ -15,9 +15,11 @@ class MigrationRunner {
         context.openSqlConnection()
         versionMigrations.each {
             logger.info "Execute migration to version " + it.getVersion()
+            logger.debug "Using class" + it.getClass().getName()
             it.context = context
             it.migrateBonitaHome()
             it.getMigrationSteps().each { step ->
+                logger.info "---------------"
                 logger.info "execute " + step.description
                 step.execute(context)
             }
