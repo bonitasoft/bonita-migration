@@ -40,8 +40,8 @@
         <module>bonita-migration-7.0.1-checker</module>
         <module>bonita-migration-7.0.2-filler</module>
         <module>bonita-migration-7.0.2-checker</module>
-        <module>bonita-migration-7.0.3-filler</module>
-        <module>bonita-migration-7.0.3-checker</module>
+        <!--<module>bonita-migration-7.0.3-filler</module>-->
+        <!--<module>bonita-migration-7.0.3-checker</module>-->
         <module>bonita-migration-scripts-integration-tests</module>
   </modules>
 
