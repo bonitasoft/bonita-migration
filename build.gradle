@@ -16,6 +16,7 @@ allprojects {
 
     version '2.0.0-SNAPSHOT'
     group 'org.bonitasoft.migration'
+    ext.isSP = false
     ext.bonitaVersions = [
             '7.0.0',
             '7.0.1',
