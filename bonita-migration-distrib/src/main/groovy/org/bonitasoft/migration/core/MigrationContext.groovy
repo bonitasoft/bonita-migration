@@ -24,10 +24,10 @@ class MigrationContext {
     String dbPassword
     String sourceVersion
     String targetVersion
+    Logger logger
 
 
     public MigrationContext() {
-        loadProperties()
     }
 
     /**
@@ -36,14 +36,14 @@ class MigrationContext {
      */
     public void loadProperties() {
         Properties properties = new Properties();
-        def configFile = new File("Config.properties")
+        def configFile = new File("../Config.properties")
         try {
             new FileInputStream(configFile).withStream {
-                println "using file " + configFile.absolutePath
+                logger.info "Using file " + configFile.absolutePath
                 properties.load(it);
             }
         } catch (IOException ignored) {
-            println "failed to load $configFile.absolutePath"
+            logger.warn "Failed to load $configFile.absolutePath"
         }
         dbVendor = MigrationStep.DBVendor.valueOf(getSystemPropertyOrFromConfigFile(DB_VENDOR, properties, true).toUpperCase())
         dburl = getSystemPropertyOrFromConfigFile(DB_URL, properties, true)
@@ -55,15 +55,15 @@ class MigrationContext {
         bonitaHome = new File(getSystemPropertyOrFromConfigFile(BONITA_HOME, properties, true))
     }
 
-    private static String getSystemPropertyOrFromConfigFile(String property, Properties properties, boolean mandatory) {
+    private String getSystemPropertyOrFromConfigFile(String property, Properties properties, boolean mandatory) {
         def systemProp = System.getProperty(property)
         def propertyFromFile = properties.getProperty(property)
         if (systemProp != null) {
-            println "Using property $property overrided by system property (instead of $propertyFromFile): $systemProp"
+            logger.info "Using property $property overrided by system property (instead of $propertyFromFile): $systemProp"
             return systemProp
         }
         if (propertyFromFile != null) {
-            println "Using property $property from configuration file: $propertyFromFile"
+            logger.info "Using property $property from configuration file: $propertyFromFile"
             return propertyFromFile
         }
         if (mandatory) {

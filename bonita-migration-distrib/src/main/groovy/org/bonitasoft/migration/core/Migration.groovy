@@ -30,7 +30,8 @@ class Migration {
 
 
     public void run() {
-        context = new MigrationContext();
+        context = new MigrationContext(logger: logger);
+        context.loadProperties()
         setupOutputs()
         printWarning()
         println "using db vendor: " + context.dbVendor
