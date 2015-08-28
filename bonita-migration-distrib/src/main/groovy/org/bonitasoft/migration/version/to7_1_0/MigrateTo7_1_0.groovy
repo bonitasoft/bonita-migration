@@ -9,6 +9,6 @@ import org.bonitasoft.migration.core.VersionMigration
 class MigrateTo7_1_0 extends VersionMigration {
     @Override
     def List<MigrationStep> getMigrationSteps() {
-        return []
+        return [new MigrateFormMapping()]
     }
 }

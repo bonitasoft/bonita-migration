@@ -1,6 +1,7 @@
 package org.bonitasoft.migration.core
 
 import groovy.sql.Sql
+import org.bonitasoft.migration.core.database.DatabaseHelper
 
 /**
  * @author Baptiste Mesta
@@ -25,6 +26,7 @@ class MigrationContext {
     String sourceVersion
     String targetVersion
     Logger logger
+    DatabaseHelper databaseHelper
 
 
     public MigrationContext() {
@@ -74,6 +76,7 @@ class MigrationContext {
 
     def openSqlConnection() {
         sql = MigrationUtil.getSqlConnection(dburl, dbUser, dbPassword, dbDriverClassName)
+        databaseHelper = new DatabaseHelper(dbVendor: dbVendor, sql: sql)
     }
 
     def closeSqlConnection() {

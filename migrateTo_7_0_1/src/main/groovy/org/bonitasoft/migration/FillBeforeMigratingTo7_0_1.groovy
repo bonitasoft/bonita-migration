@@ -12,16 +12,26 @@
  * Floor, Boston, MA 02110-1301, USA.
  **/
 package org.bonitasoft.migration
-
 import org.bonitasoft.engine.LocalServerTestsInitializer
 import org.bonitasoft.engine.api.PlatformAPIAccessor
 import org.bonitasoft.engine.api.TenantAPIAccessor
+import org.bonitasoft.engine.bpm.bar.BusinessArchiveBuilder
+import org.bonitasoft.engine.bpm.form.FormMappingModelBuilder
+import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder
+import org.bonitasoft.engine.exception.BonitaException
+import org.bonitasoft.engine.form.FormMappingSearchDescriptor
+import org.bonitasoft.engine.form.FormMappingTarget
+import org.bonitasoft.engine.form.FormMappingType
+import org.bonitasoft.engine.page.Page
+import org.bonitasoft.engine.search.SearchOptionsBuilder
 import org.bonitasoft.engine.test.PlatformTestUtil
 import org.bonitasoft.migration.filler.FillAction
 import org.bonitasoft.migration.filler.FillerInitializer
 import org.bonitasoft.migration.filler.FillerShutdown
 import org.bonitasoft.migration.filler.FillerUtils
 
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
 /**
  * @author Baptiste Mesta
  */
