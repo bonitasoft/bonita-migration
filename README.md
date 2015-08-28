@@ -1,49 +1,71 @@
 bonita-migration
 =================
+
 What it does?
 -------------
 this project migrate an installed bonita open solution from one version to another
-Configuration
---------------
-
-First change the configuration of the tool located in **Config.properties**
 
 
-###Parameters required
->     bonita.home <path to bonita home>
->     db.vendor <the kind of your database>, can be [mysql,postgres,sqlserver,oracle]
->     db.url <the url of the database>
->     db.driverclass <the class of the jdbc driver>
->     db.user <the username to connect to the database>
->     db.password <the password to connect to the database>
+Dev setup
+---------
+Setup
+```
+curl -s get.gvmtool.net | bash
+gvm install groovy 2.4.3
+gvm install gradle 2.4
+```
+Check
+```
+gvm current
+Using:
+gradle: 2.4
+groovy: 2.4.3
+```
 
-###Optional parameters
->     target.version <the version your installation will be in>
+Speed build with gradle daemon 
+https://docs.gradle.org/2.4/userguide/gradle_daemon.html
 
-by default the target.version is the last one available
+* Windows:
+```
+(if not exist "%HOMEPATH%/.gradle" mkdir "%HOMEPATH%/.gradle") && (echo foo >> "%HOMEPATH%/.gradle/gradle.properties")
+```
+* Unix:
+```
+touch ~/.gradle/gradle.properties && echo "org.gradle.daemon=true" >> ~/.gradle/gradle.properties
+```
 
-###Additional system properties 
-to be set with -Dkey=value
->     auto.accept <true|false> will answer yes to every questions, default = false
+Projects
+--------
+* bonita-migration-plugins
+* bonita-migration
+* bonita-migration-sp
 
-All parameters can be overriden with system properties
+Build plugins
+-------------
+```
+cd bonita-migration-plugins
+gradle install
+```
 
-### Database configuration
-* For MySql : use allowMultiQueries=true in db url
-* For Oracle :  In sql scripts, don't use ";" after each request, but "@@"
-* For SQLServer :  In sql scripts, don't use "GO" after each request, but "@@"
+Build migration
+---------------
+```
+cd bonita-migration
+gradle testMigration
+```
 
-
-Also note that the jdbc driver must be put in the lib folder. Create "lib" folder in root of project.
-
-Run the migration
------------------
-just run the **migration.sh** or **migration.bat**
-
-example:
->     ./migration.sh
-
-
+Build migration SP
+---------------
+```
+cd bonita-migration-sp
+gradle testMigration
+```
+Debug
+-----
+* use `gradle clean install testMigration -Dfiller.debug` to debug the filler phase of database filler
+* use `gradle clean install testMigration -Dmigration.debug` to debug the filler phase of database filler
+* use `gradle clean install testMigration test --debug-jvm` to debug the filler phase of database filler
+* use `export GRADLE_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"` before launching the build in order to debug the build script itself
 
 How to tag
 ----------
