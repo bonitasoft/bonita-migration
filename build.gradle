@@ -21,11 +21,13 @@ allprojects {
             '7.0.0',
             '7.0.1',
             '7.0.2',
-            '7.0.3'
+            //'7.0.3',
+            '7.1.0'
 
     ]
     ext.overridedVersions = [
-            '7.0.3': '7.0.3-SNAPSHOT'
+            '7.0.3': '7.0.3-SNAPSHOT',
+            '7.1.0': '7.1.0-SNAPSHOT'
     ]
 }
 

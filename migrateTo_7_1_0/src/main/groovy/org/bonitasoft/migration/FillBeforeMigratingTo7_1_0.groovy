@@ -12,6 +12,7 @@
  * Floor, Boston, MA 02110-1301, USA.
  **/
 package org.bonitasoft.migration
+
 import org.bonitasoft.engine.LocalServerTestsInitializer
 import org.bonitasoft.engine.api.PlatformAPIAccessor
 import org.bonitasoft.engine.api.TenantAPIAccessor
@@ -26,14 +27,11 @@ import org.bonitasoft.migration.filler.FillerUtils
  */
 class FillBeforeMigratingTo7_1_0 {
 
-
     @FillerInitializer
     public void init() {
         FillerUtils.initializeEngineSystemProperties()
         LocalServerTestsInitializer.beforeAll();
     }
-
-
 
 
     @FillAction

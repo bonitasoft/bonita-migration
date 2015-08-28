@@ -22,14 +22,14 @@ import org.bonitasoft.migration.filler.FillerUtils
 import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.Test
+
 /**
  * @author Baptiste Mesta
  */
 class CheckMigratedTo7_1_0 {
 
-
     @BeforeClass
-    public static void beforeClass(){
+    public static void beforeClass() {
         FillerUtils.initializeEngineSystemProperties()
         startNode()
     }
@@ -45,11 +45,11 @@ class CheckMigratedTo7_1_0 {
 
     @Test
     def void theTest() {
-        TenantAPIAccessor.getLoginAPI().login("john","bpm");
+        TenantAPIAccessor.getLoginAPI().login("john", "bpm");
     }
 
     @AfterClass
-    public static void afterClass(){
+    public static void afterClass() {
         new PlatformTestUtil().stopPlatformAndTenant(PlatformAPIAccessor.getPlatformAPI(new PlatformTestUtil().loginOnPlatform()), true)
     }
 }
