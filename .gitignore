@@ -3,12 +3,13 @@ target
 .project
 .classpath
 .settings
-bonita-migration-distrib/src/main/resources/Config.mine
-dependency-reduced-pom.xml
 build
 bin
 .gradle
-build*
 *.iml
 *.orig
 *.mine
+migration*.log
+bonita-migration-distrib/Config.properties
+bonita-migration-distrib/src/main/resources/bonita-versions.properties
+bonita-migration-distrib/src/main/resources/homes/*
