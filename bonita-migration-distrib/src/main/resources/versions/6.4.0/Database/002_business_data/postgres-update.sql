@@ -10,8 +10,8 @@ CREATE TABLE ref_biz_data_inst2 (
 );
 @@
 
-INSERT INTO ref_biz_data_inst2(tenantid, id, name, data_id, fn_inst_id, data_classname, kind) 
-SELECT tenantid, id, name, data_id, NULL, data_classname, 'simple_ref' 
+INSERT INTO ref_biz_data_inst2(tenantid, id, name, data_id, proc_inst_id, fn_inst_id, data_classname, kind)
+SELECT tenantid, id, name, data_id, proc_inst_id, NULL, data_classname, 'simple_ref'
 FROM ref_biz_data_inst
 @@
 
