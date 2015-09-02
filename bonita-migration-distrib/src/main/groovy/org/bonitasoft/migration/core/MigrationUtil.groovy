@@ -15,12 +15,9 @@ package org.bonitasoft.migration.core
 
 import groovy.sql.Sql
 import groovy.time.TimeCategory
-
-import java.sql.ResultSet
-
-import org.bonitasoft.migration.core.exception.MigrationException
 import org.bonitasoft.migration.core.exception.NotFoundException
 
+import java.sql.ResultSet
 
 /**
  *
@@ -32,21 +29,6 @@ import org.bonitasoft.migration.core.exception.NotFoundException
  */
 public class MigrationUtil {
 
-    public final static String SOURCE_VERSION = "source.version"
-
-    public final static String TARGET_VERSION = "target.version"
-
-    public final static String BONITA_HOME = "bonita.home"
-
-    public final static String DB_URL = "db.url"
-
-    public final static String DB_USER = "db.user"
-
-    public final static String DB_PASSWORD = "db.password"
-
-    public final static String DB_DRIVERCLASS = "db.driverClass"
-
-    public final static String DB_VENDOR = "db.vendor"
 
     public final static String AUTO_ACCEPT = "auto.accept"
 
@@ -55,43 +37,10 @@ public class MigrationUtil {
     public static read = System.in.newReader().&readLine
 
     public static boolean isAutoAccept() {
-        return System.getProperty(MigrationUtil.AUTO_ACCEPT)=="true"
+        return System.getProperty(MigrationUtil.AUTO_ACCEPT) == "true"
     }
 
-    /**
-     * Load properties form the 'Config.properties' file inside the distribution
-     * @return the properties of the migration distribution
-     */
-    public static Properties getProperties() {
-        def Properties properties = new Properties();
-        def FileInputStream fileInputStream = null;
 
-        try {
-            // Load a properties file
-            fileInputStream = new FileInputStream("Config.properties");
-            properties.load(fileInputStream);
-        } catch (FileNotFoundException e) {
-            throw new NotFoundException("File Config.properties not found : " + e);
-        } catch (IOException e) {
-            throw new MigrationException("Can't get all properties to migrate : " + e);
-        } finally {
-            if (fileInputStream != null) {
-                fileInputStream.close();
-            }
-        }
-        return properties;
-    }
-    
-    public static File getBonitaHome() {
-        def Properties properties = MigrationUtil.getProperties();
-        return new File(MigrationUtil.getAndPrintProperty(properties, MigrationUtil.BONITA_HOME, true));
-    }
-    
-    public static String getBonitaVersionFromBonitaHome() {
-        def s = File.separator;
-        def File versionFile = new File(getBonitaHome(), "engine-server${s}work${s}platform${s}VERSION");
-        return versionFile.exists() ? versionFile.text : null;
-    }
 
     /**
      * Get a single property and print it
@@ -99,11 +48,11 @@ public class MigrationUtil {
      * then from the given property object
      */
     public static String getAndPrintProperty(Properties properties, String propertyName, boolean isMandatory) {
-        if (properties == null || propertyName == null || "".equals(propertyName)){
-            throw new IllegalArgumentException("Can't execute getAndPrintProperty method with arguments : propeties = " + properties + ", propertyName = " + propertyName);
+        if (properties == null || propertyName == null || "".equals(propertyName)) {
+            throw new IllegalArgumentException("Can't execute getAndPrintProperty method with arguments : properties = " + properties + ", propertyName = " + propertyName);
         }
         def String property = System.getProperty(propertyName);
-        if(property != null){
+        if (property != null) {
             println "" + propertyName + " = " + property
             return property
         }
@@ -113,7 +62,7 @@ public class MigrationUtil {
             println "" + propertyName + " = " + property
             return property
         }
-        if(isMandatory){
+        if (isMandatory) {
             throw new NotFoundException("The property " + propertyName + " doesn't exist !!");
         }
     }
@@ -129,7 +78,8 @@ public class MigrationUtil {
      * @param startMigrationDate
      * @return
      */
-    public static executeMigration(GroovyScriptEngine gse, File file, String scriptName, Binding binding, Date startMigrationDate){
+    public
+    static executeMigration(GroovyScriptEngine gse, File file, String scriptName, Binding binding, Date startMigrationDate) {
         def startDate = new Date();
         IOUtil.executeWrappedWithTabs {
             gse.run(new File(file, scriptName).getPath(), binding)
@@ -137,21 +87,21 @@ public class MigrationUtil {
         MigrationUtil.printSuccessMigration(startDate, startMigrationDate);
     }
 
-    public static printSuccessMigration(Date startFeatureDate, Date startMigrationDate){
-        if (startFeatureDate == null || startMigrationDate == null){
+    public static printSuccessMigration(Date startFeatureDate, Date startMigrationDate) {
+        if (startFeatureDate == null || startMigrationDate == null) {
             throw new IllegalArgumentException("Can't execute printSuccessMigration method with arguments : startFeatureDate = " + startFeatureDate + ", startMigrationDate = " + startMigrationDate);
         }
 
         def endFeatureDate = new Date()
-        println "[ Migration step success in "+ TimeCategory.minus(endFeatureDate, startFeatureDate) + ". Migration started  " + TimeCategory.minus(endFeatureDate, startMigrationDate) + " ago. ]"
+        println "[ Migration step success in " + TimeCategory.minus(endFeatureDate, startFeatureDate) + ". Migration started  " + TimeCategory.minus(endFeatureDate, startMigrationDate) + " ago. ]"
         println ""
     }
 
-    public static Sql getSqlConnection(String dburl, String user, String pwd, String driverClass){
+    public static Sql getSqlConnection(String dburl, String user, String pwd, String driverClass) {
         return Sql.newInstance(dburl, user, pwd, driverClass);
     }
 
-    public static executeDefaultSqlFile(File file, String dbVendor, Sql sql){
+    public static executeDefaultSqlFile(File file, String dbVendor, Sql sql) {
         executeSqlFile(file, dbVendor, null, null, sql, true)
     }
 
@@ -170,16 +120,17 @@ public class MigrationUtil {
      * @param toUpdate
      *      if this will update elements
      */
-    public static executeSqlFile(File feature, String dbVendor, String suffix, Map<String, String> parameters, Sql sql, boolean toUpdate){
+    public
+    static executeSqlFile(File feature, String dbVendor, String suffix, Map<String, String> parameters, Sql sql, boolean toUpdate) {
         def sqlFile = getSqlFile(feature, dbVendor, suffix)
-        if(sqlFile.exists()){
+        if (sqlFile.exists()) {
             def List<String> contents = getSqlContent(sqlFile.text, parameters)
 
             for (content in contents) {
                 if (!content.trim().empty) {
                     if (toUpdate) {
                         def count = sql.executeUpdate(content)
-                        if(count > 0){
+                        if (count > 0) {
                             println count + " row(s) updated"
                         }
                     } else {
@@ -187,25 +138,25 @@ public class MigrationUtil {
                     }
                 }
             }
-        } else{
+        } else {
             println "nothing to execute"
         }
     }
 
-    public static List<String> getSqlContent(String sqlFileContent, Map<String, String> parameters){
+    public static List<String> getSqlContent(String sqlFileContent, Map<String, String> parameters) {
         def sqlFileContentWithParameters = replaceParameters(sqlFileContent, parameters).replaceAll("\r", "")
         return Arrays.asList(sqlFileContentWithParameters.split(REQUEST_SEPARATOR))
     }
 
-    public static File getSqlFile(File folder, String dbVendor, String suffix){
-        if (folder == null || dbVendor == null || "".equals(dbVendor)){
+    public static File getSqlFile(File folder, String dbVendor, String suffix) {
+        if (folder == null || dbVendor == null || "".equals(dbVendor)) {
             throw new IllegalArgumentException("Can't execute getSqlFile method with arguments : folder = " + folder + ", dbVendor = " + dbVendor);
         }
         return new File(folder, dbVendor + (suffix == null || suffix.isEmpty() ? "" : "-" + suffix) + ".sql")
     }
 
-    static String replaceParameters(String sqlFileContent, Map<String, String> parameters){
-        if (sqlFileContent == null){
+    static String replaceParameters(String sqlFileContent, Map<String, String> parameters) {
+        if (sqlFileContent == null) {
             throw new IllegalArgumentException("Can't execute replaceParameters method with arguments : sqlFileContent = " + sqlFileContent);
         }
 
@@ -218,7 +169,7 @@ public class MigrationUtil {
         return newSqlFileContent
     }
 
-    public static String getPlatformVersion(groovy.sql.Sql sql){
+    public static String getPlatformVersion(groovy.sql.Sql sql) {
         def version = null;
         sql.eachRow("SELECT version FROM platform") { row ->
             version = row[0]
@@ -226,15 +177,15 @@ public class MigrationUtil {
         return version;
     }
 
-    public static String getPlatformVersion(dburl, user, pwd, driverClass){
+    public static String getPlatformVersion(dburl, user, pwd, driverClass) {
         def sql = MigrationUtil.getSqlConnection(dburl, user, pwd, driverClass)
         def String platformVersionInDatabase = MigrationUtil.getPlatformVersion(sql)
         sql.close()
         return platformVersionInDatabase;
     }
 
-    public static Object getId(File feature, String dbVendor, String fileExtension, Object it, Sql sql){
-        if (it == null || sql == null){
+    public static Object getId(File feature, String dbVendor, String fileExtension, Object it, Sql sql) {
+        if (it == null || sql == null) {
             throw new IllegalArgumentException("Can't execute getId method with arguments : it = " + it + ", sql = " + sql);
         }
 
@@ -246,13 +197,14 @@ public class MigrationUtil {
         }
         return id
     }
-    
+
     /**
      * Return a list of ids. 
      * The SQL file to execute need to begin by "SELECT id FROM...".
      */
-    public static List<Long> getIds(File feature, String dbVendor, String fileExtension, Map<String, String> parameters, Sql sql){
-        if (sql == null){
+    public
+    static List<Long> getIds(File feature, String dbVendor, String fileExtension, Map<String, String> parameters, Sql sql) {
+        if (sql == null) {
             throw new IllegalArgumentException("Can't execute getId method with arguments : sql = " + sql);
         }
         def sqlFile = getSqlFile(feature, dbVendor, fileExtension)
@@ -264,8 +216,8 @@ public class MigrationUtil {
         return ids
     }
 
-    public static List<Object> getTenantsId(String dbVendor, groovy.sql.Sql sql){
-        if (sql == null){
+    public static List<Object> getTenantsId(String dbVendor, groovy.sql.Sql sql) {
+        if (sql == null) {
             throw new IllegalArgumentException("Can't execute getTenantsId method with arguments : sql = " + sql);
         }
         def tenants = []
@@ -276,8 +228,8 @@ public class MigrationUtil {
         return tenants
     }
 
-    public static migrateDirectory(String fromDir, String toDir, boolean deleteOldDirectory){
-        if (fromDir == null || toDir == null){
+    public static migrateDirectory(String fromDir, String toDir, boolean deleteOldDirectory) {
+        if (fromDir == null || toDir == null) {
             throw new IllegalArgumentException("Can't execute migrateDirectory method with arguments : fromDir = " + fromDir + ", toDir = " + toDir);
         }
         def fileFromDir = new File(fromDir);
@@ -287,7 +239,7 @@ public class MigrationUtil {
             throw new IllegalStateException("Migration failed. Source folder does not exist : " + fromDir)
         }
 
-        if(!deleteOldDirectory){
+        if (!deleteOldDirectory) {
             println "Adding/overwriting content in $toDir..."
         } else {
             IOUtil.deleteDirectory(fileToDir);
@@ -295,31 +247,31 @@ public class MigrationUtil {
         IOUtil.copyDirectory(fileFromDir, fileToDir)
     }
 
-    public static void  askIfWeContinue(){
-        if(!isAutoAccept()){
+    public static void askIfWeContinue() {
+        if (!isAutoAccept()) {
             println "Continue migration? (yes/no): "
             def String input = read();
-            if(input != "yes"){
+            if (input != "yes") {
                 println "Migration cancelled"
                 System.exit(0);
             }
         }
     }
 
-    public static String askForOptions(List<String> options){
+    public static String askForOptions(List<String> options) {
         def input = null;
-        while(true){
-            options.eachWithIndex {it,idx->
-                println "${idx+1} -- $it "
+        while (true) {
+            options.eachWithIndex { it, idx ->
+                println "${idx + 1} -- $it "
             }
             println "choice: "
             input = read();
-            try{
-                def choiceNumber = Integer.valueOf(input) -1 //index in the list is -1
-                if(choiceNumber <= options.size()){
+            try {
+                def choiceNumber = Integer.valueOf(input) - 1 //index in the list is -1
+                if (choiceNumber <= options.size()) {
                     return options.get(choiceNumber)
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
             }
             println "Invalid choice, please enter a value between 1 and ${options.size()}"
         }
@@ -328,16 +280,16 @@ public class MigrationUtil {
     public static getNexIdsForTable(Sql sql, long sequenceId) {
         def idsByTenants = [:];
         sql.eachRow("SELECT tenantid,nextId from sequence WHERE id = $sequenceId") { row ->
-            idsByTenants.put(row[0],row[1])
+            idsByTenants.put(row[0], row[1])
         }
         println "next id by tenants for sequence id $sequenceId: $idsByTenants";
         return idsByTenants;
     }
 
-    public static updateNextIdsForTable(Sql sql, long sequenceId, Map nexIdsByTenants){
+    public static updateNextIdsForTable(Sql sql, long sequenceId, Map nexIdsByTenants) {
         nexIdsByTenants.each {
             println "update next id to $it.value for sequence id $sequenceId on tenant $it.key"
-            println  sql.executeUpdate("UPDATE sequence SET nextId = $it.value WHERE tenantId = $it.key and id = $sequenceId")+" row(s) updated";
+            println sql.executeUpdate("UPDATE sequence SET nextId = $it.value WHERE tenantId = $it.key and id = $sequenceId") + " row(s) updated";
         }
     }
 }

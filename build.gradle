@@ -1,0 +1,44 @@
+buildscript {
+    repositories {
+        mavenLocal()
+    }
+    dependencies {
+        classpath 'org.bonitasoft.migration.plugin:bonita-migration-plugins:1.0-SNAPSHOT'
+    }
+}
+//define bonita version for all projects
+allprojects {
+    repositories {
+        mavenLocal()
+        maven { url 'http://repositories.rd.lan/archiva/repository/releases/' }
+        mavenCentral()
+    }
+
+    version '2.0.0-SNAPSHOT'
+    group 'org.bonitasoft.migration'
+    ext.isSP = false
+    ext.bonitaVersions = [
+            '7.0.0',
+            '7.0.1',
+            '7.0.2',
+            //'7.0.3',
+            '7.1.0'
+
+    ]
+    ext.overridedVersions = [
+            '7.0.3': '7.0.3-SNAPSHOT',
+            '7.1.0': '7.1.0-SNAPSHOT'
+    ]
+}
+
+apply plugin: 'migration-project'
+
+dependencies {
+    'org.postgresql:postgresql:9.3-1102-jdbc41'
+    'mysql:mysql-connector-java:5.1.26'
+    'com.oracle:ojdbc:6'
+    'com.microsoft.jdbc:sqlserver:4.0.2206.100'
+}
+
+migrationConf {
+}

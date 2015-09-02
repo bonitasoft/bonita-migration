@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2013 BonitaSoft S.A.
+ * Copyright (C) 2015 Bonitasoft S.A.
  * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
@@ -11,24 +11,18 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
-package org.bonitasoft.migration.core.exception
+
+package org.bonitasoft.migration.core
 /**
- * @author Celine Souchet
+ * @author Baptiste Mesta
  */
-public class MigrationException extends Exception {
+abstract class MigrationStep {
 
-    private static final long serialVersionUID = -5413586694735909486L;
+    enum DBVendor { ORACLE, POSTGRES, MYSQL, SQLSERVER}
 
-    public MigrationException(final String message) {
-        super(message);
-    }
+    abstract execute(MigrationContext context)
 
-    public MigrationException(final String message, final Throwable cause) {
-        super(message);
-    }
+    abstract String getDescription()
 
-    public MigrationException(final Throwable cause) {
-        super(cause.getMessage());
-    }
 
 }
