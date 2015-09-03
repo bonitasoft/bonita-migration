@@ -14,15 +14,27 @@
 
 package org.bonitasoft.migration.version.to7_1_0
 
+import org.bonitasoft.migration.core.MigrationContext
 import org.bonitasoft.migration.core.MigrationStep
-import org.bonitasoft.migration.core.VersionMigration
 
 /**
- * @author Baptiste Mesta
+ * @author Laurent Leseigneur
  */
-class MigrateTo7_1_0 extends VersionMigration {
+class MigratePlatform extends MigrationStep {
     @Override
-    def List<MigrationStep> getMigrationSteps() {
-        return [new MigratePlatform(),new MigrateFormMapping()]
+    def execute(MigrationContext context) {
+        def String sql
+        def sqlFile = "/version/to_7_1_0/" + context.dbVendor.toString().toLowerCase() + "_platform.sql"
+        def stream1 = this.class.getResourceAsStream(sqlFile)
+        stream1.withStream { InputStream s ->
+            sql = s.getText()
+        }
+        context.databaseHelper.execute(sql)
+
+    }
+
+    @Override
+    String getDescription() {
+        return "update platform table"
     }
 }
