@@ -1,1 +1,1 @@
-ALTER TABLE platform add information CLOB @@
+ALTER TABLE platform add information CLOB
