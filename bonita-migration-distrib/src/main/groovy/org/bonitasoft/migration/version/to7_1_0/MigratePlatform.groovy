@@ -29,7 +29,7 @@ class MigratePlatform extends MigrationStep {
         stream1.withStream { InputStream s ->
             sql = s.getText()
         }
-        context.databaseHelper.execute(sql)
+        context.databaseHelper.executeDbVendorStatement(sql)
 
     }
 

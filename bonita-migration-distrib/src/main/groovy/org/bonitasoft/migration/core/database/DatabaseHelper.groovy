@@ -37,9 +37,19 @@ class DatabaseHelper {
         return sql.execute(adaptFor(statement))
     }
 
+    /**
+     * execute statement without adapting syntax to dbVendor dialect 
+     * @param statement
+     * @return
+     */
+    def boolean executeDbVendorStatement(String statement) {
+        return sql.execute(statement)
+    }
+
     def boolean execute(String statement) {
         return sql.execute(adaptFor(statement))
     }
+    
     def boolean execute(String statement, List<Object> params) {
         return sql.execute(adaptFor(statement), params)
     }
@@ -52,6 +62,13 @@ class DatabaseHelper {
         return sql.executeUpdate(adaptFor(statement))
     }
 
+    /**
+     * adapting could have a different result that a fresh install
+     * example: VARCHAR(50) should be a VARCHAR2(50 CHAR) in oracle
+     * @param statement
+     * @return
+     */
+    @Deprecated
     def String adaptFor(String statement) {
         switch (dbVendor) {
             case DBVendor.ORACLE:
