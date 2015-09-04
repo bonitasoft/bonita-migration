@@ -34,6 +34,7 @@ class DatabaseHelper {
      * @return
      */
     def boolean execute(GString statement) {
+        //TODO: replace statement by file name, get current version from context & split statement against @@ joker
         return sql.execute(adaptFor(statement))
     }
 
