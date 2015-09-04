@@ -12,7 +12,7 @@ CREATE TABLE ref_biz_data_inst2 (
 
 INSERT INTO ref_biz_data_inst2(tenantid, id, name, data_id, proc_inst_id, fn_inst_id, data_classname, kind)
 SELECT r.tenantid, r.id, r.name, r.data_id, p.id, NULL, r.data_classname, 'proc_simple_ref'
-FROM ref_biz_data_inst r left join PROCESS_INSTANCE p on  r.PROC_INST_ID=p.ID and r.TENANTID=p.TENANTID
+FROM ref_biz_data_inst r left join process_instance p on  r.proc_inst_id=p.id and r.tenantid=p.tenantid
 WHERE p.ID is not null
 @@
 
