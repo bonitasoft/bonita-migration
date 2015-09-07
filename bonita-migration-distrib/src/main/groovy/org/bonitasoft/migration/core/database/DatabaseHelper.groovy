@@ -1,3 +1,17 @@
+/**
+ * Copyright (C) 2015 Bonitasoft S.A.
+ * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
+ * This library is free software; you can redistribute it and/or modify it under the terms
+ * of the GNU Lesser General Public License as published by the Free Software Foundation
+ * version 2.1 of the License.
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ * You should have received a copy of the GNU Lesser General Public License along with this
+ * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
+ * Floor, Boston, MA 02110-1301, USA.
+ **/
+
 package org.bonitasoft.migration.core.database
 
 import groovy.sql.GroovyRowResult
@@ -20,12 +34,23 @@ class DatabaseHelper {
      * @return
      */
     def boolean execute(GString statement) {
+        //TODO: replace statement by file name, get current version from context & split statement against @@ joker
         return sql.execute(adaptFor(statement))
+    }
+
+    /**
+     * execute statement without adapting syntax to dbVendor dialect 
+     * @param statement
+     * @return
+     */
+    def boolean executeDbVendorStatement(String statement) {
+        return sql.execute(statement)
     }
 
     def boolean execute(String statement) {
         return sql.execute(adaptFor(statement))
     }
+    
     def boolean execute(String statement, List<Object> params) {
         return sql.execute(adaptFor(statement), params)
     }
@@ -38,6 +63,13 @@ class DatabaseHelper {
         return sql.executeUpdate(adaptFor(statement))
     }
 
+    /**
+     * adapting could have a different result that a fresh install
+     * example: VARCHAR(50) should be a VARCHAR2(50 CHAR) in oracle
+     * @param statement
+     * @return
+     */
+    @Deprecated
     def String adaptFor(String statement) {
         switch (dbVendor) {
             case DBVendor.ORACLE:

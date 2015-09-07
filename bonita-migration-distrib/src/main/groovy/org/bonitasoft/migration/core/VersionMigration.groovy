@@ -1,3 +1,17 @@
+/**
+ * Copyright (C) 2015 Bonitasoft S.A.
+ * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
+ * This library is free software; you can redistribute it and/or modify it under the terms
+ * of the GNU Lesser General Public License as published by the Free Software Foundation
+ * version 2.1 of the License.
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ * You should have received a copy of the GNU Lesser General Public License along with this
+ * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
+ * Floor, Boston, MA 02110-1301, USA.
+ **/
+
 package org.bonitasoft.migration.core
 /**
  * @author Baptiste Mesta
@@ -11,13 +25,13 @@ abstract class VersionMigration {
     abstract List<MigrationStep> getMigrationSteps()
 
 
-    def migrateBonitaHome() {
+    def migrateBonitaHome(boolean isSp) {
         def dir = File.createTempDir()
 
-        def stream1 = this.class.getResourceAsStream("/homes/bonita-home-${version}-full.zip")
+        def stream1 = this.class.getResourceAsStream(getBonitaHomePath(isSp))
         if (stream1 == null) {
             logger.warn("Using snapshot version of the migration tool.")
-            stream1 = this.class.getResourceAsStream("/homes/bonita-home-${version}-SNAPSHOT-full.zip")
+            stream1 = this.class.getResourceAsStream(getBonitaHomeSnapshotPath(isSp))
         }
         if (stream1 == null) {
             throw new IllegalStateException("There is no bonita home available for the version $version")
@@ -29,6 +43,22 @@ abstract class VersionMigration {
         migrateBonitaHomeServer(newBonitaHome);
 
         dir.delete()
+    }
+
+    private GString getBonitaHomePath(boolean isSp) {
+        if (isSp){
+            return  "/homes/bonita-home-sp-${version}.zip"
+        }else {
+            return  "/homes/bonita-home-${version}-full.zip"
+        }
+    }
+
+    private GString getBonitaHomeSnapshotPath(boolean isSp) {
+        if (isSp){
+            return  "/homes/bonita-home-sp-${version}-SNAPSHOT.zip"
+        }else {
+            return  "/homes/bonita-home-${version}-SNAPSHOT-full.zip"
+        }
     }
 
     def migrateBonitaHomeClient(File newBonitaHome) {

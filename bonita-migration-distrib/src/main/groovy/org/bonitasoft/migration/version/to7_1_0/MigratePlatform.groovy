@@ -12,17 +12,29 @@
  * Floor, Boston, MA 02110-1301, USA.
  **/
 
-package org.bonitasoft.migration.core
+package org.bonitasoft.migration.version.to7_1_0
+
+import org.bonitasoft.migration.core.MigrationContext
+import org.bonitasoft.migration.core.MigrationStep
+
 /**
- * @author Baptiste Mesta
+ * @author Laurent Leseigneur
  */
-abstract class MigrationStep {
+class MigratePlatform extends MigrationStep {
+    @Override
+    def execute(MigrationContext context) {
+        def String sql
+        def sqlFile = "/version/to_7_1_0/" + context.dbVendor.toString().toLowerCase() + "_platform.sql"
+        def stream1 = this.class.getResourceAsStream(sqlFile)
+        stream1.withStream { InputStream s ->
+            sql = s.getText()
+        }
+        context.databaseHelper.executeDbVendorStatement(sql)
 
-    enum DBVendor { ORACLE, POSTGRES, MYSQL, SQLSERVER}
+    }
 
-    abstract execute(MigrationContext context)
-
-    abstract String getDescription()
-
-
+    @Override
+    String getDescription() {
+        return "update platform table"
+    }
 }
