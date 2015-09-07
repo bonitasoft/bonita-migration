@@ -25,11 +25,11 @@ class Migration {
     MigrationContext context
 
     public static void main(String[] args) {
-        new Migration().run()
+        new Migration().run(false)
     }
 
 
-    public void run() {
+    public void run(boolean isSp) {
         context = new MigrationContext(logger: logger);
         context.loadProperties()
         setupOutputs()
@@ -39,7 +39,7 @@ class Migration {
 
         def versionMigrations = getMigrationVersionsToRun()
         def runner = new MigrationRunner(versionMigrations: versionMigrations, context: context, logger: logger)
-        runner.run()
+        runner.run(isSp)
     }
 
     /**
