@@ -25,13 +25,12 @@ class MigrationRunner {
     MigrationContext context
     Logger logger
 
-    def run() {
+    def run(boolean isSp) {
         context.openSqlConnection()
         versionMigrations.each {
             logger.info "Execute migration to version " + it.getVersion()
-            logger.debug "Using class" + it.getClass().getName()
             it.context = context
-            it.migrateBonitaHome()
+            it.migrateBonitaHome(isSp)
             it.getMigrationSteps().each { step ->
                 logger.info "---------------"
                 logger.info "execute " + step.description

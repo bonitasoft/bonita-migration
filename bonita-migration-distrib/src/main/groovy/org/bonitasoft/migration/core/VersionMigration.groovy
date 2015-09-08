@@ -25,13 +25,13 @@ abstract class VersionMigration {
     abstract List<MigrationStep> getMigrationSteps()
 
 
-    def migrateBonitaHome() {
+    def migrateBonitaHome(boolean isSp) {
         def dir = File.createTempDir()
 
-        def stream1 = this.class.getResourceAsStream("/homes/bonita-home-${version}-full.zip")
+        def stream1 = this.class.getResourceAsStream(getBonitaHomePath(isSp))
         if (stream1 == null) {
             logger.warn("Using snapshot version of the migration tool.")
-            stream1 = this.class.getResourceAsStream("/homes/bonita-home-${version}-SNAPSHOT-full.zip")
+            stream1 = this.class.getResourceAsStream(getBonitaHomeSnapshotPath(isSp))
         }
         if (stream1 == null) {
             throw new IllegalStateException("There is no bonita home available for the version $version")
@@ -43,6 +43,22 @@ abstract class VersionMigration {
         migrateBonitaHomeServer(newBonitaHome);
 
         dir.delete()
+    }
+
+    private GString getBonitaHomePath(boolean isSp) {
+        if (isSp){
+            return  "/homes/bonita-home-sp-${version}.zip"
+        }else {
+            return  "/homes/bonita-home-${version}-full.zip"
+        }
+    }
+
+    private GString getBonitaHomeSnapshotPath(boolean isSp) {
+        if (isSp){
+            return  "/homes/bonita-home-sp-${version}-SNAPSHOT.zip"
+        }else {
+            return  "/homes/bonita-home-${version}-SNAPSHOT-full.zip"
+        }
     }
 
     def migrateBonitaHomeClient(File newBonitaHome) {
