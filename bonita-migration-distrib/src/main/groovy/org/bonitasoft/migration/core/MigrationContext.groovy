@@ -97,4 +97,8 @@ class MigrationContext {
         sql.close()
         sql = null
     }
+
+    def setVersion(String version){
+        databaseHelper.setVersion(version)
+    }
 }
