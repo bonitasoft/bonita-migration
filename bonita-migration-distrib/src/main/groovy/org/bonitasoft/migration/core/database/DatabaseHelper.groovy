@@ -230,8 +230,8 @@ END""")
      * the script should be located in the src/main/resources/version/to_<version>/<dbvendor>_<scriptName>.sql
      * @param scriptName
      */
-    def executeScript(String scriptName) {
-        def sqlFile = "/version/to_${version.replace('.','_')}/${dbVendor.toString().toLowerCase()}_${scriptName}.sql"
+    def executeScript(String folderName, String scriptName) {
+        def sqlFile = "/version/to_${version.replace('.','_')}/$folderName/${dbVendor.toString().toLowerCase()}_${scriptName}.sql"
         def stream1 = this.class.getResourceAsStream(sqlFile)
         def scriptContent = ""
         stream1.withStream { InputStream s ->

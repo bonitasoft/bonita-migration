@@ -23,7 +23,7 @@ import org.bonitasoft.migration.core.MigrationStep
 class MigratePlatform extends MigrationStep {
     @Override
     def execute(MigrationContext context) {
-        context.databaseHelper.executeScript("platform")
+        context.databaseHelper.executeScript("MigratePlatform", "platform")
 
     }
 
