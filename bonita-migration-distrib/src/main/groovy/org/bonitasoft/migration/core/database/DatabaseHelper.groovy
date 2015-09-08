@@ -28,7 +28,6 @@ class DatabaseHelper {
     DBVendor dbVendor
     String version
 
-
     /**
      * execute a postgres script converted to the database specified by dbVendor
      * @param statement
@@ -205,8 +204,8 @@ END""")
         }
     }
 
-    def String addIndex(String tableName, String indexName, String ... columns) {
-        def concatenatedColumns = columns.collect{it}.join(", ")
+    def String addIndex(String tableName, String indexName, String... columns) {
+        def concatenatedColumns = columns.collect { it }.join(", ")
         String request = "CREATE INDEX $indexName ON $tableName ($concatenatedColumns)"
         println "Executing request: $request"
         execute(request)
@@ -218,9 +217,9 @@ END""")
         return sql.firstRow(adaptFor(string))
     }
 
-    def long getAndUpdateNextSequenceId(long sequenceId, long tenantId){
+    def long getAndUpdateNextSequenceId(long sequenceId, long tenantId) {
         def long nextId = (Long) selectFirstRow("SELECT nextId from sequence WHERE id = $sequenceId and tenantId = $tenantId").get("nextId")
-        executeUpdate("UPDATE sequence SET nextId = ${nextId + 1 } WHERE tenantId = $tenantId and id = $sequenceId")
+        executeUpdate("UPDATE sequence SET nextId = ${nextId + 1} WHERE tenantId = $tenantId and id = $sequenceId")
         return nextId
     }
 
@@ -231,13 +230,16 @@ END""")
      * @param scriptName
      */
     def executeScript(String folderName, String scriptName) {
-        def sqlFile = "/version/to_${version.replace('.','_')}/$folderName/${dbVendor.toString().toLowerCase()}_${scriptName}.sql"
+        def sqlFile = "/version/to_${version.replace('.', '_')}/$folderName/${dbVendor.toString().toLowerCase()}_${scriptName}.sql"
         def stream1 = this.class.getResourceAsStream(sqlFile)
         def scriptContent = ""
         stream1.withStream { InputStream s ->
             scriptContent = s.text
         }
-        sql.execute(scriptContent)
+        def statements = scriptContent.split("@@")
+        statements.each {
+            sql.execute(it)
+        }
     }
 
 }

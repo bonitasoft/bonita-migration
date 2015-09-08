@@ -10,18 +10,7 @@ class MigrateQuartzIndexes extends MigrationStep {
 
     @Override
     def execute(MigrationContext context) {
-        def String sql
-        def sqlFile = "/version/to_7_1_0/quartz/" + context.dbVendor.toString().toLowerCase() + "_quartz.sql"
-        def stream1 = this.class.getResourceAsStream(sqlFile)
-        stream1.withStream { InputStream s ->
-            sql = s.getText()
-        }
-        def statements = sql.split("@@")
-        statements.each {
-            it -> context.databaseHelper.executeDbVendorStatement(it)
-        }
-
-
+        context.databaseHelper.executeScript("QuartzIndexes", "quartz")
     }
 
 
