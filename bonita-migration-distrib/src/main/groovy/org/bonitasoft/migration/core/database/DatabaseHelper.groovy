@@ -26,6 +26,7 @@ class DatabaseHelper {
 
     Sql sql
     DBVendor dbVendor
+    String version
 
 
     /**
@@ -39,7 +40,7 @@ class DatabaseHelper {
     }
 
     /**
-     * execute statement without adapting syntax to dbVendor dialect 
+     * execute statement without adapting syntax to dbVendor dialect
      * @param statement
      * @return
      */
@@ -50,7 +51,7 @@ class DatabaseHelper {
     def boolean execute(String statement) {
         return sql.execute(adaptFor(statement))
     }
-    
+
     def boolean execute(String statement, List<Object> params) {
         return sql.execute(adaptFor(statement), params)
     }
@@ -223,5 +224,20 @@ END""")
         return nextId
     }
 
+    /**
+     * get a script from the resources and execute it
+     *
+     * the script should be located in the src/main/resources/version/to_<version>/<dbvendor>_<scriptName>.sql
+     * @param scriptName
+     */
+    def executeScript(String scriptName) {
+        def sqlFile = "/version/to_${version.replace('.','_')}/${dbVendor.toString().toLowerCase()}_${scriptName}.sql"
+        def stream1 = this.class.getResourceAsStream(sqlFile)
+        def scriptContent = ""
+        stream1.withStream { InputStream s ->
+            scriptContent = s.text
+        }
+        sql.execute(scriptContent)
+    }
 
 }
