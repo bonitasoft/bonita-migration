@@ -30,6 +30,7 @@ class MigrationRunner {
         versionMigrations.each {
             logger.info "Execute migration to version " + it.getVersion()
             it.context = context
+            context.setVersion(it.getVersion())
             it.migrateBonitaHome(isSp)
             it.getMigrationSteps().each { step ->
                 logger.info "---------------"
