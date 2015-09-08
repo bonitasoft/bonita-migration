@@ -23,7 +23,7 @@ import org.bonitasoft.migration.core.MigrationStep
 class MigrateFormMapping extends MigrationStep {
     @Override
     def execute(MigrationContext context) {
-        context.databaseHelper.addColumn("form_mapping", "target", "VARCHAR(16)", "'NONE'", "NOT NULL")
+        context.databaseHelper.executeScript("MigrateFormMapping","")
 
         context.sql.eachRow("SELECT * FROM form_mapping") { formMapping ->
             def pageMapping = context.sql.firstRow("SELECT * FROM page_mapping where id = $formMapping.page_mapping_id AND tenantId = $formMapping.page_mapping_tenant_id")
