@@ -23,6 +23,11 @@ import org.bonitasoft.migration.core.VersionMigration
 class MigrateTo7_1_0 extends VersionMigration {
     @Override
     def List<MigrationStep> getMigrationSteps() {
-        return [new MigratePlatform(),new MigrateFormMapping()]
+        //keep one line per step to avoid false-positive merge conflict
+        return [
+                new MigratePlatform()
+                , new MigrateFormMapping()
+                , new MigrateQuartzIndexes()
+        ]
     }
 }

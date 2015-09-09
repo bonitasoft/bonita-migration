@@ -26,7 +26,7 @@ class DatabaseHelper {
 
     Sql sql
     DBVendor dbVendor
-
+    String version
 
     /**
      * execute a postgres script converted to the database specified by dbVendor
@@ -39,7 +39,7 @@ class DatabaseHelper {
     }
 
     /**
-     * execute statement without adapting syntax to dbVendor dialect 
+     * execute statement without adapting syntax to dbVendor dialect
      * @param statement
      * @return
      */
@@ -50,7 +50,7 @@ class DatabaseHelper {
     def boolean execute(String statement) {
         return sql.execute(adaptFor(statement))
     }
-    
+
     def boolean execute(String statement, List<Object> params) {
         return sql.execute(adaptFor(statement), params)
     }
@@ -204,8 +204,8 @@ END""")
         }
     }
 
-    def String addIndex(String tableName, String indexName, String ... columns) {
-        def concatenatedColumns = columns.collect{it}.join(", ")
+    def String addIndex(String tableName, String indexName, String... columns) {
+        def concatenatedColumns = columns.collect { it }.join(", ")
         String request = "CREATE INDEX $indexName ON $tableName ($concatenatedColumns)"
         println "Executing request: $request"
         execute(request)
@@ -217,11 +217,29 @@ END""")
         return sql.firstRow(adaptFor(string))
     }
 
-    def long getAndUpdateNextSequenceId(long sequenceId, long tenantId){
+    def long getAndUpdateNextSequenceId(long sequenceId, long tenantId) {
         def long nextId = (Long) selectFirstRow("SELECT nextId from sequence WHERE id = $sequenceId and tenantId = $tenantId").get("nextId")
-        executeUpdate("UPDATE sequence SET nextId = ${nextId + 1 } WHERE tenantId = $tenantId and id = $sequenceId")
+        executeUpdate("UPDATE sequence SET nextId = ${nextId + 1} WHERE tenantId = $tenantId and id = $sequenceId")
         return nextId
     }
 
+    /**
+     * get a script from the resources and execute it
+     *
+     * the script should be located in the src/main/resources/version/to_<version>/<dbvendor>_<scriptName>.sql
+     * @param scriptName
+     */
+    def executeScript(String folderName, String scriptName) {
+        def sqlFile = "/version/to_${version.replace('.', '_')}/$folderName/${dbVendor.toString().toLowerCase()}_${scriptName}.sql"
+        def stream1 = this.class.getResourceAsStream(sqlFile)
+        def scriptContent = ""
+        stream1.withStream { InputStream s ->
+            scriptContent = s.text
+        }
+        def statements = scriptContent.split("@@")
+        statements.each {
+            sql.execute(it)
+        }
+    }
 
 }

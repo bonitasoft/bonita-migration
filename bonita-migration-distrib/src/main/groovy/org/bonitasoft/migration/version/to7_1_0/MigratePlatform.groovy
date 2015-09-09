@@ -23,13 +23,7 @@ import org.bonitasoft.migration.core.MigrationStep
 class MigratePlatform extends MigrationStep {
     @Override
     def execute(MigrationContext context) {
-        def String sql
-        def sqlFile = "/version/to_7_1_0/" + context.dbVendor.toString().toLowerCase() + "_platform.sql"
-        def stream1 = this.class.getResourceAsStream(sqlFile)
-        stream1.withStream { InputStream s ->
-            sql = s.getText()
-        }
-        context.databaseHelper.executeDbVendorStatement(sql)
+        context.databaseHelper.executeScript("MigratePlatform", "platform")
 
     }
 
