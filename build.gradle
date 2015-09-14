@@ -3,7 +3,7 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath 'org.bonitasoft.migration.plugin:bonita-migration-plugins:1.0.0'
+        classpath 'org.bonitasoft.migration.plugin:bonita-migration-plugins:1.0.0-SNAPSHOT'
     }
 }
 //define bonita version for all projects
