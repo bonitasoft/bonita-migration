@@ -33,7 +33,7 @@ Also note that the jdbc driver must be put in the lib folder. Create "lib" folde
 
 Run the migration
 -----------------
-just run the **migration.sh** or **migration.bat**
+just run the **bonita-migration-distrib** or **bonita-migration-distrib.bat**
 
 example:
->     ./migration.sh
+>     ./bonita-migration-distrib
