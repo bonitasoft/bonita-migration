@@ -8,6 +8,7 @@ buildscript {
 }
 //define bonita version for all projects
 allprojects {
+    apply plugin:'maven'
     repositories {
         mavenLocal()
         maven { url 'http://repositories.rd.lan/archiva/repository/releases/' }
