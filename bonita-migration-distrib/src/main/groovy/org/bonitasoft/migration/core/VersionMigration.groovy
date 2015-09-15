@@ -30,10 +30,6 @@ abstract class VersionMigration {
 
         def stream1 = this.class.getResourceAsStream(getBonitaHomePath(isSp))
         if (stream1 == null) {
-            logger.warn("Using snapshot version of the migration tool.")
-            stream1 = this.class.getResourceAsStream(getBonitaHomeSnapshotPath(isSp))
-        }
-        if (stream1 == null) {
             throw new IllegalStateException("There is no bonita home available for the version $version")
         }
         IOUtil.unzip(stream1, dir)
