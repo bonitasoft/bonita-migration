@@ -3,7 +3,7 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath 'org.bonitasoft.migration.plugin:bonita-migration-plugins:1.0.0-SNAPSHOT'
+        classpath 'org.bonitasoft.migration.plugin:bonita-migration-plugins:1.0.0'
     }
 }
 //define bonita version for all projects
@@ -15,7 +15,7 @@ allprojects {
         mavenCentral()
     }
 
-    version '2.3.0-SNAPSHOT'
+    version '2.3.0.RC1'
     group 'org.bonitasoft.migration'
     ext.isSP = false
     ext.bonitaVersions = [
@@ -27,7 +27,7 @@ allprojects {
 
     ]
     ext.overridedVersions = [
-            '7.1.0': '7.1.0-SNAPSHOT'
+            '7.1.0': '7.1.0.RC1'
     ]
 
     configurations {
