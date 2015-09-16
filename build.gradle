@@ -3,18 +3,19 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath 'org.bonitasoft.migration.plugin:bonita-migration-plugins:1.0-SNAPSHOT'
+        classpath 'org.bonitasoft.migration.plugin:bonita-migration-plugins:1.0.0-SNAPSHOT'
     }
 }
 //define bonita version for all projects
 allprojects {
+    apply plugin:'maven'
     repositories {
         mavenLocal()
         maven { url 'http://repositories.rd.lan/archiva/repository/releases/' }
         mavenCentral()
     }
 
-    version '2.0.0-SNAPSHOT'
+    version '2.3.0-SNAPSHOT'
     group 'org.bonitasoft.migration'
     ext.isSP = false
     ext.bonitaVersions = [
@@ -26,8 +27,24 @@ allprojects {
 
     ]
     ext.overridedVersions = [
-            '7.1.0': '7.1.0-SNAPSHOT'
+        :
     ]
+
+    configurations {
+        deployerJars
+    }
+
+    dependencies {
+        deployerJars "org.apache.maven.wagon:wagon-http:2.2"
+    }
+
+    uploadArchives {
+        repositories.mavenDeployer {
+            configuration = configurations.deployerJars
+
+            repository(url: System.getProperty("altDeploymentRepository") != null ? System.getProperty("altDeploymentRepository").split("::").last():null)
+        }
+    }
 }
 
 apply plugin: 'migration-project'
