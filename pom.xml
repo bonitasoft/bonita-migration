@@ -22,12 +22,12 @@
         <module>bonita-migration-db-filler-6.3.2</module>
         <module>bonita-migration-db-filler-6.3.3</module>
         <module>bonita-migration-db-filler-6.3.4</module>
-	    <module>bonita-migration-db-filler-6.3.5</module>
+        <module>bonita-migration-db-filler-6.3.5</module>
         <module>bonita-migration-db-filler-6.3.6</module>
         <module>bonita-migration-db-filler-6.3.7</module>
         <module>bonita-migration-db-filler-6.3.8</module>
-		<module>bonita-migration-db-filler-6.3.9</module>
-    	<module>bonita-migration-db-filler-6.4.0</module>
+        <module>bonita-migration-db-filler-6.3.9</module>
+        <module>bonita-migration-db-filler-6.4.0</module>
         <module>bonita-migration-db-filler-6.4.1</module>
         <module>bonita-migration-db-filler-6.4.2</module>
         <module>bonita-migration-db-filler-6.5.0</module>
@@ -37,7 +37,7 @@
         <module>bonita-migration-7.0.0-filler</module>
         <module>bonita-migration-7.0.0-checker</module>
         <module>bonita-migration-scripts-integration-tests</module>
-  </modules>
+    </modules>
 
     <properties>
         <!-- -->
@@ -47,10 +47,10 @@
         <!-- -->
         <!-- specify the previous version of that is migrated -->
         <previous.bonita.version>6.5.3</previous.bonita.version>
-        <!-- specify the in developpement version of bonita -->
-		<current.bonita.version>7.0.0</current.bonita.version>
+        <!-- specify the in-development version of bonita -->
+        <current.bonita.version>6.5.4-SNAPSHOT</current.bonita.version>
         <!-- specify the name of the release next release of bonita that will be migrated -->
-		<next.bonita.version>7.0.0</next.bonita.version>
+        <next.bonita.version>6.5.4</next.bonita.version>
         <groovy.version>1.8.6</groovy.version>
     </properties>
 
