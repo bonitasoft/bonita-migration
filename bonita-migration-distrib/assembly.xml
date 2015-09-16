@@ -36,11 +36,11 @@
 			<directoryMode>0644</directoryMode>
 		</fileSet>
 		<fileSet>
-			<outputDirectory>versions/${previous.bonita.version}-${next.bonita.version}/Bonita-home</outputDirectory>
-			<directory>target/bonita-home</directory>
+			<outputDirectory>versions/${next.bonita.version}/Bonita-home/bonita</outputDirectory>
+			<directory>target/bonita-home/bonita-home</directory>
 		</fileSet>
 		<fileSet>
-			<outputDirectory>versions/${previous.bonita.version}-${next.bonita.version}/Database/001_theme</outputDirectory>
+			<outputDirectory>versions/${next.bonita.version}/Database/001_theme</outputDirectory>
 			<directory>target/bonita-theme</directory>
 			<includes>
 				<include>bonita.css</include>

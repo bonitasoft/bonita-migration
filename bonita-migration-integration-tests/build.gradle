@@ -2,194 +2,203 @@ import groovy.sql.Sql
 
 subprojects {
 
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'maven'
+    apply plugin: 'java'
+    apply plugin: 'eclipse'
+    apply plugin: 'maven'
 
 group = 'org.bonitasoft.migration'
-version = '1.22.0-SNAPSHOT'
+version = '1.23.2-SNAPSHOT'
 
-sourceCompatibility = 1.6
-targetCompatibility = 1.6
-
-
+    sourceCompatibility = 1.6
+    targetCompatibility = 1.6
 
 
-ext{
-    migrationDistribClasses='../bonita-migration-distrib/target/classes'
-    migrationScriptsClasses='../bonita-migration-scripts-integration-tests/target/classes'
-    def split = project.name.split("@")[1].split("-")
-    sourceversion = split[0]
-    targetversion = split[1]
-    dbvendor = System.getProperty("db.vendor", "postgres")
-    dburl = System.getProperty("db.url","jdbc:postgresql://localhost:5432/migration");
-    dbuser=System.getProperty("db.user","bonita")
-    dbpassword=System.getProperty("db.password", "bpm")
-    dbdriverClass=System.getProperty("db.driverClass","org.postgresql.Driver")
-    bonitahome="${buildDir.path}/home"
-    distDir="${buildDir.path}/dist"
-    devMode = project.hasProperty('devMode')
-    //used for oracle: creates table not the same way
-    //used for postgres: give a user able to drop and create databases
-    dbRootUser = System.getProperty("db.root.user","postgres")
-    dbRootPassword = System.getProperty("db.root.password","postgres")
 
-    // Define variables:
-    databaseName = "migration"
-    serverName="localhost"
-    portNumber="5432"
-}
 
-configurations {
-    scriptsintegration
-    sourcefiller
-    migrationdist
-    drivers
-    homezip
-    runmigration
-}
+    ext{
+        migrationDistribClasses='../bonita-migration-distrib/target/classes'
+        migrationScriptsClasses='../bonita-migration-scripts-integration-tests/target/classes'
+        def split = project.name.split("@")[1].split("-")
+        sourceversion = split[0]
+        targetversion = split[1]
+        dbvendor = System.getProperty("db.vendor", "postgres")
+        dburl = System.getProperty("db.url","jdbc:postgresql://localhost:5432/migration");
+        dbuser=System.getProperty("db.user","bonita")
+        dbpassword=System.getProperty("db.password", "bpm")
+        dbdriverClass=System.getProperty("db.driverClass","org.postgresql.Driver")
+        bonitahome="${buildDir.path}/home"
+        distDir="${buildDir.path}/dist"
+        devMode = project.hasProperty('devMode')
+        //used for oracle: creates table not the same way
+        //used for postgres: give a user able to drop and create databases
+        dbRootUser = System.getProperty("db.root.user","postgres")
+        dbRootPassword = System.getProperty("db.root.password","postgres")
 
-repositories {
-    flatDir name: 'localRepository', dirs: 'lib'
-    //put the extra repo first: issue with gradle
-    def customMavenRepoExtra = System.getProperty("maven.repository.extra")
-    if(customMavenRepoExtra!=null){
-        println "using custom maven.repository.extra: "+customMavenRepoExtra
-        maven { url customMavenRepoExtra}
-    }
-    mavenLocal()
-    def customMavenRepo = System.getProperty("maven.repository")
-    //used in jenkins: add in system property $ {JENKINS_HOME}/userContent/m2_repo and archiva
-    if(customMavenRepo!=null){
-        println "using custom maven.repository: "+customMavenRepo
-        maven { url customMavenRepo}
+        // Define variables:
+        databaseName = "migration"
+        serverName="localhost"
+        portNumber="5432"
     }
 
+    configurations {
+        scriptsintegration
+        sourcefiller
+        migrationdist
+        drivers
+        homezip
+        runmigration
+    }
 
-    mavenCentral()
-}
+    repositories {
+        flatDir name: 'localRepository', dirs: 'lib'
+        //put the extra repo first: issue with gradle
+        def customMavenRepoExtra = System.getProperty("maven.repository.extra")
+        if(customMavenRepoExtra!=null){
+            println "using custom maven.repository.extra: "+customMavenRepoExtra
+            maven { url customMavenRepoExtra}
+        }
+        mavenLocal()
+        def customMavenRepo = System.getProperty("maven.repository")
+        //used in jenkins: add in system property $ {JENKINS_HOME}/userContent/m2_repo and archiva
+        if(customMavenRepo!=null){
+            println "using custom maven.repository: "+customMavenRepo
+            maven { url customMavenRepo}
+        }
 
-dependencies {
-    sourcefiller "${group}:bonita-migration-db-filler-${sourceversion}:${version}"
-    scriptsintegration "${group}:bonita-migration-scripts-integration-tests:${version}"
-    homezip  group: 'org.bonitasoft.engine', name: 'bonita-home', version: sourceversion, ext: 'zip'
-    testCompile "${group}:bonita-migration-db-filler-${targetversion}:${version}"
-    testCompile group: 'ch.qos.logback', name:'logback-classic', version: '1.0.11'
-    migrationdist group: group, name: "bonita-migration-distrib", version: "${version}", ext: 'zip'
-    drivers group: 'mysql', name: 'mysql-connector-java', version: '5.1.26'
-    drivers group: 'org.postgresql', name: 'postgresql', version: '9.3-1102-jdbc41'
-    drivers name:'ojdbc6'
-    drivers name:'sqljdbc-4.0.2206.100'
-    runmigration group: 'com.thoughtworks.xstream', name: 'xstream', version: '1.4.2'
-    runmigration group: 'commons-io', name  :'commons-io', version : '2.1'
-    scriptsintegration configurations.drivers
-    sourcefiller configurations.drivers
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-    testCompile configurations.drivers
-}
+
+        mavenCentral()
+    }
+
+    dependencies {
+        if(targetversion.startsWith("7")){
+            sourcefiller "${group}:bonita-migration-${targetversion}-filler:${version}"
+        }else{
+            sourcefiller "${group}:bonita-migration-db-filler-${sourceversion}:${version}"
+        }
+        scriptsintegration "${group}:bonita-migration-scripts-integration-tests:${version}"
+        homezip  group: 'org.bonitasoft.engine', name: 'bonita-home', version: sourceversion, ext: 'zip'
+        if(targetversion.startsWith("7")){
+            testCompile "${group}:bonita-migration-${targetversion}-checker:${version}"
+        }else{
+            testCompile "${group}:bonita-migration-db-filler-${targetversion}:${version}"
+        }
+        testCompile group: 'ch.qos.logback', name:'logback-classic', version: '1.0.11'
+        migrationdist group: group, name: "bonita-migration-distrib", version: "${version}", ext: 'zip'
+        drivers group: 'mysql', name: 'mysql-connector-java', version: '5.1.26'
+        drivers group: 'org.postgresql', name: 'postgresql', version: '9.3-1102-jdbc41'
+        drivers name:'ojdbc6'
+        drivers name:'sqljdbc-4.0.2206.100'
+        runmigration group: 'com.thoughtworks.xstream', name: 'xstream', version: '1.4.2'
+        runmigration group: 'commons-io', name  :'commons-io', version : '2.1'
+        scriptsintegration configurations.drivers
+        sourcefiller configurations.drivers
+        testCompile group: 'junit', name: 'junit', version: '4.12'
+        testCompile configurations.drivers
+    }
 
 //allow to execute sql from the build script -> see cleardb task
-URLClassLoader loader = GroovyObject.class.classLoader
-configurations.drivers.each {File file ->
-    loader.addURL(file.toURI().toURL())
-}
+    URLClassLoader loader = GroovyObject.class.classLoader
+    configurations.drivers.each {File file ->
+        loader.addURL(file.toURI().toURL())
+    }
 //drop and create the database
-task cleardb<<{
-    println "Migration of $dbvendor"
-    if(dbvendor.equals("oracle")){
-        println "cleaning oracle database $dbuser"
-        if(dbRootUser == null || dbRootUser.isEmpty() || dbRootPassword == null || dbRootPassword.isEmpty()){
-            throw new IllegalStateException("must specify db.root.user and db.root.password for oracle")
-        }
-        def props = [user: dbRootUser, password: dbRootPassword] as Properties
-        def sql = Sql.newInstance(dburl, props, dbdriverClass)
-        try{
-            sql.executeUpdate("DROP user "+dbuser+" cascade");
-        }catch(Exception e){
-            println "can't drop database, maybe it did not exist, cause = "
-            e.printStackTrace()
-
-        }
-        //do not use gstring because it create prepared statement
-        sql.executeUpdate("CREATE USER "+dbuser+" IDENTIFIED BY "+dbpassword);
-        sql.executeUpdate("GRANT connect, resource TO "+dbuser+" IDENTIFIED BY "+dbpassword);
-        sql.executeUpdate("GRANT select ON sys.dba_pending_transactions TO "+dbuser);
-        sql.executeUpdate("GRANT select ON sys.pending_trans\$ TO "+dbuser);
-        sql.executeUpdate("GRANT select ON sys.dba_2pc_pending TO "+dbuser);
-        sql.executeUpdate("GRANT execute ON sys.dbms_system TO "+dbuser);
-    }else if(dbvendor.equals("sqlserver")){
-        println "cleaning sqlserver database $dburl"
-        if(dbRootUser == null || dbRootUser.isEmpty() || dbRootPassword == null || dbRootPassword.isEmpty()){
-            throw new IllegalStateException("must specify db.root.user and db.root.password for sqlserver")
-        }
-
-        def parsedUrl = (dburl =~ /(jdbc:\w+:\/\/)([\w\d\.-]+):(\d+);database=([\w-_\d]+).*/)
-        project.serverName = parsedUrl[0][2]
-        project.portNumber = parsedUrl[0][3]
-        project.databaseName = parsedUrl[0][4]
-        def genericUrl = parsedUrl[0][1] + serverName + ":"+portNumber
-        println "recreate database $databaseName on server $serverName and port $portNumber with driver $dbdriverClass"
-        println "url is  $genericUrl"
-        def sql = Sql.newInstance(genericUrl, dbRootUser, dbRootPassword, dbdriverClass)
-        def script = file("init-sqlserver.sql").text
-        script = script.replace("@sqlserver.db.name@",databaseName)
-        script = script.replace("@sqlserver.connection.username@",dbuser)
-        script = script.replace("@sqlserver.connection.password@",dbpassword)
-        script.split("GO").each { sql.executeUpdate(it) }
-        sql.close()
-    }else{
-        println "drop and create: $dburl"
-        def parsedUrl = (dburl =~ /(jdbc:\w+:\/\/)([\w\d\.-]+):(\d+)\/([\w-_\d]+).*/)
-        project.serverName = parsedUrl[0][2]
-        project.portNumber = parsedUrl[0][3]
-        project.databaseName = parsedUrl[0][4]
-        def genericUrl = parsedUrl[0][1] + serverName + ":"+portNumber+"/"
-        println "recreate database $databaseName on server $serverName and port $portNumber with driver $dbdriverClass"
-        println "url is  $genericUrl"
-        if(dbvendor.equals("postgres")){
-            println "cleaning postgres database $databaseName"
+    task cleardb<<{
+        println "Migration of $dbvendor"
+        println "dbvendor business data dialect is $dbvendor"
+        if(dbvendor.equals("oracle")){
+            println "cleaning oracle database $dbuser"
             if(dbRootUser == null || dbRootUser.isEmpty() || dbRootPassword == null || dbRootPassword.isEmpty()){
-                throw new IllegalStateException("must specify db.root.user and db.root.password for postgres")
+                throw new IllegalStateException("must specify db.root.user and db.root.password for oracle")
             }
+            def props = [user: dbRootUser, password: dbRootPassword] as Properties
+            def sql = Sql.newInstance(dburl, props, dbdriverClass)
+            try{
+                sql.executeUpdate("DROP user "+dbuser+" cascade");
+            }catch(Exception e){
+                println "can't drop database, maybe it did not exist, cause = "
+                e.printStackTrace()
+
+            }
+            //do not use gstring because it create prepared statement
+            sql.executeUpdate("CREATE USER "+dbuser+" IDENTIFIED BY "+dbpassword);
+            sql.executeUpdate("GRANT connect, resource TO "+dbuser+" IDENTIFIED BY "+dbpassword);
+            sql.executeUpdate("GRANT select ON sys.dba_pending_transactions TO "+dbuser);
+            sql.executeUpdate("GRANT select ON sys.pending_trans\$ TO "+dbuser);
+            sql.executeUpdate("GRANT select ON sys.dba_2pc_pending TO "+dbuser);
+            sql.executeUpdate("GRANT execute ON sys.dbms_system TO "+dbuser);
+        }else if(dbvendor.equals("sqlserver")){
+            println "cleaning sqlserver database $dburl"
+            if(dbRootUser == null || dbRootUser.isEmpty() || dbRootPassword == null || dbRootPassword.isEmpty()){
+                throw new IllegalStateException("must specify db.root.user and db.root.password for sqlserver")
+            }
+
+            def parsedUrl = (dburl =~ /(jdbc:\w+:\/\/)([\w\d\.-]+):(\d+);database=([\w-_\d]+).*/)
+            project.serverName = parsedUrl[0][2]
+            project.portNumber = parsedUrl[0][3]
+            project.databaseName = parsedUrl[0][4]
+            def genericUrl = parsedUrl[0][1] + serverName + ":"+portNumber
+            println "recreate database $databaseName on server $serverName and port $portNumber with driver $dbdriverClass"
+            println "url is  $genericUrl"
             def sql = Sql.newInstance(genericUrl, dbRootUser, dbRootPassword, dbdriverClass)
-            sql.executeUpdate("DROP DATABASE IF EXISTS $databaseName;".toString())
-            sql.executeUpdate("CREATE DATABASE $databaseName OWNER $dbuser;".toString())
-            sql.executeUpdate("GRANT ALL PRIVILEGES ON DATABASE $databaseName TO $dbuser;".toString())
+            def script = file("init-sqlserver.sql").text
+            script = script.replace("@sqlserver.db.name@",databaseName)
+            script = script.replace("@sqlserver.connection.username@",dbuser)
+            script = script.replace("@sqlserver.connection.password@",dbpassword)
+            script.split("GO").each { sql.executeUpdate(it) }
             sql.close()
         }else{
-            def sql = Sql.newInstance(genericUrl, dbuser, dbpassword, dbdriverClass)
-            try{
-                sql.executeUpdate("drop database "+databaseName)
-            }catch(Exception e){
-                e.printStackTrace()
-                println "can't drop database, maybe it did not exist"
+            println "drop and create: $dburl"
+            def parsedUrl = (dburl =~ /(jdbc:\w+:\/\/)([\w\d\.-]+):(\d+)\/([\w-_\d]+).*/)
+            project.serverName = parsedUrl[0][2]
+            project.portNumber = parsedUrl[0][3]
+            project.databaseName = parsedUrl[0][4]
+            def genericUrl = parsedUrl[0][1] + serverName + ":"+portNumber+"/"
+            println "recreate database $databaseName on server $serverName and port $portNumber with driver $dbdriverClass"
+            println "url is  $genericUrl"
+            if(dbvendor.equals("postgres")){
+                println "cleaning postgres database $databaseName"
+                if(dbRootUser == null || dbRootUser.isEmpty() || dbRootPassword == null || dbRootPassword.isEmpty()){
+                    throw new IllegalStateException("must specify db.root.user and db.root.password for postgres")
+                }
+                def sql = Sql.newInstance(genericUrl, dbRootUser, dbRootPassword, dbdriverClass)
+                sql.executeUpdate("DROP DATABASE IF EXISTS $databaseName;".toString())
+                sql.executeUpdate("CREATE DATABASE $databaseName OWNER $dbuser;".toString())
+                sql.executeUpdate("GRANT ALL PRIVILEGES ON DATABASE $databaseName TO $dbuser;".toString())
+                sql.close()
+            }else{
+                def sql = Sql.newInstance(genericUrl, dbuser, dbpassword, dbdriverClass)
+                try{
+                    sql.executeUpdate("drop database "+databaseName)
+                }catch(Exception e){
+                    e.printStackTrace()
+                    println "can't drop database, maybe it did not exist"
+                }
+                sql.executeUpdate("create database "+databaseName+(dbvendor.equals("mysql")?" DEFAULT CHARACTER SET utf8":""))
+                sql.close()
             }
-            sql.executeUpdate("create database "+databaseName+(dbvendor.equals("mysql")?" DEFAULT CHARACTER SET utf8":""))
-            sql.close()
         }
     }
-}
-task unpackhome(dependsOn:cleardb,type: Copy){
-    def zipFile = configurations.homezip.files.iterator().next()
-    def outputDir = file("${buildDir.path}")
+    task unpackhome(dependsOn:cleardb,type: Copy){
+        def zipFile = configurations.homezip.files.iterator().next()
+        def outputDir = file("${buildDir.path}")
 
-    from zipTree(zipFile)
-    into outputDir
-}
+        from zipTree(zipFile)
+        into outputDir
+    }
 
-task unpackdist(dependsOn:unpackhome, type: Copy){
-    def zipFile = configurations.migrationdist.files.iterator().next()
-    def outputDir = file(distDir)
+    task unpackdist(dependsOn:unpackhome, type: Copy){
+        def zipFile = configurations.migrationdist.files.iterator().next()
+        def outputDir = file(distDir)
 
-    from zipTree(zipFile)
-    into outputDir
-}
+        from zipTree(zipFile)
+        into outputDir
+    }
 
-task overwritedist(dependsOn:unpackdist, type: Copy){
+    task overwritedist(dependsOn:unpackdist, type: Copy){
 //    def zipFile = configurations.migrationdist.files.iterator().next()
-    //devMode = hasProperty('devMode')
-    if(project.hasProperty('devMode') && devMode){
-        println """
+        //devMode = hasProperty('devMode')
+        if(project.hasProperty('devMode') && devMode){
+            println """
 ***************************************
 ************** DEV MODE ***************
 ** overwriting files of distrib with :*
@@ -198,141 +207,148 @@ task overwritedist(dependsOn:unpackdist, type: Copy){
 ***************************************
 ***************************************
 """
-        def outputDir = file(distDir)
-    
-        from files(migrationDistribClasses)
-        from files(migrationScriptsClasses)
-        into outputDir
+            def outputDir = file(distDir)
+
+            from files(migrationDistribClasses)
+            from files(migrationScriptsClasses)
+            into outputDir
+        }
     }
-}
-task copyDrivers(dependsOn:overwritedist, type: Copy){
-    into "$distDir/lib"
-    from configurations.drivers
-}
-
-task changeproperties(dependsOn:copyDrivers)<<{
-    def propFile = new File(distDir,"Config.properties")
-    def fis = new FileInputStream(propFile)
-    def Properties props = new Properties()
-    props.load(fis)
-    fis.close()
-    props.put("source.version",String.valueOf(sourceversion))
-    props.put("target.version",String.valueOf(targetversion))
-    props.put("db.vendor",String.valueOf(dbvendor));
-    props.put("db.url",String.valueOf(dburl));
-    props.put("db.user",String.valueOf(dbuser));
-    props.put("db.password",String.valueOf(dbpassword));
-    props.put("db.driverClass",String.valueOf(dbdriverClass));
-    props.put("bonita.home",String.valueOf(bonitahome));
-    props.store(new FileWriter(propFile), "config");
-}
-
-task scriptsintegration(dependsOn:changeproperties, type: JavaExec) {
-    doFirst {
-        println "run scripts integration tests"
-        systemProperties(["sysprop.bonita.db.vendor":dbvendor,
-                          "db.vendor":dbvendor,
-                          "jdbc.vendor":dbvendor,
-                          "jdbc.url":dburl,
-                          "jdbc.user":dbuser,
-                          "jdbc.password":dbpassword,
-                          "jdbc.driverClass":dbdriverClass,
-                          "jdbc.serverName":project.serverName,
-                          "jdbc.portNumber":project.portNumber,
-                          "jdbc.databaseName":project.databaseName,
-                          "bonita.home":bonitahome])
-        println systemProperties
-        main = "org.bonitasoft.migration.DBUnitTestSuite"
+    task copyDrivers(dependsOn:overwritedist, type: Copy){
+        into "$distDir/lib"
+        from configurations.drivers
     }
-    classpath configurations.scriptsintegration
-    
-}
 
-task execfill(dependsOn:scriptsintegration, type: JavaExec) {
-    doFirst {
-        println "execute fill of the database using classpath of $sourceversion"
-        systemProperties(["sysprop.bonita.db.vendor":dbvendor,
-            "db.vendor":dbvendor,
-            "jdbc.vendor":dbvendor,
-            "jdbc.url":dburl,
-            "jdbc.user":dbuser,
-            "jdbc.password":dbpassword,
-            "jdbc.driverClass":dbdriverClass,
-            "jdbc.serverName":project.serverName,
-            "jdbc.portNumber":project.portNumber,
-            "jdbc.databaseName":project.databaseName,
-            "db.url":dburl,
-            "db.user":dbuser,
-            "db.password":dbpassword,
-            "db.driver.class":dbdriverClass,
-            "db.server.name":project.serverName,
-            "db.server.port":project.portNumber,
-            "db.database.name":project.databaseName,
-            "bonita.home":bonitahome])
-        /*jvmArgs([
-            "-Xdebug",
-            "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000"
-            ])*/
-        println systemProperties
-        main = "org.bonitasoft.migration.DatabaseFiller${sourceversion.replace('.','_')}"
+    task changeproperties(dependsOn:copyDrivers)<<{
+        def propFile = new File(distDir,"Config.properties")
+        def fis = new FileInputStream(propFile)
+        def Properties props = new Properties()
+        props.load(fis)
+        fis.close()
+        props.put("source.version",String.valueOf(sourceversion))
+        props.put("target.version",String.valueOf(targetversion))
+        props.put("db.vendor",String.valueOf(dbvendor));
+        props.put("db.url",String.valueOf(dburl));
+        props.put("db.user",String.valueOf(dbuser));
+        props.put("db.password",String.valueOf(dbpassword));
+        props.put("db.driverClass",String.valueOf(dbdriverClass));
+        props.put("bonita.home",String.valueOf(bonitahome));
+        props.store(new FileWriter(propFile), "config");
     }
-    classpath configurations.sourcefiller
 
-}
+    task scriptsintegration(dependsOn:changeproperties, type: JavaExec) {
+        doFirst {
+            println "run scripts integration tests"
+            systemProperties(["sysprop.bonita.db.vendor":dbvendor,
+                              "db.vendor":dbvendor,
+                              "jdbc.vendor":dbvendor,
+                              "jdbc.url":dburl,
+                              "jdbc.user":dbuser,
+                              "jdbc.password":dbpassword,
+                              "jdbc.driverClass":dbdriverClass,
+                              "jdbc.serverName":project.serverName,
+                              "jdbc.portNumber":project.portNumber,
+                              "jdbc.databaseName":project.databaseName,
+                              "bonita.home":bonitahome])
+            println systemProperties
+            main = "org.bonitasoft.migration.DBUnitTestSuite"
+        }
+        classpath configurations.scriptsintegration
 
-
-task runmigration(dependsOn:execfill, type:JavaExec){
-    workingDir distDir
-    main = 'groovy.lang.GroovyShell'
-    classpath = files([
-        "build/dist/lib/groovy-all-1.8.6.jar"
-    ]as String[], configurations.runmigration)
-    args 'Migration.groovy'
-    systemProperty 'auto.accept', 'true'
-}
-
-task postmigrationtests(dependsOn:runmigration, type:JavaExec) {
-    doFirst {
-        println "run post-migration integration tests scripts"
-        systemProperties(["bonita.home":bonitahome,
-                          "target.version":targetversion])
-        println systemProperties
-        main = "org.bonitasoft.migration.postmigration.PostMigrationTest"
     }
-    classpath configurations.scriptsintegration
-}
 
-test.dependsOn(postmigrationtests)
-test {
-    doFirst {
-        println "execute test of the database using classpath of $targetversion"
-        systemProperties(["sysprop.bonita.db.vendor":dbvendor,
-            "db.vendor":dbvendor,
-            "jdbc.vendor":dbvendor,
-            "jdbc.url":dburl,
-            "jdbc.user":dbuser,
-            "jdbc.password":dbpassword,
-            "jdbc.driverClass":dbdriverClass,
-            "jdbc.serverName":project.serverName,
-            "jdbc.portNumber":project.portNumber,
-            "jdbc.databaseName":project.databaseName,
-            "db.url":dburl,
-            "db.user":dbuser,
-            "db.password":dbpassword,
-            "db.driver.class":dbdriverClass,
-            "db.server.name":project.serverName,
-            "db.server.port":project.portNumber,
-            "db.database.name":project.databaseName,
-            "bonita.home":bonitahome,
-            "target.version":targetversion,
-            "logback.configurationFile":file("logback.xml").getAbsolutePath()])
-        /*jvmArgs([
-            "-Xdebug",
-            "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000"
-            ])*/
-        println systemProperties
+    task execfill(dependsOn:scriptsintegration, type: JavaExec) {
+        doFirst {
+            println "execute fill of the database using classpath of $sourceversion"
+            systemProperties(["sysprop.bonita.db.vendor":dbvendor,
+                              "db.vendor":dbvendor,
+                              "jdbc.vendor":dbvendor,
+                              "jdbc.url":dburl,
+                              "jdbc.user":dbuser,
+                              "jdbc.password":dbpassword,
+                              "jdbc.driverClass":dbdriverClass,
+                              "jdbc.serverName":project.serverName,
+                              "jdbc.portNumber":project.portNumber,
+                              "jdbc.databaseName":project.databaseName,
+                              "db.url":dburl,
+                              "db.user":dbuser,
+                              "db.password":dbpassword,
+                              "db.driver.class":dbdriverClass,
+                              "db.server.name":project.serverName,
+                              "db.server.port":project.portNumber,
+                              "db.database.name":project.databaseName,
+                              "bonita.home":bonitahome,
+                              "sysprop.bonita.bdm.db.vendor":dbvendor])
+            /*jvmArgs([
+                "-Xdebug",
+                "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000"
+                ])*/
+            println systemProperties
+
+            if(targetversion.startsWith("7")){
+                main = "org.bonitasoft.migration.DatabaseFillerFor${targetversion.replace('.','_')}"
+            }else{
+                main = "org.bonitasoft.migration.DatabaseFiller${sourceversion.replace('.','_')}"
+            }
+        }
+        classpath configurations.sourcefiller
+
     }
-    testLogging.showStandardStreams = true
-}
+
+
+    task runmigration(dependsOn:execfill, type:JavaExec){
+        workingDir distDir
+        main = 'groovy.lang.GroovyShell'
+        classpath = files([
+                "build/dist/lib/groovy-all-1.8.6.jar"
+        ]as String[], configurations.runmigration)
+        args 'Migration.groovy'
+        systemProperty 'auto.accept', 'true'
+    }
+
+    task postmigrationtests(dependsOn:runmigration, type:JavaExec) {
+        doFirst {
+            println "run post-migration integration tests scripts"
+            systemProperties(["bonita.home":bonitahome,
+                              "target.version":targetversion])
+            println systemProperties
+            main = "org.bonitasoft.migration.postmigration.PostMigrationTest"
+        }
+        classpath configurations.scriptsintegration
+    }
+
+    test.dependsOn(postmigrationtests)
+    test {
+        doFirst {
+            println "execute test of the database using classpath of $targetversion"
+            systemProperties(["sysprop.bonita.db.vendor":dbvendor,
+                              "db.vendor":dbvendor,
+                              "jdbc.vendor":dbvendor,
+                              "jdbc.url":dburl,
+                              "jdbc.user":dbuser,
+                              "jdbc.password":dbpassword,
+                              "jdbc.driverClass":dbdriverClass,
+                              "jdbc.serverName":project.serverName,
+                              "jdbc.portNumber":project.portNumber,
+                              "jdbc.databaseName":project.databaseName,
+                              "db.url":dburl,
+                              "db.user":dbuser,
+                              "db.password":dbpassword,
+                              "db.driver.class":dbdriverClass,
+                              "db.server.name":project.serverName,
+                              "db.server.port":project.portNumber,
+                              "db.database.name":project.databaseName,
+                              "bonita.home":bonitahome,
+                              "target.version":targetversion,
+                              "logback.configurationFile":file("logback.xml").getAbsolutePath(),
+                              "sysprop.bonita.bdm.db.vendor":dbvendor])
+            /*jvmArgs([
+                "-Xdebug",
+                "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000"
+                ])*/
+            println systemProperties
+        }
+        testLogging.showStandardStreams = true
+    }
 
 }

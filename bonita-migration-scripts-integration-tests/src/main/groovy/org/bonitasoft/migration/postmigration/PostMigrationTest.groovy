@@ -36,7 +36,9 @@ class PostMigrationTest extends TestSuite {
         for (clazz in tests) {
             def method = clazz.getMethod("runFromVersion");
             Integer fromVersion = method.invoke(null);
-            if (fromVersion <= getCurrentNumericVersion(getCurrentBonitaVersion())) {
+            Integer untilVersion = clazz.getMethod("runUntilVersion").invoke(null);
+            def currentVersion = getCurrentNumericVersion(getCurrentBonitaVersion())
+            if (fromVersion <= currentVersion && currentVersion <= untilVersion) {
                 suite.addTestSuite(clazz);
             }
         }
@@ -45,17 +47,19 @@ class PostMigrationTest extends TestSuite {
 
     protected static int getCurrentNumericVersion(String version) {
         // Keep only the first 3 digits of the numeric part of the version;
-        Integer.parseInt(version.replaceAll("\\.", "").substring(0,3))
+        Integer.parseInt(version.replaceAll("\\.", "").substring(0, 3))
     }
 
     protected static List<Class> getTestsList() {
-        // no tests for now in BOS. Only SP.
         return [];
     }
 
     public static String getCurrentBonitaVersion() {
         def s = File.separator;
-        def File versionFile = new File(System.getProperty("bonita.home"), "server${s}platform${s}conf${s}VERSION");
+        def File versionFile = new File(System.getProperty("bonita.home"), "engine-server${s}work${s}platform${s}VERSION");
+        if(!versionFile.exists()){
+            versionFile = new File(System.getProperty("bonita.home"), "server${s}platform${s}conf${s}VERSION");
+        }
         return versionFile.exists() ? versionFile.text : null;
     }
 }

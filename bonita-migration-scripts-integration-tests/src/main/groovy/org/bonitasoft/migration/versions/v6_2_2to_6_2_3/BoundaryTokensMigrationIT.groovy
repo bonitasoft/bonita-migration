@@ -21,6 +21,10 @@ import org.bonitasoft.migration.NamedColumnsAssertion
 import org.dbunit.JdbcDatabaseTester
 import org.dbunit.dataset.xml.FlatXmlDataSet
 
+import static org.bonitasoft.migration.DBUnitHelper.createSqlConnection
+import static org.bonitasoft.migration.DBUnitHelper.createTables
+import static org.bonitasoft.migration.DBUnitHelper.createTester
+
 
 /**
  * @author Elias Ricken de Medeiros
@@ -28,36 +32,17 @@ import org.dbunit.dataset.xml.FlatXmlDataSet
  */
 class BoundaryTokensMigrationIT extends GroovyTestCase {
 
-    final static String DBVENDOR
-    final static CREATE_TABLE_6_2_2
-
-    static{
-        DBVENDOR = System.getProperty("db.vendor");
-        CREATE_TABLE_6_2_2 = BoundaryTokensMigrationIT.class.getClassLoader().getResource("sql/v6_2_2/${DBVENDOR}-createTables.sql");
-    }
-
     JdbcDatabaseTester tester
     Sql sql
 
 
     @Override
     void setUp() {
-        String driverClass =  System.getProperty("jdbc.driverClass")
+        sql = createSqlConnection();
+        tester = createTester()
 
-        def config = [
-            System.getProperty("jdbc.url"),
-            System.getProperty("jdbc.user"),
-            System.getProperty("jdbc.password")
-        ]
-        sql = Sql.newInstance(*config, driverClass);
-        tester = new JdbcDatabaseTester(driverClass, *config)
-
-        def int i = 0
-        CREATE_TABLE_6_2_2.text.split("@@").each({stmt ->
-            println "executing stmt ${i++} for ${DBVENDOR}"
-            sql.execute(stmt)
-        })
         println ("setUp: create tables")
+        createTables(sql, "6_2_2", "createTables");
 
         tester.dataSet = dataSet {
             sequence tenantid:1, id:10110, nextid:200

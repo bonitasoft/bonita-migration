@@ -17,8 +17,6 @@ import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 
 
-
-
 /**
  *
  * Launched by Migration.groovy
@@ -32,15 +30,50 @@ public class TransitionGraph {
 
     List<Transition> transitions = [];
 
-    TransitionGraph(List<String> transitionNames){
-        transitions = transitionNames.findAll { it.contains("-") }.collect {
-            def split = it.split("-")
-            new Transition(source:split[0], target:split[1])
+    TransitionGraph(String firstVersion, List<String> versions) {
+        versions.each { target ->
+            if(!target.equals(firstVersion)){
+                transitions.add(new Transition(source: getPreviousReleasedVersion(versions, target), target: target))
+            }
         }
     }
 
-    List<Path> getPaths(){
-        def pathMap = transitions.groupBy{ it.source }
+    static String getPreviousReleasedVersion(List<String> names, String target) {
+        def List<Integer> split = target.split("\\.").collect { Integer.valueOf(it) }
+        split = getPreviousVersionNumber(split)
+        while (!names.contains(versionAsString(split))) {
+            if (split[0] <= 5) {
+                throw new IllegalStateException("no previous version for $target found");
+            }
+            split = getPreviousVersionNumber(split)
+        }
+
+        return versionAsString(split)
+    }
+
+
+    static String versionAsString(List<Integer> split) {
+        return split[0] + "." + split[1] + "." + split[2]
+    }
+
+    static List<Integer> getPreviousVersionNumber(List<Integer> split) {
+        if (split[2].equals(0)) {
+            if (split[1].equals(0)) {
+                split[0] -= 1
+                split[1] = 10
+                split[2] = 10
+            } else {
+                split[1] -= 1
+                split[2] = 10
+            }
+        } else {
+            split[2] -= 1
+        }
+        return split
+    }
+
+    List<Path> getPaths() {
+        def pathMap = transitions.groupBy { it.source }
         def List<Path> paths = []
         pathMap.each {
             paths.addAll(getPaths(it.key))
@@ -49,27 +82,29 @@ public class TransitionGraph {
     }
 
 
-    List<Path> getPaths(String source){
-        Map transitionStartingWithMap = transitions.groupBy{ it.source }
-        return getPaths(source,null,transitionStartingWithMap);
+    List<Path> getPaths(String source) {
+        Map transitionStartingWithMap = transitions.groupBy { it.source }
+        return getPaths(source, null, transitionStartingWithMap);
     }
 
-    List<Path> getPaths(String startNode, Path sourcePath, Map transitionStartingWithMap){
+    List<Path> getPaths(String startNode, Path sourcePath, Map transitionStartingWithMap) {
         List<Transition> followingTransitions = transitionStartingWithMap.get(startNode)
-        List<Path> paths =[]
+        List<Path> paths = []
         followingTransitions.each {
-            def newPath = (sourcePath == null ? new Path(it):new Path(sourcePath,it))
+            def newPath = (sourcePath == null ? new Path(it) : new Path(sourcePath, it))
             paths.add(newPath);
             paths.addAll(getPaths(it.target, newPath, transitionStartingWithMap))
         }
         return paths;
     }
 
-    List<String> getStartNodes(){
-        return transitions.collect{ it.source }.unique().sort();
+    List<String> getStartNodes() {
+        return transitions.collect { it.source }.unique().sort();
     }
 
-    Path getShortestPath(String source, String target){
-        getPaths(source).findAll{ it.getLastVersion() == target }.sort(false,{a,b -> a.getSize() <=> b.getSize()})[0]
+    Path getShortestPath(String source, String target) {
+        getPaths(source).findAll {
+            it.getLastVersion() == target
+        }.sort(false, { a, b -> a.getSize() <=> b.getSize() })[0]
     }
 }

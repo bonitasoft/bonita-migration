@@ -38,15 +38,8 @@ class MultiBusinessDataIT extends GroovyTestCase {
 
     @Override
     void setUp() {
-        String driverClass =  System.getProperty("jdbc.driverClass")
-
-        def config = [
-            System.getProperty("jdbc.url"),
-            System.getProperty("jdbc.user"),
-            System.getProperty("jdbc.password")
-        ]
-        sql = Sql.newInstance(*config, driverClass);
-        tester = new JdbcDatabaseTester(driverClass, *config)
+         sql = createSqlConnection();
+        tester = createTester()
 
         CREATE_TABLE_6_4_0.text.split("@@").each({ stmt ->
             println "executing stmt $stmt for ${DBVENDOR}"

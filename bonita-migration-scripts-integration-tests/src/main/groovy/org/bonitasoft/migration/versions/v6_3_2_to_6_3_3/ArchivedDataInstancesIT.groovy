@@ -20,15 +20,11 @@ import org.bonitasoft.migration.CustomAssertion
 import org.dbunit.JdbcDatabaseTester
 import org.dbunit.dataset.xml.FlatXmlDataSet
 
+import static org.bonitasoft.migration.DBUnitHelper.createSqlConnection
+import static org.bonitasoft.migration.DBUnitHelper.createTables
+import static org.bonitasoft.migration.DBUnitHelper.createTester
+
 class ArchivedDataInstancesIT extends GroovyTestCase {
-
-    final static String DBVENDOR
-    final static CREATE_TABLE_6_3_2
-
-    static{
-        DBVENDOR = System.getProperty("db.vendor");
-        CREATE_TABLE_6_3_2 = ArchivedDataInstancesIT.class.getClassLoader().getResource("sql/v6_3_2/${DBVENDOR}-createTables.sql");
-    }
 
     JdbcDatabaseTester tester
     Sql sql
@@ -39,21 +35,11 @@ class ArchivedDataInstancesIT extends GroovyTestCase {
 
     @Override
     void setUp() {
-        String driverClass =  System.getProperty("jdbc.driverClass")
+        sql = createSqlConnection();
+        tester = createTester()
 
-        def config = [
-            System.getProperty("jdbc.url"),
-            System.getProperty("jdbc.user"),
-            System.getProperty("jdbc.password")
-        ]
-        sql = Sql.newInstance(*config, driverClass);
-        tester = new JdbcDatabaseTester(driverClass, *config)
-
-        CREATE_TABLE_6_3_2.text.split("@@").each({ stmt ->
-            println "executing stmt $stmt for ${DBVENDOR}"
-            sql.execute(stmt)
-        })
         println ("setUp: create tables")
+        createTables(sql, "6_3_2", "createTables");
 		println ("setUp: populating tables")
         tester.dataSet = dataSet {
         	// archive data instances

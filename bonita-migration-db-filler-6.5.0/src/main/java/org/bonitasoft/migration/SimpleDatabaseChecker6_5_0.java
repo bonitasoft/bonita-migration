@@ -127,5 +127,8 @@ public class SimpleDatabaseChecker6_5_0 extends DatabaseChecker6_4_2 {
         //no need to check profiles
     }
 
-
+    @Override
+    public void checkDates_are_retrieved_Correctly() throws Exception {
+        //no check
+    }
 }
