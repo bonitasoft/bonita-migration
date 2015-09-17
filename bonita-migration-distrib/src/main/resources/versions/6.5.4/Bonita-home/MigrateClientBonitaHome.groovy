@@ -4,19 +4,13 @@ import org.bonitasoft.migration.core.IOUtil;
 
 def currentDir = ""
 
-
-def File newWebClientBonitaHome = new File(newBonitaHome, "/client/")
-def File newEngineClientBonitaHome = new File(newBonitaHome, "/engine-client/")
+def File newClientBonitaHome = new File(newBonitaHome, "/client/")
 def File oldClientBonitaHome = new File(bonitaHome, "/client/")
-
-// REPLACE: client/conf -> engine-client/conf/
-IOUtil.copyDirectory(newEngineClientBonitaHome,new File(bonitaHome,"/engine-client/"))
-IOUtil.deleteDirectory(new File(oldClientBonitaHome.path+"/conf"))
 
 //deactivate the security if it was not active
 println "Check if security was enabled"
 def oldSecurityFile = new File(oldClientBonitaHome.path + "/platform/tenant-template/conf/security-config.properties")
-def newSecurityFile = new File(newWebClientBonitaHome.path + "/platform/tenant-template/conf/security-config.properties")
+def newSecurityFile = new File(newClientBonitaHome.path + "/platform/tenant-template/conf/security-config.properties")
 def props = new Properties()
 if(oldSecurityFile.exists()) {
     oldSecurityFile.withDataInputStream { s ->
@@ -37,13 +31,13 @@ if(!"true".equals(secuEnabled)){
 }
 
 currentDir = "/platform/conf"
-MigrationUtil.migrateDirectory(newWebClientBonitaHome.path + currentDir, oldClientBonitaHome.path + currentDir, true)
+MigrationUtil.migrateDirectory(newClientBonitaHome.path + currentDir, oldClientBonitaHome.path + currentDir, true)
 
 currentDir = "/platform/tenant-template"
-MigrationUtil.migrateDirectory(newWebClientBonitaHome.path + currentDir, oldClientBonitaHome.path + currentDir, true)
+MigrationUtil.migrateDirectory(newClientBonitaHome.path + currentDir, oldClientBonitaHome.path + currentDir, true)
 
 currentDir = "/platform/work"
-MigrationUtil.migrateDirectory(newWebClientBonitaHome.path + currentDir, oldClientBonitaHome.path + currentDir, false)
+MigrationUtil.migrateDirectory(newClientBonitaHome.path + currentDir, oldClientBonitaHome.path + currentDir, false)
 
 println "Checking for tenants."
 def tenantsClientDir = new File(oldClientBonitaHome, "/tenants")
@@ -57,16 +51,16 @@ if (tenantsClientDir.exists()) {
             println "For tenant : " + tenant.name
             PrintStream stdout = IOUtil.executeWrappedWithTabs {
                 currentDir = "/conf"
-                MigrationUtil.migrateDirectory(newWebClientBonitaHome.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir, true)
+                MigrationUtil.migrateDirectory(newClientBonitaHome.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir, true)
 
                 currentDir = "/work/icons/default"
-                MigrationUtil.migrateDirectory(newWebClientBonitaHome.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir, true)
+                MigrationUtil.migrateDirectory(newClientBonitaHome.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir, true)
 
                 currentDir = "/work/icons/priority"
-                MigrationUtil.migrateDirectory(newWebClientBonitaHome.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir, true)
+                MigrationUtil.migrateDirectory(newClientBonitaHome.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir, true)
 
                 currentDir = "/work/icons/profiles"
-                MigrationUtil.migrateDirectory(newWebClientBonitaHome.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir, true)
+                MigrationUtil.migrateDirectory(newClientBonitaHome.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir, true)
             }
         }
     }
