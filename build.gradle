@@ -8,7 +8,7 @@ buildscript {
 }
 //define bonita version for all projects
 allprojects {
-    apply plugin:'maven'
+    apply plugin: 'maven'
     repositories {
         mavenLocal()
         maven { url 'http://repositories.rd.lan/archiva/repository/releases/' }
@@ -23,11 +23,11 @@ allprojects {
             '7.0.1',
             '7.0.2',
             '7.0.3',
-            '7.1.0'
-
+            '7.1.0',
+            '7.1.1',
     ]
     ext.overridedVersions = [
-        :
+            '7.1.1': '7.1.1-SNAPSHOT'
     ]
 
     configurations {
@@ -42,7 +42,7 @@ allprojects {
         repositories.mavenDeployer {
             configuration = configurations.deployerJars
 
-            repository(url: System.getProperty("altDeploymentRepository") != null ? System.getProperty("altDeploymentRepository").split("::").last():null)
+            repository(url: System.getProperty("altDeploymentRepository") != null ? System.getProperty("altDeploymentRepository").split("::").last() : null)
         }
     }
 }
