@@ -66,6 +66,7 @@ class DatabaseHelper {
     /**
      * adapting could have a different result that a fresh install
      * example: VARCHAR(50) should be a VARCHAR2(50 CHAR) in oracle
+     * example: column name contains reserved keyword (qrtz_simprop_triggers)
      * @param statement
      * @return
      */
@@ -144,7 +145,7 @@ EXEC sp_rename '${table}.$oldName', '$newName', 'COLUMN'
 END""")
                 break;
             default:
-                execute("ALTER TABLE $table RENAME $oldName TO $newName")
+                executeDbVendorStatement("ALTER TABLE $table RENAME $oldName TO $newName")
         }
     }
 
