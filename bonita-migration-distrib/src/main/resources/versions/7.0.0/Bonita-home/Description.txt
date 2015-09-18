@@ -1,1 +1,1 @@
-Replace 6.5.3 configuration files with the 7.0.0 files. 
+Replace 6.5.4 configuration files with the 7.0.0 files.
