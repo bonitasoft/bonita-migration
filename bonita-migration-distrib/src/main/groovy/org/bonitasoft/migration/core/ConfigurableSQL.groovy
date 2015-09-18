@@ -29,7 +29,7 @@ class ConfigurableSQL extends Sql {
     @Override
     protected void configure(Statement statement) {
         super.configure(statement)
-//        println "Overriding 'Row fetch size' configuration to 5 for this statement"
+        // You can still lower this value to 1 if elements to migrate (like documents) are still to big when fetching them 5 by 5:
         statement.setFetchSize(5)
     }
 }
