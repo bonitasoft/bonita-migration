@@ -14,6 +14,7 @@
 package org.bonitasoft.migration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.bonitasoft.migration.DatabaseCheckerInitiliazer6_3_1.springContext;
 import static org.junit.Assert.assertEquals;
 
 import java.io.FileInputStream;
@@ -315,9 +316,7 @@ public class DatabaseChecker6_4_0 extends SimpleDatabaseChecker6_4_0 {
 
         //check on finished instance that we have 3 archived document with expected values
         final SearchResult<ArchivedDocument> archivedDocumentsOfInstance1 = getProcessAPI().searchArchivedDocuments(new SearchOptionsBuilder(0, 100)
-                .filter(ArchivedDocumentsSearchDescriptor.PROCESSINSTANCE_ID, inst1)
-                .searchTerm("doc") // to filter "extradoc*" documents
-                .sort(ArchivedDocumentsSearchDescriptor.ARCHIVE_DATE, Order.ASC).done());
+                .filter(ArchivedDocumentsSearchDescriptor.PROCESSINSTANCE_ID, inst1).sort(ArchivedDocumentsSearchDescriptor.ARCHIVE_DATE, Order.ASC).done());
         final SearchResult<Document> documentsOfInstance1 = getProcessAPI().searchDocuments(new SearchOptionsBuilder(0, 100).filter(
                 DocumentsSearchDescriptor.PROCESSINSTANCE_ID, inst1).done());
 
@@ -334,14 +333,10 @@ public class DatabaseChecker6_4_0 extends SimpleDatabaseChecker6_4_0 {
         assertThat(documents1).hasSize(0);
 
         //check on instance with step1 executed that we have 1 archived document and 2 documents with expected values
-        final SearchResult<ArchivedDocument> archivedDocumentsOfInstance2 = getProcessAPI().searchArchivedDocuments(new SearchOptionsBuilder(0, 100)
-                .filter(ArchivedDocumentsSearchDescriptor.PROCESSINSTANCE_ID, inst2)
-                .searchTerm("doc") // to filter "extradoc*" documents
-                .done());
+        final SearchResult<ArchivedDocument> archivedDocumentsOfInstance2 = getProcessAPI().searchArchivedDocuments(new SearchOptionsBuilder(0, 100).filter(
+                ArchivedDocumentsSearchDescriptor.PROCESSINSTANCE_ID, inst2).done());
         final SearchResult<Document> documentsOfInstance2 = getProcessAPI().searchDocuments(new SearchOptionsBuilder(0, 100)
-                .filter(DocumentsSearchDescriptor.PROCESSINSTANCE_ID, inst2)
-                .searchTerm("doc") // to filter "extradoc*" documents
-                .sort(DocumentsSearchDescriptor.DOCUMENT_CREATIONDATE, Order.ASC).done());
+                .filter(DocumentsSearchDescriptor.PROCESSINSTANCE_ID, inst2).sort(DocumentsSearchDescriptor.DOCUMENT_CREATIONDATE, Order.ASC).done());
 
         final List<ArchivedDocument> archivedDocuments2 = archivedDocumentsOfInstance2.getResult();
         assertThat(archivedDocuments2).hasSize(1).describedAs("should have this number of archived documents for " + inst2);
@@ -358,13 +353,9 @@ public class DatabaseChecker6_4_0 extends SimpleDatabaseChecker6_4_0 {
 
         //check on instance with document added using api that we have 3 documents and 2 archived document with expected values
         final SearchResult<ArchivedDocument> archivedDocumentsOfInstance3 = getProcessAPI().searchArchivedDocuments(new SearchOptionsBuilder(0, 100)
-                .filter(ArchivedDocumentsSearchDescriptor.PROCESSINSTANCE_ID, inst3)
-                .searchTerm("doc") // to filter "extradoc*" documents
-                .sort(ArchivedDocumentsSearchDescriptor.ARCHIVE_DATE, Order.ASC).done());
+                .filter(ArchivedDocumentsSearchDescriptor.PROCESSINSTANCE_ID, inst3).sort(ArchivedDocumentsSearchDescriptor.ARCHIVE_DATE, Order.ASC).done());
         final SearchResult<Document> documentsOfInstance3 = getProcessAPI().searchDocuments(new SearchOptionsBuilder(0, 100)
-                .filter(DocumentsSearchDescriptor.PROCESSINSTANCE_ID, inst3)
-                .searchTerm("doc") // to filter "extradoc*" documents
-                .sort(DocumentsSearchDescriptor.DOCUMENT_CREATIONDATE, Order.ASC).done());
+                .filter(DocumentsSearchDescriptor.PROCESSINSTANCE_ID, inst3).sort(DocumentsSearchDescriptor.DOCUMENT_CREATIONDATE, Order.ASC).done());
 
         final List<ArchivedDocument> archivedDocuments3 = archivedDocumentsOfInstance3.getResult();
         assertThat(archivedDocuments3).hasSize(2);
@@ -386,10 +377,8 @@ public class DatabaseChecker6_4_0 extends SimpleDatabaseChecker6_4_0 {
         assertThat(documents3.get(2).getUrl()).isEqualTo("http://MyWebSite.com/file2.txt");
 
         //check on just started instance that we have only one document and that we have 3 archived document after execution
-        final SearchResult<Document> documentsOfInstance4 = getProcessAPI().searchDocuments(new SearchOptionsBuilder(0, 100)
-                .filter(DocumentsSearchDescriptor.PROCESSINSTANCE_ID, inst4)
-                .searchTerm("doc") // to filter "extradoc*" documents
-                .done());
+        final SearchResult<Document> documentsOfInstance4 = getProcessAPI().searchDocuments(new SearchOptionsBuilder(0, 100).filter(
+                DocumentsSearchDescriptor.PROCESSINSTANCE_ID, inst4).done());
 
         final List<Document> documents4 = documentsOfInstance4.getResult();
         assertThat(documents4).hasSize(1);
@@ -501,5 +490,4 @@ public class DatabaseChecker6_4_0 extends SimpleDatabaseChecker6_4_0 {
         final SearchOptions options = builder.done();
         return options;
     }
-
 }

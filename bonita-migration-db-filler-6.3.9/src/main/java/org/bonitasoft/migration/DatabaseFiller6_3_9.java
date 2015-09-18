@@ -100,43 +100,29 @@ public class DatabaseFiller6_3_9 extends SimpleDatabaseFiller6_3_1 {
 
     }
 
+
     private Map<? extends String, ? extends String> fillDocuments() throws Exception {
         final User user = getAPITestUtil().createUser("userForDocuments", "bpm");
 
         final ProcessDefinitionBuilder processWithDocuments = new ProcessDefinitionBuilder().createNewInstance("ProcessWithDocuments", "1.0");
         processWithDocuments.addStartEvent("start");
-        processWithDocuments
-                .addUserTask("step1", "actor")
+        processWithDocuments.addUserTask("step1", "actor")
                 .addOperation(new OperationBuilder()
                         .createSetDocument("doc1", new ExpressionBuilder()
                                 .createGroovyScriptExpression("update doc1",
                                         "return new org.bonitasoft.engine.bpm.document.DocumentValue(\"newContent1\".getBytes(),\"plain/text\",\"file2.txt\")",
                                         DocumentValue.class.getName())))
-                .addOperation(
-                        new OperationBuilder()
-                                .createSetDocument(
-                                        "doc2",
-                                        new ExpressionBuilder()
-                                                .createGroovyScriptExpression(
-                                                        "create doc2",
-                                                        "return new org.bonitasoft.engine.bpm.document.DocumentValue(\"newContent2\".getBytes(),\"plain/text\",\"newFile.txt\")",
-                                                        DocumentValue.class.getName())));
+                .addOperation(new OperationBuilder()
+                        .createSetDocument("doc2", new ExpressionBuilder()
+                                .createGroovyScriptExpression("create doc2",
+                                        "return new org.bonitasoft.engine.bpm.document.DocumentValue(\"newContent2\".getBytes(),\"plain/text\",\"newFile.txt\")",
+                                        DocumentValue.class.getName())));
         processWithDocuments.addUserTask("step2", "actor")
                 .addTransition("start", "step1").addTransition("step1", "step2");
-        processWithDocuments.addDocumentDefinition("doc1").addContentFileName("file.txt").addFile("file.txt").addMimeType("plain/text")
-                .addDescription("It is a text file");
-
-        // Add many big documents to test SQL Driver pagination:
-        addDocumentDefinition(processWithDocuments, 10, "file");
-
+        processWithDocuments.addDocumentDefinition("doc1").addContentFileName("file.txt").addFile("file.txt").addMimeType("plain/text").addDescription("It is a text file");
         processWithDocuments.addActor("actor");
         final BusinessArchiveBuilder businessArchiveBuilder = new BusinessArchiveBuilder().createNewBusinessArchive();
-        businessArchiveBuilder.addDocumentResource(new BarResource("file.txt",
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.".getBytes()));
-
-        // Add many big documents to test SQL Driver pagination:
-        addDocumentResource(businessArchiveBuilder, 10, "file");
-
+        businessArchiveBuilder.addDocumentResource(new BarResource("file.txt", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.".getBytes()));
         businessArchiveBuilder.setProcessDefinition(processWithDocuments.done());
 
         final ProcessDefinition processDefinition = getAPITestUtil().deployAndEnableProcessWithActor(businessArchiveBuilder.done(), "actor", user);
@@ -166,34 +152,14 @@ public class DatabaseFiller6_3_9 extends SimpleDatabaseFiller6_3_1 {
         getAPITestUtil().getProcessAPI().attachNewDocumentVersion(inst3.getId(), "urlDocumentAttachedUsingAPI", "doc2.txt", "plain/text",
                 "http://MyWebSite.com/file2.txt");
 
+
         // just started instance
         final ProcessInstance inst4 = getAPITestUtil().getProcessAPI().startProcess(processDefinition.getId());
         getAPITestUtil().waitForUserTask("step1", inst4);
 
+
         return Collections.emptyMap();
     }
 
-    private void addDocumentDefinition(ProcessDefinitionBuilder processDefinitionBuilder, int nbDocuments, String filePrefix) {
-        for (int i = 0; i < nbDocuments; i++) {
-            processDefinitionBuilder.addDocumentDefinition("extradoc" + i).addContentFileName("file" + i + ".txt").addFile(filePrefix + i)
-                    .addMimeType("plain/text")
-                    .addDescription("It is a text file");
-        }
-    }
-
-    private void addDocumentResource(BusinessArchiveBuilder businessArchiveBuilder, int nbDocuments, String filePrefix) {
-        for (int i = 0; i < nbDocuments; i++) {
-            businessArchiveBuilder.addDocumentResource(new BarResource(filePrefix + i, getBigEmptyBinaryContent()));
-        }
-    }
-
-    byte[] getBigEmptyBinaryContent() {
-        final byte[] bigContent = new byte[1024 * 1024 * 30];
-        for (int i = 0; i < bigContent.length;) {
-            bigContent[i++] = 0;
-        }
-        this.logger.info("!!!!!!!!!!! REMOVE this BIG DOCUMENTS test before committing the fix !!!");
-        return bigContent;
-    }
 
 }
