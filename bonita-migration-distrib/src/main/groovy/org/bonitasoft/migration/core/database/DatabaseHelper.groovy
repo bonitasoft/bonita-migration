@@ -133,13 +133,13 @@ class DatabaseHelper {
 
     def renameColumn(String table, String oldName, String newName, String newType) {
         switch (dbVendor) {
-            case "oracle":
+            case DBVendor.ORACLE:
                 execute("ALTER TABLE $table RENAME COLUMN $oldName TO $newName")
                 break;
-            case "mysql":
+            case DBVendor.MYSQL:
                 execute("ALTER TABLE $table CHANGE COLUMN $oldName $newName $newType")
                 break;
-            case "sqlserver":
+            case DBVendor.SQLSERVER:
                 execute("""BEGIN
 EXEC sp_rename '${table}.$oldName', '$newName', 'COLUMN'
 END""")
@@ -151,10 +151,10 @@ END""")
 
     def renameTable(String table, String newName) {
         switch (dbVendor) {
-            case "mysql":
+            case DBVendor.MYSQL:
                 execute("RENAME TABLE $table TO $newName")
                 break;
-            case "sqlserver":
+            case DBVendor.SQLSERVER:
                 execute("sp_rename $table , $newName")
                 break;
             default:
@@ -164,13 +164,13 @@ END""")
 
     def dropNotNull(String table, String column, String type) {
         switch (dbVendor) {
-            case "oracle":
+            case DBVendor.ORACLE:
                 execute("ALTER TABLE $table MODIFY $column NULL")
                 break;
-            case "mysql":
+            case DBVendor.MYSQL:
                 execute("ALTER TABLE $table MODIFY $column $type NULL")
                 break;
-            case "sqlserver":
+            case DBVendor.SQLSERVER:
                 execute("ALTER TABLE $table ALTER COLUMN $column $type NULL")
                 break;
             default:
@@ -180,10 +180,10 @@ END""")
 
     def dropColumn(String table, String column) {
         switch (dbVendor) {
-            case "oracle":
+            case DBVendor.ORACLE:
                 execute("ALTER TABLE $table DROP COLUMN $column")
                 break;
-            case "sqlserver":
+            case DBVendor.SQLSERVER:
                 execute("ALTER TABLE $table DROP COLUMN $column")
                 break;
             default:
@@ -197,7 +197,7 @@ END""")
 
     def dropForeignKey(String table, String name) {
         switch (dbVendor) {
-            case "mysql":
+            case DBVendor.MYSQL:
                 execute("ALTER TABLE $table DROP FOREIGN KEY $name")
                 break;
             default:
