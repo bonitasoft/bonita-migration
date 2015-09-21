@@ -149,6 +149,39 @@ END""")
         }
     }
 
+
+    def dropTableIfExists(String tableName) {
+        switch (dbVendor) {
+            //same script for Postgres and MySQL
+            case DBVendor.POSTGRES:
+            case DBVendor.MYSQL:
+                executeDbVendorStatement("DROP TABLE IF EXISTS $tableName")
+                break
+
+            case DBVendor.ORACLE:
+                def query = """
+                    SELECT *
+                    FROM user_tables
+                    WHERE table_name = ?
+                    OR table_name = ?
+                    """ as String
+                def firstRow = sql.firstRow(query, [tableName, tableName.toUpperCase()])
+
+                if (firstRow != null) {
+                    executeDbVendorStatement("DROP TABLE $tableName")
+                }
+                break
+
+            case DBVendor.SQLSERVER:
+                executeDbVendorStatement("""
+                    IF OBJECT_ID('$tableName', 'U') IS NOT NULL
+                    DROP TABLE $tableName;
+                """)
+                break
+
+        }
+    }
+
     def renameTable(String table, String newName) {
         switch (dbVendor) {
             case DBVendor.MYSQL:
