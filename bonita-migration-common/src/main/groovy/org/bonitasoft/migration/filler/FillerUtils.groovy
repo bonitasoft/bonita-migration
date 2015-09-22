@@ -23,11 +23,11 @@ class FillerUtils {
      * Initialize system properties to run the engine using properties from the Config.properties (migration properties)
      */
     public static void initializeEngineSystemProperties() {
-        System.setProperty("sysprop.bonita.db.vendor", System.getProperty("dbvendor"));
-        System.setProperty("db.url", System.getProperty("dburl"));
-        System.setProperty("db.user", System.getProperty("dbuser"));
-        System.setProperty("db.password", System.getProperty("dbpassword"));
-        def split = System.getProperty("dburl").split("/")
+        System.setProperty("sysprop.bonita.db.vendor", System.getProperty("db.vendor"));
+        System.setProperty("db.url", System.getProperty("db.url"));
+        System.setProperty("db.user", System.getProperty("db.user"));
+        System.setProperty("db.password", System.getProperty("db.password"));
+        def split = System.getProperty("db.url").split("/")
         def databaseName = split[split.length - 1]
         System.setProperty("db.database.name", databaseName);
     }
