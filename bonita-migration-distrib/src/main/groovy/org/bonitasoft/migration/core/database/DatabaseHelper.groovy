@@ -162,12 +162,9 @@ END""")
                 def query = """
                     SELECT *
                     FROM user_tables
-                    WHERE table_name = ?
-                    OR table_name = ?
-                    """ as String
-                def firstRow = sql.firstRow(query, [tableName, tableName.toUpperCase()])
-
-                if (firstRow != null) {
+                    WHERE UPPER(table_name) = UPPER($tableName)
+                    """
+                if (sql.firstRow(query) != null) {
                     executeDbVendorStatement("DROP TABLE $tableName")
                 }
                 break

@@ -46,6 +46,7 @@ class DBUnitHelper {
     public static final String POSTGRES = "postgres"
     public static final String ORACLE = "oracle"
     public static final String MYSQL = "mysql"
+    public static final String SQLSERVER = "sqlserver"
 
     static trueValue() {
         trueValueMap.get(dbVendor())
@@ -79,47 +80,43 @@ class DBUnitHelper {
     }
 
     def static boolean hasTable(Sql sql, String tableName) {
-        def firstRow
+        def query
         switch (dbVendor()) {
             case POSTGRES:
-                def query = """
+                query = """
                     SELECT *
                      FROM information_schema.tables
                      WHERE table_schema='public'
                        AND table_type='BASE TABLE'
-                       AND table_name = ?
+                       AND UPPER(table_name) = UPPER($tableName)
                     """
-                firstRow = sql.firstRow(query, tableName)
                 break
 
             case ORACLE:
-                def query = """
+                query = """
                     SELECT *
                     FROM user_tables
-                    WHERE table_name = ?
-                    OR table_name = ?
-                    """ as String
-                firstRow = sql.firstRow(query, [tableName, tableName.toUpperCase()])
+                    WHERE UPPER(table_name) = UPPER($tableName)
+                    """
                 break
 
             case MYSQL:
-                def query = """
+                query = """
                     SELECT *
                     FROM information_schema.tables
-                    WHERE table_name = ?
+                    WHERE UPPER(table_name) = UPPER($tableName)
                     AND table_schema = DATABASE()
                     """
-                firstRow = sql.firstRow(query, tableName)
                 break
 
-            case "sqlserver":
-                def query = """
+            case SQLSERVER:
+                query = """
                     SELECT * FROM information_schema.tables
-                    WHERE TABLE_NAME = ?
+                    WHERE UPPER(TABLE_NAME) = UPPER($tableName)
                     """
-                firstRow = sql.firstRow(query, tableName)
                 break
         }
+        def firstRow = sql.firstRow(query)
         return firstRow != null
     }
 
@@ -158,6 +155,8 @@ class DBUnitHelper {
 
     def static dropTables(Sql sql, String[] tables) {
         tables.each {
+            //add .toString to avoid the error bellow. Is there a better way to do that?
+            //Failed to execute: DROP TABLE ? because: ERROR: syntax error at or near "$1"
             sql.execute("DROP TABLE $it".toString())
         }
     }
