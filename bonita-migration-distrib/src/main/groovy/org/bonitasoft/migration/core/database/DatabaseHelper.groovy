@@ -66,6 +66,7 @@ class DatabaseHelper {
     /**
      * adapting could have a different result that a fresh install
      * example: VARCHAR(50) should be a VARCHAR2(50 CHAR) in oracle
+     * example: column name contains reserved keyword (qrtz_simprop_triggers)
      * @param statement
      * @return
      */
@@ -132,28 +133,58 @@ class DatabaseHelper {
 
     def renameColumn(String table, String oldName, String newName, String newType) {
         switch (dbVendor) {
-            case "oracle":
+            case DBVendor.ORACLE:
                 execute("ALTER TABLE $table RENAME COLUMN $oldName TO $newName")
                 break;
-            case "mysql":
+            case DBVendor.MYSQL:
                 execute("ALTER TABLE $table CHANGE COLUMN $oldName $newName $newType")
                 break;
-            case "sqlserver":
+            case DBVendor.SQLSERVER:
                 execute("""BEGIN
 EXEC sp_rename '${table}.$oldName', '$newName', 'COLUMN'
 END""")
                 break;
             default:
-                execute("ALTER TABLE $table RENAME $oldName TO $newName")
+                executeDbVendorStatement("ALTER TABLE $table RENAME $oldName TO $newName")
+        }
+    }
+
+
+    def dropTableIfExists(String tableName) {
+        switch (dbVendor) {
+            //same script for Postgres and MySQL
+            case DBVendor.POSTGRES:
+            case DBVendor.MYSQL:
+                executeDbVendorStatement("DROP TABLE IF EXISTS $tableName")
+                break
+
+            case DBVendor.ORACLE:
+                def query = """
+                    SELECT *
+                    FROM user_tables
+                    WHERE UPPER(table_name) = UPPER($tableName)
+                    """
+                if (sql.firstRow(query) != null) {
+                    executeDbVendorStatement("DROP TABLE $tableName")
+                }
+                break
+
+            case DBVendor.SQLSERVER:
+                executeDbVendorStatement("""
+                    IF OBJECT_ID('$tableName', 'U') IS NOT NULL
+                    DROP TABLE $tableName;
+                """)
+                break
+
         }
     }
 
     def renameTable(String table, String newName) {
         switch (dbVendor) {
-            case "mysql":
+            case DBVendor.MYSQL:
                 execute("RENAME TABLE $table TO $newName")
                 break;
-            case "sqlserver":
+            case DBVendor.SQLSERVER:
                 execute("sp_rename $table , $newName")
                 break;
             default:
@@ -163,13 +194,13 @@ END""")
 
     def dropNotNull(String table, String column, String type) {
         switch (dbVendor) {
-            case "oracle":
+            case DBVendor.ORACLE:
                 execute("ALTER TABLE $table MODIFY $column NULL")
                 break;
-            case "mysql":
+            case DBVendor.MYSQL:
                 execute("ALTER TABLE $table MODIFY $column $type NULL")
                 break;
-            case "sqlserver":
+            case DBVendor.SQLSERVER:
                 execute("ALTER TABLE $table ALTER COLUMN $column $type NULL")
                 break;
             default:
@@ -179,10 +210,10 @@ END""")
 
     def dropColumn(String table, String column) {
         switch (dbVendor) {
-            case "oracle":
+            case DBVendor.ORACLE:
                 execute("ALTER TABLE $table DROP COLUMN $column")
                 break;
-            case "sqlserver":
+            case DBVendor.SQLSERVER:
                 execute("ALTER TABLE $table DROP COLUMN $column")
                 break;
             default:
@@ -196,7 +227,7 @@ END""")
 
     def dropForeignKey(String table, String name) {
         switch (dbVendor) {
-            case "mysql":
+            case DBVendor.MYSQL:
                 execute("ALTER TABLE $table DROP FOREIGN KEY $name")
                 break;
             default:
