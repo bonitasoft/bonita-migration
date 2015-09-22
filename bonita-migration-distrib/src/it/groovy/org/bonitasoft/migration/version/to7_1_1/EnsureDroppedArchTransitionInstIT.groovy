@@ -1,7 +1,7 @@
 package org.bonitasoft.migration.version.to7_1_1
-import groovy.sql.Sql
 import org.bonitasoft.migration.DBUnitHelper
-import org.bonitasoft.migration.version.DBUnitMigrationContext
+import org.bonitasoft.migration.core.Logger
+import org.bonitasoft.migration.core.MigrationContext
 import spock.lang.Shared
 import spock.lang.Specification
 /**
@@ -10,28 +10,34 @@ import spock.lang.Specification
 class EnsureDroppedArchTransitionInstIT extends Specification {
 
     @Shared
-    Sql sql = DBUnitHelper.createSqlConnection()
+    Logger logger = Mock(Logger)
+
+    @Shared
+    MigrationContext migrationContext = new MigrationContext(logger: logger)
+
+    @Shared
+    DBUnitHelper dbUnitHelper = new DBUnitHelper(migrationContext)
 
     def "should drop arch_transition_instance table when exists"() {
-        DBUnitHelper.createTables(sql, "7_0_0", "archTransition")
+        dbUnitHelper.createTables("7_0_0", "archTransition")
 
         when:
-        new EnsureDroppedArchTransitionInst().execute(new DBUnitMigrationContext(sql))
+        new EnsureDroppedArchTransitionInst().execute(migrationContext)
 
         then:
-        DBUnitHelper.hasTable(sql, "arch_transition_instance") == false
+        dbUnitHelper.hasTable("arch_transition_instance") == false
 
         //clean up
-        DBUnitHelper.dropTables(sql, "tenant")
+        dbUnitHelper.dropTables("tenant")
 
     }
 
     def "execution step should not throws exception when the table arch_transition_instance does not exist"() {
         when:
-        new EnsureDroppedArchTransitionInst().execute(new DBUnitMigrationContext(sql))
+        new EnsureDroppedArchTransitionInst().execute(migrationContext)
 
         then:
-        DBUnitHelper.hasTable(sql, "arch_transition_instance") == false
+        dbUnitHelper.hasTable("arch_transition_instance") == false
 
     }
 }

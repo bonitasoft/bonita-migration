@@ -16,8 +16,9 @@
  */
 package org.bonitasoft.migration
 
-import groovy.sql.Sql
 import groovy.xml.StreamingMarkupBuilder
+import org.bonitasoft.migration.core.MigrationContext
+import org.bonitasoft.migration.core.MigrationStep
 import org.dbunit.JdbcDatabaseTester
 import org.dbunit.database.IDatabaseConnection
 import org.dbunit.dataset.ReplacementDataSet
@@ -25,42 +26,40 @@ import org.dbunit.dataset.xml.FlatXmlDataSet
 import org.dbunit.ext.oracle.OracleConnection
 
 import java.sql.DriverManager
-
 /**
  * @author Baptiste Mesta
  */
 class DBUnitHelper {
 
+    private MigrationContext context
+
+    DBUnitHelper(MigrationContext context) {
+        context.loadProperties();
+        context.openSqlConnection()
+        this.context = context
+    }
+
     static Map trueValueMap = [
-            "oracle"   : 1,
-            "postgres" : true,
-            "mysql"    : true,
-            "sqlserver": true
+            (MigrationStep.DBVendor.ORACLE)   : 1,
+            (MigrationStep.DBVendor.POSTGRES) : true,
+            (MigrationStep.DBVendor.MYSQL)    : true,
+            (MigrationStep.DBVendor.SQLSERVER): true
     ]
     static Map falseValueMap = [
-            "oracle"   : 0,
-            "postgres" : false,
-            "mysql"    : false,
-            "sqlserver": false
+            (MigrationStep.DBVendor.ORACLE)  : 0,
+            (MigrationStep.DBVendor.POSTGRES): false,
+            (MigrationStep.DBVendor.MYSQL)   : false,
+            (MigrationStep.DBVendor.SQLSERVER): false
     ]
-    public static final String POSTGRES = "postgres"
-    public static final String ORACLE = "oracle"
-    public static final String MYSQL = "mysql"
-    public static final String SQLSERVER = "sqlserver"
 
-    static trueValue() {
-        trueValueMap.get(dbVendor())
+    def trueValue() {
+        trueValueMap.get(context.dbVendor)
     }
 
-    static falseValue() {
-        falseValueMap.get(dbVendor())
+    def falseValue() {
+        falseValueMap.get(context.dbVendor)
 
     }
-
-    static String dbVendor() {
-        System.getProperty("dbvendor")
-    }
-
 
     def static dataSet(data) {
         new ReplacementDataSet(new FlatXmlDataSet(new StringReader(new StreamingMarkupBuilder().bind {
@@ -68,21 +67,21 @@ class DBUnitHelper {
         }.toString())), ["[NULL]": null], null)
     }
 
-    def static getCreateTables(String version, String feature) {
-        DBUnitHelper.class.getClassLoader().getResource("sql/v${version}/${dbVendor()}-${feature}.sql");
+    def getCreateTables(String version, String feature) {
+        DBUnitHelper.class.getClassLoader().getResource("sql/v${version}/${context.dbVendor.name().toLowerCase()}-${feature}.sql");
     }
 
-    def static String[] createTables(sql, String version, String feature) {
+    def String[] createTables(String version, String feature) {
         println "Create tables of $feature"
         getCreateTables(version, feature).text.split("@@").each({ stmt ->
-            sql.execute(stmt)
+            context.sql.execute(stmt)
         })
     }
 
-    def static boolean hasTable(Sql sql, String tableName) {
+    def boolean hasTable(String tableName) {
         def query
-        switch (dbVendor()) {
-            case POSTGRES:
+        switch (context.dbVendor) {
+            case MigrationStep.DBVendor.POSTGRES:
                 query = """
                     SELECT *
                      FROM information_schema.tables
@@ -92,7 +91,7 @@ class DBUnitHelper {
                     """
                 break
 
-            case ORACLE:
+            case MigrationStep.DBVendor.ORACLE:
                 query = """
                     SELECT *
                     FROM user_tables
@@ -100,7 +99,7 @@ class DBUnitHelper {
                     """
                 break
 
-            case MYSQL:
+            case MigrationStep.DBVendor.MYSQL:
                 query = """
                     SELECT *
                     FROM information_schema.tables
@@ -109,23 +108,23 @@ class DBUnitHelper {
                     """
                 break
 
-            case SQLSERVER:
+            case MigrationStep.DBVendor.SQLSERVER:
                 query = """
                     SELECT * FROM information_schema.tables
                     WHERE UPPER(TABLE_NAME) = UPPER($tableName)
                     """
                 break
         }
-        def firstRow = sql.firstRow(query)
+        def firstRow = context.sql.firstRow(query)
         return firstRow != null
     }
 
-    def static JdbcDatabaseTester createTester() {
-        new JdbcDatabaseTester(driverClass, url, user, password) {
+    def JdbcDatabaseTester createTester() {
+        new JdbcDatabaseTester(context.dbDriverClassName, context.dburl, context.dbUser, context.dbPassword) {
             public IDatabaseConnection getConnection() {
-                if (dbVendor() == ORACLE) {
-                    def conn = DriverManager.getConnection(getUrl(), getUser(), getPassword());
-                    return new OracleConnection(conn, getUser());
+                if (context.dbVendor == MigrationStep.DBVendor.ORACLE) {
+                    def conn = DriverManager.getConnection(context.dburl, context.dbUser, context.dbPassword);
+                    return new OracleConnection(conn, context.dbUser);
                 } else {
                     return super.getConnection();
                 }
@@ -133,31 +132,11 @@ class DBUnitHelper {
         }
     }
 
-    def static Sql createSqlConnection() {
-        Sql.newInstance(url, user, password, driverClass)
-    }
-
-    def static String getPassword() {
-        System.getProperty("dbpassword")
-    }
-
-    def static String getUser() {
-        System.getProperty("dbuser")
-    }
-
-    def static String getUrl() {
-        System.getProperty("dburl")
-    }
-
-    def static String getDriverClass() {
-        System.getProperty("dbdriverClass")
-    }
-
-    def static dropTables(Sql sql, String[] tables) {
+    def dropTables(String[] tables) {
         tables.each {
             //add .toString to avoid the error bellow. Is there a better way to do that?
             //Failed to execute: DROP TABLE ? because: ERROR: syntax error at or near "$1"
-            sql.execute("DROP TABLE $it".toString())
+            context.sql.execute("DROP TABLE $it".toString())
         }
     }
 

@@ -78,10 +78,10 @@ FROM
 
     private Sql getSql() {
         def sql
-        def dburl = System.getProperty("dburl");
-        def dbuser = System.getProperty("dbuser")
-        def dbpassword = System.getProperty("dbpassword")
-        def dbdriverClass = System.getProperty("dbdriverClass")
+        def dburl = System.getProperty("db.url");
+        def dbuser = System.getProperty("db.user")
+        def dbpassword = System.getProperty("db.password")
+        def dbdriverClass = System.getProperty("db.driverClass")
 
         def db = [url: dburl, user: dbuser, password: dbpassword, driver: dbdriverClass]
 
