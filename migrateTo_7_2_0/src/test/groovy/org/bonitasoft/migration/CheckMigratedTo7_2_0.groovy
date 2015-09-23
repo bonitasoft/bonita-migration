@@ -14,16 +14,15 @@
 
 package org.bonitasoft.migration
 
-import groovy.sql.Sql
 import org.bonitasoft.engine.LocalServerTestsInitializer
 import org.bonitasoft.engine.api.PlatformAPIAccessor
 import org.bonitasoft.engine.test.PlatformTestUtil
 import org.bonitasoft.migration.filler.FillerUtils
 import org.junit.AfterClass
 import org.junit.BeforeClass
-
+import org.junit.Test
 /**
- * @author Baptiste Mesta
+ * @author Laurent Leseigneur
  */
 class CheckMigratedTo7_2_0 {
 
@@ -42,22 +41,14 @@ class CheckMigratedTo7_2_0 {
         platformTestUtil.logoutOnPlatform(platform)
     }
 
+    @Test
+    def void emptyTest() {
+
+    }
 
     @AfterClass
     public static void afterClass() {
         new PlatformTestUtil().stopPlatformAndTenant(PlatformAPIAccessor.getPlatformAPI(new PlatformTestUtil().loginOnPlatform()), true)
     }
 
-    private Sql getSql() {
-        def sql
-        def dburl = System.getProperty("db.url");
-        def dbuser = System.getProperty("db.user")
-        def dbpassword = System.getProperty("db.password")
-        def dbdriverClass = System.getProperty("db.driverClass")
-
-        def db = [url: dburl, user: dbuser, password: dbpassword, driver: dbdriverClass]
-
-        sql = Sql.newInstance(db.url, db.user, db.password, db.driver)
-        sql
-    }
 }
