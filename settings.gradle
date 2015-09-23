@@ -3,7 +3,8 @@ include 'migrateTo_7_0_1',
         'migrateTo_7_0_2',
         'migrateTo_7_0_3',
         'migrateTo_7_1_0',
-        'migrateTo_7_1_1',
+//        'migrateTo_7_1_1',
+        'migrateTo_7_2_0',
         'bonita-migration-distrib',
         'bonita-migration-common'
 
