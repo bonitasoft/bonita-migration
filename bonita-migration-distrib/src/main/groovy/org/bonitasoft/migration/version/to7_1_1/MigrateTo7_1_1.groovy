@@ -12,23 +12,21 @@
  * Floor, Boston, MA 02110-1301, USA.
  **/
 
-package org.bonitasoft.migration.filler
+package org.bonitasoft.migration.version.to7_1_1
+
+import org.bonitasoft.migration.core.MigrationStep
+import org.bonitasoft.migration.core.VersionMigration
 
 /**
- * @author Baptiste Mesta
+ * @author Laurent Leseigneur
  */
-class FillerUtils {
-
-    /**
-     * Initialize system properties to run the engine using properties from the Config.properties (migration properties)
-     */
-    public static void initializeEngineSystemProperties() {
-        System.setProperty("sysprop.bonita.db.vendor", System.getProperty("db.vendor"));
-        System.setProperty("db.url", System.getProperty("db.url"));
-        System.setProperty("db.user", System.getProperty("db.user"));
-        System.setProperty("db.password", System.getProperty("db.password"));
-        def split = System.getProperty("db.url").split("/")
-        def databaseName = split[split.length - 1]
-        System.setProperty("db.database.name", databaseName);
+class MigrateTo7_1_1 extends VersionMigration {
+    @Override
+    def List<MigrationStep> getMigrationSteps() {
+        //keep one line per step to avoid false-positive merge conflict
+        return [
+                new MigrateQuartzRenameColumn(),
+                new EnsureDroppedArchTransitionInst()
+        ]
     }
 }

@@ -15,45 +15,31 @@
 package org.bonitasoft.migration.core
 
 import groovy.sql.Sql
-import org.junit.Test
-
+import spock.lang.Specification
 /**
  * @author Baptiste Mesta
  */
-class MigrationRunnerTest {
+class MigrationRunnerTest extends  Specification {
 
     def infos = []
-    def sql = [] as Sql
     def logger = [info: { String message -> infos.add(message) }] as Logger
-    def boolean isStepExecuted = false
 
-    @Test
-    void testRun() {
+    def VersionMigration versionMigration = Mock(VersionMigration);
+    def MigrationContext migrationContext = Mock(MigrationContext)
+    def Sql sql = Mock(Sql)
 
-        def migrations = [new VersionMigration() {
+    def "run should execute migration step"() {
+        migrationContext.sql >> sql
+        def MigrationStep migrationStep = Mock(MigrationStep);
+        versionMigration.getMigrationSteps() >> [migrationStep]
 
-            @Override
-            List<MigrationStep> getMigrationSteps() {
-                return [new MigrationStep() {
-                    @Override
-                    def execute(Sql sql, DBVendor dbVendor) {
-                        isStepExecuted = true
-                        return null
-                    }
+        MigrationRunner migrationRunner = new MigrationRunner(versionMigrations: [versionMigration], context: migrationContext, logger: logger)
 
-                    @Override
-                    String getDescription() {
-                        return "the Description"
-                    }
-                }]
-            }
-        }
-        ]
-        MigrationRunner migrationRunner = new MigrationRunner(sql: sql, logger: logger, dbVendor: MigrationStep.DBVendor.POSTGRES, versionMigrations: migrations)
+        when:
+        migrationRunner.run(false)
 
-        migrationRunner.run()
-
-        assert isStepExecuted
+        then:
+        1 * migrationStep.execute(migrationContext)
 
     }
 }
