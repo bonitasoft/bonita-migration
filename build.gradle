@@ -26,9 +26,10 @@ allprojects {
             '7.0.3',
             '7.1.0',
 //            '7.1.1',
+            '7.2.0'
     ]
     ext.overridedVersions = [
-            '7.1.1': '7.1.1-SNAPSHOT'
+            '7.2.0': '7.2.0-SNAPSHOT'
     ]
 
     configurations {
