@@ -15,6 +15,7 @@ package org.bonitasoft.migration
 import org.bonitasoft.engine.LocalServerTestsInitializer
 import org.bonitasoft.engine.api.PlatformAPIAccessor
 import org.bonitasoft.engine.api.TenantAPIAccessor
+import org.bonitasoft.engine.bpm.bar.BusinessArchiveBuilder
 import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder
 import org.bonitasoft.engine.test.PlatformTestUtil
 import org.bonitasoft.migration.filler.FillAction
@@ -40,11 +41,42 @@ class FillBeforeMigratingTo7_2_0 {
     public void deployProcessDefinitionXMLThatWillBeMigrated() {
         def session = TenantAPIAccessor.getLoginAPI().login("install", "install")
 
+        def identityAPI = TenantAPIAccessor.getIdentityAPI(session)
+
+        def user = identityAPI.createUser("userForMigratedProcess", "bpm")
+
+
         def builder = new ProcessDefinitionBuilder().createNewInstance("MyProcess to be migrated", "1.0-SNAPSHOT")
         builder.addAutomaticTask("step1")
+        builder.addUserTask("step2","myActor")
+        builder.addTransition("step1","step2")
+        builder.addActor("myActor")
+        builder.setActorInitiator("myActorInitiator")
+
+        def businessArchive = new BusinessArchiveBuilder()
+                .createNewBusinessArchive()
+                .setActorMapping("""<?xml version="1.0" encoding="UTF-8"?>
+<actormappings:actorMappings xmlns:actormappings="http://www.bonitasoft.org/ns/actormapping/6.0">
+\t<actorMapping name="myActor">
+\t\t<users>
+\t\t\t<user>userForMigratedProcess</user>
+\t\t</users>
+\t</actorMapping>
+\t<actorMapping name="myActorInitiator">
+\t\t<users>
+\t\t\t<user>userForMigratedProcess</user>
+\t\t</users>
+\t</actorMapping>
+</actormappings:actorMappings>""".getBytes())
+                .setProcessDefinition(builder.getProcess())
+                .done()
 
         def processAPI = TenantAPIAccessor.getProcessAPI(session)
-        def processDefinition = processAPI.deploy(builder.getProcess())
+        def processDefinition = processAPI.deploy(businessArchive)
+
+
+
+
         processAPI.enableProcess(processDefinition.getId())
 
         TenantAPIAccessor.getLoginAPI().logout(session)
