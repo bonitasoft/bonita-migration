@@ -439,4 +439,11 @@ END""")
         }
     }
 
+    static String getClobContent(Object clob) {
+        if(clob instanceof String){
+            return clob
+        }else{
+            return clob.stringValue()
+        }
+    }
 }

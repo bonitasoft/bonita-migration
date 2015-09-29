@@ -13,11 +13,9 @@
  **/
 
 package org.bonitasoft.migration.version.to7_2_0
-
 import org.bonitasoft.migration.core.MigrationContext
 import org.bonitasoft.migration.core.MigrationStep
 import org.codehaus.groovy.runtime.InvokerHelper
-
 /**
  * @author Laurent Leseigneur
  */
@@ -26,7 +24,7 @@ class MigrateProcessDefXml extends MigrationStep {
     @Override
     def execute(MigrationContext context) {
         context.sql.eachRow("SELECT * FROM process_content") { processContent ->
-            def String migratedXML = migrateProcessDefinitionXML(processContent.content)
+                        def String migratedXML = migrateProcessDefinitionXML(context.databaseHelper.getClobContent(processContent.content))
             context.sql.executeUpdate("UPDATE process_content SET content = $migratedXML WHERE tenantid=${processContent.tenantid} AND id=${processContent.id}")
         }
     }
