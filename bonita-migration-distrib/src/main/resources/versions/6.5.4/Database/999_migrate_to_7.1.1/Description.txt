@@ -1,0 +1,1 @@
+Warn about fixes done in 6.5.4
