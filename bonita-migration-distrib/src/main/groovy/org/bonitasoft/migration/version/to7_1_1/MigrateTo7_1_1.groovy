@@ -16,6 +16,7 @@ package org.bonitasoft.migration.version.to7_1_1
 
 import org.bonitasoft.migration.core.MigrationStep
 import org.bonitasoft.migration.core.VersionMigration
+import org.bonitasoft.migration.version.to7_1_0.MigrateQuartzIndexes
 
 /**
  * @author Laurent Leseigneur
@@ -26,7 +27,10 @@ class MigrateTo7_1_1 extends VersionMigration {
         //keep one line per step to avoid false-positive merge conflict
         return [
                 new MigrateQuartzRenameColumn(),
-                new EnsureDroppedArchTransitionInst()
+                new EnsureDroppedArchTransitionInst(),
+
+                //same migration step as in 7.1.0
+                new MigrateQuartzIndexes()
         ]
     }
 }
