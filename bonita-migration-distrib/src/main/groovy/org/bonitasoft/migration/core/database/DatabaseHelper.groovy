@@ -152,7 +152,7 @@ END""")
 
     def dropTableIfExists(String tableName) {
         switch (dbVendor) {
-            //same script for Postgres and MySQL
+        //same script for Postgres and MySQL
             case DBVendor.POSTGRES:
             case DBVendor.MYSQL:
                 executeDbVendorStatement("DROP TABLE IF EXISTS $tableName")
@@ -235,13 +235,121 @@ END""")
         }
     }
 
-    def String addIndex(String tableName, String indexName, String... columns) {
+    /**
+     * remove existing index if already exists and create new index
+     * @param tableName
+     * @param indexName
+     * @param columns
+     * @return create index SQl statement
+     */
+    def String addOrReplaceIndex(String tableName, String indexName, String... columns) {
+        dropIndexIfExists(tableName,indexName)
+
         def concatenatedColumns = columns.collect { it }.join(", ")
         String request = "CREATE INDEX $indexName ON $tableName ($concatenatedColumns)"
         println "Executing request: $request"
-        execute(request)
-        return request;
+        sql.execute(request)
+        return request
+    }
 
+    /**
+     * remove existing index if already exists
+     * @param tableName
+     * @param indexName
+     * @return
+     */
+    def dropIndexIfExists(String tableName, String indexName) {
+        if (hasIndexOnTable(tableName, indexName)) {
+            def query
+            switch (dbVendor) {
+                case DBVendor.POSTGRES:
+                case DBVendor.ORACLE:
+                    query = "DROP INDEX " + indexName
+                    break
+                case DBVendor.MYSQL:
+                    query = "DROP INDEX " + indexName + " on " + tableName
+                    break
+                case DBVendor.SQLSERVER:
+                    query = "DROP INDEX " + tableName + "." + indexName
+                    break
+            }
+            sql.execute(query)
+        }
+    }
+
+    /**
+     * checks if given index exists on table
+     * @param tableName
+     * @param indexName
+     * @return true if exists, false otherwise
+     */
+    def boolean hasIndexOnTable(String tableName, String indexName) {
+        def query
+        switch (dbVendor) {
+            case DBVendor.POSTGRES:
+                query = """
+                    SELECT
+                        pg_class.relname AS table_name,
+                        pg2.relname AS index_name
+                    FROM
+                        pg_index,
+                        pg_class,
+                        pg_class AS pg2
+                    WHERE
+                        pg_class.oid = pg_index.indrelid
+                        AND pg2.oid = pg_index.indexrelid
+                        AND UPPER(pg_class.relname) = UPPER(?)
+                        AND UPPER(pg2.relname) = UPPER(?)
+                    """
+                break
+
+            case DBVendor.ORACLE:
+                query = """
+                    SELECT
+                        i.TABLE_NAME,
+                        i.INDEX_NAME
+                    FROM
+                        USER_INDEXES i
+                    WHERE
+                        LOWER(i.TABLE_NAME) = LOWER(?)
+                        AND LOWER(i.index_name) = LOWER(?)
+                    """
+                break
+
+            case DBVendor.MYSQL:
+                query = """
+                SELECT
+                    DISTINCT s.TABLE_NAME,
+                    s.INDEX_NAME
+                FROM
+                    INFORMATION_SCHEMA.STATISTICS s
+                WHERE
+                    s.TABLE_SCHEMA =(
+                        SELECT
+                            DATABASE()
+                    )
+                    AND UPPER( s.table_name ) = UPPER( ? )
+                    AND UPPER( s.index_name ) = UPPER( ? )
+                    """
+                break
+
+            case DBVendor.SQLSERVER:
+                query = """
+                   SELECT
+                        t.name,
+                        i.name
+                    FROM
+                        sys.tables t INNER JOIN sys.indexes i
+                            ON i.object_id = t.object_id
+                    WHERE
+                        UPPER(t.name) = UPPER(?)
+                        AND UPPER(i.name) = UPPER(?)
+                    """
+                break
+        }
+
+        def firstRow = sql.firstRow(query, [tableName, indexName])
+        return firstRow != null
     }
 
     def GroovyRowResult selectFirstRow(GString string) {
