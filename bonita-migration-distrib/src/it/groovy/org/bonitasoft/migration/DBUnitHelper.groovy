@@ -128,6 +128,10 @@ class DBUnitHelper {
         context.databaseHelper.hasIndexOnTable(tableName, indexName)
     }
 
+    def boolean hasColumnOnTable(String tableName, String columnName) {
+        context.databaseHelper.hasColumnOnTable(tableName, columnName)
+    }
+
     def JdbcDatabaseTester createTester() {
         new JdbcDatabaseTester(context.dbDriverClassName, context.dburl, context.dbUser, context.dbPassword) {
             public IDatabaseConnection getConnection() {

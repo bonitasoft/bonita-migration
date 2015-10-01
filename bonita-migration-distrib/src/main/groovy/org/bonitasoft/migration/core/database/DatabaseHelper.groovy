@@ -243,7 +243,7 @@ END""")
      * @return create index SQl statement
      */
     def String addOrReplaceIndex(String tableName, String indexName, String... columns) {
-        dropIndexIfExists(tableName,indexName)
+        dropIndexIfExists(tableName, indexName)
 
         def concatenatedColumns = columns.collect { it }.join(", ")
         String request = "CREATE INDEX $indexName ON $tableName ($concatenatedColumns)"
@@ -349,6 +349,64 @@ END""")
         }
 
         def firstRow = sql.firstRow(query, [tableName, indexName])
+        return firstRow != null
+    }
+
+    /**
+     * checks if given column exists on table
+     * @param tableName
+     * @param columnName
+     * @return true if exists, false otherwise
+     */
+    def boolean hasColumnOnTable(String tableName, String columnName) {
+        def query
+        switch (dbVendor) {
+            case DBVendor.POSTGRES:
+            case DBVendor.SQLSERVER:
+                query = """
+                    SELECT
+                        C.TABLE_NAME,
+                        C.COLUMN_NAME
+                    FROM
+                        INFORMATION_SCHEMA.COLUMNS C
+                    WHERE
+                         UPPER( C.TABLE_NAME ) = UPPER( ? )
+                    AND UPPER( C.COLUMN_NAME ) = UPPER( ? )
+                    """
+                break
+
+            case DBVendor.ORACLE:
+                query = """
+                   SELECT
+                        c.TABLE_NAME,
+                        c.COLUMN_NAME
+                    FROM
+                        user_tab_cols c
+                    WHERE
+                         UPPER( c.TABLE_NAME ) = UPPER( ? )
+                    AND UPPER( c.COLUMN_NAME ) = UPPER( ? )
+                    """
+                break
+
+            case DBVendor.MYSQL:
+                query = """
+                SELECT
+                    c.TABLE_NAME,
+                    c.COLUMN_NAME
+                FROM
+                    INFORMATION_SCHEMA.COLUMNS c
+                WHERE
+                    c.TABLE_SCHEMA =(
+                        SELECT
+                            DATABASE()
+                    )
+                    AND UPPER( c.TABLE_NAME ) = UPPER( ? )
+                    AND UPPER( c.COLUMN_NAME ) = UPPER( ? )
+                    """
+                break
+        }
+
+        def firstRow = sql.firstRow(query, [tableName, columnName])
         return firstRow != null
     }
 
