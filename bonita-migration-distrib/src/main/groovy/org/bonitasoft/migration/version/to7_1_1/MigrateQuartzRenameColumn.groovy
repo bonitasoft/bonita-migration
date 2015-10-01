@@ -8,26 +8,18 @@ import org.bonitasoft.migration.core.MigrationStep
  */
 class MigrateQuartzRenameColumn extends MigrationStep {
 
+
+    public static final String QRTZ_SIMPROP_TRIGGERS = "qrtz_simprop_triggers"
+
     @Override
     def execute(MigrationContext context) {
         if (context.dbVendor.equals(DBVendor.POSTGRES)) {
-            def tableName = "qrtz_simprop_triggers"
-            def like = "int8_%"
-            def query = """
-            SELECT
-            count(*) as nb_columns
-            FROM
-            information_schema.columns b
-            WHERE
-            LOWER(b.table_name) = '$tableName'
-            AND LOWER(b.column_name) LIKE '$like'
-            """
-
-            def result = context.databaseHelper.selectFirstRow(query)
-
-            if (result.get("nb_columns") != "0") {
-                context.databaseHelper.renameColumn("qrtz_simprop_triggers", "int8_prop_1", "long_prop_1", "int8")
-                context.databaseHelper.renameColumn("qrtz_simprop_triggers", "int8_prop_2", "long_prop_2", "int8")
+            def helper = context.databaseHelper
+            if (helper.hasColumnOnTable(QRTZ_SIMPROP_TRIGGERS, "int8_prop_1")) {
+                helper.renameColumn(QRTZ_SIMPROP_TRIGGERS, "int8_prop_1", "long_prop_1", "int8")
+            }
+            if (helper.hasColumnOnTable(QRTZ_SIMPROP_TRIGGERS, "int8_prop_2")) {
+                helper.renameColumn(QRTZ_SIMPROP_TRIGGERS, "int8_prop_2", "long_prop_2", "int8")
             }
         }
     }
