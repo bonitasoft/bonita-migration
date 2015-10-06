@@ -1,4 +1,4 @@
-package org.bonitasoft.migration.version.to7_1_1
+package org.bonitasoft.migration.version.to7_1_2
 import org.bonitasoft.migration.DBUnitHelper
 import org.bonitasoft.migration.core.Logger
 import org.bonitasoft.migration.core.MigrationContext

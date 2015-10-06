@@ -1,4 +1,4 @@
-package org.bonitasoft.migration.version.to7_1_1
+package org.bonitasoft.migration.version.to7_1_2
 
 import org.bonitasoft.migration.DBUnitHelper
 import org.bonitasoft.migration.core.Logger
@@ -23,7 +23,7 @@ class QrtzSimpPropTriggersIT extends Specification {
     DBUnitHelper dbUnitHelper = new DBUnitHelper(migrationContext)
 
     def setup() {
-        migrationContext.setVersion("7.1.1")
+        migrationContext.setVersion("7.1.2")
     }
 
     def cleanup() {

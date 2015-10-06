@@ -12,7 +12,7 @@
  * Floor, Boston, MA 02110-1301, USA.
  **/
 
-package org.bonitasoft.migration.version.to7_1_1
+package org.bonitasoft.migration.version.to7_1_2
 
 import org.bonitasoft.migration.core.MigrationStep
 import org.bonitasoft.migration.core.VersionMigration
@@ -21,7 +21,7 @@ import org.bonitasoft.migration.version.to7_1_0.MigrateQuartzIndexes
 /**
  * @author Laurent Leseigneur
  */
-class MigrateTo7_1_1 extends VersionMigration {
+class MigrateTo7_1_2 extends VersionMigration {
     @Override
     def List<MigrationStep> getMigrationSteps() {
         //keep one line per step to avoid false-positive merge conflict

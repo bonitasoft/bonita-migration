@@ -23,7 +23,7 @@ import org.bonitasoft.migration.filler.FillerUtils
 /**
  * @author Baptiste Mesta
  */
-class FillBeforeMigratingTo7_1_1 {
+class FillBeforeMigratingTo7_1_2 {
 
     /**
      * init platform before fill actions
