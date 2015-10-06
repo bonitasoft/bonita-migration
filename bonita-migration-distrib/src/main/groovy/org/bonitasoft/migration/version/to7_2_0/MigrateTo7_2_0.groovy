@@ -22,8 +22,6 @@ class MigrateTo7_2_0 extends VersionMigration {
     @Override
     def List<MigrationStep> getMigrationSteps() {
         //keep one line per step to avoid false-positive merge conflict
-        return [
-
-        ]
+        return []
     }
 }
