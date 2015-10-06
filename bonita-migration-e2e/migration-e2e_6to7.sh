@@ -6,11 +6,12 @@
 export BASE_URL=$1
 
 
-export VERSION6_URL=${BASE_URL}"/6.5.x/6.5.0/BonitaBPMCommunity-6.5.0/BonitaBPMCommunity-6.5.0-Tomcat-7.0.55.zip"
 export VERSION6="6.5.0"
 
-export VERSION7_URL=${BASE_URL}"/7.1.x/7.1.0/BonitaBPMCommunity-7.1.0/BonitaBPMCommunity-7.1.0-Tomcat-7.0.55.zip"
+export VERSION6_URL=${BASE_URL}"/6.5.x/6.5.0/BonitaBPMCommunity-6.5.0/BonitaBPMCommunity-6.5.0-Tomcat-7.0.55.zip"
+
 export VERSION7="7.1.0"
+export VERSION7_URL=${BASE_URL}"/7.1.x/7.1.0/BonitaBPMCommunity-7.1.0/BonitaBPMCommunity-7.1.0-Tomcat-7.0.55.zip"
 
 
 export MIGRATION1="1.23.1"
@@ -39,10 +40,28 @@ mkdir -p ${MIGRATION1_DIR}
 echo "#########################################"
 echo "download artifacts"
 
-wget --quiet ${VERSION6_URL} -O ${WORK_DIR}"/BonitaBPMCommunity-${VERSION6}-Tomcat-7.0.55.zip"
-wget --quiet ${VERSION7_URL} -O ${WORK_DIR}"/BonitaBPMCommunity-${VERSION7}-Tomcat-7.0.55.zip"
-wget --quiet ${MIGRATION1_URL} -O ${WORK_DIR}"/bonita-migration-distrib-${MIGRATION1}.zip"
-wget --quiet ${MIGRATION2_URL} -O ${WORK_DIR}"/bonita-migration-distrib-${MIGRATION2}.zip"
+if [ ! -f ${WORK_DIR}"/BonitaBPMCommunity-${VERSION6}-Tomcat-7.0.55.zip" ]
+then
+  wget --quiet ${VERSION6_URL} -O ${WORK_DIR}"/BonitaBPMCommunity-${VERSION6}-Tomcat-7.0.55.zip"
+fi
+
+if [ ! -f ${WORK_DIR}"/BonitaBPMCommunity-${VERSION7}-Tomcat-7.0.55.zip" ]
+then
+  wget --quiet ${VERSION7_URL} -O ${WORK_DIR}"/BonitaBPMCommunity-${VERSION7}-Tomcat-7.0.55.zip"
+fi
+
+if [ ! -f ${WORK_DIR}"/bonita-migration-distrib-${MIGRATION1}.zip" ]
+then
+  wget --quiet ${MIGRATION1_URL} -O ${WORK_DIR}"/bonita-migration-distrib-${MIGRATION1}.zip"
+fi
+
+if [ ! -f ${WORK_DIR}"/bonita-migration-distrib-${MIGRATION2}.zip" ]
+then
+  wget --quiet ${MIGRATION2_URL} -O ${WORK_DIR}"/bonita-migration-distrib-${MIGRATION2}.zip"
+fi
+
+echo "#########################################"
+echo "unzip artifacts"
 
 unzip -q ${WORK_DIR}"/BonitaBPMCommunity-${VERSION6}-Tomcat-7.0.55.zip" -d ${TEMP_DIR}
 unzip -q ${WORK_DIR}"/BonitaBPMCommunity-${VERSION7}-Tomcat-7.0.55.zip" -d ${TEMP_DIR}
@@ -76,7 +95,9 @@ echo "clean database"
 # TODO: make if fail if unable to clean the DB or kill sessions
 gradle -b ../build.gradle cleanDb
 
-# run v6
+echo "Hit enter to continue..."
+read a
+
 echo "#########################################"
 echo "start engine v"${VERSION6}
 ${VERSION6_DIR}/bin/startup.sh
@@ -91,6 +112,9 @@ done
 
 # TODO fill engine with organization/processes/etc.
 
+echo "Hit enter to stop engine..."
+read a
+
 echo "#########################################"
 echo "stop engine v"${VERSION6}
 ${VERSION6_DIR}/bin/shutdown.sh
@@ -102,7 +126,7 @@ echo "folder "${MIGRATION1_DIR}
 
 echo "bonita.home=${VERSION6_DIR}/bonita" > ${MIGRATION1_DIR}/Config.properties
 echo "db.vendor=postgres" >> ${MIGRATION1_DIR}/Config.properties
-echo "db.url=jdbc:postgresql://localhost:5432/migration" >> ${MIGRATION1_DIR}/Config.properties
+echo "db.url=jdbc:postgresql://192.168.1.34:5432/migration" >> ${MIGRATION1_DIR}/Config.properties
 echo "db.driverClass=org.postgresql.Driver" >> ${MIGRATION1_DIR}/Config.properties
 echo "db.user=bonita" >> ${MIGRATION1_DIR}/Config.properties
 echo "db.password=bpm" >> ${MIGRATION1_DIR}/Config.properties
@@ -111,6 +135,8 @@ echo "migration settings:"
 cat ${MIGRATION1_DIR}/Config.properties
 echo "#########################################"
 
+echo "Hit enter to run migration..."
+read a
 
 cd ${MIGRATION1_DIR}
 ./migration.sh
@@ -121,10 +147,12 @@ echo "folder "${MIGRATION2_DIR}
 
 echo "bonita.home=${VERSION6_DIR}/bonita" > ${MIGRATION2_DIR}/Config.properties
 echo "db.vendor=postgres" >> ${MIGRATION2_DIR}/Config.properties
-echo "db.url=jdbc:postgresql://localhost:5432/migration" >> ${MIGRATION2_DIR}/Config.properties
+echo "db.url=jdbc:postgresql://192.168.1.34:5432/migration" >> ${MIGRATION2_DIR}/Config.properties
 echo "db.driverClass=org.postgresql.Driver" >> ${MIGRATION2_DIR}/Config.properties
 echo "db.user=bonita" >> ${MIGRATION2_DIR}/Config.properties
 echo "db.password=bpm" >> ${MIGRATION2_DIR}/Config.properties
+echo "target.version=${VERSION7}" >> ${MIGRATION2_DIR}/Config.properties
+
 
 echo "migration settings:"
 cat ${MIGRATION2_DIR}/Config.properties
@@ -141,6 +169,9 @@ echo "copy migrated bonita home to new bundle"
 mv  ${VERSION7_DIR}/bonita  ${VERSION7_DIR}/bonita.orig
 cp -rf ${VERSION6_DIR}/bonita ${VERSION7_DIR}/bonita
 
+echo "Hit enter to start migrated engine..."
+read a
+
 echo "#########################################"
 echo "start migrated platform in v"${VERSION7}
 ${VERSION7_DIR}/bin/startup.sh
@@ -152,6 +183,9 @@ until [ "`curl --silent --show-error --connect-timeout 1 -I http://localhost:808
 do
   sleep 5
 done
+
+echo "Hit enter to stop engine..."
+read a
 
 echo "#########################################"
 echo "stop engine v"${VERSION7}

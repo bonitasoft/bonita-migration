@@ -41,7 +41,7 @@
               username="bonita"
               password="bpm"
               driverClassName="org.postgresql.Driver"
-              url="jdbc:postgresql://localhost:5432/migration"/>
+              url="jdbc:postgresql://192.168.1.34:5432/migration"/>
 
 
     <!-- Oracle Example -->
