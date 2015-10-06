@@ -24,7 +24,7 @@ import org.junit.Test
 /**
  * @author Baptiste Mesta
  */
-class CheckMigratedTo7_1_1 {
+class CheckMigratedTo7_1_2 {
 
     @BeforeClass
     public static void beforeClass() {
