@@ -17,6 +17,13 @@ play end to end migration on BOS tomcat bundles
 
 ##Run it
 
+### from v6 to v7 using migratool v1 and v2
+ 
 ```shell
 sh migration-e2e-6to7.sh "http://<server release>"
+```
+### from v7 to v7 using migratool v2
+ 
+```shell
+sh migration-e2e-6to7.sh "http://<server release>" "7.0.3" "7.1.0" "2.3.0" "postgres"
 ```
