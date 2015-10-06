@@ -4,7 +4,7 @@ buildscript {
         maven { url = 'http://repositories.rd.lan/archiva/repository/releases/' }
     }
     dependencies {
-        classpath 'org.bonitasoft.migration.plugin:bonita-migration-plugins:1.0.1'
+        classpath 'org.bonitasoft.migration.plugin:bonita-migration-plugins:1.0.2-SNAPSHOT'
     }
 }
 //define bonita version for all projects
