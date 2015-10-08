@@ -4,7 +4,7 @@ buildscript {
         maven { url = 'http://repositories.rd.lan/archiva/repository/releases/' }
     }
     dependencies {
-        classpath 'org.bonitasoft.migration.plugin:bonita-migration-plugins:1.0.3'
+        classpath 'org.bonitasoft.migration.plugin:bonita-migration-plugins:1.0.4-SNAPSHOT'
     }
 }
 //define bonita version for all projects
@@ -19,9 +19,6 @@ allprojects {
     version '2.4.0-SNAPSHOT'
     group 'org.bonitasoft.migration'
     ext.isSP = false
-    ext.overridedVersions = [
-            '7.1.1': '7.1.1-SNAPSHOT'
-    ]
     ext.bonitaVersions = [
             '7.0.0',
             '7.0.1',
@@ -30,7 +27,10 @@ allprojects {
             '7.1.0',
             '7.1.2',
             '7.2.0'
-            
+
+    ]
+    ext.overridedVersions = [
+            '7.2.0': '7.2.0-SNAPSHOT'
     ]
 
     configurations {
