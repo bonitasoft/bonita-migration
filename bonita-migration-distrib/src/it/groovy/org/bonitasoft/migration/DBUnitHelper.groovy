@@ -26,6 +26,8 @@ import org.dbunit.dataset.xml.FlatXmlDataSet
 import org.dbunit.ext.oracle.OracleConnection
 
 import java.sql.DriverManager
+import java.sql.SQLException
+
 /**
  * @author Baptiste Mesta
  */
@@ -46,9 +48,9 @@ class DBUnitHelper {
             (MigrationStep.DBVendor.SQLSERVER): true
     ]
     static Map falseValueMap = [
-            (MigrationStep.DBVendor.ORACLE)  : 0,
-            (MigrationStep.DBVendor.POSTGRES): false,
-            (MigrationStep.DBVendor.MYSQL)   : false,
+            (MigrationStep.DBVendor.ORACLE)   : 0,
+            (MigrationStep.DBVendor.POSTGRES) : false,
+            (MigrationStep.DBVendor.MYSQL)    : false,
             (MigrationStep.DBVendor.SQLSERVER): false
     ]
 
@@ -73,9 +75,12 @@ class DBUnitHelper {
 
     def String[] createTables(String version, String feature) {
         println "Create tables of $feature"
+
+        //warning : don't end with @@ to avoid blank statement (error)
         getCreateTables(version, feature).text.split("@@").each({ stmt ->
             context.sql.execute(stmt)
         })
+
     }
 
     def boolean hasTable(String tableName) {
@@ -119,6 +124,14 @@ class DBUnitHelper {
         return firstRow != null
     }
 
+    def boolean hasIndexOnTable(String tableName, String indexName) {
+        context.databaseHelper.hasIndexOnTable(tableName, indexName)
+    }
+
+    def boolean hasColumnOnTable(String tableName, String columnName) {
+        context.databaseHelper.hasColumnOnTable(tableName, columnName)
+    }
+
     def JdbcDatabaseTester createTester() {
         new JdbcDatabaseTester(context.dbDriverClassName, context.dburl, context.dbUser, context.dbPassword) {
             public IDatabaseConnection getConnection() {
@@ -136,7 +149,18 @@ class DBUnitHelper {
         tables.each {
             //add .toString to avoid the error bellow. Is there a better way to do that?
             //Failed to execute: DROP TABLE ? because: ERROR: syntax error at or near "$1"
-            context.sql.execute("DROP TABLE $it".toString())
+            if (hasTable(it)) {
+                def statement = "DROP TABLE $it".toString()
+                println("DROP TABLE [$it]".toString())
+                try {
+                    context.sql.execute(statement)
+                } catch (SQLException e) {
+                    System.err.println(String.format("error while executing %s", statement))
+                    throw e
+                }
+            } else {
+                println("table [$it] does not exists")
+            }
         }
     }
 
