@@ -1,6 +1,7 @@
 package org.bonitasoft.migration.version.to7_1_3
 
 import spock.lang.Specification
+
 /**
  * @author Laurent Leseigneur
  */
@@ -14,7 +15,7 @@ class MigrateTo7_1_3Test extends Specification {
         def steps = migrateTo7_1_3.migrationSteps
 
         then:
-        steps.size() == 0
+        steps.size() == 1
 
     }
 
