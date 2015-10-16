@@ -29,4 +29,6 @@ dependencies {
     testRuntime "cglib:cglib-nodep:2.2"
     testRuntime 'org.objenesis:objenesis:1.2'
     testCompile('org.dbunit:dbunit:2.5.1')
+    testCompile group: 'com.oracle', name: 'ojdbc', version:'6'
+    testCompile group: 'com.microsoft.jdbc', name: 'sqlserver', version:'4.0.2206.100'
 }

@@ -1,3 +1,5 @@
+import org.bonitasoft.migration.plugin.MigrationConstants
+
 buildscript {
     repositories {
         mavenLocal()
@@ -52,12 +54,42 @@ allprojects {
 }
 
 apply plugin: 'migration-project'
+configure(project.subprojects.findAll {
+    it.name.startsWith(MigrationConstants.MIGRATION_PREFIX)
+}) {
+    apply plugin: 'groovy'
+    apply plugin: 'java'
+    apply plugin: 'clean-db'
+    apply plugin: 'test-migration'
 
-dependencies {
-    'org.postgresql:postgresql:9.3-1102-jdbc41'
-    'mysql:mysql-connector-java:5.1.26'
-    'com.oracle:ojdbc:6'
-    'com.microsoft.jdbc:sqlserver:4.0.2206.100'
+    database {
+        dbvendor = System.getProperty("db.vendor", "postgres")
+        dburl = System.getProperty("db.url", "jdbc:postgresql://localhost:5432/migration");
+        dbuser = System.getProperty("db.user", "bonita")
+        dbpassword = System.getProperty("db.password", "bpm")
+        dbdriverClass = System.getProperty("db.driverClass", "org.postgresql.Driver")
+        dbRootUser = System.getProperty("db.root.user", "postgres")
+        dbRootPassword = System.getProperty("db.root.password", "postgres")
+        classpath = project.configurations.drivers
+    }
+    dependencies {
+        compile group: 'org.bonitasoft.migration', name: 'bonita-migration-common', version: project.getVersion()
+        compile group: 'org.bonitasoft.migration', name: 'bonita-migration-distrib', version: project.getVersion()
+        compile group: 'org.postgresql', name: 'postgresql', version:'9.3-1102-jdbc41'
+        compile group: 'mysql', name: 'mysql-connector-java', version:'5.1.26'
+        compile group: 'com.oracle', name: 'ojdbc', version:'6'
+        compile group: 'com.microsoft.jdbc', name: 'sqlserver', version:'4.0.2206.100'
+    }
+
+    task ("testJar",type: Jar) {
+        classifier = 'tests'
+        from sourceSets.test.output
+    }
+
+    artifacts {
+        archives tasks.testJar
+    }
+    tasks.install.dependsOn tasks.testJar
 }
 
 migrationConf {
