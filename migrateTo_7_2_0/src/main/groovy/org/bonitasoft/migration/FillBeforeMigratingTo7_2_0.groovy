@@ -12,6 +12,7 @@
  * Floor, Boston, MA 02110-1301, USA.
  **/
 package org.bonitasoft.migration
+
 import org.bonitasoft.engine.LocalServerTestsInitializer
 import org.bonitasoft.engine.api.PlatformAPIAccessor
 import org.bonitasoft.engine.api.TenantAPIAccessor
@@ -30,6 +31,7 @@ import org.bonitasoft.migration.filler.FillAction
 import org.bonitasoft.migration.filler.FillerInitializer
 import org.bonitasoft.migration.filler.FillerShutdown
 import org.bonitasoft.migration.filler.FillerUtils
+
 /**
  * @author Baptiste Mesta
  */
@@ -44,10 +46,11 @@ class FillBeforeMigratingTo7_2_0 {
         LocalServerTestsInitializer.beforeAll();
     }
 
-    public class MyConnector extends AbstractConnector{
+    public class MyConnector extends AbstractConnector {
         @Override
         protected void executeBusinessLogic() throws ConnectorException {
         }
+
         @Override
         void validateInputParameters() throws ConnectorValidationException {
 
@@ -68,9 +71,9 @@ class FillBeforeMigratingTo7_2_0 {
         builder.addAutomaticTask("step1").addDescription("autoTaskDesc")
         builder.addUserTask("step2", "myActor").addContract().addInput("myTaskContractInput", Type.BOOLEAN, "Serves description non-reg purposes")
         def task = builder.addAutomaticTask("taskWithNoDescription")
-        task.addConnector("theConnector","connectorId","version",ConnectorEvent.ON_ENTER).addInput("input1",new ExpressionBuilder().createConstantStringExpression("input1Value"))
-            .addOutput(new OperationBuilder().createSetDataOperation("myData",new ExpressionBuilder().createConstantStringExpression("outputValue")))
-        task.addOperation(new OperationBuilder().createSetDataOperation("myData",new ExpressionBuilder().createConstantStringExpression("theNewValue")))
+        task.addConnector("theConnector", "connectorId", "version", ConnectorEvent.ON_ENTER).addInput("input1", new ExpressionBuilder().createConstantStringExpression("input1Value"))
+                .addOutput(new OperationBuilder().createSetDataOperation("myData", new ExpressionBuilder().createConstantStringExpression("outputValue")))
+        task.addOperation(new OperationBuilder().createSetDataOperation("myData", new ExpressionBuilder().createConstantStringExpression("theNewValue")))
         builder.addTransition("step1", "step2")
         builder.addActor("myActor")
         builder.addData("myData", "java.lang.String", new ExpressionBuilder().createConstantStringExpression("myDataValue")).addDescription("my data description")
@@ -79,7 +82,7 @@ class FillBeforeMigratingTo7_2_0 {
 
         def contract = builder.addContract()
         contract.addInput("isOk", Type.BOOLEAN, "the is ok contract input", true);
-        contract.addComplexInput("request","a request", false).addInput("name",Type.TEXT,"name of the request").addInput("value",Type.INTEGER,"request amount")
+        contract.addComplexInput("request", "a request", false).addInput("name", Type.TEXT, "name of the request").addInput("value", Type.INTEGER, "request amount")
 
 
         builder.setActorInitiator("myActorInitiator")
@@ -118,7 +121,46 @@ class FillBeforeMigratingTo7_2_0 {
         println processAPI.getProcessResolutionProblems(processDefinition.id)
         processAPI.enableProcess(processDefinition.getId())
 
-        def processInstance = processAPI.startProcessWithInputs(processDefinition.id, [isOk:[true,false,true],request:[name:"myRequest",value:123]])
+        def processInstance = processAPI.startProcessWithInputs(processDefinition.id, [isOk: [true, false, true], request: [name: "myRequest", value: 123]])
+
+        TenantAPIAccessor.getLoginAPI().logout(session)
+    }
+
+    @FillAction
+    public void parametersInDatabase() {
+        def session = TenantAPIAccessor.getLoginAPI().login("install", "install");
+        def processAPI = TenantAPIAccessor.getProcessAPI(session)
+        def identityAPI = TenantAPIAccessor.getIdentityAPI(session)
+        def user = identityAPI.createUser("userOfProcessWithParam", "bpm")
+
+        def builder = new BusinessArchiveBuilder().createNewBusinessArchive()
+        def processDefinitionBuilder = new ProcessDefinitionBuilder().createNewInstance("processWithParameters", "1.1.0")
+        processDefinitionBuilder.addActor("theUser")
+        processDefinitionBuilder.addUserTask("step1", "theUser").addDisplayName(new ExpressionBuilder().createParameterExpression("myParam1", "myParam1", String.class.getName()))
+        processDefinitionBuilder.addUserTask("step2", "theUser").addDisplayName(new ExpressionBuilder().createGroovyScriptExpression("theScript", "''+myParam2", String.class.getName(), new ExpressionBuilder().createParameterExpression("myParam2", "myParam2", Integer.class.getName())))
+        processDefinitionBuilder.addParameter("myParam1", String.class.getName())
+        processDefinitionBuilder.addParameter("myParam2", Integer.class.getName())
+        processDefinitionBuilder.addParameter("myParam3", String.class.getName())
+
+
+
+        builder.setProcessDefinition(processDefinitionBuilder.done())
+        builder.setActorMapping("""
+<actorMappings:actorMappings xmlns:actorMappings="http://www.bonitasoft.org/ns/actormapping/6.0">
+    <actorMapping name="theUser">
+        <users>
+            <user>userOfProcessWithParam</user>
+        </users>
+        <groups />
+        <roles />
+        <memberships />
+    </actorMapping>
+</actorMappings:actorMappings>
+""".getBytes())
+        builder.setParameters(["myParam1": "theParam1Value", "myParam2": "123456789", "myParam3": "theParam3Value"])
+
+        def processDefinition = processAPI.deploy(builder.done())
+        processAPI.enableProcess(processDefinition.getId())
 
         TenantAPIAccessor.getLoginAPI().logout(session)
     }
