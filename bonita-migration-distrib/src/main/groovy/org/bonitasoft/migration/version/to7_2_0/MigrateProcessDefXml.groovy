@@ -13,18 +13,21 @@
  **/
 
 package org.bonitasoft.migration.version.to7_2_0
+
 import org.bonitasoft.migration.core.MigrationContext
 import org.bonitasoft.migration.core.MigrationStep
 import org.codehaus.groovy.runtime.InvokerHelper
+
 /**
- * @author Laurent Leseigneur
+ * @author Baptiste Mesta
+ * @author Emmanuel Duchastenier
  */
 class MigrateProcessDefXml extends MigrationStep {
 
     @Override
     def execute(MigrationContext context) {
         context.sql.eachRow("SELECT * FROM process_content") { processContent ->
-                        def String migratedXML = migrateProcessDefinitionXML(context.databaseHelper.getClobContent(processContent.content))
+            def String migratedXML = migrateProcessDefinitionXML(context.databaseHelper.getClobContent(processContent.content))
             context.sql.executeUpdate("UPDATE process_content SET content = $migratedXML WHERE tenantid=${processContent.tenantid} AND id=${processContent.id}")
         }
     }
@@ -35,7 +38,31 @@ class MigrateProcessDefXml extends MigrationStep {
         removeDependencies(processDefinitionXml)
         removeFlowNodes(processDefinitionXml)
         changeIdRef(processDefinitionXml)
+        changeDescriptionAttributeToElement(processDefinitionXml)
         return removeXmlns(getContent(processDefinitionXml))
+    }
+
+    def void changeDescriptionAttributeToElement(Node processDefinitionXml) {
+        def displayDescs = processDefinitionXml.breadthFirst().findAll {
+            it instanceof Node && it.@displayDescription != null
+        }
+        displayDescs.each { Node nodeWithDisplayDescription ->
+            def displayDescription = nodeWithDisplayDescription.@displayDescription;
+            def node = new Node(nodeWithDisplayDescription, "displayDescription", displayDescription)
+            nodeWithDisplayDescription.remove(node)
+            nodeWithDisplayDescription.children().add(0, node);
+            nodeWithDisplayDescription.attributes().remove "displayDescription";
+        }
+        def descs = processDefinitionXml.breadthFirst().findAll {
+            it instanceof Node && it.@description != null
+        }
+        descs.each { Node nodeWithDescription ->
+            def description = nodeWithDescription.@description;
+            def node = new Node(nodeWithDescription, "description", description)
+            nodeWithDescription.remove(node)
+            nodeWithDescription.children().add(0, node);
+            nodeWithDescription.attributes().remove "description";
+        }
     }
 
     public String getContent(Node processDefinitionXml) {
@@ -54,8 +81,7 @@ class MigrateProcessDefXml extends MigrationStep {
         printer.setExpandEmptyElements(false)
         printer.print(processDefinitionXml)
 
-        def result = writer.toString()
-        return result;
+        writer.toString()
     }
 
     @Override
@@ -66,10 +92,10 @@ class MigrateProcessDefXml extends MigrationStep {
 
     def static void changeActorInitiator(Node processDefinitionXml) {
         Node actorInitiator = processDefinitionXml.breadthFirst().find { Node it -> it.name().getLocalPart() == "actorInitiator" } as Node
-        if(actorInitiator != null){
+        if (actorInitiator != null) {
             def name = actorInitiator.@name;
             actorInitiator.setValue(name);
-            actorInitiator.@name = null;
+            actorInitiator.attributes().remove "name";
         }
     }
 
@@ -113,7 +139,7 @@ class MigrateProcessDefXml extends MigrationStep {
         list.each { transitionRef ->
             def idRef = transitionRef.@idref;
             transitionRef.setValue(idRef);
-            transitionRef.@idref = null;
+            transitionRef.attributes().remove "idref"
         }
     }
 

@@ -13,15 +13,18 @@
  **/
 
 package org.bonitasoft.migration
+
 import org.bonitasoft.engine.LocalServerTestsInitializer
 import org.bonitasoft.engine.api.PlatformAPIAccessor
 import org.bonitasoft.engine.api.TenantAPIAccessor
 import org.bonitasoft.engine.bpm.flownode.ActivityInstanceCriterion
+import org.bonitasoft.engine.bpm.flownode.UserTaskDefinition
 import org.bonitasoft.engine.test.PlatformTestUtil
 import org.bonitasoft.migration.filler.FillerUtils
 import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.Test
+
 /**
  * @author Laurent Leseigneur
  */
@@ -57,6 +60,13 @@ class CheckMigratedTo7_2_0 {
 
         assert definition.getName() == "MyProcess to be migrated"
         assert definition.getVersion() == "1.0-SNAPSHOT"
+        assert definition.description == "2-lines\ndescription"
+        assert definition.displayDescription == "2-lines\ndisplay description"
+
+
+        def dataDefinition = definition.getFlowElementContainer().getDataDefinitions().get(0)
+        assert dataDefinition.name == "myData"
+        assert dataDefinition.description == "my data description"
 
         def step1 = definition.getFlowElementContainer().getActivity("step1")
         def step2 = definition.getFlowElementContainer().getActivity("step2")
@@ -64,10 +74,16 @@ class CheckMigratedTo7_2_0 {
         assert step1 != null
         assert step1.getOutgoingTransitions().size() == 1
         assert step1.getOutgoingTransitions().get(0).getTarget() == step2.getId()
+        assert step1.description == "autoTaskDesc"
 
         assert step2 != null
         assert step2.getIncomingTransitions().size() == 1
         assert step2.getIncomingTransitions().get(0).getSource() == step1.getId()
+        assert ((UserTaskDefinition) step2).getContract().getInputs().get(0).description == "Serves description non-reg purposes"
+
+        // Check that we do not add a sub-element 'description' if there was no attribute 'description':
+        def autoTask3 = definition.getFlowElementContainer().getActivity("taskWithNoDescription")
+        assert autoTask3.description == null
 
         assert definition.getFlowElementContainer().getTransitions().size() == 1
         assert definition.getFlowElementContainer().getTransitions().iterator().next().getSource() == step1.getId()

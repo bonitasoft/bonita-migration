@@ -12,16 +12,20 @@
  * Floor, Boston, MA 02110-1301, USA.
  **/
 package org.bonitasoft.migration
+
 import org.bonitasoft.engine.LocalServerTestsInitializer
 import org.bonitasoft.engine.api.PlatformAPIAccessor
 import org.bonitasoft.engine.api.TenantAPIAccessor
 import org.bonitasoft.engine.bpm.bar.BusinessArchiveBuilder
+import org.bonitasoft.engine.bpm.contract.Type
 import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder
+import org.bonitasoft.engine.expression.ExpressionBuilder
 import org.bonitasoft.engine.test.PlatformTestUtil
 import org.bonitasoft.migration.filler.FillAction
 import org.bonitasoft.migration.filler.FillerInitializer
 import org.bonitasoft.migration.filler.FillerShutdown
 import org.bonitasoft.migration.filler.FillerUtils
+
 /**
  * @author Baptiste Mesta
  */
@@ -45,12 +49,15 @@ class FillBeforeMigratingTo7_2_0 {
 
         def user = identityAPI.createUser("userForMigratedProcess", "bpm")
 
-
         def builder = new ProcessDefinitionBuilder().createNewInstance("MyProcess to be migrated", "1.0-SNAPSHOT")
-        builder.addAutomaticTask("step1")
-        builder.addUserTask("step2","myActor")
-        builder.addTransition("step1","step2")
+        builder.addDescription("2-lines\ndescription")
+        builder.addDisplayDescription("2-lines\ndisplay description")
+        builder.addAutomaticTask("step1").addDescription("autoTaskDesc")
+        builder.addUserTask("step2", "myActor").addContract().addInput("myTaskContractInput", Type.BOOLEAN, "Serves description non-reg purposes")
+        builder.addAutomaticTask("taskWithNoDescription")
+        builder.addTransition("step1", "step2")
         builder.addActor("myActor")
+        builder.addData("myData", "java.lang.String", new ExpressionBuilder().createConstantStringExpression("myDataValue")).addDescription("my data description")
         builder.setActorInitiator("myActorInitiator")
 
         def businessArchive = new BusinessArchiveBuilder()
@@ -73,9 +80,6 @@ class FillBeforeMigratingTo7_2_0 {
 
         def processAPI = TenantAPIAccessor.getProcessAPI(session)
         def processDefinition = processAPI.deploy(businessArchive)
-
-
-
 
         processAPI.enableProcess(processDefinition.getId())
 
