@@ -25,8 +25,11 @@ database {
 }
 
 dependencies {
-    testCompile "org.spockframework:spock-core:1.0-groovy-2.3"
+	compile "org.codehaus.groovy:groovy-all:2.4.4"
+    testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
     testRuntime "cglib:cglib-nodep:2.2"
     testRuntime 'org.objenesis:objenesis:1.2'
     testCompile('org.dbunit:dbunit:2.5.1')
+    testCompile group: 'com.oracle', name: 'ojdbc', version:'6'
+    testCompile group: 'com.microsoft.jdbc', name: 'sqlserver', version:'4.0.2206.100'
 }
