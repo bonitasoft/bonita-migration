@@ -29,6 +29,7 @@ class MigrationContext {
     public final static String DB_PASSWORD = "db.password"
     public final static String DB_DRIVERCLASS = "db.driverClass"
     public final static String DB_VENDOR = "db.vendor"
+    public final static String LOGGER_LEVEL = "logger.level"
 
     def MigrationStep.DBVendor dbVendor
     def Sql sql
@@ -69,6 +70,11 @@ class MigrationContext {
         //if not set it will be ask later
         targetVersion = getSystemPropertyOrFromConfigFile(TARGET_VERSION, properties, false)
         bonitaHome = new File(getSystemPropertyOrFromConfigFile(BONITA_HOME, properties, true))
+        def level = getSystemPropertyOrFromConfigFile(LOGGER_LEVEL, properties, false)
+        if(level != null){
+            logger.setLevel(level)
+        }
+
     }
 
     private String getSystemPropertyOrFromConfigFile(String property, Properties properties, boolean mandatory) {

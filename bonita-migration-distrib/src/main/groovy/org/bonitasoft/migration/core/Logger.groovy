@@ -19,20 +19,57 @@ package org.bonitasoft.migration.core
  */
 class Logger {
 
+    def boolean debug = true
+    def boolean info = true
+    def boolean warn = true
+    def boolean error = true
+
+
     def debug(String message) {
+        if(debug)
         println "[DEBUG] " + message
     }
 
     def info(String message) {
+        if(info)
         println "[INFO] " + message
     }
 
     def warn(String message) {
+        if(warn)
         println "[WARN] " + message
     }
 
     def error(String message) {
+        if(error)
         println "[ERROR] " + message
     }
 
+    void setLevel(String level) {
+        debug = true
+        info = true
+        warn = true
+        error = true
+        switch (level) {
+            case "INFO":
+                debug = false
+                break
+            case "WARN":
+                debug = false
+                info = false
+                break
+            case "ERROR":
+                debug = false
+                info = false
+                warn = false
+                break
+            case "OFF":
+                debug = false
+                info = false
+                warn = false
+                error = false
+                break
+        }
+
+    }
 }
