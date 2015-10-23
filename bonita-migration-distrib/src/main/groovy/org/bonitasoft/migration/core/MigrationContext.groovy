@@ -90,6 +90,7 @@ class MigrationContext {
 
     def openSqlConnection() {
         sql = MigrationUtil.getSqlConnection(dburl, dbUser, dbPassword, dbDriverClassName)
+        sql.connection.setAutoCommit(true)
         databaseHelper = new DatabaseHelper(dbVendor: dbVendor, sql: sql)
     }
 
@@ -98,7 +99,7 @@ class MigrationContext {
         sql = null
     }
 
-    def setVersion(String version){
+    def setVersion(String version) {
         databaseHelper.setVersion(version)
     }
 }
