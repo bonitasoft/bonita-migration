@@ -13,18 +13,18 @@
  **/
 
 package org.bonitasoft.migration
-
 import org.bonitasoft.engine.LocalServerTestsInitializer
 import org.bonitasoft.engine.api.PlatformAPIAccessor
 import org.bonitasoft.engine.api.TenantAPIAccessor
+import org.bonitasoft.engine.bpm.contract.Type
 import org.bonitasoft.engine.bpm.flownode.ActivityInstanceCriterion
+import org.bonitasoft.engine.bpm.flownode.MultiInstanceLoopCharacteristics
 import org.bonitasoft.engine.bpm.flownode.UserTaskDefinition
 import org.bonitasoft.engine.test.PlatformTestUtil
 import org.bonitasoft.migration.filler.FillerUtils
 import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.Test
-
 /**
  * @author Laurent Leseigneur
  */
@@ -50,11 +50,7 @@ class CheckMigratedTo7_2_0 {
         def session = TenantAPIAccessor.getLoginAPI().login("install", "install")
         def processAPI = TenantAPIAccessor.getProcessAPI(session)
         def id = processAPI.getProcessDefinitionId("MyProcess to be migrated", "1.0-SNAPSHOT")
-        def processInstance = processAPI.startProcess(id)
-        Thread.sleep(2000)
-        def instances = processAPI.getOpenActivityInstances(processInstance.getId(), 0, 10, ActivityInstanceCriterion.DEFAULT)
-        assert instances.size() == 1
-        assert instances.get(0).getName() == "step2"
+
 
         def definition = processAPI.getDesignProcessDefinition(id)
 
@@ -84,6 +80,13 @@ class CheckMigratedTo7_2_0 {
         // Check that we do not add a sub-element 'description' if there was no attribute 'description':
         def autoTask3 = definition.getFlowElementContainer().getActivity("taskWithNoDescription")
         assert autoTask3.description == null
+        assert autoTask3.getConnectors().size() == 1
+        assert autoTask3.getConnectors().get(0).getName() == "theConnector"
+        assert autoTask3.getConnectors().get(0).getInputs().size() == 1
+        assert autoTask3.getConnectors().get(0).getInputs().get("input1").getName() == "input1Value"
+        assert autoTask3.getConnectors().get(0).getOutputs().size() == 1
+        assert autoTask3.getOperations().size() == 1
+        assert autoTask3.getOperations().get(0).getLeftOperand().name == "myData"
 
         assert definition.getFlowElementContainer().getTransitions().size() == 1
         assert definition.getFlowElementContainer().getTransitions().iterator().next().getSource() == step1.getId()
@@ -93,6 +96,35 @@ class CheckMigratedTo7_2_0 {
         assert definition.getActorsList().size() == 2
         assert definition.getActorsList().get(0).getName() == "myActor"
         assert definition.getActorsList().get(1).getName() == "myActorInitiator"
+
+        assert definition.getFlowElementContainer().getDataDefinition("xmlData") != null
+        assert definition.getFlowElementContainer().getDataDefinition("xmlData").class.name.contains("XMLDataDefinition")
+        assert definition.getFlowElementContainer().getDataDefinition("xmlData").getDefaultValueExpression().getContent() == "'<tag>'+isOk+'</tag>'"
+        assert definition.getFlowElementContainer().getDataDefinition("xmlData").getDefaultValueExpression().getDependencies().size() == 1
+
+
+        def step3 = definition.getFlowElementContainer().getActivity("step3")
+        assert step3.loopCharacteristics instanceof MultiInstanceLoopCharacteristics
+        assert !(step3.loopCharacteristics as MultiInstanceLoopCharacteristics).sequential
+        assert (step3.loopCharacteristics as MultiInstanceLoopCharacteristics).loopCardinality.content == "12"
+
+        assert definition.contract.inputs.size() == 2
+        assert definition.contract.inputs[0].multiple
+        assert definition.contract.inputs[0].type == Type.BOOLEAN
+        assert definition.contract.inputs[0].name == "isOk"
+        assert definition.contract.inputs[0].description == "the is ok contract input"
+        assert definition.contract.inputs[1].hasChildren()
+        assert definition.contract.inputs[1].inputs[0].name == "name"
+        assert definition.contract.inputs[1].inputs[1].name == "value"
+        assert definition.contract.inputs[1].inputs[1].type == Type.INTEGER
+
+
+
+        def processInstance = processAPI.startProcessWithInputs(id, [isOk: [true, false, true], request: [name: "myRequest", value: 123]])
+        Thread.sleep(2000)
+        def instances = processAPI.getOpenActivityInstances(processInstance.getId(), 0, 10, ActivityInstanceCriterion.DEFAULT)
+        assert instances.size() == 1
+        assert instances.get(0).getName() == "step2"
 
 
         TenantAPIAccessor.getLoginAPI().logout(session)

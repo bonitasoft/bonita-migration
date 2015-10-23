@@ -12,20 +12,24 @@
  * Floor, Boston, MA 02110-1301, USA.
  **/
 package org.bonitasoft.migration
-
 import org.bonitasoft.engine.LocalServerTestsInitializer
 import org.bonitasoft.engine.api.PlatformAPIAccessor
 import org.bonitasoft.engine.api.TenantAPIAccessor
+import org.bonitasoft.engine.bpm.bar.BarResource
 import org.bonitasoft.engine.bpm.bar.BusinessArchiveBuilder
+import org.bonitasoft.engine.bpm.connector.ConnectorEvent
 import org.bonitasoft.engine.bpm.contract.Type
 import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder
+import org.bonitasoft.engine.connector.AbstractConnector
+import org.bonitasoft.engine.connector.ConnectorException
+import org.bonitasoft.engine.connector.ConnectorValidationException
 import org.bonitasoft.engine.expression.ExpressionBuilder
+import org.bonitasoft.engine.operation.OperationBuilder
 import org.bonitasoft.engine.test.PlatformTestUtil
 import org.bonitasoft.migration.filler.FillAction
 import org.bonitasoft.migration.filler.FillerInitializer
 import org.bonitasoft.migration.filler.FillerShutdown
 import org.bonitasoft.migration.filler.FillerUtils
-
 /**
  * @author Baptiste Mesta
  */
@@ -40,6 +44,15 @@ class FillBeforeMigratingTo7_2_0 {
         LocalServerTestsInitializer.beforeAll();
     }
 
+    public class MyConnector extends AbstractConnector{
+        @Override
+        protected void executeBusinessLogic() throws ConnectorException {
+        }
+        @Override
+        void validateInputParameters() throws ConnectorValidationException {
+
+        }
+    }
 
     @FillAction
     public void deployProcessDefinitionXMLThatWillBeMigrated() {
@@ -54,10 +67,21 @@ class FillBeforeMigratingTo7_2_0 {
         builder.addDisplayDescription("2-lines\ndisplay description")
         builder.addAutomaticTask("step1").addDescription("autoTaskDesc")
         builder.addUserTask("step2", "myActor").addContract().addInput("myTaskContractInput", Type.BOOLEAN, "Serves description non-reg purposes")
-        builder.addAutomaticTask("taskWithNoDescription")
+        def task = builder.addAutomaticTask("taskWithNoDescription")
+        task.addConnector("theConnector","connectorId","version",ConnectorEvent.ON_ENTER).addInput("input1",new ExpressionBuilder().createConstantStringExpression("input1Value"))
+            .addOutput(new OperationBuilder().createSetDataOperation("myData",new ExpressionBuilder().createConstantStringExpression("outputValue")))
+        task.addOperation(new OperationBuilder().createSetDataOperation("myData",new ExpressionBuilder().createConstantStringExpression("theNewValue")))
         builder.addTransition("step1", "step2")
         builder.addActor("myActor")
         builder.addData("myData", "java.lang.String", new ExpressionBuilder().createConstantStringExpression("myDataValue")).addDescription("my data description")
+        builder.addXMLData("xmlData", new ExpressionBuilder().createGroovyScriptExpression("theScript", "'<tag>'+isOk+'</tag>'", String.class.getName(), new ExpressionBuilder().createContractInputExpression("isOk", List.class.getName()))).addDescription("xml data depends on myData")
+        builder.addAutomaticTask("step3").addMultiInstance(false, new ExpressionBuilder().createConstantIntegerExpression(12));
+
+        def contract = builder.addContract()
+        contract.addInput("isOk", Type.BOOLEAN, "the is ok contract input", true);
+        contract.addComplexInput("request","a request", false).addInput("name",Type.TEXT,"name of the request").addInput("value",Type.INTEGER,"request amount")
+
+
         builder.setActorInitiator("myActorInitiator")
 
         def businessArchive = new BusinessArchiveBuilder()
@@ -76,12 +100,25 @@ class FillBeforeMigratingTo7_2_0 {
 \t</actorMapping>
 </actormappings:actorMappings>""".getBytes())
                 .setProcessDefinition(builder.getProcess())
+                .addConnectorImplementation(new BarResource("myConnector.impl", """
+<connectorImplementation>
+    <definitionId>connectorId</definitionId>
+    <definitionVersion>version</definitionVersion>
+    <implementationClassname>${MyConnector.class.getName()}</implementationClassname>
+    <implementationId>implId</implementationId>
+    <implementationVersion>1.0</implementationVersion>
+    <jarDependencies>
+    </jarDependencies>
+</connectorImplementation>""".getBytes()))
                 .done()
 
         def processAPI = TenantAPIAccessor.getProcessAPI(session)
         def processDefinition = processAPI.deploy(businessArchive)
 
+        println processAPI.getProcessResolutionProblems(processDefinition.id)
         processAPI.enableProcess(processDefinition.getId())
+
+        def processInstance = processAPI.startProcessWithInputs(processDefinition.id, [isOk:[true,false,true],request:[name:"myRequest",value:123]])
 
         TenantAPIAccessor.getLoginAPI().logout(session)
     }

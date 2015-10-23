@@ -27,8 +27,9 @@ class MigrateProcessDefXml extends MigrationStep {
     @Override
     def execute(MigrationContext context) {
         context.sql.eachRow("SELECT * FROM process_content") { processContent ->
+            context.logger.debug("Process Definition before migration:\n$processContent")
             def String migratedXML = migrateProcessDefinitionXML(context.databaseHelper.getClobContent(processContent.content))
-            println "Process Definition migrated to 7.2:\n$migratedXML"
+            context.logger.debug("Process Definition migrated to 7.2:\n$migratedXML")
             context.sql.executeUpdate("UPDATE process_content SET content = $migratedXML WHERE tenantid=${processContent.tenantid} AND id=${processContent.id}")
         }
     }
@@ -41,8 +42,25 @@ class MigrateProcessDefXml extends MigrationStep {
         removeFlowNodes(processDefinitionXml)
         changeIdRef(processDefinitionXml)
         changeDescriptionAttributeToElement(processDefinitionXml)
+        addNodeToWrapContractInputDefinitions(processDefinitionXml)
 
         return getContent(processDefinitionXml)
+    }
+
+    def addNodeToWrapContractInputDefinitions(Node processDefinitionXml) {
+        def list = processDefinitionXml.breadthFirst().findAll {
+            it instanceof Node && it.name() == "inputDefinition"
+        } as Node[]
+        list.each {
+            if (it.children().find { it.name() == "inputDefinitions" } == null) {
+                def node = new Node(it, "inputDefinitions")
+                it.append(node)
+                (it.children().findAll { it.name() == "inputDefinition" } as Node[]).each { Node child ->
+                    it.remove(child);
+                    node.append(child)
+                }
+            }
+        }
     }
 
     def void removeBosVersion(Node processDefinitionXml) {
@@ -52,9 +70,9 @@ class MigrateProcessDefXml extends MigrationStep {
     def void changeDescriptionAttributeToElement(Node processDefinitionXml) {
         def displayDescs = processDefinitionXml.breadthFirst().findAll {
             it instanceof Node && it.@displayDescription != null
-        }
-        displayDescs.each { Node nodeWithDisplayDescription ->
-            def displayDescription = nodeWithDisplayDescription.@displayDescription;
+        } as Node[]
+        displayDescs.each { nodeWithDisplayDescription ->
+            def displayDescription = nodeWithDisplayDescription.@displayDescription as String
             def node = new Node(nodeWithDisplayDescription, "displayDescription", displayDescription)
             nodeWithDisplayDescription.remove(node)
             nodeWithDisplayDescription.children().add(0, node);
@@ -62,13 +80,13 @@ class MigrateProcessDefXml extends MigrationStep {
         }
         def descs = processDefinitionXml.breadthFirst().findAll {
             it instanceof Node && it.@description != null
-        }
-        descs.each { Node nodeWithDescription ->
-            def description = nodeWithDescription.@description;
+        } as Node[]
+        descs.each { nodeWithDescription ->
+            def description = nodeWithDescription.@description as String
             def node = new Node(nodeWithDescription, "description", description)
             nodeWithDescription.remove(node)
             nodeWithDescription.children().add(0, node);
-            nodeWithDescription.attributes().remove "description";
+            nodeWithDescription.attributes().remove "description"
         }
     }
 
@@ -134,8 +152,8 @@ class MigrateProcessDefXml extends MigrationStep {
     def static void changeIdRef(Node processDefinitionXml) {
         def list = processDefinitionXml.breadthFirst().findAll {
             it instanceof Node && (it.name() == "incomingTransition" || it.name() == "outgoingTransition" || it.name() == "defaultTransition")
-        }
-        list.each { Node transitionRef ->
+        } as Node[]
+        list.each { transitionRef ->
             def idRef = transitionRef.@idref;
             transitionRef.setValue(idRef);
             transitionRef.attributes().remove "idref"
