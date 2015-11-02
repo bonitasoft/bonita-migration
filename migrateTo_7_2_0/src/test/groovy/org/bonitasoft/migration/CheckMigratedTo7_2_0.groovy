@@ -13,6 +13,7 @@
  **/
 
 package org.bonitasoft.migration
+
 import org.bonitasoft.engine.LocalServerTestsInitializer
 import org.bonitasoft.engine.api.PlatformAPIAccessor
 import org.bonitasoft.engine.api.TenantAPIAccessor
@@ -25,6 +26,7 @@ import org.bonitasoft.migration.filler.FillerUtils
 import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.Test
+
 /**
  * @author Laurent Leseigneur
  */
@@ -121,8 +123,13 @@ class CheckMigratedTo7_2_0 {
 
 
         def processInstance = processAPI.startProcessWithInputs(id, [isOk: [true, false, true], request: [name: "myRequest", value: 123]])
-        Thread.sleep(2000)
-        def instances = processAPI.getOpenActivityInstances(processInstance.getId(), 0, 10, ActivityInstanceCriterion.DEFAULT)
+
+        def instances
+        def timeout = System.currentTimeMillis() + 15000
+        while ((instances = processAPI.getOpenActivityInstances(processInstance.getId(), 0, 10, ActivityInstanceCriterion.DEFAULT)).size() < 1 && System.currentTimeMillis() < timeout ){
+            Thread.sleep(200)
+            println "wait 200"
+        }
         assert instances.size() == 1
         assert instances.get(0).getName() == "step2"
 
