@@ -157,7 +157,10 @@ class FillBeforeMigratingTo7_2_0 {
     </actorMapping>
 </actorMappings:actorMappings>
 """.getBytes())
-        builder.setParameters(["myParam1": "theParam1Value", "myParam2": "123456789", "myParam3": "theParam3Value"])
+
+        def theParam3Value = new byte[1150];
+        Arrays.fill(theParam3Value, (byte) 65);
+        builder.setParameters(["myParam1": "theParam1Value", "myParam2": "123456789", "myParam3": new String(theParam3Value)])
 
         def processDefinition = processAPI.deploy(builder.done())
         processAPI.enableProcess(processDefinition.getId())
