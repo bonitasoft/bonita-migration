@@ -13,8 +13,10 @@
  **/
 
 package org.bonitasoft.migration.version.to7_2_0
+
 import org.bonitasoft.migration.core.MigrationStep
 import org.bonitasoft.migration.core.VersionMigration
+
 /**
  * @author Laurent Leseigneur
  */
@@ -23,7 +25,8 @@ class MigrateTo7_2_0 extends VersionMigration {
     def List<MigrationStep> getMigrationSteps() {
         //keep one line per step to avoid false-positive merge conflict
         return [
-                new MigrateProcessDefXml()
+                new MigrateProcessDefXml(),
+                new ParametersInDatabase()
         ]
     }
 }

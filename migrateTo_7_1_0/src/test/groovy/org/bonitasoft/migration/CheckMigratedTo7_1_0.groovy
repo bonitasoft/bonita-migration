@@ -87,7 +87,7 @@ class CheckMigratedTo7_1_0 {
         assertThat(processAPI.searchFormMappings(new SearchOptionsBuilder(0, 10)
                 .filter(FormMappingSearchDescriptor.TYPE, TASK).filter(FormMappingSearchDescriptor.TASK, "step4").filter(PROCESS_DEFINITION_ID, processDefinitionId)
                 .done()).getResult().get(0))
-                .isEqualToIgnoringGivenFields(new FormMapping(processDefinitionId: processDefinitionId, type: TASK, task: "step4", target: FormMappingTarget.URL),"id","pageMappingKey","lastUpdateDate")
+                .isEqualToIgnoringGivenFields(new FormMapping(processDefinitionId: processDefinitionId, type: TASK, task: "step4", target: FormMappingTarget.URL, pageURL: "theExternalUrlForStep4"),"id","pageMappingKey","lastUpdateDate")
         assertThat(processAPI.searchFormMappings(new SearchOptionsBuilder(0, 10)
                 .filter(FormMappingSearchDescriptor.TYPE, TASK).filter(FormMappingSearchDescriptor.TASK, "step5").filter(PROCESS_DEFINITION_ID, processDefinitionId)
                 .done()).getResult().get(0))
