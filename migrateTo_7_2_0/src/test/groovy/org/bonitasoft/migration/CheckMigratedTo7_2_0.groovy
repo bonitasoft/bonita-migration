@@ -21,11 +21,15 @@ import org.bonitasoft.engine.bpm.contract.Type
 import org.bonitasoft.engine.bpm.flownode.ActivityInstanceCriterion
 import org.bonitasoft.engine.bpm.flownode.MultiInstanceLoopCharacteristics
 import org.bonitasoft.engine.bpm.flownode.UserTaskDefinition
+import org.bonitasoft.engine.bpm.parameter.ParameterInstance
 import org.bonitasoft.engine.test.PlatformTestUtil
 import org.bonitasoft.migration.filler.FillerUtils
 import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.Test
+
+import static org.assertj.core.api.Assertions.assertThat
+import static org.assertj.core.api.Assertions.tuple
 
 /**
  * @author Laurent Leseigneur
@@ -126,7 +130,7 @@ class CheckMigratedTo7_2_0 {
 
         def instances
         def timeout = System.currentTimeMillis() + 15000
-        while ((instances = processAPI.getOpenActivityInstances(processInstance.getId(), 0, 10, ActivityInstanceCriterion.DEFAULT)).size() < 1 && System.currentTimeMillis() < timeout ){
+        while ((instances = processAPI.getOpenActivityInstances(processInstance.getId(), 0, 10, ActivityInstanceCriterion.DEFAULT)).size() < 1 && System.currentTimeMillis() < timeout) {
             Thread.sleep(200)
             println "wait 200"
         }
@@ -140,6 +144,27 @@ class CheckMigratedTo7_2_0 {
     @AfterClass
     public static void afterClass() {
         new PlatformTestUtil().stopPlatformAndTenant(PlatformAPIAccessor.getPlatformAPI(new PlatformTestUtil().loginOnPlatform()), true)
+    }
+
+
+    @Test
+    public void verifyParametersAreMigratedInDb() {
+        def session = TenantAPIAccessor.getLoginAPI().login("userOfProcessWithParam", "bpm");
+        def processAPI = TenantAPIAccessor.getProcessAPI(session)
+        def processDefinitionId = processAPI.getProcessDefinitionId("processWithParameters", "1.1.0")
+
+        processAPI.startProcess(processDefinitionId)
+        Thread.sleep(1000)
+        def instances = processAPI.getPendingHumanTaskInstances(session.getUserId(), 0, 10, ActivityInstanceCriterion.NAME_ASC)
+        assertThat(instances).extracting("name", "displayName").containsExactly(tuple("step1", "theParam1Value"), tuple("step2", "123456789"))
+
+        ParameterInstance parameterInstance = processAPI.getParameterInstance(processDefinitionId, "myParam3")
+        assert ((String) parameterInstance.getValue()).length() == 1150
+        def theParam3Value = new byte[1150];
+        Arrays.fill(theParam3Value, (byte) 65);
+        assert parameterInstance.getValue() == new String(theParam3Value)
+
+        TenantAPIAccessor.getLoginAPI().logout(session)
     }
 
 }

@@ -40,7 +40,14 @@ class FillerRunner {
             def annotation = method.getAnnotation(clazz)
             if (annotation != null) {
                 println("FillerRunner: Executing " + fillerClass.getName() + "." + method.getName())
-                method.invoke(instance)
+                try {
+                    method.invoke(instance)
+                } catch (Exception e) {
+                    println "Issue while executing " + fillerClass.getName() + "." + method.getName()
+                    println "${e.getClass().getName()}  ${e.getMessage()}"
+                    e.printStackTrace()
+                    System.exit(1)
+                }
             }
         }
     }
