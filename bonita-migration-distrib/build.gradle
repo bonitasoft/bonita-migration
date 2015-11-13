@@ -30,3 +30,7 @@ dependencies {
     testRuntime 'org.objenesis:objenesis:1.2'
     testCompile('org.dbunit:dbunit:2.5.1')
 }
+
+startScripts {
+    classpath  = files('$APP_HOME/lib/*')
+}
