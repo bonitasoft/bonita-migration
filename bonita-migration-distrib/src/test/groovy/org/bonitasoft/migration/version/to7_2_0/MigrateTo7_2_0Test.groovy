@@ -2,6 +2,7 @@ package org.bonitasoft.migration.version.to7_2_0
 
 import spock.lang.Specification
 import spock.lang.Unroll
+
 /**
  * @author Elias Ricken de Medeiros
  */
@@ -16,7 +17,8 @@ class MigrateTo7_2_0Test extends Specification {
 
         where:
         index || step
-        0 || MigrateProcessDefXml
+        0     || MigrateProcessDefXml
+        1     || ParametersInDatabase
 
     }
 
