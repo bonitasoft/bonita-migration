@@ -15,6 +15,7 @@
 package org.bonitasoft.migration.core
 
 import groovy.sql.Sql
+import groovy.time.TimeCategory
 
 /**
  * @author Baptiste Mesta
@@ -26,7 +27,9 @@ class MigrationRunner {
     Logger logger
 
     def run(boolean isSp) {
+        Date migrationStartDate = new Date()
         context.openSqlConnection()
+        def lastVersion
         versionMigrations.each {
             logger.info "Execute migration to version " + it.getVersion()
             it.context = context
@@ -34,15 +37,30 @@ class MigrationRunner {
             it.migrateBonitaHome(isSp)
             it.getMigrationSteps().each { step ->
                 logger.info "---------------"
-                logger.info "execute " + step.description
+                logger.info "| Execute migration step: " + step.description
+                Date stepStartDate = new Date()
                 step.execute(context)
+                MigrationUtil.printSuccessMigration(stepStartDate, migrationStartDate)
+                logger.info "---------------"
             }
             changePlatformVersion(context.sql, it.getVersion())
+            lastVersion = it.getVersion()
         }
+        logSuccessfullyCompleted(migrationStartDate, lastVersion)
         context.closeSqlConnection()
     }
 
+    private void logSuccessfullyCompleted(Date migrationStartDate, lastVersion) {
+        def end = new Date()
+        logger.info("--------------------------------------------------------------------------------------")
+        logger.info(" Migration successfully completed, in " + TimeCategory.minus(end, migrationStartDate))
+        logger.info(" The version of your Bonita BPM installation is now: $lastVersion")
+        logger.info(" Now, you must reapply the customizations of your bonita home.")
+        logger.info("--------------------------------------------------------------------------------------")
+    }
+
     def changePlatformVersion(Sql sql, String version) {
+        logger.info("Updating platform version in the database ...")
         sql.executeUpdate("UPDATE platform SET previousVersion = version");
         sql.executeUpdate("UPDATE platform SET version = $version")
         logger.info("Platform version in database changed to $version")

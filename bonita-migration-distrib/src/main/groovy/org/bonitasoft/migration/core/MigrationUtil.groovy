@@ -93,8 +93,8 @@ public class MigrationUtil {
         }
 
         def endFeatureDate = new Date()
-        println "[ Migration step success in " + TimeCategory.minus(endFeatureDate, startFeatureDate) + ". Migration started  " + TimeCategory.minus(endFeatureDate, startMigrationDate) + " ago. ]"
-        println ""
+        def logger = new Logger();
+        logger.info("| --> Migration step success in " + TimeCategory.minus(endFeatureDate, startFeatureDate) + ". Migration started  " + TimeCategory.minus(endFeatureDate, startMigrationDate) + " ago. --")
     }
 
     public static Sql getSqlConnection(String dburl, String user, String pwd, String driverClass) {
