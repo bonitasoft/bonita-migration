@@ -1,0 +1,39 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        maven { url = 'http://repositories.rd.lan/archiva/repository/releases/' }
+    }
+    dependencies {
+        classpath group: 'org.bonitasoft.migration.plugin', name: 'bonita-migration-plugins',
+                version: '1.0.4-SNAPSHOT'
+    }
+}
+
+apply plugin: 'application'
+apply plugin: 'clean-db'
+apply plugin: 'migration-dist'
+
+database {
+    dbvendor = System.getProperty("db.vendor", "postgres")
+    dburl = System.getProperty("db.url", "jdbc:postgresql://localhost:5432/migration");
+    dbuser = System.getProperty("db.user", "bonita")
+    dbpassword = System.getProperty("db.password", "bpm")
+    dbdriverClass = System.getProperty("db.driverClass", "org.postgresql.Driver")
+    dbRootUser = System.getProperty("db.root.user", "postgres")
+    dbRootPassword = System.getProperty("db.root.password", "postgres")
+    classpath = project.configurations.drivers
+}
+
+dependencies {
+	compile "org.codehaus.groovy:groovy-all:2.4.4"
+    testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
+    testRuntime "cglib:cglib-nodep:2.2"
+    testRuntime 'org.objenesis:objenesis:1.2'
+    testCompile('org.dbunit:dbunit:2.5.1')
+    testCompile group: 'com.oracle', name: 'ojdbc', version:'6'
+    testCompile group: 'com.microsoft.jdbc', name: 'sqlserver', version:'4.0.2206.100'
+}
+
+startScripts {
+    classpath  = files('$APP_HOME/lib/*')
+}

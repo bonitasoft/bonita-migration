@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Context>
+
+	<!--  To not persist the session after reboot tomcat -->
+	<Manager pathname="" />
+	
+    <!-- Configure Datasource for Bonita BPM standard database -->       
+	<Resource name="bonitaDS" auth="Container" type="javax.sql.DataSource"
+        factory="bitronix.tm.resource.ResourceObjectFactory" uniqueName="jdbc/bonitaDSXA" />
+
+    <!-- H2 Example -->
+    <!--<Resource name="bonitaSequenceManagerDS"  -->
+              <!--auth="Container"  -->
+              <!--type="javax.sql.DataSource" -->
+              <!--maxActive="17"  -->
+              <!--minIdle="5"  -->
+              <!--maxWait="10000"  -->
+              <!--initialSize="3" -->
+              <!--validationQuery="SELECT 1"-->
+              <!--validationInterval="30000"-->
+              <!--removeAbandoned="true" -->
+              <!--logAbandoned="true" -->
+              <!--username="sa" -->
+              <!--password=""-->
+              <!--driverClassName="org.h2.Driver" -->
+              <!--url="jdbc:h2:tcp://localhost:9091/bonita_journal.db;MVCC=TRUE;DB_CLOSE_ON_EXIT=TRUE;IGNORECASE=TRUE;"/>-->
+
+    <!-- Postgresql Example -->
+
+    <Resource name="bonitaSequenceManagerDS"
+              auth="Container"
+              type="javax.sql.DataSource"
+              maxActive="17"
+              minIdle="5"
+              maxWait="10000"
+              initialSize="3"
+              validationQuery="SELECT 1"
+              validationInterval="30000"
+              removeAbandoned="true"
+              logAbandoned="true"
+              username="bonita"
+              password="bpm"
+              driverClassName="org.postgresql.Driver"
+              url="jdbc:postgresql://192.168.1.34:5432/migration"/>
+
+
+    <!-- Oracle Example -->
+    <!--
+    <Resource name="bonitaSequenceManagerDS"  
+              auth="Container"  
+              type="javax.sql.DataSource" 
+              maxActive="17"  
+              minIdle="5"  
+              maxWait="10000"  
+              initialSize="3" 
+              validationQuery="SELECT 1 FROM dual"
+              validationInterval="30000"
+              removeAbandoned="true" 
+              logAbandoned="true" 
+              username="bonita" 
+              password="bpm"
+              driverClassName="oracle.jdbc.OracleDriver" 
+              url="jdbc:oracle:thin:@localhost:1521:XE"/>
+    -->
+
+    <!-- SQL Server Example -->
+    <!--
+    <Resource name="bonitaSequenceManagerDS"  
+              auth="Container"  
+              type="javax.sql.DataSource" 
+              maxActive="17"  
+              minIdle="5"  
+              maxWait="10000"  
+              initialSize="3" 
+              validationQuery="SELECT 1"
+              validationInterval="30000"
+              removeAbandoned="true" 
+              logAbandoned="true" 
+              username="bonita" 
+              password="bpm"
+              driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver" 
+              url="jdbc:sqlserver://localhost:1433;database=journal"/>
+    -->
+    
+    <!-- MySQL Example -->
+    <!--
+    <Resource name="bonitaSequenceManagerDS"  
+              auth="Container"  
+              type="javax.sql.DataSource" 
+              maxActive="17"  
+              minIdle="5"  
+              maxWait="10000"  
+              initialSize="3" 
+              maxPoolSize="15" 
+              minPoolSize="3"
+              maxConnectionAge="0"
+              maxIdleTime="1800"
+              maxIdleTimeExcessConnections="120"
+              idleConnectionTestPeriod="30"
+              acquireIncrement="3"
+              validationQuery="SELECT 1"
+              validationInterval="30000"
+              testConnectionOnCheckout="true"
+              removeAbandoned="true" 
+              logAbandoned="true" 
+              username="bonita" 
+              password="bpm"
+              driverClassName="com.mysql.jdbc.Driver" 
+              url="jdbc:mysql://localhost:3306/bonita?dontTrackOpenResources=true&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
+    -->
+
+</Context>
