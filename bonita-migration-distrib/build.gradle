@@ -33,3 +33,7 @@ dependencies {
     testCompile group: 'com.oracle', name: 'ojdbc', version:'6'
     testCompile group: 'com.microsoft.jdbc', name: 'sqlserver', version:'4.0.2206.100'
 }
+
+startScripts {
+    classpath  = files('$APP_HOME/lib/*')
+}
