@@ -13,17 +13,18 @@
  **/
 
 package org.bonitasoft.migration
-
+import org.bonitasoft.engine.LocalServerTestsInitializer
+import org.bonitasoft.engine.api.PlatformAPIAccessor
 import org.bonitasoft.engine.api.TenantAPIAccessor
 import org.bonitasoft.engine.bpm.contract.Type
 import org.bonitasoft.engine.bpm.flownode.ActivityInstanceCriterion
 import org.bonitasoft.engine.bpm.flownode.MultiInstanceLoopCharacteristics
 import org.bonitasoft.engine.bpm.flownode.UserTaskDefinition
 import org.bonitasoft.engine.bpm.parameter.ParameterInstance
-import org.bonitasoft.engine.test.junit.BonitaEngineRule
+import org.bonitasoft.engine.test.PlatformTestUtil
 import org.bonitasoft.migration.filler.FillerUtils
+import org.junit.AfterClass
 import org.junit.BeforeClass
-import org.junit.Rule
 import org.junit.Test
 
 import static org.assertj.core.api.Assertions.assertThat
@@ -33,13 +34,19 @@ import static org.assertj.core.api.Assertions.tuple
  */
 class CheckMigratedTo7_2_0 {
 
-    @Rule
-    public BonitaEngineRule bonitaEngineRule = BonitaEngineRule.create().reuseExistingPlatform()
-
-
     @BeforeClass
     public static void beforeClass() {
         FillerUtils.initializeEngineSystemProperties()
+        startNode()
+    }
+
+    private static void startNode() {
+        LocalServerTestsInitializer.instance.prepareEnvironment()
+        def platformTestUtil = new PlatformTestUtil()
+        def platform = platformTestUtil.loginOnPlatform()
+        def platformApi = platformTestUtil.getPlatformAPI(platform)
+        platformApi.startNode()
+        platformTestUtil.logoutOnPlatform(platform)
     }
 
     @Test
@@ -130,6 +137,11 @@ class CheckMigratedTo7_2_0 {
 
 
         TenantAPIAccessor.getLoginAPI().logout(session)
+    }
+
+    @AfterClass
+    public static void afterClass() {
+        new PlatformTestUtil().stopPlatformAndTenant(PlatformAPIAccessor.getPlatformAPI(new PlatformTestUtil().loginOnPlatform()), true)
     }
 
 
