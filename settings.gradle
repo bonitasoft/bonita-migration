@@ -6,6 +6,6 @@ include 'bonita-migration-common',
         'migrateTo_7_0_3',
         'migrateTo_7_1_0',
         'migrateTo_7_1_2',
-//        'migrateTo_7_1_3',
+        'migrateTo_7_1_3',
         'migrateTo_7_2_0'
 
