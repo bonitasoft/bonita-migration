@@ -16,6 +16,8 @@ package org.bonitasoft.migration
 import org.bonitasoft.engine.LocalServerTestsInitializer
 import org.bonitasoft.engine.api.PlatformAPIAccessor
 import org.bonitasoft.engine.api.TenantAPIAccessor
+import org.bonitasoft.engine.bpm.bar.BusinessArchive
+import org.bonitasoft.engine.bpm.bar.BusinessArchiveFactory
 import org.bonitasoft.engine.bpm.contract.Type
 import org.bonitasoft.engine.bpm.flownode.ActivityInstanceCriterion
 import org.bonitasoft.engine.bpm.flownode.MultiInstanceLoopCharacteristics
@@ -154,7 +156,7 @@ class CheckMigratedTo7_2_0 {
         processAPI.startProcess(processDefinitionId)
         def timeout = System.currentTimeMillis() + 15000
         def instances
-        while ((instances = processAPI.getPendingHumanTaskInstances(session.getUserId(), 0, 10, ActivityInstanceCriterion.NAME_ASC)).size() <2 && System.currentTimeMillis() < timeout) {
+        while ((instances = processAPI.getPendingHumanTaskInstances(session.getUserId(), 0, 10, ActivityInstanceCriterion.NAME_ASC)).size() < 2 && System.currentTimeMillis() < timeout) {
             Thread.sleep(200)
         }
         assertThat(instances).extracting("name", "displayName").containsExactly(tuple("step1", "theParam1Value"), tuple("step2", "123456789"))
@@ -167,5 +169,53 @@ class CheckMigratedTo7_2_0 {
 
         TenantAPIAccessor.getLoginAPI().logout(session)
     }
+
+
+    @Test
+    public void verifyBARsAreMigratedInDb() {
+        def session = TenantAPIAccessor.getLoginAPI().login("userOfBARInDatabase", "bpm");
+        def processAPI = TenantAPIAccessor.getProcessAPI(session)
+        def processDefinitionId = processAPI.getProcessDefinitionId("barInDatabase", "1.1.0")
+
+        def processInstance = processAPI.startProcess(processDefinitionId)
+        def timeout = System.currentTimeMillis() + 15000
+        while (processAPI.getPendingHumanTaskInstances(session.getUserId(), 0, 10, ActivityInstanceCriterion.NAME_ASC).size() < 1 && System.currentTimeMillis() < timeout) {
+            Thread.sleep(200)
+        }
+
+        def instances = processAPI.getPendingHumanTaskInstances(session.getUserId(), 0, 10, ActivityInstanceCriterion.NAME_ASC)
+        assertThat(instances).hasSize(1)
+        assertThat(instances.get(0).getState()).isNotEqualTo("failed")
+
+        def document = processAPI.getLastDocument(processInstance.id, "myDoc1")
+        def content = processAPI.getDocumentContent(document.getContentStorageId())
+        assertThat(new String(content)).isEqualTo("This is the content of my file1")
+        assertThat(processAPI.getProcessDataInstance("myData", processInstance.getId()).getValue()).isEqualTo("input1Value")
+        //export
+        final byte[] bytes = processAPI.exportBarProcessContentUnderHome(processDefinitionId);
+        final BusinessArchive exportedBAR = BusinessArchiveFactory.readBusinessArchive(new ByteArrayInputStream(bytes));
+
+        //check
+        def resources = exportedBAR.getResources()
+        assertThat(resources).containsKeys(
+                "documents/initialContent1.txt",
+                "documents/initialContent2.txt",
+                "documents/initialContent3.txt",
+                "resources/index.html",
+                "resources/content/other.html",
+                "userFilters/MyUserFilter.impl",
+                "connector/myConnector.impl"
+        )
+        assertThat(resources.get("documents/initialContent1.txt")).isEqualTo("This is the content of my file1".bytes)
+        assertThat(resources.get("documents/initialContent2.txt")).isEqualTo("This is the content of my file2".bytes)
+        assertThat(resources.get("documents/initialContent3.txt")).isEqualTo("This is the content of my file3".bytes)
+        assertThat(resources.get("resources/index.html")).isEqualTo("<html>".bytes)
+        assertThat(resources.get("resources/content/other.html")).isEqualTo("<html>1".bytes)
+        assertThat(new String(resources.get("connector/myConnector.impl"))).contains(MyConnector.class.getName())
+        assertThat(new String(resources.get("userFilters/MyUserFilter.impl"))).contains("MyUserFilter")
+
+        TenantAPIAccessor.getLoginAPI().logout(session)
+    }
+
 
 }
