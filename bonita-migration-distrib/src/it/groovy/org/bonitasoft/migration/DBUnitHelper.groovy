@@ -15,10 +15,10 @@
  *
  */
 package org.bonitasoft.migration
-
 import groovy.xml.StreamingMarkupBuilder
 import org.bonitasoft.migration.core.MigrationContext
 import org.bonitasoft.migration.core.MigrationStep
+import org.bonitasoft.migration.core.database.schema.IndexDefinition
 import org.dbunit.JdbcDatabaseTester
 import org.dbunit.database.IDatabaseConnection
 import org.dbunit.dataset.ReplacementDataSet
@@ -27,7 +27,6 @@ import org.dbunit.ext.oracle.OracleConnection
 
 import java.sql.DriverManager
 import java.sql.SQLException
-
 /**
  * @author Baptiste Mesta
  */
@@ -130,6 +129,14 @@ class DBUnitHelper {
 
     def boolean hasColumnOnTable(String tableName, String columnName) {
         context.databaseHelper.hasColumnOnTable(tableName, columnName)
+    }
+
+    def boolean hasForeignKeyOnTable(String tableName, String foreignKey) {
+        context.databaseHelper.hasForeignKeyOnTable(tableName, foreignKey)
+    }
+
+    def IndexDefinition getIndexDefinition(String tableName, String indexName) {
+        context.databaseHelper.getIndexDefinition(tableName, indexName)
     }
 
     def JdbcDatabaseTester createTester() {

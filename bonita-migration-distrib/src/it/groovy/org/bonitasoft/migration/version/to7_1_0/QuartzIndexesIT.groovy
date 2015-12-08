@@ -44,7 +44,7 @@ class QuartzIndexesIT extends Specification {
     @Unroll
     def "platform created in #version should create indexes on quartz table "(String version) {
         setup:
-        dbUnitHelper.createTables(version, "createQuartzTables")
+        dbUnitHelper.createTables("$version/quartzTables", "createQuartzTables")
 
         when:
         new MigrateQuartzIndexes().execute(migrationContext)
