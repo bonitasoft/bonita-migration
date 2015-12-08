@@ -17,6 +17,8 @@ package org.bonitasoft.migration.core.database
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import org.bonitasoft.migration.core.MigrationStep.DBVendor
+import org.bonitasoft.migration.core.database.schema.ColumnDefinition
+import org.bonitasoft.migration.core.database.schema.IndexDefinition
 
 /**
  * @author Baptiste Mesta
@@ -278,6 +280,34 @@ END""")
     }
 
     /**
+     * retrieve index definition for a given table
+     * @param tableName
+     * @param indexName
+     * @return
+     */
+    def IndexDefinition getIndexDefinition(String tableName, String indexName) {
+        def query = getScriptContent("/database/indexDefinition", "indexDefinition")
+        def indexDefinition = new IndexDefinition(tableName, indexName)
+        sql.eachRow(query, [tableName, indexName]) {
+            indexDefinition.addColumn(new ColumnDefinition(it["column_name"], it["column_order"]))
+        }
+        indexDefinition
+    }
+
+    /**
+     * checks if given foreign key exists on table
+     * @param tableName
+     * @param foreignKeyName
+     * @return true if exists, false otherwise
+     */
+    def boolean hasForeignKeyOnTable(String tableName, String foreignKeyName) {
+        def query = getScriptContent("/database/foreignKey", "foreignKey")
+        def firstRow = sql.firstRow(query, [tableName, foreignKeyName])
+        return firstRow != null
+    }
+
+
+        /**
      * checks if given index exists on table
      * @param tableName
      * @param indexName
@@ -427,22 +457,31 @@ END""")
      * @param scriptName
      */
     def executeScript(String folderName, String scriptName) {
-        def sqlFile = "/version/to_${version.replace('.', '_')}/$folderName/${dbVendor.toString().toLowerCase()}_${scriptName}.sql"
-        def stream1 = this.class.getResourceAsStream(sqlFile)
-        def scriptContent = ""
-        stream1.withStream { InputStream s ->
-            scriptContent = s.text
-        }
-        def statements = scriptContent.split("@@")
+        def statements = getScriptContent(getVersionFolder() + "/$folderName", scriptName).split("@@")
         statements.each {
             sql.execute(it)
         }
     }
 
+    private String getScriptContent(String folderName, String scriptName) {
+        def scriptContent = ""
+        def sqlFile = "$folderName/${dbVendor.toString().toLowerCase()}_${scriptName}.sql"
+        def stream1 = this.class.getResourceAsStream(sqlFile)
+        stream1.withStream { InputStream s ->
+            scriptContent = s.text
+        }
+        scriptContent
+    }
+
+    private GString getVersionFolder() {
+        def versionFolder = "/version/to_${version.replace('.', '_')}"
+        versionFolder
+    }
+
     static String getClobContent(Object clob) {
-        if(clob instanceof String){
+        if (clob instanceof String) {
             return clob
-        }else{
+        } else {
             return clob.stringValue()
         }
     }
