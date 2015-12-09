@@ -70,6 +70,7 @@ class ResetFailedGatewaysIT extends GroovyTestCase {
             flownode_instance tenantid: 1, id: 112, name: 'gate', parentContainerId: 130, kind: 'gate', stateId: 3, stateName: "failed", prev_state_id: 61, terminal: falseValue.get(DBVENDOR), stable: falseValue.get(DBVENDOR), hitBys: "1,5,12", token_ref_id: 10
             arch_flownode_instance tenantid: 1, id: 212, sourceObjectId: 112, stateId: 0, stateName: "executing", terminal: falseValue.get(DBVENDOR), stable: falseValue.get(DBVENDOR), hitBys: "1,5,12"
 
+
             //gateway that will be reset to completed and will have left one  archived version
             flownode_instance tenantid: 1, id: 113, name: 'gate', parentContainerId: 131, kind: 'gate', stateId: 3, stateName: "failed", prev_state_id: 2, terminal: falseValue.get(DBVENDOR), stable: falseValue.get(DBVENDOR), hitBys: "FINISH:5", token_ref_id: 11
             arch_flownode_instance tenantid: 1, id: 213, sourceObjectId: 113, stateId: 0, stateName: "executing", terminal: falseValue.get(DBVENDOR), stable: falseValue.get(DBVENDOR), hitBys: "1,5,12"
@@ -91,11 +92,29 @@ class ResetFailedGatewaysIT extends GroovyTestCase {
             //case not all transition hit
             flownode_instance tenantid: 1, id: 119, name: 'gate2', parentContainerId: 126, kind: 'gate', stateId: 3, stateName: "failed", prev_state_id: 2, terminal: falseValue.get(DBVENDOR), stable: trueValue.get(DBVENDOR), hitBys: "1", token_ref_id: 3
             flownode_instance tenantid: 1, id: 120, name: 'gate2', parentContainerId: 126, kind: 'gate', stateId: 61, stateName: "executing", prev_state_id: 0, terminal: falseValue.get(DBVENDOR), stable: falseValue.get(DBVENDOR), hitBys: "2,3", token_ref_id: 3
-            //create 3 token
+
+            //create 4 token
             token tenantid: 1, id: 3, ref_id: 3, processInstanceId: 126
             token tenantid: 1, id: 4, ref_id: 3, processInstanceId: 126
             token tenantid: 1, id: 5, ref_id: 3, processInstanceId: 126
             token tenantid: 1, id: 6, ref_id: 3, processInstanceId: 126
+
+            //case one hitby empty (oracle null issue)
+            flownode_instance tenantid: 1, id: 121, name: 'gate', parentContainerId: 135, kind: 'gate', stateId: 3, stateName: "failed", prev_state_id: 2, terminal: falseValue.get(DBVENDOR), stable: trueValue.get(DBVENDOR), hitBys: "", token_ref_id: 15
+            flownode_instance tenantid: 1, id: 122, name: 'gate', parentContainerId: 135, kind: 'gate', stateId: 61, stateName: "executing", prev_state_id: 0, terminal: falseValue.get(DBVENDOR), stable: falseValue.get(DBVENDOR), hitBys: "1,2", token_ref_id: 15
+
+            //create 2 token
+            token tenantid: 1, id: 8, ref_id: 15, processInstanceId: 135
+            token tenantid: 1, id: 9, ref_id: 15, processInstanceId: 135
+
+            //case one hitby empty (oracle null issue)
+            flownode_instance tenantid: 1, id: 123, name: 'gate', parentContainerId: 136, kind: 'gate', stateId: 3, stateName: "failed", prev_state_id: 2, terminal: falseValue.get(DBVENDOR), stable: trueValue.get(DBVENDOR), hitBys: "1,2", token_ref_id: 16
+            flownode_instance tenantid: 1, id: 124, name: 'gate', parentContainerId: 136, kind: 'gate', stateId: 61, stateName: "executing", prev_state_id: 0, terminal: falseValue.get(DBVENDOR), stable: falseValue.get(DBVENDOR), hitBys: "", token_ref_id: 16
+
+            //create 3 token
+            token tenantid: 1, id: 10, ref_id: 16, processInstanceId: 136
+            token tenantid: 1, id: 11, ref_id: 16, processInstanceId: 136
+            token tenantid: 1, id: 12, ref_id: 16, processInstanceId: 136
 
             //on tenant 2
             flownode_instance tenantid: 2, id: 112, name: 'gate', parentContainerId: 137, kind: 'gate', stateId: 3, stateName: "failed", prev_state_id: 61, terminal: falseValue.get(DBVENDOR), stable: falseValue.get(DBVENDOR), hitBys: "1,5,12", token_ref_id: 1
@@ -143,11 +162,18 @@ class ResetFailedGatewaysIT extends GroovyTestCase {
             //case not all transition hit
             flownode_instance tenantid: 1, id: 119, name: 'gate2', parentContainerId: 126, kind: 'gate', stateId: 61, stateName: "executing", prev_state_id: 0, terminal: falseValue.get(DBVENDOR), stable: falseValue.get(DBVENDOR), hitBys: "1,2,3", token_ref_id: 3
 
+            //case no transition hit (oracle null issue)
+            flownode_instance tenantid: 1, id: 121, name: 'gate', parentContainerId: 135, kind: 'gate', stateId: 2, stateName: "completed", prev_state_id: 61, terminal: trueValue.get(DBVENDOR), stable: trueValue.get(DBVENDOR), hitBys: "FINISH:2", token_ref_id: 15
+
+            flownode_instance tenantid: 1, id: 123, name: 'gate', parentContainerId: 136, kind: 'gate', stateId: 61, stateName: "executing", prev_state_id: 0, terminal: falseValue.get(DBVENDOR), stable: falseValue.get(DBVENDOR), hitBys: "1,2", token_ref_id: 16
+
             //on tenant 2
             flownode_instance tenantid: 2, id: 112, name: 'gate', parentContainerId: 137, kind: 'gate', stateId: 61, stateName: "executing", prev_state_id: 0, terminal: falseValue.get(DBVENDOR), stable: falseValue.get(DBVENDOR), hitBys: "1,5,12", token_ref_id: 1
             flownode_instance tenantid: 2, id: 113, name: 'gate', parentContainerId: 138, kind: 'gate', stateId: 2, stateName: "completed", prev_state_id: 61, terminal: trueValue.get(DBVENDOR), stable: trueValue.get(DBVENDOR), hitBys: "FINISH:5", token_ref_id: 2
             flownode_instance tenantid: 2, id: 114, name: 'gate', parentContainerId: 139, kind: 'gate', stateId: 2, stateName: "completed", prev_state_id: 61, terminal: trueValue.get(DBVENDOR), stable: trueValue.get(DBVENDOR), hitBys: "FINISH:5", token_ref_id: 3
             flownode_instance tenantid: 2, id: 115, name: 'gate', parentContainerId: 140, kind: 'gate', stateId: 61, stateName: "executing", prev_state_id: 0, terminal: falseValue.get(DBVENDOR), stable: falseValue.get(DBVENDOR), hitBys: "1,5,12", token_ref_id: 4
+
+
         }, updatedGateways
     }
 

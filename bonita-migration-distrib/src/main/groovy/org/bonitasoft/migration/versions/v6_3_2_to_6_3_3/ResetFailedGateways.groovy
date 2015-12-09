@@ -48,7 +48,9 @@ class ResetFailedGateways {
                         "AND f1.token_ref_id = f2.token_ref_id)") { failedGateway ->
 
                     //for each merge all hitBys in one string
-                    def String hitBys = failedGateway.hitBys
+                    def hitBys = []
+                    if (failedGateway.hitBys != null && !failedGateway.hitBys.isEmpty())
+                        hitBys.addAll(failedGateway.hitBys.split(","))
                     def List<Long> gatewaysToDelete = []
                     sql.eachRow("SELECT * FROM flownode_instance " +
                             "WHERE tenantId = ? " +
@@ -56,27 +58,33 @@ class ResetFailedGateways {
                             "AND name = ? " +
                             "AND parentContainerId = ? " +
                             "AND token_ref_id = ? ", [tenantId, failedGateway.id, failedGateway.name, failedGateway.parentContainerId, failedGateway.token_ref_id]) { sameGate ->
-                        if (hitBys.size() > 0) {
-                            hitBys += ","
-                        }
-                        hitBys += sameGate.hitBys
+                        if (sameGate.hitBys != null && !sameGate.hitBys.isEmpty())
+                            hitBys.addAll(sameGate.hitBys.split(","))
                         gatewaysToDelete.add(sameGate.id)
                     }
 
                     //if number of transition that hit is equal to the number of token having ref_id == token_ref_id
-                    def Long numberOfHit = hitBys.split(',').length;
+                    def Long numberOfHit = hitBys.size();
                     def Long numberOfTokens = sql.firstRow("SELECT count(id) FROM token WHERE tenantId = $tenantId AND ref_id = ${failedGateway.token_ref_id} ")[0]
+                    def hitBysString = ""
                     if (numberOfHit == numberOfTokens) {
                         //then we put in hitBy finish with number of transition that hit
-                        hitBys = "FINISH:"+numberOfHit;
+                        hitBysString = "FINISH:" + numberOfHit
                         //else we put the hitBys string
+                    } else {
+                        hitBys.eachWithIndex { hit, index ->
+                            hitBysString += hit
+                            if (index < hitBys.size() - 1) {
+                                hitBysString += ","
+                            }
+                        }
                     }
-                    println "Set hitBys on " + failedGateway.id + " to " + hitBys
+                    println "Set hitBys on " + failedGateway.id + " to " + hitBysString
                     sql.executeUpdate("UPDATE flownode_instance " +
                             "SET " +
                             "hitBys = ? " +
                             "WHERE tenantId = ? " +
-                            "AND id = ? ",[hitBys,tenantId,failedGateway.id])
+                            "AND id = ? ", [hitBysString, tenantId, failedGateway.id])
 
                     //we delete other flow node
                     println "Delete " + gatewaysToDelete.size() + " gateways that are duplicated of " + failedGateway.id
