@@ -14,7 +14,6 @@
 package org.bonitasoft.migration;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.bonitasoft.migration.DatabaseCheckerInitiliazer6_3_1.springContext;
 import static org.junit.Assert.assertEquals;
 
 import java.io.FileInputStream;
@@ -25,7 +24,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-
 import javax.sql.DataSource;
 
 import org.bonitasoft.engine.bpm.document.ArchivedDocument;
@@ -357,22 +355,25 @@ public class DatabaseChecker6_4_0 extends SimpleDatabaseChecker6_4_0 {
         final SearchResult<Document> documentsOfInstance3 = getProcessAPI().searchDocuments(new SearchOptionsBuilder(0, 100)
                 .filter(DocumentsSearchDescriptor.PROCESSINSTANCE_ID, inst3).sort(DocumentsSearchDescriptor.DOCUMENT_CREATIONDATE, Order.ASC).done());
 
+
         final List<ArchivedDocument> archivedDocuments3 = archivedDocumentsOfInstance3.getResult();
-        assertThat(archivedDocuments3).hasSize(2);
+        assertThat(archivedDocuments3).hasSize(3);
         final List<Document> documents3 = documentsOfInstance3.getResult();
         assertThat(documents3).hasSize(3);
 
         assertThat(archivedDocuments3.get(0).getName()).isEqualTo("documentAttachedUsingAPI");
         assertThat(getProcessAPI().getDocumentContent(archivedDocuments3.get(0).getContentStorageId())).isEqualTo(
                 "The content of the file attached using the api".getBytes());
-        assertThat(archivedDocuments3.get(1).getName()).isEqualTo("urlDocumentAttachedUsingAPI");
-        assertThat(archivedDocuments3.get(1).getDocumentURL()).isEqualTo("http://MyWebSite.com/file.txt");
+        assertThat(getProcessAPI().getDocumentContent(archivedDocuments3.get(1).getContentStorageId())).isEqualTo(
+                "The content of the file attached using the api2".getBytes());
+        assertThat(archivedDocuments3.get(2).getName()).isEqualTo("urlDocumentAttachedUsingAPI");
+        assertThat(archivedDocuments3.get(2).getDocumentURL()).isEqualTo("http://MyWebSite.com/file.txt");
         assertThat(documents3.get(0).getName()).isEqualTo("doc1");
         assertThat(getProcessAPI().getDocumentContent(documents3.get(0).getContentStorageId())).isEqualTo(
                 "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.".getBytes());
         assertThat(documents3.get(1).getName()).isEqualTo("documentAttachedUsingAPI");
         assertThat(getProcessAPI().getDocumentContent(documents3.get(1).getContentStorageId())).isEqualTo(
-                "The content of the file attached using the api2".getBytes());
+                "The content of the file attached using the api3".getBytes());
         assertThat(documents3.get(2).getName()).isEqualTo("urlDocumentAttachedUsingAPI");
         assertThat(documents3.get(2).getUrl()).isEqualTo("http://MyWebSite.com/file2.txt");
 

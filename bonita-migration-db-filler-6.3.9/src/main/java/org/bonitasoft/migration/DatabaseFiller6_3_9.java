@@ -149,6 +149,8 @@ public class DatabaseFiller6_3_9 extends SimpleDatabaseFiller6_3_1 {
         getAPITestUtil().getProcessAPI().attachDocument(inst3.getId(), "urlDocumentAttachedUsingAPI", "doc.txt", "plain/text", "http://MyWebSite.com/file.txt");
         getAPITestUtil().getProcessAPI().attachNewDocumentVersion(inst3.getId(), "documentAttachedUsingAPI", "doc2.txt", "plain/text",
                 "The content of the file attached using the api2".getBytes());
+        getAPITestUtil().getProcessAPI().attachNewDocumentVersion(inst3.getId(), "documentAttachedUsingAPI", "doc2.txt", "plain/text",
+                "The content of the file attached using the api3".getBytes());
         getAPITestUtil().getProcessAPI().attachNewDocumentVersion(inst3.getId(), "urlDocumentAttachedUsingAPI", "doc2.txt", "plain/text",
                 "http://MyWebSite.com/file2.txt");
 

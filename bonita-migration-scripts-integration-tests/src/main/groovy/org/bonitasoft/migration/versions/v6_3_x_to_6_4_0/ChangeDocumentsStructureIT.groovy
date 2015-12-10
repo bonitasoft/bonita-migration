@@ -60,7 +60,7 @@ class ChangeDocumentsStructureIT extends GroovyTestCase {
             document_mapping tenantid: 1, id: 304, processinstanceid: 803, documentName: "mydoc5", documentAuthor: 902, documentCreationDate: 4567892318, documentHasContent: falseValue(), documentContentFileName: "file5.txt", documentContentMimeType: "plain/text", contentStorageId: "[NULL]", documentURL: "http://myurl.com/thefile.txt"
 
             arch_document_mapping tenantid: 1, id: 1300, sourceobjectid: 300, processinstanceid: 800, documentName: "oldmydoc1", documentAuthor: 901, documentCreationDate: 4567890001, documentHasContent: trueValue(), documentContentFileName: "oldfile1.txt", documentContentMimeType: "plain/text", contentStorageId: '-4561234568646477', documentURL: "documentDownload?", archivedate: 4567892314
-            arch_document_mapping tenantid: 1, id: 1301, sourceobjectid: 300, processinstanceid: 800, documentName: "oldmydoc1", documentAuthor: 901, documentCreationDate: 4567890002, documentHasContent: falseValue(), documentContentFileName: "oldfile2.txt", documentContentMimeType: "plain/text", contentStorageId: '[NULL]', documentURL: "http//myurl.com/myfile2.txt", archivedate: 4567892101
+            arch_document_mapping tenantid: 1, id: 1301, sourceobjectid: 300, processinstanceid: 800, documentName: "oldmydoc1", documentAuthor: 901, documentCreationDate: 4567890001, documentHasContent: trueValue(), documentContentFileName: "oldfile1.txt", documentContentMimeType: "plain/text", contentStorageId: '-4561234568646477', documentURL: "documentDownload?", archivedate: 4567892101
             arch_document_mapping tenantid: 1, id: 1302, sourceobjectid: 300, processinstanceid: 800, documentName: "oldmydoc1", documentAuthor: 901, documentCreationDate: 4567890003, documentHasContent: falseValue(), documentContentFileName: "oldfile2.txt", documentContentMimeType: "plain/text", contentStorageId: '[NULL]', documentURL: "http//myurl.com/myfile21.txt", archivedate: 4567892102
             arch_document_mapping tenantid: 1, id: 1303, sourceobjectid: 300, processinstanceid: 800, documentName: "oldmydoc1", documentAuthor: 901, documentCreationDate: 4567890004, documentHasContent: falseValue(), documentContentFileName: "oldfile2.txt", documentContentMimeType: "plain/text", contentStorageId: '[NULL]', documentURL: "http//myurl.com/myfile22.txt", archivedate: 4567892103
             arch_document_mapping tenantid: 1, id: 1304, sourceobjectid: 300, processinstanceid: 800, documentName: "oldmydoc1", documentAuthor: 901, documentCreationDate: 4567890005, documentHasContent: falseValue(), documentContentFileName: "oldfile2.txt", documentContentMimeType: "plain/text", contentStorageId: '[NULL]', documentURL: "http//myurl.com/myfile23.txt", archivedate: 4567892104
@@ -121,7 +121,7 @@ class ChangeDocumentsStructureIT extends GroovyTestCase {
         //TODO document content without mapping?
         CustomAssertion.assertEquals dataSet {
 
-            sequence tenantid: 1, id: 10090, nextid: 322
+            sequence tenantid: 1, id: 10090, nextid: 321
 
             document tenantid: 1, id: 99, author: 901, creationdate: 4567890001, hascontent: trueValue(), filename: "oldfile1.txt", mimetype: "plain/text", content: "the old content1".getBytes(), url: "[NULL]"
             document tenantid: 1, id: 100, author: 900, creationdate: 4567890003, hascontent: trueValue(), filename: "file1.txt", mimetype: "plain/text", content: "the content1".getBytes(), url: "[NULL]"
@@ -129,23 +129,22 @@ class ChangeDocumentsStructureIT extends GroovyTestCase {
             document tenantid: 1, id: 102, author: 901, creationdate: 4567892317, hascontent: trueValue(), filename: "file3.txt", mimetype: "plain/text", content: "the content3".getBytes(), url: "[NULL]"
             document tenantid: 1, id: 201, author: 902, creationdate: 4567892318, hascontent: trueValue(), filename: "file4.txt", mimetype: "plain/text", content: "the content4".getBytes(), url: "[NULL]"
             document tenantid: 1, id: 304, author: 902, creationdate: 4567892318, hascontent: falseValue(), filename: "file5.txt", mimetype: "plain/text", content: "[NULL]", url: 'http://myurl.com/thefile.txt'
-            document tenantid: 1, id: 305, author: 901, creationdate: 4567890002, hascontent: falseValue(), filename: "oldfile2.txt", mimetype: "plain/text", content: "[NULL]", url: 'http//myurl.com/myfile2.txt'
-            document tenantid: 1, id: 306, author: 901, creationdate: 4567890003, hascontent: falseValue(), filename: "oldfile2.txt", mimetype: "plain/text", content: "[NULL]", url: 'http//myurl.com/myfile21.txt'
-            document tenantid: 1, id: 307, author: 901, creationdate: 4567890004, hascontent: falseValue(), filename: "oldfile2.txt", mimetype: "plain/text", content: "[NULL]", url: 'http//myurl.com/myfile22.txt'
-            document tenantid: 1, id: 308, author: 901, creationdate: 4567890005, hascontent: falseValue(), filename: "oldfile2.txt", mimetype: "plain/text", content: "[NULL]", url: 'http//myurl.com/myfile23.txt'
-            document tenantid: 1, id: 309, author: 901, creationdate: 4567890006, hascontent: falseValue(), filename: "oldfile2.txt", mimetype: "plain/text", content: "[NULL]", url: 'http//myurl.com/myfile24.txt'
-            document tenantid: 1, id: 310, author: 901, creationdate: 4567890007, hascontent: falseValue(), filename: "oldfile2.txt", mimetype: "plain/text", content: "[NULL]", url: 'http//myurl.com/myfile25.txt'
-            document tenantid: 1, id: 311, author: 901, creationdate: 4567890008, hascontent: falseValue(), filename: "oldfile2.txt", mimetype: "plain/text", content: "[NULL]", url: 'http//myurl.com/myfile26.txt'
-            document tenantid: 1, id: 312, author: 901, creationdate: 4567890009, hascontent: falseValue(), filename: "oldfile2.txt", mimetype: "plain/text", content: "[NULL]", url: 'http//myurl.com/myfile27.txt'
-            document tenantid: 1, id: 313, author: 901, creationdate: 4567890010, hascontent: falseValue(), filename: "oldfile2.txt", mimetype: "plain/text", content: "[NULL]", url: 'http//myurl.com/myfile28.txt'
-            document tenantid: 1, id: 314, author: 901, creationdate: 4567890011, hascontent: falseValue(), filename: "oldfile2.txt", mimetype: "plain/text", content: "[NULL]", url: 'http//myurl.com/myfile29.txt'
-            document tenantid: 1, id: 315, author: 901, creationdate: 4567890012, hascontent: falseValue(), filename: "oldfile2.txt", mimetype: "plain/text", content: "[NULL]", url: 'http//myurl.com/myfile210.txt'
-            document tenantid: 1, id: 316, author: 901, creationdate: 4567890013, hascontent: falseValue(), filename: "oldfile2.txt", mimetype: "plain/text", content: "[NULL]", url: 'http//myurl.com/myfile211.txt'
-            document tenantid: 1, id: 317, author: 901, creationdate: 4567890014, hascontent: falseValue(), filename: "oldfile2.txt", mimetype: "plain/text", content: "[NULL]", url: 'http//myurl.com/myfile212.txt'
-            document tenantid: 1, id: 318, author: 901, creationdate: 4567890015, hascontent: falseValue(), filename: "oldfile2.txt", mimetype: "plain/text", content: "[NULL]", url: 'http//myurl.com/myfile213.txt'
-            document tenantid: 1, id: 319, author: 901, creationdate: 4567890016, hascontent: falseValue(), filename: "oldfile2.txt", mimetype: "plain/text", content: "[NULL]", url: 'http//myurl.com/myfile214.txt'
-            document tenantid: 1, id: 320, author: 901, creationdate: 4567890017, hascontent: falseValue(), filename: "oldfile2.txt", mimetype: "plain/text", content: "[NULL]", url: 'http//myurl.com/myfile215.txt'
-            document tenantid: 1, id: 321, author: 901, creationdate: 4567892325, hascontent: falseValue(), filename: "archedDoc.txt", mimetype: "plain/text", content: "[NULL]", url: 'http//myurl.com/myfile.txt'
+            document tenantid: 1, id: 305, author: 901, creationdate: 4567890003, hascontent: falseValue(), filename: "oldfile2.txt", mimetype: "plain/text", content: "[NULL]", url: 'http//myurl.com/myfile21.txt'
+            document tenantid: 1, id: 306, author: 901, creationdate: 4567890004, hascontent: falseValue(), filename: "oldfile2.txt", mimetype: "plain/text", content: "[NULL]", url: 'http//myurl.com/myfile22.txt'
+            document tenantid: 1, id: 307, author: 901, creationdate: 4567890005, hascontent: falseValue(), filename: "oldfile2.txt", mimetype: "plain/text", content: "[NULL]", url: 'http//myurl.com/myfile23.txt'
+            document tenantid: 1, id: 308, author: 901, creationdate: 4567890006, hascontent: falseValue(), filename: "oldfile2.txt", mimetype: "plain/text", content: "[NULL]", url: 'http//myurl.com/myfile24.txt'
+            document tenantid: 1, id: 309, author: 901, creationdate: 4567890007, hascontent: falseValue(), filename: "oldfile2.txt", mimetype: "plain/text", content: "[NULL]", url: 'http//myurl.com/myfile25.txt'
+            document tenantid: 1, id: 310, author: 901, creationdate: 4567890008, hascontent: falseValue(), filename: "oldfile2.txt", mimetype: "plain/text", content: "[NULL]", url: 'http//myurl.com/myfile26.txt'
+            document tenantid: 1, id: 311, author: 901, creationdate: 4567890009, hascontent: falseValue(), filename: "oldfile2.txt", mimetype: "plain/text", content: "[NULL]", url: 'http//myurl.com/myfile27.txt'
+            document tenantid: 1, id: 312, author: 901, creationdate: 4567890010, hascontent: falseValue(), filename: "oldfile2.txt", mimetype: "plain/text", content: "[NULL]", url: 'http//myurl.com/myfile28.txt'
+            document tenantid: 1, id: 313, author: 901, creationdate: 4567890011, hascontent: falseValue(), filename: "oldfile2.txt", mimetype: "plain/text", content: "[NULL]", url: 'http//myurl.com/myfile29.txt'
+            document tenantid: 1, id: 314, author: 901, creationdate: 4567890012, hascontent: falseValue(), filename: "oldfile2.txt", mimetype: "plain/text", content: "[NULL]", url: 'http//myurl.com/myfile210.txt'
+            document tenantid: 1, id: 315, author: 901, creationdate: 4567890013, hascontent: falseValue(), filename: "oldfile2.txt", mimetype: "plain/text", content: "[NULL]", url: 'http//myurl.com/myfile211.txt'
+            document tenantid: 1, id: 316, author: 901, creationdate: 4567890014, hascontent: falseValue(), filename: "oldfile2.txt", mimetype: "plain/text", content: "[NULL]", url: 'http//myurl.com/myfile212.txt'
+            document tenantid: 1, id: 317, author: 901, creationdate: 4567890015, hascontent: falseValue(), filename: "oldfile2.txt", mimetype: "plain/text", content: "[NULL]", url: 'http//myurl.com/myfile213.txt'
+            document tenantid: 1, id: 318, author: 901, creationdate: 4567890016, hascontent: falseValue(), filename: "oldfile2.txt", mimetype: "plain/text", content: "[NULL]", url: 'http//myurl.com/myfile214.txt'
+            document tenantid: 1, id: 319, author: 901, creationdate: 4567890017, hascontent: falseValue(), filename: "oldfile2.txt", mimetype: "plain/text", content: "[NULL]", url: 'http//myurl.com/myfile215.txt'
+            document tenantid: 1, id: 320, author: 901, creationdate: 4567892325, hascontent: falseValue(), filename: "archedDoc.txt", mimetype: "plain/text", content: "[NULL]", url: 'http//myurl.com/myfile.txt'
 
             document_mapping tenantid: 1, id: 300, processinstanceid: 800, documentid: 100, name: "mydoc1", description: "[NULL]", version: "18", index_: -1
             document_mapping tenantid: 1, id: 301, processinstanceid: 800, documentid: 101, name: "mydoc2", description: "[NULL]", version: "1", index_: -1
@@ -154,23 +153,23 @@ class ChangeDocumentsStructureIT extends GroovyTestCase {
             document_mapping tenantid: 1, id: 304, processinstanceid: 803, documentid: 304, name: "mydoc5", description: "[NULL]", version: "1", index_: -1
 
             arch_document_mapping tenantid: 1, id: 1300, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892314, documentid: 99, description: "[NULL]", version: "1", index_: -1
-            arch_document_mapping tenantid: 1, id: 1301, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892101, documentid: 305, description: "[NULL]", version: "2", index_: -1
-            arch_document_mapping tenantid: 1, id: 1302, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892102, documentid: 306, description: "[NULL]", version: "3", index_: -1
-            arch_document_mapping tenantid: 1, id: 1303, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892103, documentid: 307, description: "[NULL]", version: "4", index_: -1
-            arch_document_mapping tenantid: 1, id: 1304, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892104, documentid: 308, description: "[NULL]", version: "5", index_: -1
-            arch_document_mapping tenantid: 1, id: 1305, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892105, documentid: 309, description: "[NULL]", version: "6", index_: -1
-            arch_document_mapping tenantid: 1, id: 1306, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892106, documentid: 310, description: "[NULL]", version: "7", index_: -1
-            arch_document_mapping tenantid: 1, id: 1307, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892107, documentid: 311, description: "[NULL]", version: "8", index_: -1
-            arch_document_mapping tenantid: 1, id: 1308, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892108, documentid: 312, description: "[NULL]", version: "9", index_: -1
-            arch_document_mapping tenantid: 1, id: 1309, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892109, documentid: 313, description: "[NULL]", version: "10", index_: -1
-            arch_document_mapping tenantid: 1, id: 1310, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892110, documentid: 314, description: "[NULL]", version: "11", index_: -1
-            arch_document_mapping tenantid: 1, id: 1311, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892111, documentid: 315, description: "[NULL]", version: "12", index_: -1
-            arch_document_mapping tenantid: 1, id: 1312, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892112, documentid: 316, description: "[NULL]", version: "13", index_: -1
-            arch_document_mapping tenantid: 1, id: 1313, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892113, documentid: 317, description: "[NULL]", version: "14", index_: -1
-            arch_document_mapping tenantid: 1, id: 1314, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892114, documentid: 318, description: "[NULL]", version: "15", index_: -1
-            arch_document_mapping tenantid: 1, id: 1315, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892115, documentid: 319, description: "[NULL]", version: "16", index_: -1
-            arch_document_mapping tenantid: 1, id: 1316, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892116, documentid: 320, description: "[NULL]", version: "17", index_: -1
-            arch_document_mapping tenantid: 1, id: 1317, sourceobjectid: 299, processinstanceid: 804, name: "archedDoc", archivedate: 4567892315, documentid: 321, description: "[NULL]", version: "1", index_: -1
+            arch_document_mapping tenantid: 1, id: 1301, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892101, documentid: 99, description: "[NULL]", version: "2", index_: -1
+            arch_document_mapping tenantid: 1, id: 1302, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892102, documentid: 305, description: "[NULL]", version: "3", index_: -1
+            arch_document_mapping tenantid: 1, id: 1303, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892103, documentid: 306, description: "[NULL]", version: "4", index_: -1
+            arch_document_mapping tenantid: 1, id: 1304, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892104, documentid: 307, description: "[NULL]", version: "5", index_: -1
+            arch_document_mapping tenantid: 1, id: 1305, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892105, documentid: 308, description: "[NULL]", version: "6", index_: -1
+            arch_document_mapping tenantid: 1, id: 1306, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892106, documentid: 309, description: "[NULL]", version: "7", index_: -1
+            arch_document_mapping tenantid: 1, id: 1307, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892107, documentid: 310, description: "[NULL]", version: "8", index_: -1
+            arch_document_mapping tenantid: 1, id: 1308, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892108, documentid: 311, description: "[NULL]", version: "9", index_: -1
+            arch_document_mapping tenantid: 1, id: 1309, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892109, documentid: 312, description: "[NULL]", version: "10", index_: -1
+            arch_document_mapping tenantid: 1, id: 1310, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892110, documentid: 313, description: "[NULL]", version: "11", index_: -1
+            arch_document_mapping tenantid: 1, id: 1311, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892111, documentid: 314, description: "[NULL]", version: "12", index_: -1
+            arch_document_mapping tenantid: 1, id: 1312, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892112, documentid: 315, description: "[NULL]", version: "13", index_: -1
+            arch_document_mapping tenantid: 1, id: 1313, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892113, documentid: 316, description: "[NULL]", version: "14", index_: -1
+            arch_document_mapping tenantid: 1, id: 1314, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892114, documentid: 317, description: "[NULL]", version: "15", index_: -1
+            arch_document_mapping tenantid: 1, id: 1315, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892115, documentid: 318, description: "[NULL]", version: "16", index_: -1
+            arch_document_mapping tenantid: 1, id: 1316, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892116, documentid: 319, description: "[NULL]", version: "17", index_: -1
+            arch_document_mapping tenantid: 1, id: 1317, sourceobjectid: 299, processinstanceid: 804, name: "archedDoc", archivedate: 4567892315, documentid: 320, description: "[NULL]", version: "1", index_: -1
 
         }, updatedDocuments
     }
