@@ -12,12 +12,14 @@
  * Floor, Boston, MA 02110-1301, USA.
  */
 package org.bonitasoft.migration.version.to7_1_5
+
 import org.bonitasoft.migration.DBUnitHelper
 import org.bonitasoft.migration.core.Logger
 import org.bonitasoft.migration.core.MigrationContext
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
+
 /**
  * @author Laurent Leseigneur
  */
@@ -37,7 +39,7 @@ class EnsureAddedForeignKeyOnActorMemberIT extends Specification {
     }
 
     def cleanup() {
-        dbUnitHelper.dropTables(["actormember","actor" ] as String[])
+        dbUnitHelper.dropTables(["actormember", "actor"] as String[])
     }
 
     @Unroll
@@ -49,7 +51,7 @@ class EnsureAddedForeignKeyOnActorMemberIT extends Specification {
         new MigrateActorMember().execute(migrationContext)
 
         then:
-        dbUnitHelper.hasForeignKeyOnTable("actormember","fk_actormember_actorid")==true
+        dbUnitHelper.hasForeignKeyOnTable("actormember", "fk_actormember_actorid")
 
         where:
         version << ["6_4_2", "6_5_0"]

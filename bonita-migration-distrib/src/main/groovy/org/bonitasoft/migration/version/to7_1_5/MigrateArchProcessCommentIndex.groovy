@@ -17,7 +17,7 @@ import org.bonitasoft.migration.core.MigrationContext
 import org.bonitasoft.migration.core.MigrationStep
 
 /**
- * author Laurent Leseigneur
+ * @author Laurent Leseigneur
  */
 class MigrateArchProcessCommentIndex extends MigrationStep {
 
@@ -30,8 +30,7 @@ class MigrateArchProcessCommentIndex extends MigrationStep {
 
         if (!"sourceObjectId".equalsIgnoreCase(indexDefinition.columnDefinitions.get(0).columnName)) {
             helper.addOrReplaceIndex(ARCH_PROCESS_COMMENT, "idx1_arch_process_comment", "sourceobjectid", "tenantid")
-        }
-        else{
+        } else {
             println("index does not need to be migrated.")
         }
 

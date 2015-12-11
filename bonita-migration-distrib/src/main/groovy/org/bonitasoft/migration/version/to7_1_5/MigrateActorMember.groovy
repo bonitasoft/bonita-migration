@@ -17,7 +17,7 @@ import org.bonitasoft.migration.core.MigrationContext
 import org.bonitasoft.migration.core.MigrationStep
 
 /**
- * author Laurent Leseigneur
+ * @author Laurent Leseigneur
  */
 class MigrateActorMember extends MigrationStep {
 
