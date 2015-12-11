@@ -26,7 +26,8 @@ class MigrateTo7_2_0 extends VersionMigration {
         //keep one line per step to avoid false-positive merge conflict
         return [
                 new MigrateProcessDefXml(),
-                new ParametersInDatabase()
+                new ParametersInDatabase(),
+                new CheckBDMQueries()
         ]
     }
 }
