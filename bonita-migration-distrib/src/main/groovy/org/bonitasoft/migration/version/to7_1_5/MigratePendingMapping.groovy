@@ -16,15 +16,18 @@ package org.bonitasoft.migration.version.to7_1_5
 import org.bonitasoft.migration.core.MigrationContext
 import org.bonitasoft.migration.core.MigrationStep
 
+import static org.bonitasoft.migration.core.MigrationStep.DBVendor.ORACLE
+
 /**
- * author Laurent Leseigneur
+ * @author Laurent Leseigneur
  */
 class MigratePendingMapping extends MigrationStep {
 
     @Override
     def execute(MigrationContext context) {
         def helper = context.databaseHelper
-        if (!helper.hasForeignKeyOnTable("pending_mapping", "fk_pending_mapping_flownode_instanceId")) {
+        def foreignKeyName = (context.dbVendor == ORACLE) ? "fk_pMap_flnId" : "fk_pending_mapping_flownode_instanceId"
+        if (!helper.hasForeignKeyOnTable("pending_mapping", foreignKeyName)) {
             helper.executeScript("MigratePendingMapping", "pendingMapping")
         }
     }
