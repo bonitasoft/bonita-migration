@@ -14,12 +14,23 @@
 
 package org.bonitasoft.migration
 
+import org.bonitasoft.engine.api.CommandAPI
 import org.bonitasoft.engine.api.TenantAPIAccessor
+import org.bonitasoft.engine.bdm.BusinessObjectModelConverter
+import org.bonitasoft.engine.bdm.model.BusinessObject
+import org.bonitasoft.engine.bdm.model.BusinessObjectModel
+import org.bonitasoft.engine.bdm.model.Query
+import org.bonitasoft.engine.bdm.model.field.FieldType
+import org.bonitasoft.engine.bdm.model.field.SimpleField
+import org.bonitasoft.engine.bpm.businessdata.BusinessDataQueryResult
 import org.bonitasoft.engine.bpm.contract.Type
 import org.bonitasoft.engine.bpm.flownode.ActivityInstanceCriterion
 import org.bonitasoft.engine.bpm.flownode.MultiInstanceLoopCharacteristics
 import org.bonitasoft.engine.bpm.flownode.UserTaskDefinition
 import org.bonitasoft.engine.bpm.parameter.ParameterInstance
+import org.bonitasoft.engine.command.BusinessDataCommandField
+import org.bonitasoft.engine.command.ExecuteBDMQueryCommand
+import org.bonitasoft.engine.command.GetBusinessDataByQueryCommand
 import org.bonitasoft.engine.test.junit.BonitaEngineRule
 import org.bonitasoft.migration.filler.FillerUtils
 import org.junit.BeforeClass
@@ -28,6 +39,7 @@ import org.junit.Test
 
 import static org.assertj.core.api.Assertions.assertThat
 import static org.assertj.core.api.Assertions.tuple
+
 /**
  * @author Laurent Leseigneur
  */
@@ -142,7 +154,7 @@ class CheckMigratedTo7_2_0 {
         processAPI.startProcess(processDefinitionId)
         def timeout = System.currentTimeMillis() + 15000
         def instances
-        while ((instances = processAPI.getPendingHumanTaskInstances(session.getUserId(), 0, 10, ActivityInstanceCriterion.NAME_ASC)).size() <2 && System.currentTimeMillis() < timeout) {
+        while ((instances = processAPI.getPendingHumanTaskInstances(session.getUserId(), 0, 10, ActivityInstanceCriterion.NAME_ASC)).size() < 2 && System.currentTimeMillis() < timeout) {
             Thread.sleep(200)
         }
         assertThat(instances).extracting("name", "displayName").containsExactly(tuple("step1", "theParam1Value"), tuple("step2", "123456789"))
@@ -155,5 +167,146 @@ class CheckMigratedTo7_2_0 {
 
         TenantAPIAccessor.getLoginAPI().logout(session)
     }
+
+    @Test
+    public void verify_BDM_query_call() {
+        def session = TenantAPIAccessor.getLoginAPI().login("userForBPMProcess", "bpm")
+        def commandAPI = TenantAPIAccessor.getCommandAPI(session)
+
+        callBdmQuery(commandAPI, "Employee.find", "com.company.model.Employee")
+    }
+
+//  uncomment to check without BDM redeploy and countFor* named queries
+//  see BS-14810
+//    @Test
+//    public void verify_BDM_businessData_query_call() {
+//        def session = TenantAPIAccessor.getLoginAPI().login("userForBPMProcess", "bpm")
+//        def commandAPI = TenantAPIAccessor.getCommandAPI(session)
+//
+//        callBusinessDataByQuery(commandAPI, "find", "com.company.model.Employee")
+//    }
+
+    @Test
+    public void verify_BDM_businessData_query_call_with_BDM_redeploy() {
+        redeployBdmAfterMigration(createBusinessObjectModel())
+
+        def session = TenantAPIAccessor.getLoginAPI().login("userForBPMProcess", "bpm")
+        def commandAPI = TenantAPIAccessor.getCommandAPI(session)
+        callBusinessDataByQuery(commandAPI, "find", "com.company.model.Employee")
+    }
+
+
+    private void redeployBdmAfterMigration(BusinessObjectModel businessObjectModel) throws Exception {
+        def session = TenantAPIAccessor.getLoginAPI().login("install", "install")
+        def tenantAdministrationAPI = TenantAPIAccessor.getTenantAdministrationAPI(session)
+
+        final BusinessObjectModelConverter converter = new BusinessObjectModelConverter()
+        final byte[] zip = converter.zip(businessObjectModel)
+
+        tenantAdministrationAPI.pause()
+        tenantAdministrationAPI.uninstallBusinessDataModel()
+        tenantAdministrationAPI.installBusinessDataModel(zip)
+        tenantAdministrationAPI.resume()
+
+        TenantAPIAccessor.getLoginAPI().logout(session)
+
+    }
+
+    def createBusinessObjectModel() {
+        final SimpleField firstName = new SimpleField()
+        firstName.setName("firstName")
+        firstName.setType(FieldType.STRING)
+        firstName.setLength(Integer.valueOf(10))
+
+        final SimpleField lastName = new SimpleField()
+        lastName.setName("lastName")
+        lastName.setType(FieldType.STRING)
+        lastName.setNullable(Boolean.FALSE)
+
+        final SimpleField phoneNumbers = new SimpleField()
+        phoneNumbers.setName("phoneNumbers")
+        phoneNumbers.setType(FieldType.STRING)
+        phoneNumbers.setLength(Integer.valueOf(10))
+        phoneNumbers.setCollection(Boolean.TRUE)
+
+        final SimpleField hireDate = new SimpleField()
+        hireDate.setName("hireDate")
+        hireDate.setType(FieldType.DATE)
+
+        final SimpleField booleanField = new SimpleField()
+        booleanField.setName("booleanField")
+        booleanField.setType(FieldType.BOOLEAN)
+
+        final BusinessObject employee = new BusinessObject()
+        employee.setQualifiedName("com.company.model.Employee")
+        employee.addField(hireDate)
+        employee.addField(booleanField)
+        employee.addField(firstName)
+        employee.addField(lastName)
+        employee.addField(phoneNumbers)
+        employee.setDescription("Describe a simple employee")
+        employee.addUniqueConstraint("uk_fl", "firstName", "lastName")
+
+        final Query getEmployeeByPhoneNumber = employee.addQuery("findByPhoneNumber",
+                "SELECT e FROM Employee e WHERE :phoneNumber IN ELEMENTS(e.phoneNumbers)", List.class.getName());
+        getEmployeeByPhoneNumber.addQueryParameter("phoneNumber", String.class.getName());
+
+        final Query findByFirstNAmeAndLastNameNewOrder = employee.addQuery("findByFirstNameAndLastNameNewOrder",
+                "SELECT e FROM Employee e WHERE e.firstName =:firstName AND e.lastName = :lastName ORDER BY e.lastName", List.class.getName());
+        findByFirstNAmeAndLastNameNewOrder.addQueryParameter("firstName", String.class.getName());
+        findByFirstNAmeAndLastNameNewOrder.addQueryParameter("lastName", String.class.getName());
+
+
+        final Query findByHireDate = employee.addQuery("findByHireDateRange",
+                "SELECT e FROM Employee e WHERE e.hireDate >=:date1 and e.hireDate <=:date2", List.class.getName());
+        findByHireDate.addQueryParameter("date1", Date.class.getName());
+        findByHireDate.addQueryParameter("date2", Date.class.getName());
+
+        employee.addQuery("countForAllEmployee", "SELECT COUNT(e) FROM Employee e", Long.class.getName());
+
+        employee.addIndex("IDX_LSTNM", "lastName");
+
+        final BusinessObjectModel model = new BusinessObjectModel();
+        model.addBusinessObject(employee)
+        model
+    }
+
+
+    private void callBdmQuery(CommandAPI commandAPI, String queryName, String returnType) {
+        final Map<String, Serializable> parameters = new HashMap<>()
+        parameters.put("queryName", queryName)
+        parameters.put("returnType", returnType)
+
+        final Map<String, Serializable> queryParameters = new HashMap<>()
+        parameters.put(ExecuteBDMQueryCommand.RETURNS_LIST, true)
+        parameters.put(ExecuteBDMQueryCommand.START_INDEX, 0)
+        parameters.put(ExecuteBDMQueryCommand.MAX_RESULTS, 10)
+
+        parameters.put(queryParameters, (Serializable) queryParameters)
+        def execute = commandAPI.execute("executeBDMQuery", parameters)
+
+        def bytes = execute as byte[]
+        def string = new String(bytes)
+        println "Employee.find BDM query result:\n$string"
+    }
+
+    private void callBusinessDataByQuery(CommandAPI commandAPI, String queryName, String returnType) {
+        final Map<String, Serializable> parameters = new HashMap<>()
+        parameters.put(GetBusinessDataByQueryCommand.QUERY_NAME, queryName)
+
+        final Map<String, Serializable> queryParameters = new HashMap<>()
+        parameters.put(GetBusinessDataByQueryCommand.ENTITY_CLASS_NAME, returnType)
+        parameters.put(GetBusinessDataByQueryCommand.START_INDEX, 0)
+        parameters.put(GetBusinessDataByQueryCommand.MAX_RESULTS, 10)
+        parameters.put(BusinessDataCommandField.BUSINESS_DATA_URI_PATTERN, "/businessdata/{className}/{id}/{field}")
+
+        parameters.put(queryParameters, (Serializable) queryParameters)
+
+        def execute = commandAPI.execute("getBusinessDataByQueryCommand", parameters) as BusinessDataQueryResult
+        println "Employee.find BDM query result:\n${execute.businessDataQueryMetadata.count}"
+        println "Employee.find BDM query result:\n${execute.jsonResults}"
+
+    }
+
 
 }

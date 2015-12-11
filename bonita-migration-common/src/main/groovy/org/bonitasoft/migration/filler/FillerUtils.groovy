@@ -24,6 +24,7 @@ class FillerUtils {
      */
     public static void initializeEngineSystemProperties() {
         System.setProperty("sysprop.bonita.db.vendor", System.getProperty("db.vendor"));
+        System.setProperty("sysprop.bonita.bdm.db.vendor", System.getProperty("db.vendor"));
         System.setProperty("db.url", System.getProperty("db.url"));
         System.setProperty("db.user", System.getProperty("db.user"));
         System.setProperty("db.password", System.getProperty("db.password"));
