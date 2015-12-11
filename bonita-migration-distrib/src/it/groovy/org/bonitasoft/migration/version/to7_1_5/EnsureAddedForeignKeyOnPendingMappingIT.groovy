@@ -12,12 +12,16 @@
  * Floor, Boston, MA 02110-1301, USA.
  */
 package org.bonitasoft.migration.version.to7_1_5
+
 import org.bonitasoft.migration.DBUnitHelper
 import org.bonitasoft.migration.core.Logger
 import org.bonitasoft.migration.core.MigrationContext
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
+
+import static org.bonitasoft.migration.core.MigrationStep.DBVendor.ORACLE
+
 /**
  * @author Laurent Leseigneur
  */
@@ -37,7 +41,7 @@ class EnsureAddedForeignKeyOnPendingMappingIT extends Specification {
     }
 
     def cleanup() {
-        dbUnitHelper.dropTables(["pending_mapping","flownode_instance" ] as String[])
+        dbUnitHelper.dropTables(["pending_mapping", "flownode_instance"] as String[])
     }
 
     @Unroll
@@ -46,10 +50,11 @@ class EnsureAddedForeignKeyOnPendingMappingIT extends Specification {
         dbUnitHelper.createTables("$version/pendingMapping", "PendingMapping")
 
         when:
+        def foreignKeyName = (migrationContext.dbVendor == ORACLE) ? "fk_pMap_flnId" : "fk_pending_mapping_flownode_instanceId"
         new MigratePendingMapping().execute(migrationContext)
 
         then:
-        dbUnitHelper.hasForeignKeyOnTable("pending_mapping","fk_pending_mapping_flownode_instanceId")==true
+        dbUnitHelper.hasForeignKeyOnTable("pending_mapping", foreignKeyName)
 
         where:
         version << ["6_4_2", "6_5_0"]
