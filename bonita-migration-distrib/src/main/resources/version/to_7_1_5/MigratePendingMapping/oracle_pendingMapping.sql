@@ -1,0 +1,1 @@
+ALTER TABLE pending_mapping ADD CONSTRAINT fk_pMap_flnId FOREIGN KEY (tenantid, activityId) REFERENCES flownode_instance(tenantid, id)
