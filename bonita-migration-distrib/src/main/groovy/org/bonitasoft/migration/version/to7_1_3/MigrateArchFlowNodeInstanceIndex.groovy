@@ -17,7 +17,7 @@ import org.bonitasoft.migration.core.MigrationContext
 import org.bonitasoft.migration.core.MigrationStep
 
 /**
- * author Emmanuel Duchastenier
+ * @author Emmanuel Duchastenier
  */
 class MigrateArchFlowNodeInstanceIndex extends MigrationStep {
 

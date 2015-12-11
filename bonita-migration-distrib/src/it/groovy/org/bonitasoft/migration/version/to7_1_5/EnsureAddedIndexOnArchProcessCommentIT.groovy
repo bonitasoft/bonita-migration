@@ -12,12 +12,14 @@
  * Floor, Boston, MA 02110-1301, USA.
  */
 package org.bonitasoft.migration.version.to7_1_5
+
 import org.bonitasoft.migration.DBUnitHelper
 import org.bonitasoft.migration.core.Logger
 import org.bonitasoft.migration.core.MigrationContext
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
+
 /**
  * @author Laurent Leseigneur
  */
@@ -53,17 +55,17 @@ class EnsureAddedIndexOnArchProcessCommentIT extends Specification {
         println("indexDefinition after migration:")
         println(indexDefinition.toString())
 
-        indexDefinition.tableName=="arch_process_comment"
-        indexDefinition.indexName=="idx1_arch_process_comment"
+        indexDefinition.tableName == "arch_process_comment"
+        indexDefinition.indexName == "idx1_arch_process_comment"
 
         def columnDefinitions = indexDefinition.getColumnDefinitions()
-        columnDefinitions.size()==2
+        columnDefinitions.size() == 2
 
-        columnDefinitions.get(0).columnName.toLowerCase()=="sourceObjectId".toLowerCase()
-        columnDefinitions.get(0).position==1
+        columnDefinitions.get(0).columnName.toLowerCase() == "sourceObjectId".toLowerCase()
+        columnDefinitions.get(0).position == 1
 
-        columnDefinitions.get(1).columnName.toLowerCase()=="tenantId".toLowerCase()
-        columnDefinitions.get(1).position==2
+        columnDefinitions.get(1).columnName.toLowerCase() == "tenantId".toLowerCase()
+        columnDefinitions.get(1).position == 2
 
         where:
         version << ["6_4_2", "6_5_0"]
