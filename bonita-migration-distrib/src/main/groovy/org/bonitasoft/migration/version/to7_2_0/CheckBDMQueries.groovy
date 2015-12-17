@@ -56,7 +56,8 @@ class CheckBDMQueries extends MigrationStep {
                 }
             }
             if (potentialConflict) {
-                logger.warn "To avoid this risk, those queries should be renamed then the BDM should be redeployed"
+                logger.warn "To avoid this risk, those queries should be renamed then the BDM should be redeployed."
+                logger.info "Please report this message to BDM administrator. "
             }
         } else {
             logger.info "no BDM found on this tenant"

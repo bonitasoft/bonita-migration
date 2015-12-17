@@ -14,7 +14,7 @@
 
 package org.bonitasoft.migration
 
-import org.bonitasoft.engine.api.CommandAPI
+import groovy.json.JsonSlurper
 import org.bonitasoft.engine.api.TenantAPIAccessor
 import org.bonitasoft.engine.bdm.BusinessObjectModelConverter
 import org.bonitasoft.engine.bdm.model.BusinessObject
@@ -29,13 +29,14 @@ import org.bonitasoft.engine.bpm.flownode.MultiInstanceLoopCharacteristics
 import org.bonitasoft.engine.bpm.flownode.UserTaskDefinition
 import org.bonitasoft.engine.bpm.parameter.ParameterInstance
 import org.bonitasoft.engine.command.BusinessDataCommandField
-import org.bonitasoft.engine.command.ExecuteBDMQueryCommand
 import org.bonitasoft.engine.command.GetBusinessDataByQueryCommand
 import org.bonitasoft.engine.test.junit.BonitaEngineRule
 import org.bonitasoft.migration.filler.FillerUtils
 import org.junit.BeforeClass
 import org.junit.Rule
 import org.junit.Test
+
+import java.text.SimpleDateFormat
 
 import static org.assertj.core.api.Assertions.assertThat
 import static org.assertj.core.api.Assertions.tuple
@@ -168,31 +169,31 @@ class CheckMigratedTo7_2_0 {
         TenantAPIAccessor.getLoginAPI().logout(session)
     }
 
-    @Test
-    public void verify_BDM_query_call() {
-        def session = TenantAPIAccessor.getLoginAPI().login("userForBPMProcess", "bpm")
-        def commandAPI = TenantAPIAccessor.getCommandAPI(session)
-
-        callBdmQuery(commandAPI, "Employee.find", "com.company.model.Employee")
-    }
-
-//  uncomment to check without BDM redeploy and countFor* named queries
-//  see BS-14810
-//    @Test
-//    public void verify_BDM_businessData_query_call() {
-//        def session = TenantAPIAccessor.getLoginAPI().login("userForBPMProcess", "bpm")
-//        def commandAPI = TenantAPIAccessor.getCommandAPI(session)
-//
-//        callBusinessDataByQuery(commandAPI, "find", "com.company.model.Employee")
-//    }
 
     @Test
-    public void verify_BDM_businessData_query_call_with_BDM_redeploy() {
+    public void verify_BDM_businessData_query_call() {
+        def queryName = "find"
+        def returnType = "com.company.model.Employee"
+
+
+        startProcessWithBdm()
+        callBusinessDataByQuery(queryName, returnType, 2, false)
+
         redeployBdmAfterMigration(createBusinessObjectModel())
 
-        def session = TenantAPIAccessor.getLoginAPI().login("userForBPMProcess", "bpm")
-        def commandAPI = TenantAPIAccessor.getCommandAPI(session)
-        callBusinessDataByQuery(commandAPI, "find", "com.company.model.Employee")
+        startProcessWithBdm()
+        callBusinessDataByQuery(queryName, returnType, 1, true)
+
+    }
+
+    private void startProcessWithBdm() {
+        def loginAPI = TenantAPIAccessor.getLoginAPI()
+        def session = loginAPI.login("userForBPMProcess", "bpm")
+        def processAPI = TenantAPIAccessor.getProcessAPI(session)
+        def processDefinitionId = processAPI.getProcessDefinitionId("process with BDM", "before_7_2")
+        processAPI.startProcess(processDefinitionId)
+        loginAPI.logout(session)
+
     }
 
 
@@ -200,13 +201,29 @@ class CheckMigratedTo7_2_0 {
         def session = TenantAPIAccessor.getLoginAPI().login("install", "install")
         def tenantAdministrationAPI = TenantAPIAccessor.getTenantAdministrationAPI(session)
 
+        tenantAdministrationAPI.clientBDMZip
+
         final BusinessObjectModelConverter converter = new BusinessObjectModelConverter()
         final byte[] zip = converter.zip(businessObjectModel)
 
         tenantAdministrationAPI.pause()
-        tenantAdministrationAPI.uninstallBusinessDataModel()
-        tenantAdministrationAPI.installBusinessDataModel(zip)
+        def versionBefore = tenantAdministrationAPI.businessDataModelVersion
+        tenantAdministrationAPI.cleanAndUninstallBusinessDataModel()
         tenantAdministrationAPI.resume()
+
+        tenantAdministrationAPI.pause()
+        def businessDataModelVersionFromInstall = tenantAdministrationAPI.installBusinessDataModel(zip)
+        tenantAdministrationAPI.resume()
+        def businessDataModelVersion = tenantAdministrationAPI.businessDataModelVersion
+
+        assertThat(businessDataModelVersionFromInstall)
+                .as("should redeploy BDM " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S").format(new Date()))
+                .isNotNull()
+                .isNotEqualTo(versionBefore)
+
+        assertThat(businessDataModelVersion)
+                .isNotNull()
+                .isEqualTo(businessDataModelVersionFromInstall)
 
         TenantAPIAccessor.getLoginAPI().logout(session)
 
@@ -216,11 +233,12 @@ class CheckMigratedTo7_2_0 {
         final SimpleField firstName = new SimpleField()
         firstName.setName("firstName")
         firstName.setType(FieldType.STRING)
-        firstName.setLength(Integer.valueOf(10))
+        firstName.setLength(Integer.valueOf(100))
 
         final SimpleField lastName = new SimpleField()
         lastName.setName("lastName")
         lastName.setType(FieldType.STRING)
+        lastName.setLength(Integer.valueOf(100))
         lastName.setNullable(Boolean.FALSE)
 
         final SimpleField phoneNumbers = new SimpleField()
@@ -272,25 +290,10 @@ class CheckMigratedTo7_2_0 {
     }
 
 
-    private void callBdmQuery(CommandAPI commandAPI, String queryName, String returnType) {
-        final Map<String, Serializable> parameters = new HashMap<>()
-        parameters.put("queryName", queryName)
-        parameters.put("returnType", returnType)
+    private void callBusinessDataByQuery(String queryName, String returnType, Integer expectedSize, boolean expectBusinessDataQueryMetadata) {
+        def session = TenantAPIAccessor.getLoginAPI().login("userForBPMProcess", "bpm")
+        def commandAPI = TenantAPIAccessor.getCommandAPI(session)
 
-        final Map<String, Serializable> queryParameters = new HashMap<>()
-        parameters.put(ExecuteBDMQueryCommand.RETURNS_LIST, true)
-        parameters.put(ExecuteBDMQueryCommand.START_INDEX, 0)
-        parameters.put(ExecuteBDMQueryCommand.MAX_RESULTS, 10)
-
-        parameters.put(queryParameters, (Serializable) queryParameters)
-        def execute = commandAPI.execute("executeBDMQuery", parameters)
-
-        def bytes = execute as byte[]
-        def string = new String(bytes)
-        println "Employee.find BDM query result:\n$string"
-    }
-
-    private void callBusinessDataByQuery(CommandAPI commandAPI, String queryName, String returnType) {
         final Map<String, Serializable> parameters = new HashMap<>()
         parameters.put(GetBusinessDataByQueryCommand.QUERY_NAME, queryName)
 
@@ -303,8 +306,16 @@ class CheckMigratedTo7_2_0 {
         parameters.put(queryParameters, (Serializable) queryParameters)
 
         def execute = commandAPI.execute("getBusinessDataByQueryCommand", parameters) as BusinessDataQueryResult
-        println "Employee.find BDM query result:\n${execute.businessDataQueryMetadata.count}"
+        if (expectBusinessDataQueryMetadata) {
+            assertThat(execute.businessDataQueryMetadata.count).as("expect to have $expectedSize results").isEqualTo(expectedSize)
+        }
+        def slurper = new JsonSlurper()
+        def result = slurper.parseText(execute.jsonResults)
+
         println "Employee.find BDM query result:\n${execute.jsonResults}"
+
+        assertThat(result.size()).as("expect to have $expectedSize results").isEqualTo(expectedSize)
+        assertThat(result[0].lastName).as("should have last name in ${result[0]}").isEqualTo("Doe")
 
     }
 

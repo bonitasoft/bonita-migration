@@ -66,11 +66,12 @@ class FillBeforeMigratingTo7_2_0 {
         final SimpleField firstName = new SimpleField()
         firstName.setName("firstName")
         firstName.setType(FieldType.STRING)
-        firstName.setLength(Integer.valueOf(10))
+        firstName.setLength(Integer.valueOf(100))
 
         final SimpleField lastName = new SimpleField()
         lastName.setName("lastName")
         lastName.setType(FieldType.STRING)
+        lastName.setLength(Integer.valueOf(100))
         lastName.setNullable(Boolean.FALSE)
 
         final SimpleField phoneNumbers = new SimpleField()
@@ -155,11 +156,13 @@ class FillBeforeMigratingTo7_2_0 {
         def user = identityAPI.createUser("userForBPMProcess", "bpm")
 
         final Expression employeeExpression = new ExpressionBuilder().createGroovyScriptExpression("createNewEmployee", new StringBuilder().append("import ")
-                .append("com.company.model.Employee").append("; Employee e = new Employee(); e.firstName = 'Jane'; e.lastName = 'Doe'; return e;").toString(),
+                .append("com.company.model.Employee; ")
+                .append("import java.util.Calendar.*; ")
+                .append("Employee e = new Employee(); e.firstName = 'Jane'+Calendar.instance.time; e.lastName = 'Doe'; return e;").toString(),
                 "com.company.model.Employee");
 
         def builder = new ProcessDefinitionBuilder()
-        builder.createNewInstance("process with BDM", "1.0-SNAPSHOT")
+        builder.createNewInstance("process with BDM", "before_7_2")
         builder.addActor("BDM actor", true)
         builder.addBusinessData("myEmployee", "com.company.model.Employee", employeeExpression)
         builder.addAutomaticTask("step1").addDescription("autoTaskDesc")
