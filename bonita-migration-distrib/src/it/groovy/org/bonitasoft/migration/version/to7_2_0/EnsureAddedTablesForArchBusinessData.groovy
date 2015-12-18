@@ -66,35 +66,35 @@ class EnsureAddedTablesForArchBusinessData extends Specification {
         then:
         def columnDefinitions1 = dbUnitHelper.getIndexDefinition("arch_ref_biz_data_inst", "idx_arch_biz_data_inst1").getColumnDefinitions()
         columnDefinitions1.size() == 2
-        columnDefinitions1.get(0).columnName == "tenantid"
+        columnDefinitions1.get(0).columnName.toLowerCase() == "tenantid"
         columnDefinitions1.get(0).position == 1
-        columnDefinitions1.get(1).columnName == "orig_proc_inst_id"
+        columnDefinitions1.get(1).columnName.toLowerCase() == "orig_proc_inst_id"
         columnDefinitions1.get(1).position == 2
 
         def columnDefinitions2 = dbUnitHelper.getIndexDefinition("arch_ref_biz_data_inst", "idx_arch_biz_data_inst2").getColumnDefinitions()
         columnDefinitions2.size() == 2
-        columnDefinitions2.get(0).columnName == "tenantid"
+        columnDefinitions2.get(0).columnName.toLowerCase() == "tenantid"
         columnDefinitions2.get(0).position == 1
-        columnDefinitions2.get(1).columnName == "orig_fn_inst_id"
+        columnDefinitions2.get(1).columnName.toLowerCase() == "orig_fn_inst_id"
         columnDefinitions2.get(1).position == 2
 
         // Can we use getIndexDefinition() method to retrieve info on PKs, FKs and UKs ? (it works at least for Postgres)
 //        def columnDefinitions3 = dbUnitHelper.getIndexDefinition("arch_ref_biz_data_inst", "pk_arch_ref_biz_data_inst").getColumnDefinitions()
 //        columnDefinitions3.size() == 2
-//        columnDefinitions3.get(0).columnName == "tenantid"
+//        columnDefinitions3.get(0).columnName.toLowerCase() == "tenantid"
 //        columnDefinitions3.get(0).position == 1
-//        columnDefinitions3.get(1).columnName == "id"
+//        columnDefinitions3.get(1).columnName.toLowerCase() == "id"
 //        columnDefinitions3.get(1).position == 2
 //
 //        def columnDefinitions4 = dbUnitHelper.getIndexDefinition("arch_ref_biz_data_inst", "uk_arch_ref_biz_data_inst").getColumnDefinitions()
 //        columnDefinitions4.size() == 4
-//        columnDefinitions4.get(0).columnName == "name"
+//        columnDefinitions4.get(0).columnName.toLowerCase() == "name"
 //        columnDefinitions4.get(0).position == 1
-//        columnDefinitions4.get(1).columnName == "orig_proc_inst_id"
+//        columnDefinitions4.get(1).columnName.toLowerCase() == "orig_proc_inst_id"
 //        columnDefinitions4.get(1).position == 2
-//        columnDefinitions4.get(2).columnName == "orig_fn_inst_id"
+//        columnDefinitions4.get(2).columnName.toLowerCase() == "orig_fn_inst_id"
 //        columnDefinitions4.get(2).position == 3
-//        columnDefinitions4.get(3).columnName == "tenantid"
+//        columnDefinitions4.get(3).columnName.toLowerCase() == "tenantid"
 //        columnDefinitions4.get(3).position == 4
     }
 
@@ -106,11 +106,11 @@ class EnsureAddedTablesForArchBusinessData extends Specification {
         // Can we use getIndexDefinition() method to retrieve info on PKs, FKs and UKs ? (it works at least for Postgres), if yes, uncomment this test :
 //        def columnDefinitions1 = dbUnitHelper.getIndexDefinition("arch_multi_biz_data", "pk_arch_rbdi_mbd").getColumnDefinitions()
 //        columnDefinitions1.size() == 3
-//        columnDefinitions1.get(0).columnName == "tenantid"
+//        columnDefinitions1.get(0).columnName.toLowerCase() == "tenantid"
 //        columnDefinitions1.get(0).position == 1
-//        columnDefinitions1.get(1).columnName == "id"
+//        columnDefinitions1.get(1).columnName.toLowerCase() == "id"
 //        columnDefinitions1.get(1).position == 2
-//        columnDefinitions1.get(2).columnName == "data_id"
+//        columnDefinitions1.get(2).columnName.toLowerCase() == "data_id"
 //        columnDefinitions1.get(2).position == 3
 
         dbUnitHelper.hasForeignKeyOnTable("arch_multi_biz_data", "fk_arch_rbdi_mbd")
