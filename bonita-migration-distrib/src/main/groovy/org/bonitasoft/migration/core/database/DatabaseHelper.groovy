@@ -16,6 +16,7 @@ package org.bonitasoft.migration.core.database
 
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
+import org.bonitasoft.migration.core.Logger
 import org.bonitasoft.migration.core.MigrationStep.DBVendor
 import org.bonitasoft.migration.core.database.schema.ColumnDefinition
 import org.bonitasoft.migration.core.database.schema.IndexDefinition
@@ -29,6 +30,8 @@ class DatabaseHelper {
     Sql sql
     DBVendor dbVendor
     String version
+    Logger logger
+
 
     /**
      * execute a postgres script converted to the database specified by dbVendor
@@ -249,7 +252,7 @@ END""")
 
         def concatenatedColumns = columns.collect { it }.join(", ")
         String request = "CREATE INDEX $indexName ON $tableName ($concatenatedColumns)"
-        println "Executing request: $request"
+        logger.info "Executing request: $request"
         sql.execute(request)
         return request
     }
@@ -262,7 +265,7 @@ END""")
      */
     def dropIndexIfExists(String tableName, String indexName) {
         if (hasIndexOnTable(tableName, indexName)) {
-            def query
+            def String query
             switch (dbVendor) {
                 case DBVendor.POSTGRES:
                 case DBVendor.ORACLE:
@@ -275,6 +278,7 @@ END""")
                     query = "DROP INDEX " + tableName + "." + indexName
                     break
             }
+            logger.info "Executing request: $query"
             sql.execute(query)
         }
     }

@@ -97,7 +97,7 @@ class MigrationContext {
     def openSqlConnection() {
         sql = MigrationUtil.getSqlConnection(dburl, dbUser, dbPassword, dbDriverClassName)
         autoCommitOn(sql.connection)
-        databaseHelper = new DatabaseHelper(dbVendor: dbVendor, sql: sql)
+        databaseHelper = new DatabaseHelper(dbVendor: dbVendor, sql: sql, logger: logger)
     }
 
     @groovy.transform.CompileStatic

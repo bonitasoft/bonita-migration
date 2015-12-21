@@ -20,6 +20,7 @@ class MigrateTo7_1_5Test extends Specification {
         0     || MigrateArchProcessCommentIndex
         1     || MigrateActorMember
         2     || MigratePendingMapping
+        3     || MigrateArchiveFlownodeInstanceIndex
     }
 
 }
