@@ -428,6 +428,7 @@ END""")
      */
     def executeScript(String folderName, String scriptName) {
         def sqlFile = "/version/to_${version.replace('.', '_')}/$folderName/${dbVendor.toString().toLowerCase()}_${scriptName}.sql"
+        println "execute script $sqlFile"
         def stream1 = this.class.getResourceAsStream(sqlFile)
         def scriptContent = ""
         stream1.withStream { InputStream s ->
@@ -435,7 +436,9 @@ END""")
         }
         def statements = scriptContent.split("@@")
         statements.each {
-            sql.execute(it)
+            def trimmed = it.trim()
+            println "execute statement:\n${trimmed}"
+            sql.execute(trimmed)
         }
     }
 
