@@ -26,7 +26,8 @@ class MigrateTo7_1_5 extends VersionMigration {
                 new MigrateArchProcessCommentIndex(),
                 new MigrateActorMember(),
                 new MigratePendingMapping(),
-                new MigrateArchiveFlownodeInstanceIndex()
+                new MigrateArchiveFlownodeInstanceIndex(),
+                new UpdateNullReachStateDate()
         ]
     }
 }

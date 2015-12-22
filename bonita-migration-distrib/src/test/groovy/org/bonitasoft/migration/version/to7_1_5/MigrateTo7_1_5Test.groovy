@@ -21,6 +21,7 @@ class MigrateTo7_1_5Test extends Specification {
         1     || MigrateActorMember
         2     || MigratePendingMapping
         3     || MigrateArchiveFlownodeInstanceIndex
+        4     || UpdateNullReachStateDate
     }
 
 }
