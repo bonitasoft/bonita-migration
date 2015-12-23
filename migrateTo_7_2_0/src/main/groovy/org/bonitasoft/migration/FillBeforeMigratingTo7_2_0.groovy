@@ -42,6 +42,7 @@ import org.bonitasoft.engine.expression.ExpressionBuilder
 import org.bonitasoft.engine.operation.OperationBuilder
 import org.bonitasoft.engine.test.PlatformTestUtil
 import org.bonitasoft.migration.filler.FillAction
+import org.bonitasoft.migration.filler.FillerBdmInitializer
 import org.bonitasoft.migration.filler.FillerInitializer
 import org.bonitasoft.migration.filler.FillerShutdown
 import org.bonitasoft.migration.filler.FillerUtils
@@ -58,8 +59,6 @@ class FillBeforeMigratingTo7_2_0 {
     public void init() {
         FillerUtils.initializeEngineSystemProperties()
         LocalServerTestsInitializer.beforeAll();
-
-        deployBDM(createBusinessObjectModel())
     }
 
     def createBusinessObjectModel() {
@@ -122,7 +121,9 @@ class FillBeforeMigratingTo7_2_0 {
         model
     }
 
-    void deployBDM(BusinessObjectModel businessObjectModel) {
+    @FillerBdmInitializer
+    def deployBDM() {
+        def businessObjectModel=createBusinessObjectModel()
         def session = TenantAPIAccessor.getLoginAPI().login("install", "install")
         def tenantAdministrationAPI = TenantAPIAccessor.getTenantAdministrationAPI(session)
 
