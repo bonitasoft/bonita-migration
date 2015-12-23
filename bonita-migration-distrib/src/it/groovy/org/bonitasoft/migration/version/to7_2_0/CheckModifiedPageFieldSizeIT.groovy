@@ -50,8 +50,8 @@ class CheckModifiedPageFieldSizeIT extends Specification {
         and:
         dbUnitHelper.context.sql.execute(
                 """
-            INSERT INTO PAGE
-            (TENANTID, ID, NAME, DISPLAYNAME, DESCRIPTION, INSTALLATIONDATE, INSTALLEDBY, PROVIDED, LASTMODIFICATIONDATE, LASTUPDATEDBY, CONTENTNAME, CONTENTTYPE, PROCESSDEFINITIONID)
+            INSERT INTO page
+            (tenantid, id, name, displayname, description, installationdate, installedby, provided, lastmodificationdate, lastupdatedby, contentname, contenttype, processdefinitionid)
             VALUES(1, 3, 'custompage_01234546789012345467890123454678901234546789012345467890123454678901234546789012345467890123454678901234546789012345467890123454678901234546789',
              'Bootstrap default theme', 'Application theme based on bootstrap "Default" theme. (see http://bootswatch.com/default/)', 1444727084195, -1, ${
                     dbUnitHelper.falseValue()
@@ -62,8 +62,8 @@ class CheckModifiedPageFieldSizeIT extends Specification {
 
         dbUnitHelper.context.sql.execute(
                 """
-            INSERT INTO PROFILEENTRY
-            (TENANTID, ID, PROFILEID, NAME, DESCRIPTION, PARENTID, INDEX_, TYPE, PAGE, CUSTOM)
+            INSERT INTO profileentry
+            (tenantid, id, profileid, name, description, parentid, index_, type, page, custom)
             VALUES(1, 3, 1, 'Processes', 'Manage processes', 0, 4, 'link',
             'custompage_01234546789012345467890123454678901234546789012345467890123454678901234546789012345467890123454678901234546789012345467890123454678901234546789', ${
                     dbUnitHelper.falseValue()
@@ -72,8 +72,8 @@ class CheckModifiedPageFieldSizeIT extends Specification {
         )
 
         then:
-        dbUnitHelper.context.sql.rows("select * from page").size() == 1
-        dbUnitHelper.context.sql.rows("select * from profileentry").size() == 1
+        dbUnitHelper.context.sql.rows("SELECT * FROM page").size() == 1
+        dbUnitHelper.context.sql.rows("SELECT * FROM profileentry").size() == 1
 
     }
 
