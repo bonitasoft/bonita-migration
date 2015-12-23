@@ -44,7 +44,7 @@ class QrtzSimpPropTriggersIT extends Specification {
     @Unroll
     def "platform created in #version should rename qrtz_simprop_triggers columns"(String version) {
         setup:
-        dbUnitHelper.createTables(version, "createQuartzTables")
+        dbUnitHelper.createTables("$version/quartzTables", "createQuartzTables")
         println("""dbUnitHelper.hasColumnOnTable("qrtz_simprop_triggers", "int8_prop_1") in version $version :""" + dbUnitHelper.hasColumnOnTable("qrtz_simprop_triggers", "int8_prop_1"))
         println("""dbUnitHelper.hasColumnOnTable("qrtz_simprop_triggers", "int8_prop_2") in version $version :""" + dbUnitHelper.hasColumnOnTable("qrtz_simprop_triggers", "int8_prop_2"))
 

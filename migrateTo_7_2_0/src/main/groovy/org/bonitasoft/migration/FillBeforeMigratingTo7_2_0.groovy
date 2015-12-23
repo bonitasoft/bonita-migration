@@ -12,7 +12,6 @@
  * Floor, Boston, MA 02110-1301, USA.
  **/
 package org.bonitasoft.migration
-
 import org.bonitasoft.engine.LocalServerTestsInitializer
 import org.bonitasoft.engine.api.CommandAPI
 import org.bonitasoft.engine.api.PlatformAPIAccessor
@@ -46,7 +45,6 @@ import org.bonitasoft.migration.filler.FillerBdmInitializer
 import org.bonitasoft.migration.filler.FillerInitializer
 import org.bonitasoft.migration.filler.FillerShutdown
 import org.bonitasoft.migration.filler.FillerUtils
-
 /**
  * @author Baptiste Mesta
  */
@@ -246,7 +244,7 @@ class FillBeforeMigratingTo7_2_0 {
         builder.addUserTask("step2", "myActor").addContract().addInput("myTaskContractInput", Type.BOOLEAN, "Serves description non-reg purposes")
         def task = builder.addAutomaticTask("taskWithNoDescription")
         task.addConnector("theConnector", "connectorId", "version", ConnectorEvent.ON_ENTER).addInput("input1", new ExpressionBuilder().createConstantStringExpression("input1Value"))
-                .addOutput(new OperationBuilder().createSetDataOperation("myData", new ExpressionBuilder().createConstantStringExpression("outputValue")))
+                .addOutput(new OperationBuilder().createSetDataOperation("myData", new ExpressionBuilder().createInputExpression("outputValue",String.class.getName())))
         task.addOperation(new OperationBuilder().createSetDataOperation("myData", new ExpressionBuilder().createConstantStringExpression("theNewValue")))
         builder.addTransition("step1", "step2")
         builder.addActor("myActor")
@@ -341,6 +339,79 @@ class FillBeforeMigratingTo7_2_0 {
 
         TenantAPIAccessor.getLoginAPI().logout(session)
     }
+
+
+
+
+    @FillAction
+    public void barInDatabase() {
+        def session = TenantAPIAccessor.getLoginAPI().login("install", "install");
+        def processAPI = TenantAPIAccessor.getProcessAPI(session)
+        def identityAPI = TenantAPIAccessor.getIdentityAPI(session)
+        def user = identityAPI.createUser("userOfBARInDatabase", "bpm")
+
+        def builder = new BusinessArchiveBuilder().createNewBusinessArchive()
+        def processDefinitionBuilder = new ProcessDefinitionBuilder().createNewInstance("barInDatabase", "1.1.0")
+        processDefinitionBuilder.addActor("theUser")
+        def task = processDefinitionBuilder.addUserTask("step1", "theUser")
+        task.addConnector("theConnector", "connectorId", "version", ConnectorEvent.ON_ENTER).addInput("input1", new ExpressionBuilder().createConstantStringExpression("input1Value"))
+                .addOutput(new OperationBuilder().createSetDataOperation("myData", new ExpressionBuilder().createInputExpression("outputValue",String.class.getName())))
+        processDefinitionBuilder.addUserTask("step2", "theUser")
+        processDefinitionBuilder.addDocumentDefinition("myDoc1").addFile("initialContent1.txt").addContentFileName("MyFile.txt").addMimeType("plain/text")
+        processDefinitionBuilder.addDocumentDefinition("myDoc2").addFile("initialContent2.txt").addContentFileName("MyFile.txt").addMimeType("plain/text")
+        processDefinitionBuilder.addDocumentDefinition("myDoc3").addFile("initialContent3.txt").addContentFileName("MyFile.txt").addMimeType("plain/text")
+        processDefinitionBuilder.addData("myData", "java.lang.String", new ExpressionBuilder().createConstantStringExpression("myDataValue")).addDescription("my data description")
+        processDefinitionBuilder.addTransition("step1", "step2")
+
+        builder.setProcessDefinition(processDefinitionBuilder.done())
+        builder.addDocumentResource(new BarResource("initialContent1.txt", "This is the content of my file1".bytes))
+        builder.addDocumentResource(new BarResource("initialContent2.txt", "This is the content of my file2".bytes))
+        builder.addDocumentResource(new BarResource("initialContent3.txt", "This is the content of my file3".bytes))
+
+        builder.setActorMapping("""
+<actorMappings:actorMappings xmlns:actorMappings="http://www.bonitasoft.org/ns/actormapping/6.0">
+    <actorMapping name="theUser">
+        <users>
+            <user>userOfBARInDatabase</user>
+        </users>
+        <groups />
+        <roles />
+        <memberships />
+    </actorMapping>
+</actorMappings:actorMappings>
+""".getBytes())
+        builder.addExternalResource(new BarResource("index.html", "<html>".getBytes()));
+        builder.addExternalResource(new BarResource("content/other.html", "<html>1".getBytes()));
+        builder.addUserFilters(new BarResource("MyUserFilter.impl", """
+<connectorImplementation>
+    <definitionId>connectorId</definitionId>
+    <definitionVersion>version</definitionVersion>
+    <implementationClassname>MyUserFilter</implementationClassname>
+    <implementationId>implId</implementationId>
+    <implementationVersion>1.0</implementationVersion>
+    <jarDependencies>
+    </jarDependencies>
+</connectorImplementation>""".getBytes()))
+        builder.addConnectorImplementation(new BarResource("myConnector.impl", """
+<connectorImplementation>
+    <definitionId>connectorId</definitionId>
+    <definitionVersion>version</definitionVersion>
+    <implementationClassname>${MyConnector.class.getName()}</implementationClassname>
+    <implementationId>implId</implementationId>
+    <implementationVersion>1.0</implementationVersion>
+    <jarDependencies>
+    </jarDependencies>
+</connectorImplementation>""".getBytes()))
+                .done()
+
+
+        def processDefinition = processAPI.deploy(builder.done())
+        processAPI.enableProcess(processDefinition.getId())
+
+        TenantAPIAccessor.getLoginAPI().logout(session)
+    }
+
+
 
     /**
      * stop platform after all fill actions
