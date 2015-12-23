@@ -11,28 +11,33 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  */
-package org.bonitasoft.migration.version.to7_1_3
-
-import org.bonitasoft.migration.core.MigrationContext
-import org.bonitasoft.migration.core.MigrationStep
-
+package org.bonitasoft.migration.core.database.schema
 /**
- * @author Emmanuel Duchastenier
+ * @author Laurent Leseigneur
  */
-class MigrateArchFlowNodeInstanceIndex extends MigrationStep {
+class ColumnDefinition {
 
-    public static final String ARCH_FLOWNODE_INSTANCE = "arch_flownode_instance"
+    private final String columnName
+    private final long position
 
-    @Override
-    def execute(MigrationContext context) {
-        def helper = context.databaseHelper
-        helper.addOrReplaceIndex(ARCH_FLOWNODE_INSTANCE, "idx_afi_kind_lg3", "tenantId", "kind", "logicalGroup3")
+    def ColumnDefinition(String columnName, long position) {
+
+        this.columnName = columnName
+        this.position = position
     }
 
+    def ColumnDefinition(String columnName, BigDecimal position) {
 
-    @Override
-    String getDescription() {
-        return "Creates a new index on " + ARCH_FLOWNODE_INSTANCE + " table on columns (tenantId, kind, logicalGroup3)"
+        this.columnName = columnName
+        this.position = position.longValue()
+    }
+
+    String getColumnName() {
+        return columnName
+    }
+
+    long getPosition() {
+        return position
     }
 
 }

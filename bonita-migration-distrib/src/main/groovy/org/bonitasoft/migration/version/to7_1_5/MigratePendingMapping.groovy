@@ -11,28 +11,30 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  */
-package org.bonitasoft.migration.version.to7_1_3
+package org.bonitasoft.migration.version.to7_1_5
 
 import org.bonitasoft.migration.core.MigrationContext
 import org.bonitasoft.migration.core.MigrationStep
 
-/**
- * @author Emmanuel Duchastenier
- */
-class MigrateArchFlowNodeInstanceIndex extends MigrationStep {
+import static org.bonitasoft.migration.core.MigrationStep.DBVendor.ORACLE
 
-    public static final String ARCH_FLOWNODE_INSTANCE = "arch_flownode_instance"
+/**
+ * @author Laurent Leseigneur
+ */
+class MigratePendingMapping extends MigrationStep {
 
     @Override
     def execute(MigrationContext context) {
         def helper = context.databaseHelper
-        helper.addOrReplaceIndex(ARCH_FLOWNODE_INSTANCE, "idx_afi_kind_lg3", "tenantId", "kind", "logicalGroup3")
+        def foreignKeyName = (context.dbVendor == ORACLE) ? "fk_pMap_flnId" : "fk_pending_mapping_flownode_instanceId"
+        if (!helper.hasForeignKeyOnTable("pending_mapping", foreignKeyName)) {
+            helper.executeScript("MigratePendingMapping", "pendingMapping")
+        }
     }
-
 
     @Override
     String getDescription() {
-        return "Creates a new index on " + ARCH_FLOWNODE_INSTANCE + " table on columns (tenantId, kind, logicalGroup3)"
+        "add missing foreign key on table pending_mapping if needed"
     }
 
 }

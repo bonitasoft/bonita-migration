@@ -27,6 +27,7 @@ class MigrateTo7_2_0 extends VersionMigration {
         return [
                 new MigrateProcessDefXml(),
                 new ParametersInDatabase(),
+                new BARInDatabase(),
                 new CheckBDMQueries(),
                 new IncreasePageNameField()
         ]

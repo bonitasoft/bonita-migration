@@ -11,28 +11,34 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  */
-package org.bonitasoft.migration.version.to7_1_3
+package org.bonitasoft.migration.version.to7_1_5
 
 import org.bonitasoft.migration.core.MigrationContext
 import org.bonitasoft.migration.core.MigrationStep
 
 /**
- * @author Emmanuel Duchastenier
+ * @author Laurent Leseigneur
  */
-class MigrateArchFlowNodeInstanceIndex extends MigrationStep {
+class MigrateArchProcessCommentIndex extends MigrationStep {
 
-    public static final String ARCH_FLOWNODE_INSTANCE = "arch_flownode_instance"
+    public static final String ARCH_PROCESS_COMMENT = "arch_process_comment"
 
     @Override
     def execute(MigrationContext context) {
         def helper = context.databaseHelper
-        helper.addOrReplaceIndex(ARCH_FLOWNODE_INSTANCE, "idx_afi_kind_lg3", "tenantId", "kind", "logicalGroup3")
-    }
+        def indexDefinition = helper.getIndexDefinition(ARCH_PROCESS_COMMENT, "idx1_arch_process_comment")
 
+        if (!"sourceObjectId".equalsIgnoreCase(indexDefinition.columnDefinitions.get(0).columnName)) {
+            helper.addOrReplaceIndex(ARCH_PROCESS_COMMENT, "idx1_arch_process_comment", "sourceobjectid", "tenantid")
+        } else {
+            println("index does not need to be migrated.")
+        }
+
+    }
 
     @Override
     String getDescription() {
-        return "Creates a new index on " + ARCH_FLOWNODE_INSTANCE + " table on columns (tenantId, kind, logicalGroup3)"
+        return "Fix index column order on table " + ARCH_PROCESS_COMMENT
     }
 
 }
