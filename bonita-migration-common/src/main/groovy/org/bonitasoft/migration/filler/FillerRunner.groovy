@@ -27,6 +27,7 @@ class FillerRunner {
         def instance = fillerClass.newInstance()
 
         executeAllMethodsHaving(fillerClass, FillerInitializer, instance)
+        executeAllMethodsHaving(fillerClass, FillerBdmInitializer, instance)
         executeAllMethodsHaving(fillerClass, FillAction, instance)
         executeAllMethodsHaving(fillerClass, FillerShutdown, instance)
 
