@@ -13,7 +13,6 @@
  **/
 
 package org.bonitasoft.migration
-
 import groovy.json.JsonSlurper
 import org.bonitasoft.engine.api.TenantAPIAccessor
 import org.bonitasoft.engine.bdm.BusinessObjectModelConverter
@@ -22,9 +21,9 @@ import org.bonitasoft.engine.bdm.model.BusinessObjectModel
 import org.bonitasoft.engine.bdm.model.Query
 import org.bonitasoft.engine.bdm.model.field.FieldType
 import org.bonitasoft.engine.bdm.model.field.SimpleField
-import org.bonitasoft.engine.bpm.businessdata.BusinessDataQueryResult
 import org.bonitasoft.engine.bpm.bar.BusinessArchive
 import org.bonitasoft.engine.bpm.bar.BusinessArchiveFactory
+import org.bonitasoft.engine.bpm.businessdata.BusinessDataQueryResult
 import org.bonitasoft.engine.bpm.contract.Type
 import org.bonitasoft.engine.bpm.flownode.ActivityInstanceCriterion
 import org.bonitasoft.engine.bpm.flownode.MultiInstanceLoopCharacteristics
@@ -42,7 +41,6 @@ import java.text.SimpleDateFormat
 
 import static org.assertj.core.api.Assertions.assertThat
 import static org.assertj.core.api.Assertions.tuple
-
 /**
  * @author Laurent Leseigneur
  */
@@ -365,7 +363,6 @@ class CheckMigratedTo7_2_0 {
         assertThat(resources.get("resources/content/other.html")).isEqualTo("<html>1".bytes)
         assertThat(new String(resources.get("connector/myConnector.impl"))).contains(MyConnector.class.getName())
         assertThat(new String(resources.get("userFilters/MyUserFilter.impl"))).contains("MyUserFilter")
-
         TenantAPIAccessor.getLoginAPI().logout(session)
     }
 
