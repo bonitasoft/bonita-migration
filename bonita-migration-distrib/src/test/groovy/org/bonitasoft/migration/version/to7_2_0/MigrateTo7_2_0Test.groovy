@@ -1,7 +1,6 @@
 package org.bonitasoft.migration.version.to7_2_0
 
 import spock.lang.Specification
-
 /**
  * @author Elias Ricken de Medeiros
  */
@@ -36,6 +35,7 @@ class MigrateTo7_2_0Test extends Specification {
         3     || AddArchRefBusinessDataTables
         4     || CheckBDMQueries
         5     || IncreasePageNameField
+        6     || CreatePageMappingForNONE
 
     }
 

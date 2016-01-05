@@ -28,16 +28,21 @@ import org.bonitasoft.engine.bpm.bar.BarResource
 import org.bonitasoft.engine.bpm.bar.BusinessArchiveBuilder
 import org.bonitasoft.engine.bpm.connector.ConnectorEvent
 import org.bonitasoft.engine.bpm.contract.Type
+import org.bonitasoft.engine.bpm.form.FormMappingModelBuilder
 import org.bonitasoft.engine.bpm.process.ProcessDefinition
 import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder
+import org.bonitasoft.engine.exception.NotFoundException
 import org.bonitasoft.engine.command.BusinessDataCommandField
 import org.bonitasoft.engine.command.ExecuteBDMQueryCommand
 import org.bonitasoft.engine.command.GetBusinessDataByQueryCommand
 import org.bonitasoft.engine.expression.Expression
 import org.bonitasoft.engine.expression.ExpressionBuilder
+import org.bonitasoft.engine.form.FormMappingTarget
+import org.bonitasoft.engine.io.IOUtil
 import org.bonitasoft.engine.operation.OperationBuilder
 import org.bonitasoft.engine.test.PlatformTestUtil
 import org.bonitasoft.migration.filler.*
+import static groovy.test.GroovyAssert.shouldFail
 /**
  * @author Baptiste Mesta
  */
@@ -392,6 +397,70 @@ class FillBeforeMigratingTo7_2_0 {
 
         TenantAPIAccessor.getLoginAPI().logout(session)
     }
+
+
+    @FillAction
+    public void createProcessWithFormMappings() {
+        def session = TenantAPIAccessor.getLoginAPI().login("install", "install");
+        def processAPI = TenantAPIAccessor.getProcessAPI(session)
+        def identityAPI = TenantAPIAccessor.getIdentityAPI(session)
+        def pageAPI = TenantAPIAccessor.getCustomPageAPI(session)
+
+        def zip = IOUtil.zip(["Index.groovy":"""
+    return ''
+""".getBytes(),
+        "page.properties":"""
+name=custompage_mypage
+displayName=MyPage
+description=An example page
+""".getBytes()])
+        def page = pageAPI.createPage("mypage.zip", zip)
+        def user = identityAPI.createUser("formMappingUser", "bpm")
+
+        def builder = new BusinessArchiveBuilder().createNewBusinessArchive()
+        def processDefinitionBuilder = new ProcessDefinitionBuilder().createNewInstance("formMappingProcess", "1.1.0")
+        processDefinitionBuilder.addActor("theUser")
+        processDefinitionBuilder.addUserTask("step1", "theUser")
+        processDefinitionBuilder.addUserTask("step2", "theUser")
+        processDefinitionBuilder.addUserTask("step3", "theUser")
+
+        builder.setProcessDefinition(processDefinitionBuilder.done())
+        builder.setActorMapping("""
+<actorMappings:actorMappings xmlns:actorMappings="http://www.bonitasoft.org/ns/actormapping/6.0">
+    <actorMapping name="theUser">
+        <users>
+            <user>formMappingProcess</user>
+        </users>
+        <groups />
+        <roles />
+        <memberships />
+    </actorMapping>
+</actorMappings:actorMappings>
+""".getBytes())
+        builder.setFormMappings(new FormMappingModelBuilder().addProcessOverviewForm("the url of the page",FormMappingTarget.URL)
+        .addProcessStartForm("custompage_mypage",FormMappingTarget.INTERNAL)
+        .addTaskForm(null,FormMappingTarget.NONE,"step1")
+        .addTaskForm(null,FormMappingTarget.NONE,"step3")
+        .addTaskForm(null,FormMappingTarget.UNDEFINED,"step2").build())
+
+
+        def processDefinition = processAPI.deploy(builder.done())
+
+
+        def urlMapping = pageAPI.resolvePageOrURL("processInstance/formMappingProcess/1.1.0", ["IS_ADMIN": true], true)
+        assert urlMapping.url == "the url of the page"
+        def internalMapping = pageAPI.resolvePageOrURL("process/formMappingProcess/1.1.0", ["IS_ADMIN": true], true);
+        assert internalMapping.pageId == page.id
+        shouldFail(NotFoundException){
+            assert pageAPI.resolvePageOrURL("taskInstance/formMappingProcess/1.1.0/step1", ["IS_ADMIN": true], true);
+        }
+        shouldFail(NotFoundException) {
+            assert pageAPI.resolvePageOrURL("taskInstance/formMappingProcess/1.1.0/step2", ["IS_ADMIN": true], true);
+        }
+
+        TenantAPIAccessor.getLoginAPI().logout(session)
+    }
+
 
 
 

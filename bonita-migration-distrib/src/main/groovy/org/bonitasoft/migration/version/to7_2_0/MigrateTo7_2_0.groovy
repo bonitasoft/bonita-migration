@@ -30,7 +30,8 @@ class MigrateTo7_2_0 extends VersionMigration {
                 new BARInDatabase(),
                 new AddArchRefBusinessDataTables(),
                 new CheckBDMQueries(),
-                new IncreasePageNameField()
+                new IncreasePageNameField(),
+                new CreatePageMappingForNONE()
         ]
     }
 }
