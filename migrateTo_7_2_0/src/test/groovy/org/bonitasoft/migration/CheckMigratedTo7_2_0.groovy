@@ -29,6 +29,7 @@ import org.bonitasoft.engine.bpm.flownode.ActivityInstanceCriterion
 import org.bonitasoft.engine.bpm.flownode.MultiInstanceLoopCharacteristics
 import org.bonitasoft.engine.bpm.flownode.UserTaskDefinition
 import org.bonitasoft.engine.bpm.parameter.ParameterInstance
+import org.bonitasoft.engine.exception.NotFoundException
 import org.bonitasoft.engine.command.BusinessDataCommandField
 import org.bonitasoft.engine.command.GetBusinessDataByQueryCommand
 import org.bonitasoft.engine.test.junit.BonitaEngineRule
@@ -39,6 +40,7 @@ import org.junit.Test
 
 import java.text.SimpleDateFormat
 
+import static groovy.test.GroovyAssert.shouldFail
 import static org.assertj.core.api.Assertions.assertThat
 import static org.assertj.core.api.Assertions.tuple
 /**
@@ -363,6 +365,29 @@ class CheckMigratedTo7_2_0 {
         assertThat(resources.get("resources/content/other.html")).isEqualTo("<html>1".bytes)
         assertThat(new String(resources.get("connector/myConnector.impl"))).contains(MyConnector.class.getName())
         assertThat(new String(resources.get("userFilters/MyUserFilter.impl"))).contains("MyUserFilter")
+        TenantAPIAccessor.getLoginAPI().logout(session)
+    }
+
+
+
+    @Test
+    public void checkFormMappingAreMigrated() {
+        def session = TenantAPIAccessor.getLoginAPI().login("formMappingUser", "bpm");
+        def pageAPI = TenantAPIAccessor.getCustomPageAPI(session)
+        def page = pageAPI.getPageByName("custompage_mypage")
+
+
+        def urlMapping = pageAPI.resolvePageOrURL("processInstance/formMappingProcess/1.1.0", ["IS_ADMIN": true], true)
+        assert urlMapping.url == "the url of the page?tenant=1"
+        def internalMapping = pageAPI.resolvePageOrURL("process/formMappingProcess/1.1.0", ["IS_ADMIN": true], true);
+        assert internalMapping.pageId == page.id
+        def noneMapping = pageAPI.resolvePageOrURL("taskInstance/formMappingProcess/1.1.0/step1", ["IS_ADMIN": true], true)
+        assert noneMapping.pageId == null;
+        assert noneMapping.url == null;
+        shouldFail(NotFoundException) {
+            assert pageAPI.resolvePageOrURL("taskInstance/formMappingProcess/1.1.0/step2", ["IS_ADMIN": true], true);
+        }
+
         TenantAPIAccessor.getLoginAPI().logout(session)
     }
 
