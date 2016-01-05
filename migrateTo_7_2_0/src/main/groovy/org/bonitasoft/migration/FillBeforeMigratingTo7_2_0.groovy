@@ -33,18 +33,11 @@ import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder
 import org.bonitasoft.engine.command.BusinessDataCommandField
 import org.bonitasoft.engine.command.ExecuteBDMQueryCommand
 import org.bonitasoft.engine.command.GetBusinessDataByQueryCommand
-import org.bonitasoft.engine.connector.AbstractConnector
-import org.bonitasoft.engine.connector.ConnectorException
-import org.bonitasoft.engine.connector.ConnectorValidationException
 import org.bonitasoft.engine.expression.Expression
 import org.bonitasoft.engine.expression.ExpressionBuilder
 import org.bonitasoft.engine.operation.OperationBuilder
 import org.bonitasoft.engine.test.PlatformTestUtil
-import org.bonitasoft.migration.filler.FillAction
-import org.bonitasoft.migration.filler.FillerBdmInitializer
-import org.bonitasoft.migration.filler.FillerInitializer
-import org.bonitasoft.migration.filler.FillerShutdown
-import org.bonitasoft.migration.filler.FillerUtils
+import org.bonitasoft.migration.filler.*
 /**
  * @author Baptiste Mesta
  */
@@ -131,17 +124,6 @@ class FillBeforeMigratingTo7_2_0 {
         tenantAdministrationAPI.pause()
         tenantAdministrationAPI.installBusinessDataModel(zip)
         tenantAdministrationAPI.resume()
-    }
-
-    public class MyConnector extends AbstractConnector {
-        @Override
-        protected void executeBusinessLogic() throws ConnectorException {
-        }
-
-        @Override
-        void validateInputParameters() throws ConnectorValidationException {
-
-        }
     }
 
     @FillAction
