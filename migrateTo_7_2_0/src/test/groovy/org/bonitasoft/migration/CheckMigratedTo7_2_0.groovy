@@ -13,20 +13,31 @@
  **/
 
 package org.bonitasoft.migration
-
+import groovy.json.JsonSlurper
 import org.bonitasoft.engine.api.TenantAPIAccessor
+import org.bonitasoft.engine.bdm.BusinessObjectModelConverter
+import org.bonitasoft.engine.bdm.model.BusinessObject
+import org.bonitasoft.engine.bdm.model.BusinessObjectModel
+import org.bonitasoft.engine.bdm.model.Query
+import org.bonitasoft.engine.bdm.model.field.FieldType
+import org.bonitasoft.engine.bdm.model.field.SimpleField
 import org.bonitasoft.engine.bpm.bar.BusinessArchive
 import org.bonitasoft.engine.bpm.bar.BusinessArchiveFactory
+import org.bonitasoft.engine.bpm.businessdata.BusinessDataQueryResult
 import org.bonitasoft.engine.bpm.contract.Type
 import org.bonitasoft.engine.bpm.flownode.ActivityInstanceCriterion
 import org.bonitasoft.engine.bpm.flownode.MultiInstanceLoopCharacteristics
 import org.bonitasoft.engine.bpm.flownode.UserTaskDefinition
 import org.bonitasoft.engine.bpm.parameter.ParameterInstance
+import org.bonitasoft.engine.command.BusinessDataCommandField
+import org.bonitasoft.engine.command.GetBusinessDataByQueryCommand
 import org.bonitasoft.engine.test.junit.BonitaEngineRule
 import org.bonitasoft.migration.filler.FillerUtils
 import org.junit.BeforeClass
 import org.junit.Rule
 import org.junit.Test
+
+import java.text.SimpleDateFormat
 
 import static org.assertj.core.api.Assertions.assertThat
 import static org.assertj.core.api.Assertions.tuple
@@ -160,6 +171,157 @@ class CheckMigratedTo7_2_0 {
 
 
     @Test
+    public void verify_BDM_businessData_query_call() {
+        def queryName = "find"
+        def returnType = "com.company.model.Employee"
+
+
+        startProcessWithBdm()
+        callBusinessDataByQuery(queryName, returnType, 2, false)
+
+        redeployBdmAfterMigration(createBusinessObjectModel())
+
+        startProcessWithBdm()
+        callBusinessDataByQuery(queryName, returnType, 1, true)
+
+    }
+
+    private void startProcessWithBdm() {
+        def loginAPI = TenantAPIAccessor.getLoginAPI()
+        def session = loginAPI.login("userForBPMProcess", "bpm")
+        def processAPI = TenantAPIAccessor.getProcessAPI(session)
+        def processDefinitionId = processAPI.getProcessDefinitionId("process with BDM", "before_7_2")
+        processAPI.startProcess(processDefinitionId)
+        loginAPI.logout(session)
+
+    }
+
+
+    private void redeployBdmAfterMigration(BusinessObjectModel businessObjectModel) throws Exception {
+        def session = TenantAPIAccessor.getLoginAPI().login("install", "install")
+        def tenantAdministrationAPI = TenantAPIAccessor.getTenantAdministrationAPI(session)
+
+        tenantAdministrationAPI.clientBDMZip
+
+        final BusinessObjectModelConverter converter = new BusinessObjectModelConverter()
+        final byte[] zip = converter.zip(businessObjectModel)
+
+        tenantAdministrationAPI.pause()
+        def versionBefore = tenantAdministrationAPI.businessDataModelVersion
+        tenantAdministrationAPI.cleanAndUninstallBusinessDataModel()
+        tenantAdministrationAPI.resume()
+
+        tenantAdministrationAPI.pause()
+        def businessDataModelVersionFromInstall = tenantAdministrationAPI.installBusinessDataModel(zip)
+        tenantAdministrationAPI.resume()
+        def businessDataModelVersion = tenantAdministrationAPI.businessDataModelVersion
+
+        assertThat(businessDataModelVersionFromInstall)
+                .as("should redeploy BDM " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S").format(new Date()))
+                .isNotNull()
+                .isNotEqualTo(versionBefore)
+
+        assertThat(businessDataModelVersion)
+                .isNotNull()
+                .isEqualTo(businessDataModelVersionFromInstall)
+
+        TenantAPIAccessor.getLoginAPI().logout(session)
+
+    }
+
+    def createBusinessObjectModel() {
+        final SimpleField firstName = new SimpleField()
+        firstName.setName("firstName")
+        firstName.setType(FieldType.STRING)
+        firstName.setLength(Integer.valueOf(100))
+
+        final SimpleField lastName = new SimpleField()
+        lastName.setName("lastName")
+        lastName.setType(FieldType.STRING)
+        lastName.setLength(Integer.valueOf(100))
+        lastName.setNullable(Boolean.FALSE)
+
+        final SimpleField phoneNumbers = new SimpleField()
+        phoneNumbers.setName("phoneNumbers")
+        phoneNumbers.setType(FieldType.STRING)
+        phoneNumbers.setLength(Integer.valueOf(10))
+        phoneNumbers.setCollection(Boolean.TRUE)
+
+        final SimpleField hireDate = new SimpleField()
+        hireDate.setName("hireDate")
+        hireDate.setType(FieldType.DATE)
+
+        final SimpleField booleanField = new SimpleField()
+        booleanField.setName("booleanField")
+        booleanField.setType(FieldType.BOOLEAN)
+
+        final BusinessObject employee = new BusinessObject()
+        employee.setQualifiedName("com.company.model.Employee")
+        employee.addField(hireDate)
+        employee.addField(booleanField)
+        employee.addField(firstName)
+        employee.addField(lastName)
+        employee.addField(phoneNumbers)
+        employee.setDescription("Describe a simple employee")
+        employee.addUniqueConstraint("uk_fl", "firstName", "lastName")
+
+        final Query getEmployeeByPhoneNumber = employee.addQuery("findByPhoneNumber",
+                "SELECT e FROM Employee e WHERE :phoneNumber IN ELEMENTS(e.phoneNumbers)", List.class.getName());
+        getEmployeeByPhoneNumber.addQueryParameter("phoneNumber", String.class.getName());
+
+        final Query findByFirstNAmeAndLastNameNewOrder = employee.addQuery("findByFirstNameAndLastNameNewOrder",
+                "SELECT e FROM Employee e WHERE e.firstName =:firstName AND e.lastName = :lastName ORDER BY e.lastName", List.class.getName());
+        findByFirstNAmeAndLastNameNewOrder.addQueryParameter("firstName", String.class.getName());
+        findByFirstNAmeAndLastNameNewOrder.addQueryParameter("lastName", String.class.getName());
+
+
+        final Query findByHireDate = employee.addQuery("findByHireDateRange",
+                "SELECT e FROM Employee e WHERE e.hireDate >=:date1 and e.hireDate <=:date2", List.class.getName());
+        findByHireDate.addQueryParameter("date1", Date.class.getName());
+        findByHireDate.addQueryParameter("date2", Date.class.getName());
+
+        employee.addQuery("countForAllEmployee", "SELECT COUNT(e) FROM Employee e", Long.class.getName());
+
+        employee.addIndex("IDX_LSTNM", "lastName");
+
+        final BusinessObjectModel model = new BusinessObjectModel();
+        model.addBusinessObject(employee)
+        model
+    }
+
+
+    private void callBusinessDataByQuery(String queryName, String returnType, Integer expectedSize, boolean expectBusinessDataQueryMetadata) {
+        def session = TenantAPIAccessor.getLoginAPI().login("userForBPMProcess", "bpm")
+        def commandAPI = TenantAPIAccessor.getCommandAPI(session)
+
+        final Map<String, Serializable> parameters = new HashMap<>()
+        parameters.put(GetBusinessDataByQueryCommand.QUERY_NAME, queryName)
+
+        final Map<String, Serializable> queryParameters = new HashMap<>()
+        parameters.put(GetBusinessDataByQueryCommand.ENTITY_CLASS_NAME, returnType)
+        parameters.put(GetBusinessDataByQueryCommand.START_INDEX, 0)
+        parameters.put(GetBusinessDataByQueryCommand.MAX_RESULTS, 10)
+        parameters.put(BusinessDataCommandField.BUSINESS_DATA_URI_PATTERN, "/businessdata/{className}/{id}/{field}")
+
+        parameters.put(queryParameters, (Serializable) queryParameters)
+
+        def execute = commandAPI.execute("getBusinessDataByQueryCommand", parameters) as BusinessDataQueryResult
+        if (expectBusinessDataQueryMetadata) {
+            assertThat(execute.businessDataQueryMetadata.count).as("expect to have $expectedSize results").isEqualTo(expectedSize)
+        }
+        def slurper = new JsonSlurper()
+        def result = slurper.parseText(execute.jsonResults)
+
+        println "Employee.find BDM query result:\n${execute.jsonResults}"
+
+        assertThat(result.size()).as("expect to have $expectedSize results").isEqualTo(expectedSize)
+        assertThat(result[0].lastName).as("should have last name in ${result[0]}").isEqualTo("Doe")
+
+    }
+
+
+
+    @Test
     public void verifyBARsAreMigratedInDb() {
         def session = TenantAPIAccessor.getLoginAPI().login("userOfBARInDatabase", "bpm");
         def processAPI = TenantAPIAccessor.getProcessAPI(session)
@@ -201,7 +363,6 @@ class CheckMigratedTo7_2_0 {
         assertThat(resources.get("resources/content/other.html")).isEqualTo("<html>1".bytes)
         assertThat(new String(resources.get("connector/myConnector.impl"))).contains(MyConnector.class.getName())
         assertThat(new String(resources.get("userFilters/MyUserFilter.impl"))).contains("MyUserFilter")
-
         TenantAPIAccessor.getLoginAPI().logout(session)
     }
 

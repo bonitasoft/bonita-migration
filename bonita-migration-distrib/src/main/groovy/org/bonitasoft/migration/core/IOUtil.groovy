@@ -206,7 +206,6 @@ public class IOUtil {
 
         byte[] buff = new byte[1024]
         inputStream.withStream { stream ->
-            println "bonita home zip = " + stream
 
             def zipStream = new ZipInputStream(stream)
             def ZipEntry entry

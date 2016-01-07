@@ -13,20 +13,31 @@
  **/
 package org.bonitasoft.migration
 import org.bonitasoft.engine.LocalServerTestsInitializer
+import org.bonitasoft.engine.api.CommandAPI
 import org.bonitasoft.engine.api.PlatformAPIAccessor
+import org.bonitasoft.engine.api.ProcessAPI
 import org.bonitasoft.engine.api.TenantAPIAccessor
+import org.bonitasoft.engine.bdm.BusinessObjectModelConverter
+import org.bonitasoft.engine.bdm.model.BusinessObject
+import org.bonitasoft.engine.bdm.model.BusinessObjectModel
+import org.bonitasoft.engine.bdm.model.Query
+import org.bonitasoft.engine.bdm.model.field.FieldType
+import org.bonitasoft.engine.bdm.model.field.SimpleField
+import org.bonitasoft.engine.bpm.actor.ActorCriterion
 import org.bonitasoft.engine.bpm.bar.BarResource
 import org.bonitasoft.engine.bpm.bar.BusinessArchiveBuilder
 import org.bonitasoft.engine.bpm.connector.ConnectorEvent
 import org.bonitasoft.engine.bpm.contract.Type
+import org.bonitasoft.engine.bpm.process.ProcessDefinition
 import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder
+import org.bonitasoft.engine.command.BusinessDataCommandField
+import org.bonitasoft.engine.command.ExecuteBDMQueryCommand
+import org.bonitasoft.engine.command.GetBusinessDataByQueryCommand
+import org.bonitasoft.engine.expression.Expression
 import org.bonitasoft.engine.expression.ExpressionBuilder
 import org.bonitasoft.engine.operation.OperationBuilder
 import org.bonitasoft.engine.test.PlatformTestUtil
-import org.bonitasoft.migration.filler.FillAction
-import org.bonitasoft.migration.filler.FillerInitializer
-import org.bonitasoft.migration.filler.FillerShutdown
-import org.bonitasoft.migration.filler.FillerUtils
+import org.bonitasoft.migration.filler.*
 /**
  * @author Baptiste Mesta
  */
@@ -40,6 +51,165 @@ class FillBeforeMigratingTo7_2_0 {
         FillerUtils.initializeEngineSystemProperties()
         LocalServerTestsInitializer.beforeAll();
     }
+
+    def createBusinessObjectModel() {
+        final SimpleField firstName = new SimpleField()
+        firstName.setName("firstName")
+        firstName.setType(FieldType.STRING)
+        firstName.setLength(Integer.valueOf(100))
+
+        final SimpleField lastName = new SimpleField()
+        lastName.setName("lastName")
+        lastName.setType(FieldType.STRING)
+        lastName.setLength(Integer.valueOf(100))
+        lastName.setNullable(Boolean.FALSE)
+
+        final SimpleField phoneNumbers = new SimpleField()
+        phoneNumbers.setName("phoneNumbers")
+        phoneNumbers.setType(FieldType.STRING)
+        phoneNumbers.setLength(Integer.valueOf(10))
+        phoneNumbers.setCollection(Boolean.TRUE)
+
+        final SimpleField hireDate = new SimpleField()
+        hireDate.setName("hireDate")
+        hireDate.setType(FieldType.DATE)
+
+        final SimpleField booleanField = new SimpleField()
+        booleanField.setName("booleanField")
+        booleanField.setType(FieldType.BOOLEAN)
+
+        final BusinessObject employee = new BusinessObject()
+        employee.setQualifiedName("com.company.model.Employee")
+        employee.addField(hireDate)
+        employee.addField(booleanField)
+        employee.addField(firstName)
+        employee.addField(lastName)
+        employee.addField(phoneNumbers)
+        employee.setDescription("Describe a simple employee")
+        employee.addUniqueConstraint("uk_fl", "firstName", "lastName")
+
+        final Query getEmployeeByPhoneNumber = employee.addQuery("findByPhoneNumber",
+                "SELECT e FROM Employee e WHERE :phoneNumber IN ELEMENTS(e.phoneNumbers)", List.class.getName());
+        getEmployeeByPhoneNumber.addQueryParameter("phoneNumber", String.class.getName());
+
+        final Query findByFirstNAmeAndLastNameNewOrder = employee.addQuery("findByFirstNameAndLastNameNewOrder",
+                "SELECT e FROM Employee e WHERE e.firstName =:firstName AND e.lastName = :lastName ORDER BY e.lastName", List.class.getName());
+        findByFirstNAmeAndLastNameNewOrder.addQueryParameter("firstName", String.class.getName());
+        findByFirstNAmeAndLastNameNewOrder.addQueryParameter("lastName", String.class.getName());
+
+
+        final Query findByHireDate = employee.addQuery("findByHireDateRange",
+                "SELECT e FROM Employee e WHERE e.hireDate >=:date1 and e.hireDate <=:date2", List.class.getName());
+        findByHireDate.addQueryParameter("date1", Date.class.getName());
+        findByHireDate.addQueryParameter("date2", Date.class.getName());
+
+        employee.addQuery("countForAllEmployee", "SELECT COUNT(e) FROM Employee e", Long.class.getName());
+
+        employee.addIndex("IDX_LSTNM", "lastName");
+
+        final BusinessObjectModel model = new BusinessObjectModel();
+        model.addBusinessObject(employee)
+        model
+    }
+
+    @FillerBdmInitializer
+    def deployBDM() {
+        def businessObjectModel=createBusinessObjectModel()
+        def session = TenantAPIAccessor.getLoginAPI().login("install", "install")
+        def tenantAdministrationAPI = TenantAPIAccessor.getTenantAdministrationAPI(session)
+
+        final BusinessObjectModelConverter converter = new BusinessObjectModelConverter()
+        final byte[] zip = converter.zip(businessObjectModel)
+
+        tenantAdministrationAPI.pause()
+        tenantAdministrationAPI.installBusinessDataModel(zip)
+        tenantAdministrationAPI.resume()
+    }
+
+    @FillAction
+    public void deployProcessWithBdm() {
+        def loginAPI = TenantAPIAccessor.getLoginAPI()
+        def session = loginAPI.login("install", "install")
+        def identityAPI = TenantAPIAccessor.getIdentityAPI(session)
+        def processAPI = TenantAPIAccessor.getProcessAPI(session)
+        def commandAPI = TenantAPIAccessor.getCommandAPI(session)
+
+        def user = identityAPI.createUser("userForBPMProcess", "bpm")
+
+        final Expression employeeExpression = new ExpressionBuilder().createGroovyScriptExpression("createNewEmployee", new StringBuilder().append("import ")
+                .append("com.company.model.Employee; ")
+                .append("import java.util.Calendar.*; ")
+                .append("Employee e = new Employee(); e.firstName = 'Jane'+Calendar.instance.time; e.lastName = 'Doe'; return e;").toString(),
+                "com.company.model.Employee");
+
+        def builder = new ProcessDefinitionBuilder()
+        builder.createNewInstance("process with BDM", "before_7_2")
+        builder.addActor("BDM actor", true)
+        builder.addBusinessData("myEmployee", "com.company.model.Employee", employeeExpression)
+        builder.addAutomaticTask("step1").addDescription("autoTaskDesc")
+
+        def businessArchive = new BusinessArchiveBuilder()
+                .createNewBusinessArchive()
+                .setProcessDefinition(builder.getProcess())
+                .done()
+
+        def processDefinition = processAPI.deploy(businessArchive)
+        addUserToProcessActors(processAPI, processDefinition, user)
+        processAPI.enableProcess(processDefinition.id)
+        processAPI.startProcess(user.getId(), processDefinition.id)
+
+        callBdmQuery(commandAPI, "Employee.find", "com.company.model.Employee")
+        callBusinessDataByQuery(commandAPI, "find", "com.company.model.Employee")
+
+        loginAPI.logout(session)
+
+    }
+
+    private void callBdmQuery(CommandAPI commandAPI, String queryName, String returnType) {
+        final Map<String, Serializable> parameters = new HashMap<>()
+        parameters.put(ExecuteBDMQueryCommand.QUERY_NAME, queryName)
+        parameters.put(ExecuteBDMQueryCommand.RETURN_TYPE, returnType)
+
+        final Map<String, Serializable> queryParameters = new HashMap<>()
+        parameters.put(ExecuteBDMQueryCommand.RETURNS_LIST, true)
+        parameters.put(ExecuteBDMQueryCommand.START_INDEX, 0)
+        parameters.put(ExecuteBDMQueryCommand.MAX_RESULTS, 10)
+
+        parameters.put(queryParameters, (Serializable) queryParameters)
+        def execute = commandAPI.execute("executeBDMQuery", parameters)
+
+        displayCommandResult execute
+    }
+
+    private void callBusinessDataByQuery(CommandAPI commandAPI, String queryName, String returnType) {
+        final Map<String, Serializable> parameters = new HashMap<>()
+        parameters.put(GetBusinessDataByQueryCommand.QUERY_NAME, queryName)
+        parameters.put(ExecuteBDMQueryCommand.RETURN_TYPE, returnType)
+
+        final Map<String, Serializable> queryParameters = new HashMap<>()
+        parameters.put(GetBusinessDataByQueryCommand.ENTITY_CLASS_NAME, returnType)
+        parameters.put(GetBusinessDataByQueryCommand.START_INDEX, 0)
+        parameters.put(GetBusinessDataByQueryCommand.MAX_RESULTS, 10)
+        parameters.put(BusinessDataCommandField.BUSINESS_DATA_URI_PATTERN, "/businessdata/{className}/{id}/{field}")
+
+        parameters.put(queryParameters, (Serializable) queryParameters)
+        def execute = commandAPI.execute("getBusinessDataByQueryCommand", parameters)
+
+        displayCommandResult execute
+    }
+
+    private displayCommandResult(Serializable execute) {
+        def bytes = execute as byte[]
+        def string = new String(bytes)
+        println "Employee.find BDM query result:\n$string"
+
+    }
+
+    private void addUserToProcessActors(ProcessAPI processAPI, ProcessDefinition processDefinition, user) {
+        def actors = processAPI.getActors(processDefinition.id, 0, 100, ActorCriterion.NAME_ASC)
+        actors.each { processAPI.addUserToActor(it.id, user.id) }
+    }
+
 
     @FillAction
     public void deployProcessDefinitionXMLThatWillBeMigrated() {
