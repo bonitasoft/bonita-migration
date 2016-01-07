@@ -459,13 +459,16 @@ END""")
     def executeScript(String folderName, String scriptName) {
         def statements = getScriptContent(getVersionFolder() + "/$folderName", scriptName).split("@@")
         statements.each {
-            sql.execute(it)
+            def trimmed = it.trim()
+            println "execute statement:\n${trimmed}"
+            sql.execute(trimmed)
         }
     }
 
     private String getScriptContent(String folderName, String scriptName) {
         def scriptContent = ""
         def sqlFile = "$folderName/${dbVendor.toString().toLowerCase()}_${scriptName}.sql"
+        println "execute script: $sqlFile"
         def stream1 = this.class.getResourceAsStream(sqlFile)
         stream1.withStream { InputStream s ->
             scriptContent = s.text

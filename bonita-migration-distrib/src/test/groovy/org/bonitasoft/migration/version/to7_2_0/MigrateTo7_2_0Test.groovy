@@ -7,7 +7,21 @@ import spock.lang.Specification
  */
 class MigrateTo7_2_0Test extends Specification {
 
-    def "should contains #step"() {
+    @Unroll
+    def "should contains #size migration steps"(def size) {
+        setup:
+        def migration = new MigrateTo7_2_0();
+
+        expect:
+        migration.getMigrationSteps().size() == size
+
+        where:
+        size << 6
+    }
+
+
+    @Unroll
+    def "should contains #step"(def index, def step) {
         setup:
         def migration = new MigrateTo7_2_0();
 
@@ -20,6 +34,8 @@ class MigrateTo7_2_0Test extends Specification {
         1     || ParametersInDatabase
         2     || BARInDatabase
         3     || AddArchRefBusinessDataTables
+        4     || CheckBDMQueries
+        5     || IncreasePageNameField
 
     }
 

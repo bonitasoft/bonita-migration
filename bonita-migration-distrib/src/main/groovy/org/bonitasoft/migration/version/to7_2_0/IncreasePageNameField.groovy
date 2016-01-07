@@ -11,26 +11,28 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
-
 package org.bonitasoft.migration.version.to7_2_0
 
+import org.bonitasoft.migration.core.MigrationContext
 import org.bonitasoft.migration.core.MigrationStep
-import org.bonitasoft.migration.core.VersionMigration
 
 /**
- * @author Laurent Leseigneur
+ *
+ * increase page name field to 255 in tables page and profileentry
+ *
+ * @author Colin Puy
  */
-class MigrateTo7_2_0 extends VersionMigration {
+class IncreasePageNameField extends MigrationStep {
+
+
     @Override
-    def List<MigrationStep> getMigrationSteps() {
-        //keep one line per step to avoid false-positive merge conflict
-        return [
-                new MigrateProcessDefXml(),
-                new ParametersInDatabase(),
-                new BARInDatabase(),
-                new AddArchRefBusinessDataTables(),
-                new CheckBDMQueries(),
-                new IncreasePageNameField()
-        ]
+    def execute(MigrationContext context) {
+        context.databaseHelper.executeScript("PageNameSize", "page")
     }
+
+    @Override
+    String getDescription() {
+        "Increase page name field to 255"
+    }
+
 }
