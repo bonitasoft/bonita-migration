@@ -17,7 +17,7 @@ class MigrateTo7_2_0Test extends Specification {
         migration.getMigrationSteps().size() == size
 
         where:
-        size << 6
+        size << 7
     }
 
 
