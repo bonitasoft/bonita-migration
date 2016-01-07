@@ -378,7 +378,7 @@ class CheckMigratedTo7_2_0 {
 
 
         def urlMapping = pageAPI.resolvePageOrURL("processInstance/formMappingProcess/1.1.0", ["IS_ADMIN": true], true)
-        assert urlMapping.url == "the url of the page?tenant=1"
+        assert urlMapping.url == "the url of the page" + getUrlAddition()
         def internalMapping = pageAPI.resolvePageOrURL("process/formMappingProcess/1.1.0", ["IS_ADMIN": true], true);
         assert internalMapping.pageId == page.id
         def noneMapping = pageAPI.resolvePageOrURL("taskInstance/formMappingProcess/1.1.0/step1", ["IS_ADMIN": true], true)
@@ -389,6 +389,10 @@ class CheckMigratedTo7_2_0 {
         }
 
         TenantAPIAccessor.getLoginAPI().logout(session)
+    }
+
+    protected String getUrlAddition() {
+        ""
     }
 
 
