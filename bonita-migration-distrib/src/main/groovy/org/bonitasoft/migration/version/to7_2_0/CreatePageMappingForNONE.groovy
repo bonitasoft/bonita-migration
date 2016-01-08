@@ -35,7 +35,7 @@ class CreatePageMappingForNONE extends MigrationStep {
             if (pageMapping == null) {
                 def Long nextId = pageMappingCount.get(formMapping.tenantId as Long)
                 pageMappingCount.put(formMapping.tenantId as Long, nextId + 1L)
-                context.sql.executeInsert("INSERT INTO page_mapping VALUES($formMapping.tenantId,$nextId,${getKey(context, formMapping.tenantId as Long, formMapping.process as Long, formMapping.task, formMapping.type)},${null},${null},${null},${getAuthorizationRules(formMapping.type)},${0L},${0L})")
+                context.sql.executeInsert("INSERT INTO page_mapping VALUES($formMapping.tenantId,$nextId,${getKey(context, formMapping.tenantId as Long, formMapping.process as Long, formMapping.task, formMapping.type as Integer)},${null},${null},${null},${getAuthorizationRules(formMapping.type as Integer)},${0L},${0L})")
                 context.sql.executeUpdate("UPDATE form_mapping SET page_mapping_id = $nextId, page_mapping_tenant_id = $formMapping.tenantId WHERE tenantId = $formMapping.tenantId and id = $formMapping.id")
                 context.logger.debug("Inserted page mapping $nextId")
             }
