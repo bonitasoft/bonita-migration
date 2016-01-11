@@ -35,10 +35,24 @@ class EnsureAddedTablesForArchBusinessData extends Specification {
 
     def setup() {
         migrationContext.setVersion("7.2.0")
+        dbUnitHelper.createTables("7_2_0/archBizData", "archBizData")
+
+        dbUnitHelper.context.sql.execute(
+                """
+                INSERT INTO tenant (id, created, createdby, description, defaulttenant, iconname, iconpath, name, status)
+                VALUES(1, 1452271739683, 'defaultUser', 'Default tenant', ${dbUnitHelper.trueValue()}, NULL, NULL, 'default', 'ACTIVATED')
+                """)
+
+        dbUnitHelper.context.sql.execute(
+                """
+                INSERT INTO tenant (id, created, createdby, description, defaulttenant, iconname, iconpath, name, status)
+                VALUES(2, 1452271739683, 'defaultUser', 'Default tenant', ${dbUnitHelper.falseValue()}, NULL, NULL, 'default', 'ACTIVATED')
+                """)
+
     }
 
     def cleanup() {
-        dbUnitHelper.dropTables(["arch_multi_biz_data", "arch_ref_biz_data_inst"] as String[])
+        dbUnitHelper.dropTables(["arch_multi_biz_data", "arch_ref_biz_data_inst", "sequence", "tenant"] as String[])
     }
 
     def "should 7.2.0 platform create table arch_ref_biz_data_inst"() {
@@ -114,6 +128,19 @@ class EnsureAddedTablesForArchBusinessData extends Specification {
 //        columnDefinitions1.get(2).position == 3
 
         dbUnitHelper.hasForeignKeyOnTable("arch_multi_biz_data", "fk_arch_rbdi_mbd")
+    }
+
+    def "should have sequence for archived biz data reference"() {
+        when:
+        new AddArchRefBusinessDataTables().execute(migrationContext)
+
+        then:
+        migrationContext.databaseHelper.getAllTenants().each {
+            tenant ->
+                assert dbUnitHelper.hasSequenceForTenant(tenant.id, 20096)
+        }
+
+
     }
 
 }
