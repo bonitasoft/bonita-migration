@@ -25,6 +25,8 @@ class AddArchRefBusinessDataTables extends MigrationStep {
     @Override
     def execute(MigrationContext context) {
         context.databaseHelper.executeScript("ArchRefBusinessData", "arch_ref_business_data")
+        context.databaseHelper.addSequenceOnAllTenants(20096)
+
     }
 
     @Override

@@ -1,2 +1,5 @@
-apply plugin:'groovy'
+apply plugin: 'groovy'
 
+dependencies {
+    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.0.11'
+}
