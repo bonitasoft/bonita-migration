@@ -35,14 +35,14 @@ class CheckModifiedPageFieldSizeIT extends Specification {
 
     def setup() {
         migrationContext.setVersion("7.2.0")
-        dbUnitHelper.createTables("7_2_0", "page")
+        dbUnitHelper.createTables("7_2_0/page", "page")
     }
 
     def cleanup() {
         dbUnitHelper.dropTables(["page", "profileentry"] as String[])
     }
 
-    def "should update page name field size"() {
+    def "should update page name and content name field size"() {
 
         when:
         new IncreasePageNameField().execute(migrationContext)
@@ -56,7 +56,7 @@ class CheckModifiedPageFieldSizeIT extends Specification {
              'Bootstrap default theme', 'Application theme based on bootstrap "Default" theme. (see http://bootswatch.com/default/)', 1444727084195, -1, ${
                     dbUnitHelper.falseValue()
                 }, 1444727084195, -1,
-              'bonita-bootstrap-default-theme.zip', 'theme', NULL)
+              'custompage_01234546789012345467890123454678901234546789012345467890123454678901234546789012345467890123454678901234546789012345467890123454678901234546789.zip', 'theme', NULL)
             """
         )
 

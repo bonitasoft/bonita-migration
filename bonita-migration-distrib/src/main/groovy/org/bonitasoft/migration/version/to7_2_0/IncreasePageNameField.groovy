@@ -32,7 +32,7 @@ class IncreasePageNameField extends MigrationStep {
 
     @Override
     String getDescription() {
-        "Increase page name field to 255"
+        "Increase page name and content name field size in page table"
     }
 
 }
