@@ -306,8 +306,7 @@ END""")
         return firstRow != null
     }
 
-
-        /**
+    /**
      * checks if given index exists on table
      * @param tableName
      * @param indexName
@@ -488,4 +487,19 @@ END""")
             return clob.stringValue()
         }
     }
+
+    def addSequenceOnAllTenants(int sequenceKey) {
+        getAllTenants().each {
+            tenant -> sql.execute("INSERT INTO sequence (tenantid, id, nextid) VALUES(${tenant.id}, $sequenceKey, 1)")
+        }
+    }
+
+    def getSequenceValue(def tenantId, def sequenceId) {
+        sql.firstRow("select s.tenantid,s.id,s.nextid from sequence s where s.tenantid = ${tenantId} and s.id=${sequenceId}")
+    }
+
+    def getAllTenants() {
+        sql.rows("select t.id, t.name, t.status from tenant t order by t.id")
+    }
+
 }
