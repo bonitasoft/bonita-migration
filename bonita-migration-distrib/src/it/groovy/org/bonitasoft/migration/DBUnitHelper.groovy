@@ -15,6 +15,7 @@
  *
  */
 package org.bonitasoft.migration
+
 import groovy.xml.StreamingMarkupBuilder
 import org.bonitasoft.migration.core.MigrationContext
 import org.bonitasoft.migration.core.MigrationStep
@@ -27,6 +28,7 @@ import org.dbunit.ext.oracle.OracleConnection
 
 import java.sql.DriverManager
 import java.sql.SQLException
+
 /**
  * @author Baptiste Mesta
  */
@@ -77,7 +79,7 @@ class DBUnitHelper {
 
         //warning : don't end with @@ to avoid blank statement (error)
         getCreateTables(version, feature).text.split("@@").each({ stmt ->
-            def trimmed=stmt.trim()
+            def trimmed = stmt.trim()
             println "execute statement:\n$trimmed"
             context.sql.execute(trimmed)
         })
@@ -139,6 +141,12 @@ class DBUnitHelper {
 
     def IndexDefinition getIndexDefinition(String tableName, String indexName) {
         context.databaseHelper.getIndexDefinition(tableName, indexName)
+    }
+
+
+    def hasSequenceForTenant(def tenantId,def sequenceId) {
+        def value = context.databaseHelper.getSequenceValue(tenantId, sequenceId)
+        value && value.nextid > 0
     }
 
     def JdbcDatabaseTester createTester() {

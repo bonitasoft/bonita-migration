@@ -14,24 +14,24 @@
 
 package org.bonitasoft.migration.version.to7_2_0
 
+import org.bonitasoft.migration.core.MigrationContext
 import org.bonitasoft.migration.core.MigrationStep
-import org.bonitasoft.migration.core.VersionMigration
 
 /**
- * @author Laurent Leseigneur
+ * @author Emmanuel Duchastenier
  */
-class MigrateTo7_2_0 extends VersionMigration {
+class AddArchRefBusinessDataTables extends MigrationStep {
+
     @Override
-    def List<MigrationStep> getMigrationSteps() {
-        //keep one line per step to avoid false-positive merge conflict
-        return [
-                new MigrateProcessDefXml(),
-                new ParametersInDatabase(),
-                new BARInDatabase(),
-                new AddArchRefBusinessDataTables(),
-                new CheckBDMQueries(),
-                new IncreasePageNameField(),
-                new CreatePageMappingForNONE()
-        ]
+    def execute(MigrationContext context) {
+        context.databaseHelper.executeScript("ArchRefBusinessData", "arch_ref_business_data")
+        context.databaseHelper.addSequenceOnAllTenants(20096)
+
     }
+
+    @Override
+    String getDescription() {
+        "add 2 new tables to archive the Business Data references"
+    }
+
 }

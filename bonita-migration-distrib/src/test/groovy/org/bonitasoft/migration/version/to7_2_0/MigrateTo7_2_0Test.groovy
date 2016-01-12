@@ -9,7 +9,7 @@ import spock.lang.Unroll
 class MigrateTo7_2_0Test extends Specification {
 
     @Unroll
-    def "should contains #size migration steps" (def size) {
+    def "should contains #size migration steps"(def size) {
         setup:
         def migration = new MigrateTo7_2_0();
 
@@ -17,7 +17,7 @@ class MigrateTo7_2_0Test extends Specification {
         migration.getMigrationSteps().size() == size
 
         where:
-        size << 5
+        size << 7
     }
 
 
@@ -34,8 +34,10 @@ class MigrateTo7_2_0Test extends Specification {
         0     || MigrateProcessDefXml
         1     || ParametersInDatabase
         2     || BARInDatabase
-        3     || CheckBDMQueries
-        4     || IncreasePageNameField
+        3     || AddArchRefBusinessDataTables
+        4     || CheckBDMQueries
+        5     || IncreasePageNameField
+        6     || CreatePageMappingForNONE
 
     }
 
