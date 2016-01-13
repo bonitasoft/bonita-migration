@@ -13,10 +13,8 @@
  **/
 
 package org.bonitasoft.migration.version.to7_2_0
-
 import org.bonitasoft.migration.core.MigrationStep
 import org.bonitasoft.migration.core.VersionMigration
-
 /**
  * @author Laurent Leseigneur
  */
