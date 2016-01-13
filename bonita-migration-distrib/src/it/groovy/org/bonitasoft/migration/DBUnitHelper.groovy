@@ -76,8 +76,11 @@ class DBUnitHelper {
         println "Create tables of $feature"
 
         //warning : don't end with @@ to avoid blank statement (error)
-        getCreateTables(version, feature).text.split("@@").each({ stmt ->
-            context.sql.execute(stmt)
+        getCreateTables(version, feature).text.split("@@|;").each({ String stmt ->
+            stmt = stmt.trim()
+            if(!stmt.isEmpty()){
+                context.sql.execute(stmt)
+            }
         })
 
     }
