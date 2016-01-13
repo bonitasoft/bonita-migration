@@ -78,10 +78,11 @@ class DBUnitHelper {
         println "Create tables of $feature in version $version"
 
         //warning : don't end with @@ to avoid blank statement (error)
-        getCreateTables(version, feature).text.split("@@").each({ stmt ->
-            def trimmed = stmt.trim()
-            println "execute statement:\n$trimmed"
-            context.sql.execute(trimmed)
+        getCreateTables(version, feature).text.split("@@|;").each({ String stmt ->
+            stmt = stmt.trim()
+            if(!stmt.isEmpty()){
+                context.sql.execute(stmt)
+            }
         })
 
     }
