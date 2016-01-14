@@ -1,6 +1,8 @@
 package org.bonitasoft.migration.version.to7_2_0
 
 import spock.lang.Specification
+import spock.lang.Unroll
+
 /**
  * @author Elias Ricken de Medeiros
  */
