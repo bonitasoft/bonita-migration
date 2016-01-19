@@ -85,7 +85,7 @@ class CheckModifiedPageFieldSizeIT extends Specification {
         and:
         dbUnitHelper.context.sql.execute(
                 """
-            INSERT INTO PAGE
+            INSERT INTO page
             (TENANTID, ID, NAME, DISPLAYNAME, DESCRIPTION, INSTALLATIONDATE, INSTALLEDBY, PROVIDED, LASTMODIFICATIONDATE, LASTUPDATEDBY, CONTENTNAME, CONTENTTYPE, PROCESSDEFINITIONID)
             VALUES(1, 3, null,
              'Bootstrap default theme', 'Application theme based on bootstrap "Default" theme. (see http://bootswatch.com/default/)', 1444727084195, -1, ${
@@ -96,7 +96,8 @@ class CheckModifiedPageFieldSizeIT extends Specification {
         )
 
         then:
-        thrown(Exception)
+        def ex = thrown(Exception)
+        ex.message.toLowerCase().contains("null")
 
     }
 
