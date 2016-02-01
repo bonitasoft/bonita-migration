@@ -9,4 +9,5 @@ include 'bonita-migration-common',
         'migrateTo_7_1_3',
         'migrateTo_7_1_4',
         'migrateTo_7_1_5',
-        'migrateTo_7_2_0'
+//        'migrateTo_7_2_0',
+        'migrateTo_7_2_1'
