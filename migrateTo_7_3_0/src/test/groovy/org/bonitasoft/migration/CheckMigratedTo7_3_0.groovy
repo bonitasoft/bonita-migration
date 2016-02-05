@@ -18,11 +18,11 @@ import org.bonitasoft.engine.test.junit.BonitaEngineRule
 import org.bonitasoft.migration.filler.FillerUtils
 import org.junit.BeforeClass
 import org.junit.Rule
-
+import spock.lang.Specification
 /**
- * @author Laurent Leseigneur
+ * @author Baptiste Mesta
  */
-class CheckMigratedTo7_3_0 {
+class CheckMigratedTo7_3_0 extends Specification {
 
     @Rule
     public BonitaEngineRule bonitaEngineRule = BonitaEngineRule.create().reuseExistingPlatform()
