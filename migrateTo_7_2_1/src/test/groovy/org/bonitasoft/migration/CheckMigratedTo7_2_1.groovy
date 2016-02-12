@@ -14,10 +14,13 @@
 
 package org.bonitasoft.migration
 
+import org.bonitasoft.engine.api.APIClient
+import org.bonitasoft.engine.bpm.flownode.ActivityInstanceCriterion
 import org.bonitasoft.engine.test.junit.BonitaEngineRule
 import org.bonitasoft.migration.filler.FillerUtils
 import org.junit.BeforeClass
 import org.junit.Rule
+import org.junit.Test
 
 /**
  * @author Laurent Leseigneur
@@ -31,6 +34,24 @@ class CheckMigratedTo7_2_1 {
     @BeforeClass
     public static void beforeClass() {
         FillerUtils.initializeEngineSystemProperties()
+    }
+
+    @Test
+    def void "should processs and task contract still work with updated sequence"(){
+        def client = new APIClient()
+        client.login("userForContractInput","bpm")
+
+        def processDefinitionId = client.processAPI.getProcessDefinitionId("ProcessWithContractInput", "7.2.0")
+        client.processAPI.startProcessWithInputs(processDefinitionId, [processInput: true])
+        def instances
+        def timeout = System.currentTimeMillis() + 3000
+        while ((instances = client.processAPI.getPendingHumanTaskInstances(client.session.userId, 0, 10, ActivityInstanceCriterion.DEFAULT)).size() < 2 && System.currentTimeMillis() < timeout) {
+            Thread.sleep(200)
+            println "wait 200"
+        }
+        client.processAPI.assignUserTask(instances.get(0).id, client.session.userId)
+        client.processAPI.executeUserTask(instances.get(0).id, [taskInput: true])
+        client.logout()
     }
 
 
