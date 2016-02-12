@@ -13,13 +13,11 @@
  **/
 package org.bonitasoft.migration
 
-import org.bonitasoft.engine.LocalServerTestsInitializer
 import org.bonitasoft.engine.api.PlatformAPIAccessor
-import org.bonitasoft.engine.test.PlatformTestUtil
+import org.bonitasoft.engine.test.TestEngineImpl
 import org.bonitasoft.migration.filler.FillerInitializer
 import org.bonitasoft.migration.filler.FillerShutdown
 import org.bonitasoft.migration.filler.FillerUtils
-
 /**
  * @author Baptiste Mesta
  */
@@ -31,7 +29,7 @@ class FillBeforeMigratingTo7_2_1 {
     @FillerInitializer
     public void init() {
         FillerUtils.initializeEngineSystemProperties()
-        LocalServerTestsInitializer.beforeAll();
+        TestEngineImpl.instance.start()
     }
 
     /**
@@ -39,7 +37,10 @@ class FillBeforeMigratingTo7_2_1 {
      */
     @FillerShutdown
     public void shutdown() {
-        new PlatformTestUtil().stopPlatformAndTenant(PlatformAPIAccessor.getPlatformAPI(new PlatformTestUtil().loginOnPlatform()), true)
+        //to be replaced by BonitaEngineRule with keepPlatformOnShutdown option
+        def session = PlatformAPIAccessor.getPlatformLoginAPI().login("platformAdmin", "platform")
+        PlatformAPIAccessor.getPlatformAPI(session).stopNode()
+        PlatformAPIAccessor.getPlatformLoginAPI().logout(session)
     }
 
 }
