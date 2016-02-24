@@ -14,7 +14,7 @@ class ContractInputSequence extends MigrationStep {
     @Override
     def execute(MigrationContext context) {
         //remove  10220 and 20220
-        context.sql.executeInsert("DELETE FROM sequence WHERE id = ${10220} OR id = ${20220}")
+        context.sql.execute("DELETE FROM sequence WHERE id = ${10220} OR id = ${20220}")
 
     }
 
