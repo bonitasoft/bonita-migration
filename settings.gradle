@@ -1,5 +1,4 @@
 rootProject.name = 'bonita-migration'
-'migrateTo_7_1_5'
 include 'bonita-migration-common',
         'bonita-migration-distrib',
         'migrateTo_7_0_1',
@@ -11,5 +10,5 @@ include 'bonita-migration-common',
         'migrateTo_7_1_4',
         'migrateTo_7_1_5',
         'migrateTo_7_2_0',
-//        'migrateTo_7_2_1',
+        'migrateTo_7_2_1',
         'migrateTo_7_3_0'

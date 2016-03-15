@@ -17,7 +17,7 @@ class MigrateTo7_2_1Test extends Specification {
         migration.getMigrationSteps().size() == size
 
         where:
-        size << 0
+        size << 1
     }
 
 //    @Unroll
