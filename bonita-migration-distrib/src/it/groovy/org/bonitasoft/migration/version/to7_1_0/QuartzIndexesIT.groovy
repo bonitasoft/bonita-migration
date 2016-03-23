@@ -6,7 +6,6 @@ import org.bonitasoft.migration.core.MigrationContext
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
-
 /**
  * @author Elias Ricken de Medeiros
  */
@@ -70,6 +69,15 @@ class QuartzIndexesIT extends Specification {
         dbUnitHelper.hasIndexOnTable("qrtz_fired_triggers", "idx_qrtz_ft_jg")
         dbUnitHelper.hasIndexOnTable("qrtz_fired_triggers", "idx_qrtz_ft_t_g")
         dbUnitHelper.hasIndexOnTable("qrtz_fired_triggers", "idx_qrtz_ft_tg")
+
+        if (!"mysql".equals(migrationContext.dbVendor)) {
+            //mysql primary key is always named "primary"
+            dbUnitHelper.getPrimaryKey("qrtz_triggers") == "pk_quartz_triggers"
+        }
+
+        dbUnitHelper.hasForeignKeyOnTable("qrtz_simple_triggers", "fk_qrtz_simple_triggers")
+        dbUnitHelper.hasForeignKeyOnTable("qrtz_simprop_triggers", "fk_qrtz_simprop_triggers")
+        dbUnitHelper.hasForeignKeyOnTable("qrtz_triggers", "fk_qrtz_triggers")
 
         where:
         version << ["6_4_2", "6_5_0", "7_1_0"]

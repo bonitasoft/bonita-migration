@@ -80,7 +80,7 @@ class DBUnitHelper {
         //warning : don't end with @@ to avoid blank statement (error)
         getCreateTables(version, feature).text.split("@@|;").each({ String stmt ->
             stmt = stmt.trim()
-            if(!stmt.isEmpty()){
+            if (!stmt.isEmpty()) {
                 context.sql.execute(stmt)
             }
         })
@@ -140,12 +140,20 @@ class DBUnitHelper {
         context.databaseHelper.hasForeignKeyOnTable(tableName, foreignKey)
     }
 
+    def boolean hasPrimaryKeyOnTable(String tableName, String pkName) {
+        context.databaseHelper.hasPrimaryKeyOnTable(tableName, pkName)
+    }
+
+    def String getPrimaryKey(String tableName) {
+        context.databaseHelper.getPrimaryKey(tableName)
+    }
+
     def IndexDefinition getIndexDefinition(String tableName, String indexName) {
         context.databaseHelper.getIndexDefinition(tableName, indexName)
     }
 
 
-    def hasSequenceForTenant(def tenantId,def sequenceId) {
+    def hasSequenceForTenant(def tenantId, def sequenceId) {
         def value = context.databaseHelper.getSequenceValue(tenantId, sequenceId)
         value && value.nextid > 0
     }
