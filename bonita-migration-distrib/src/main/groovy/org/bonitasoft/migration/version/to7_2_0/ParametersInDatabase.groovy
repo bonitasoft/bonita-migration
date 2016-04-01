@@ -22,26 +22,29 @@ class ParametersInDatabase extends MigrationStep {
         def engineServer = new File(context.bonitaHome, "engine-server")
         def work = new File(engineServer, "work")
         def tenants = new File(work, "tenants")
+
         tenants.eachFileMatch DIRECTORIES, ~/[0-9]+/, { tenant ->
             long tenantId = Long.valueOf(tenant.getName())
             parameterCount.put(tenantId, 1)
             def processesFile = new File(tenant, "processes")
-            processesFile?.eachFileMatch DIRECTORIES, ~/[0-9]+/, { process ->
-                long processId = Long.valueOf(process.getName())
-                def parameters = new File(process, "parameters.properties")
-                if (parameters.exists()) {
-                    def properties = new Properties()
-                    parameters.withInputStream { inputStream ->
-                        properties.load(inputStream)
+            if (processesFile.exists()) {
+                processesFile.eachFileMatch DIRECTORIES, ~/[0-9]+/, { process ->
+                    long processId = Long.valueOf(process.getName())
+                    def parameters = new File(process, "parameters.properties")
+                    if (parameters.exists()) {
+                        def properties = new Properties()
+                        parameters.withInputStream { inputStream ->
+                            properties.load(inputStream)
+                        }
+                        context.logger.info("Putting ${properties.size()} parameters in database for process $processId")
+                        properties.each { parameter ->
+                            def long parameterId = parameterCount.get(tenantId)
+                            parameterCount.put(tenantId, parameterId + 1)
+                            context.sql.executeInsert("INSERT INTO proc_parameter VALUES ($tenantId,$parameterId,$processId,${parameter.getKey()},${parameter.getValue()})")
+                        }
+                    } else {
+                        context.logger.warn("No parameter file for process $processId")
                     }
-                    context.logger.info("Putting ${properties.size()} parameters in database for process $processId")
-                    properties.each { parameter ->
-                        def long parameterId = parameterCount.get(tenantId)
-                        parameterCount.put(tenantId, parameterId + 1)
-                        context.sql.executeInsert("INSERT INTO proc_parameter VALUES ($tenantId,$parameterId,$processId,${parameter.getKey()},${parameter.getValue()})")
-                    }
-                } else {
-                    context.logger.warn("No parameter file for process $processId")
                 }
             }
         }
