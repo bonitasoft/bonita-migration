@@ -14,7 +14,6 @@ import static groovy.io.FileType.DIRECTORIES
  */
 class BARInDatabase extends MigrationStep {
 
-
     @Override
     def execute(MigrationContext context) {
         def Map<Long, Long> resourcesCount = [:]
@@ -26,13 +25,15 @@ class BARInDatabase extends MigrationStep {
             long tenantId = Long.valueOf(tenant.getName())
             resourcesCount.put(tenantId, 1)
             def processesFile = new File(tenant, "processes")
-            processesFile?.eachFileMatch DIRECTORIES, ~/[0-9]+/, { process ->
-                long processId = Long.valueOf(process.getName())
-                def nbDoc = migrateInitialDocument(context, resourcesCount, tenantId, process, processId)
-                def nbConnector = migrateConnectors(context, resourcesCount, tenantId, process, processId)
-                def nbUserfilter = migrateUserfilters(context, resourcesCount, tenantId, process, processId)
-                def nbexternal = migrateExternalResources(context, resourcesCount, tenantId, process, processId)
-                context.logger.info("put $nbDoc intial document, $nbConnector connector implementation, $nbUserfilter user filter implementation and $nbexternal external resources in database for process $processId")
+            if (processesFile.exists()) {
+                processesFile.eachFileMatch DIRECTORIES, ~/[0-9]+/, { process ->
+                    long processId = Long.valueOf(process.getName())
+                    def nbDoc = migrateInitialDocument(context, resourcesCount, tenantId, process, processId)
+                    def nbConnector = migrateConnectors(context, resourcesCount, tenantId, process, processId)
+                    def nbUserfilter = migrateUserfilters(context, resourcesCount, tenantId, process, processId)
+                    def nbexternal = migrateExternalResources(context, resourcesCount, tenantId, process, processId)
+                    context.logger.info("put $nbDoc initial document, $nbConnector connector implementation, $nbUserfilter user filter implementation and $nbexternal external resources in database for process $processId")
+                }
             }
         }
         insertSequences(resourcesCount, context)

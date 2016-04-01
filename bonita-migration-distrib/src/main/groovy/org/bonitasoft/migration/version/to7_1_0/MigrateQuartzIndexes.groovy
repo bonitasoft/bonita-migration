@@ -11,8 +11,25 @@ class MigrateQuartzIndexes extends MigrationStep {
 
     @Override
     def execute(MigrationContext context) {
-        removeFalsy7_0_0_indexes(context.databaseHelper)
-        recreateIndexesAsIn6_4_2(context.databaseHelper)
+        def databaseHelper = context.databaseHelper
+
+        //indexes are used by primary and foreign keys
+        dropForeignKeys(databaseHelper, "qrtz_job_details")
+        dropForeignKeys(databaseHelper, "qrtz_triggers")
+        databaseHelper.dropPrimaryKey("qrtz_triggers")
+
+        removeFalsy7_0_0_indexes(databaseHelper)
+        recreateIndexesAsIn6_4_2(databaseHelper)
+
+        //recreate primary and foreign key
+        databaseHelper.executeScript("Quartz", "constraints")
+    }
+
+    def dropForeignKeys(DatabaseHelper dbHelper, String tableName) {
+        def foreignKeyDefinitions = dbHelper.getForeignKeyReferences(tableName)
+        foreignKeyDefinitions.each { foreignKeyDefinition ->
+            dbHelper.dropForeignKey(foreignKeyDefinition.tableName, foreignKeyDefinition.foreignKeyName)
+        }
     }
 
     private void recreateIndexesAsIn6_4_2(DatabaseHelper dbHelper) {
