@@ -19,6 +19,7 @@ import groovy.sql.Sql
 import org.bonitasoft.migration.core.Logger
 import org.bonitasoft.migration.core.MigrationStep.DBVendor
 import org.bonitasoft.migration.core.database.schema.ColumnDefinition
+import org.bonitasoft.migration.core.database.schema.ForeignKeyDefinition
 import org.bonitasoft.migration.core.database.schema.IndexDefinition
 
 /**
@@ -32,12 +33,18 @@ class DatabaseHelper {
     String version
     Logger logger
 
-
     /**
      * execute a postgres script converted to the database specified by dbVendor
+     *
+     * this method should not be use anymore and will be removed in next versions.
+     * using "adaptFor" before executing request lead to renaming fields names instead of field definition as expected.
+     * use DatabaseHelper.executeScript method in replacement ,
+     * and store db vendor specific queries stored in resources/database/TOPIC/DB_VENDOR_TOPIC.sql files
+     *
      * @param statement
      * @return
      */
+    @Deprecated
     def boolean execute(GString statement) {
         //TODO: replace statement by file name, get current version from context & split statement against @@ joker
         return sql.execute(adaptFor(statement))
@@ -230,16 +237,40 @@ END""")
         execute("ALTER TABLE $table ADD $column $type ${defaultValue != null ? "DEFAULT $defaultValue" : ""} ${constraint != null ? constraint : ""}")
     }
 
-    def dropForeignKey(String table, String name) {
+    def dropForeignKey(String table, String foreignKeyName) {
+        if (!hasForeignKeyOnTable(table, foreignKeyName)) {
+            println "foreign key ${foreignKeyName} not found on table ${table}"
+            return
+        }
+        def request
         switch (dbVendor) {
             case DBVendor.MYSQL:
-                execute("ALTER TABLE $table DROP FOREIGN KEY $name")
+                request = "ALTER TABLE " + table + " DROP FOREIGN KEY " + foreignKeyName
                 break;
             default:
-                execute("ALTER TABLE $table DROP CONSTRAINT $name")
+                request = "ALTER TABLE " + table + " DROP CONSTRAINT " + foreignKeyName
         }
+        println "Executing request: $request"
+        sql.execute(request)
     }
 
+    def dropPrimaryKey(String tableName) {
+        def query = getScriptContent("/database/primaryKey", "primaryKey")
+        sql.eachRow(query, [tableName]) { row ->
+            def request
+            switch (dbVendor) {
+                case DBVendor.MYSQL:
+                    request = "ALTER TABLE " + row.TABLE_NAME + " DROP PRIMARY KEY"
+                    break;
+                default:
+                    request = "ALTER TABLE " + row.TABLE_NAME + " DROP CONSTRAINT " + row.CONSTRAINT_NAME
+            }
+            println row
+            println "Executing request: $request"
+            sql.execute(request)
+        }
+
+    }
     /**
      * remove existing index if already exists and create new index
      * @param tableName
@@ -299,6 +330,20 @@ END""")
     }
 
     /**
+     * retrieve foreign keys definition pointing to a given table
+     * @param tableName table pointed by foreign keys
+     * @return list of FkDefinition
+     */
+    def List<ForeignKeyDefinition> getForeignKeyReferences(String tableName) {
+        def query = getScriptContent("/database/foreignKeyReference", "foreignKeyRef")
+        def fkReferences = []
+        sql.eachRow(query, [tableName]) { row ->
+            fkReferences.add(new ForeignKeyDefinition(row.table_name, row.constraint_name))
+        }
+        fkReferences
+    }
+
+    /**
      * checks if given foreign key exists on table
      * @param tableName
      * @param foreignKeyName
@@ -308,6 +353,33 @@ END""")
         def query = getScriptContent("/database/foreignKey", "foreignKey")
         def firstRow = sql.firstRow(query, [tableName, foreignKeyName])
         return firstRow != null
+    }
+
+    /**
+     * checks if primary key exists on table
+     * @param tableName name of the table
+     * @param pkName name of the primary key
+     * @return true if exists, false otherwise
+     */
+    def boolean hasPrimaryKeyOnTable(String tableName, String pkName) {
+        def primaryKey = getPrimaryKey(tableName)
+        primaryKey != null && primaryKey == pkName
+
+    }
+
+    /**
+     * get primary key name
+     * @param tableName
+     * @return pk name if exists, null otherwise
+     */
+    def String getPrimaryKey(String tableName) {
+        def query = getScriptContent("/database/primaryKey", "primaryKey")
+        def firstRow = sql.firstRow(query, [tableName])
+        if (firstRow != null) {
+            return firstRow.CONSTRAINT_NAME
+        }
+        return null
+
     }
 
     /**
