@@ -11,23 +11,26 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
-
 package org.bonitasoft.migration.version.to7_3_0
-
+import org.bonitasoft.migration.core.MigrationContext
 import org.bonitasoft.migration.core.MigrationStep
-import org.bonitasoft.migration.core.VersionMigration
-
 /**
- * @author Emmanuel Duchastenier
+ *
  * @author Guillaume Rosinosky
  */
-class MigrateTo7_3_0 extends VersionMigration {
+class MigrateSqlReservedKeywords extends MigrationStep {
+
 
     @Override
-    def List<MigrationStep> getMigrationSteps() {
-        //keep one line per step to avoid false-positive merge conflict
-        return [
-                new MigrateSqlReservedKeywords()
-        ]
+    def execute(MigrationContext context) {
+        def helper = context.databaseHelper
+        helper.executeScript("SqlReservedKeywords", "")
     }
+
+
+    @Override
+    String getDescription() {
+        return "Rename fields named as SQL keywords (queriable_log.year / month / timestamp => whatYear / whatMonth / log_timestamp"
+    }
+
 }
