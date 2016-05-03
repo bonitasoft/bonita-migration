@@ -3,23 +3,26 @@ import org.bonitasoft.migration.plugin.MigrationConstants
 buildscript {
     repositories {
         mavenLocal()
-        maven { url = 'http://repositories.rd.lan/archiva/repository/releases/' }
+        maven { url 'http://repositories.rd.lan/archiva/repository/releases/' }
     }
     dependencies {
-        classpath 'org.bonitasoft.migration.plugin:bonita-migration-plugins:2.13.0-SNAPSHOT'
+        classpath group: 'org.bonitasoft.migration.plugin', name: 'bonita-migration-plugins',
+                version: '2.13.0-SNAPSHOT'
     }
 }
-//define bonita version for all projects
+
 allprojects {
     apply plugin: 'maven'
+
     repositories {
         mavenLocal()
-        maven { url = 'http://repositories.rd.lan/archiva/repository/releases/' }
+        maven { url 'http://repositories.rd.lan/archiva/repository/releases/' }
         mavenCentral()
     }
 
     version '2.13.0-SNAPSHOT'
     group 'org.bonitasoft.migration'
+
     ext.isSP = false
     ext.bonitaVersions = [
             '7.0.0',
@@ -33,13 +36,12 @@ allprojects {
             '7.1.5',
             '7.2.0',
             '7.2.1',
-            '7.2.2' ,
+            '7.2.2',
             '7.3.0'
     ]
     ext.overridedVersions = [
             '7.3.0': '7.3.0-SNAPSHOT'
     ]
-
     configurations {
         deployerJars
     }
@@ -55,9 +57,19 @@ allprojects {
             repository(url: System.getProperty("altDeploymentRepository") != null ? System.getProperty("altDeploymentRepository").split("::").last() : null)
         }
     }
+
+}
+subprojects {
+    apply plugin: 'groovy'
+
+    dependencies {
+        compile "org.codehaus.groovy:groovy-all:2.4.4"
+        testCompile "junit:junit:4.12"
+        testRuntime 'com.oracle:ojdbc:6'
+        testRuntime 'com.microsoft.jdbc:sqlserver:4.0.2206.100'
+    }
 }
 
-apply plugin: 'migration-project'
 configure(project.subprojects.findAll {
     it.name.startsWith(MigrationConstants.MIGRATION_PREFIX)
 }) {
@@ -97,7 +109,4 @@ configure(project.subprojects.findAll {
         archives tasks.testJar
     }
     tasks.install.dependsOn tasks.testJar
-}
-
-migrationConf {
 }

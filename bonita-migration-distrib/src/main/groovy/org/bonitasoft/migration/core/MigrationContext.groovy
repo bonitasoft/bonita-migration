@@ -14,6 +14,7 @@
 
 package org.bonitasoft.migration.core
 
+import com.github.zafarkhaja.semver.Version
 import groovy.sql.Sql
 import org.bonitasoft.migration.core.database.DatabaseHelper
 
@@ -21,6 +22,12 @@ import org.bonitasoft.migration.core.database.DatabaseHelper
  * @author Baptiste Mesta
  */
 class MigrationContext {
+
+    static {
+        String.metaClass.toVersion = {
+            Version.valueOf(delegate)
+        }
+    }
 
     public final static String TARGET_VERSION = "target.version"
     public final static String BONITA_HOME = "bonita.home"
@@ -38,8 +45,8 @@ class MigrationContext {
     String dbDriverClassName
     String dbUser
     String dbPassword
-    String sourceVersion
-    String targetVersion
+    Version sourceVersion
+    Version targetVersion
     Logger logger
     DatabaseHelper databaseHelper
 
@@ -68,10 +75,10 @@ class MigrationContext {
         dbUser = getSystemPropertyOrFromConfigFile(DB_USER, properties, true)
         dbPassword = getSystemPropertyOrFromConfigFile(DB_PASSWORD, properties, true)
         //if not set it will be ask later
-        targetVersion = getSystemPropertyOrFromConfigFile(TARGET_VERSION, properties, false)
-        bonitaHome = new File(getSystemPropertyOrFromConfigFile(BONITA_HOME, properties, true))
+        targetVersion = getSystemPropertyOrFromConfigFile(TARGET_VERSION, properties, false)?.toVersion()
+        bonitaHome = new File(getSystemPropertyOrFromConfigFile(BONITA_HOME, properties, false))
         def level = getSystemPropertyOrFromConfigFile(LOGGER_LEVEL, properties, false)
-        if(level != null){
+        if (level != null) {
             logger.setLevel(level)
         }
 
