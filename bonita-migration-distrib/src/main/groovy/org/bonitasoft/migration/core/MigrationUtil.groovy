@@ -13,6 +13,7 @@
  **/
 package org.bonitasoft.migration.core
 
+import com.github.zafarkhaja.semver.Version
 import groovy.sql.Sql
 import groovy.time.TimeCategory
 import org.bonitasoft.migration.core.exception.NotFoundException
@@ -39,8 +40,6 @@ public class MigrationUtil {
     public static boolean isAutoAccept() {
         return System.getProperty(MigrationUtil.AUTO_ACCEPT) == "true"
     }
-
-
 
     /**
      * Get a single property and print it
@@ -169,19 +168,8 @@ public class MigrationUtil {
         return newSqlFileContent
     }
 
-    public static String getPlatformVersion(groovy.sql.Sql sql) {
-        def version = null;
-        sql.eachRow("SELECT version FROM platform") { row ->
-            version = row[0]
-        }
-        return version;
-    }
-
-    public static String getPlatformVersion(dburl, user, pwd, driverClass) {
-        def sql = MigrationUtil.getSqlConnection(dburl, user, pwd, driverClass)
-        def String platformVersionInDatabase = MigrationUtil.getPlatformVersion(sql)
-        sql.close()
-        return platformVersionInDatabase;
+    public static Version getPlatformVersion(Sql sql) {
+        return Version.valueOf(sql.firstRow("SELECT version FROM platform")[0] as String);
     }
 
     public static Object getId(File feature, String dbVendor, String fileExtension, Object it, Sql sql) {

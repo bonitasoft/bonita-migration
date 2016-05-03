@@ -15,31 +15,68 @@
 package org.bonitasoft.migration.core
 
 import groovy.sql.Sql
+import org.bonitasoft.migration.core.database.DatabaseHelper
 import spock.lang.Specification
+import spock.lang.Unroll
+
 /**
  * @author Baptiste Mesta
  */
-class MigrationRunnerTest extends  Specification {
+class MigrationRunnerTest extends Specification {
 
     def infos = []
     def logger = [info: { String message -> infos.add(message) }] as Logger
-
     def VersionMigration versionMigration = Mock(VersionMigration);
-    def MigrationContext migrationContext = Mock(MigrationContext)
+    def MigrationStep migrationStep1 = Mock(MigrationStep)
+    def MigrationStep migrationStep2 = Mock(MigrationStep)
+    def List<MigrationStep> migrationStepList = [migrationStep1, migrationStep2]
+    def MigrationContext migrationContext = new MigrationContext()
+    def DatabaseHelper databaseHelper = Mock(DatabaseHelper)
+    def MigrationRunner migrationRunner
     def Sql sql = Mock(Sql)
 
-    def "run should execute migration step"() {
-        migrationContext.sql >> sql
-        def MigrationStep migrationStep = Mock(MigrationStep);
-        versionMigration.getMigrationSteps() >> [migrationStep]
-
-        MigrationRunner migrationRunner = new MigrationRunner(versionMigrations: [versionMigration], context: migrationContext, logger: logger)
-
-        when:
-        migrationRunner.run(false)
-
-        then:
-        1 * migrationStep.execute(migrationContext)
-
+    def setup() {
+        versionMigration.getMigrationSteps() >> migrationStepList
+        migrationContext.sql = sql
+        migrationContext.databaseHelper = databaseHelper
+        migrationRunner = new MigrationRunner(versionMigrations: [versionMigration], context: migrationContext, logger: logger)
     }
+
+    @Unroll
+    def "run should #migrateText execute migrate bonita home for version #version"() {
+        given:
+        versionMigration.getVersion() >> version
+        when:
+        migrationRunner.run(true)
+        then:
+        migrate * versionMigration.migrateBonitaHome(_)
+        where:
+        version || migrate
+        "7.2.8" || 1
+        "7.3.0" || 0
+        "7.3.1" || 0
+        migrateText = migrate == 1 ? "" : "not"
+    }
+
+    def "run should execute migration steps in order"() {
+        given:
+        versionMigration.getVersion() >> "7.3.1"
+        when:
+        migrationRunner.run(true)
+        then:
+        1 * migrationStep1.execute(migrationContext)
+        then:
+        1 * migrationStep2.execute(migrationContext)
+    }
+
+    def "run should change platform version in database"() {
+        given:
+        versionMigration.getVersion() >> "7.3.1"
+        when:
+        migrationRunner.run(true)
+        then:
+        1 * sql.executeUpdate("UPDATE platform SET previousVersion = version")
+        1 * sql.executeUpdate("UPDATE platform SET version = ${"7.3.1"}")
+    }
+
 }
