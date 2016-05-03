@@ -14,6 +14,7 @@
 
 package org.bonitasoft.migration.core
 
+import com.github.zafarkhaja.semver.Version
 import groovy.sql.Sql
 import groovy.time.TimeCategory
 
@@ -28,13 +29,14 @@ class MigrationRunner {
 
     def run(boolean isSp) {
         Date migrationStartDate = new Date()
-        context.openSqlConnection()
         def lastVersion
         versionMigrations.each {
             logger.info "Execute migration to version " + it.getVersion()
             it.context = context
             context.setVersion(it.getVersion())
-            it.migrateBonitaHome(isSp)
+            if (Version.valueOf(it.getVersion()) < Version.valueOf("7.3.0")) {
+                it.migrateBonitaHome(isSp)
+            }
             it.getMigrationSteps().each { step ->
                 logger.info "---------------"
                 logger.info "| Execute migration step: " + step.description
@@ -47,7 +49,6 @@ class MigrationRunner {
             lastVersion = it.getVersion()
         }
         logSuccessfullyCompleted(migrationStartDate, lastVersion)
-        context.closeSqlConnection()
     }
 
     private void logSuccessfullyCompleted(Date migrationStartDate, lastVersion) {
