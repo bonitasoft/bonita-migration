@@ -28,6 +28,7 @@ class MigrateTo7_3_0 extends VersionMigration {
         //keep one line per step to avoid false-positive merge conflict
         return [
                 new MigrateBonitaHomeEngine(),
+                new TenantResources(),
                 new MigrateSqlReservedKeywords()
         ]
     }
