@@ -532,7 +532,7 @@ END""")
      * @param scriptName
      */
     def executeScript(String folderName, String scriptName) {
-        def statements = getScriptContent(getVersionFolder() + "/$folderName", scriptName).split("@@")
+        def statements = getScriptContent(getVersionFolder() + "/$folderName", scriptName).split("@@|GO|;")
         statements.each {
             def trimmed = it.trim()
             println "execute statement:\n${trimmed}"

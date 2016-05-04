@@ -14,11 +14,13 @@
 
 package org.bonitasoft.migration
 
+import org.bonitasoft.engine.api.APIClient
 import org.bonitasoft.engine.test.junit.BonitaEngineRule
 import org.bonitasoft.migration.filler.FillerUtils
 import org.junit.BeforeClass
 import org.junit.Rule
 import spock.lang.Specification
+
 /**
  * @author Baptiste Mesta
  */
@@ -33,5 +35,12 @@ class CheckMigratedTo7_3_0 extends Specification {
         FillerUtils.initializeEngineSystemProperties()
     }
 
+
+    def "engine should be running"() {
+        expect:
+        def client = new APIClient()
+        client.login("install", "install")
+
+    }
 
 }
