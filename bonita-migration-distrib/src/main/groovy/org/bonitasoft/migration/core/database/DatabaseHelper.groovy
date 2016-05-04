@@ -535,8 +535,10 @@ END""")
         def statements = getScriptContent(getVersionFolder() + "/$folderName", scriptName).split("@@|GO|;")
         statements.each {
             def trimmed = it.trim()
-            println "execute statement:\n${trimmed}"
-            sql.execute(trimmed)
+            if (trimmed != null && !trimmed.empty) {
+                println "execute statement:\n${trimmed}"
+                sql.execute(trimmed)
+            }
         }
     }
 
