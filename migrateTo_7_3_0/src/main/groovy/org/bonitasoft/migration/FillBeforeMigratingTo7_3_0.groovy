@@ -14,11 +14,14 @@
 package org.bonitasoft.migration
 
 import org.bonitasoft.engine.api.PlatformAPIAccessor
+import org.bonitasoft.engine.api.TenantAPIAccessor
+import org.bonitasoft.engine.bdm.BusinessObjectModelConverter
+import org.bonitasoft.engine.bdm.model.BusinessObject
+import org.bonitasoft.engine.bdm.model.BusinessObjectModel
+import org.bonitasoft.engine.bdm.model.field.FieldType
+import org.bonitasoft.engine.bdm.model.field.SimpleField
 import org.bonitasoft.engine.test.TestEngineImpl
-import org.bonitasoft.migration.filler.FillAction
-import org.bonitasoft.migration.filler.FillerInitializer
-import org.bonitasoft.migration.filler.FillerShutdown
-import org.bonitasoft.migration.filler.FillerUtils
+import org.bonitasoft.migration.filler.*
 
 /**
  * @author Baptiste Mesta
@@ -32,10 +35,39 @@ class FillBeforeMigratingTo7_3_0 {
         TestEngineImpl.instance.start()
     }
 
+
+    def static BusinessObjectModel createBusinessObjectModel() {
+        final SimpleField firstName = new SimpleField()
+        firstName.setName("name")
+        firstName.setType(FieldType.STRING)
+        firstName.setLength(Integer.valueOf(100))
+        final BusinessObject testEntity = new BusinessObject()
+        testEntity.setQualifiedName("com.company.model.TestEntity")
+        testEntity.addField(firstName)
+        final BusinessObjectModel model = new BusinessObjectModel();
+        model.addBusinessObject(testEntity)
+        model
+    }
+
+    @FillerBdmInitializer
+    def deployBDM() {
+        def businessObjectModel = createBusinessObjectModel()
+        def session = TenantAPIAccessor.getLoginAPI().login("install", "install")
+        def tenantAdministrationAPI = TenantAPIAccessor.getTenantAdministrationAPI(session)
+
+        final BusinessObjectModelConverter converter = new BusinessObjectModelConverter()
+        final byte[] zip = converter.zip(businessObjectModel)
+
+        tenantAdministrationAPI.pause()
+        tenantAdministrationAPI.installBusinessDataModel(zip)
+        tenantAdministrationAPI.resume()
+    }
+
     @FillAction
-    public void fillSomething(){
+    public void fillSomething() {
 
     }
+
 
     @FillerShutdown
     public void stop() {
@@ -44,7 +76,6 @@ class FillBeforeMigratingTo7_3_0 {
         PlatformAPIAccessor.getPlatformAPI(session).stopNode()
         PlatformAPIAccessor.getPlatformLoginAPI().logout(session)
     }
-
 
 
 }
