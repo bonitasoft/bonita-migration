@@ -18,12 +18,11 @@ import org.bonitasoft.engine.api.TenantAPIAccessor
 import org.bonitasoft.engine.resources.TenantResourceType
 import org.bonitasoft.engine.service.TenantServiceSingleton
 import org.bonitasoft.engine.service.impl.ServiceAccessorFactory
+import org.bonitasoft.engine.session.APISession
 import org.bonitasoft.engine.test.TestEngine
 import org.bonitasoft.engine.test.annotation.Engine
-import org.bonitasoft.engine.api.APIClient
 import org.bonitasoft.engine.test.junit.BonitaEngineRule
 import org.bonitasoft.migration.filler.FillerUtils
-import org.junit.BeforeClass
 import org.junit.Rule
 import spock.lang.Specification
 
@@ -36,18 +35,23 @@ class CheckMigratedTo7_3_0 extends Specification {
     public BonitaEngineRule bonitaEngineRule = BonitaEngineRule.create().reuseExistingPlatform()
 
     @Engine
-    public TestEngine testEngine;
+    public TestEngine testEngine
+
+    def APISession session
 
 
-    @BeforeClass
-    public static void beforeClass() {
+    def setupSpec() {
         FillerUtils.initializeEngineSystemProperties()
     }
 
-    public void "tenant resource service should work"() {
-        given:
-        TenantAPIAccessor.getLoginAPI().login("install", "install")
-        def tenantResourcesService = TenantServiceSingleton.getInstance().getTenantResourcesService()
+    def cleanup() {
+        TenantAPIAccessor.loginAPI.logout(session)
+    }
+
+    def "tenant resource service should work"() {
+        setup:
+        session = TenantAPIAccessor.loginAPI.login("install", "install")
+        def tenantResourcesService = TenantServiceSingleton.instance.getTenantResourcesService()
         def transactionService = ServiceAccessorFactory.instance.createPlatformServiceAccessor().transactionService
         when:
         transactionService.begin()
@@ -61,12 +65,11 @@ class CheckMigratedTo7_3_0 extends Specification {
         new String(tenantResource.content) == "theContent"
     }
 
-
-    def "engine should be running"() {
+    def "client BDM zip file must be put in database"() {
+        setup:
+        session = TenantAPIAccessor.loginAPI.login("install", "install")
         expect:
-        def client = new APIClient()
-        client.login("install", "install")
-
+        TenantAPIAccessor.getTenantAdministrationAPI(session).getClientBDMZip() != null
     }
 
 }
