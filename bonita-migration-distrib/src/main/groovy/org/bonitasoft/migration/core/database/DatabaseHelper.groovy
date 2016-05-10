@@ -368,6 +368,19 @@ END""")
     }
 
     /**
+     * checks if unique key exists on table
+     * @param tableName name of the table
+     * @param ukName name of the unique key
+     * @return true if exists, false otherwise
+     */
+    def boolean hasUniqueKeyOnTable(String tableName, String ukName) {
+        def query = getScriptContent("/database/uniqueKey", "uniqueKey")
+        def firstRow = sql.firstRow(query, [tableName, ukName])
+        return firstRow != null
+
+    }
+
+    /**
      * get primary key name
      * @param tableName
      * @return pk name if exists, null otherwise
