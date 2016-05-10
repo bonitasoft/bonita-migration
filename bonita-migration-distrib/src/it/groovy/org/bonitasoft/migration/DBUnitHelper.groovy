@@ -78,7 +78,7 @@ class DBUnitHelper {
         println "Create tables of $feature in version $version"
 
         //warning : don't end with @@ to avoid blank statement (error)
-        getCreateTables(version, feature).text.split("@@|;").each({ String stmt ->
+        getCreateTables(version, feature).text.split("@@|GO|;").each({ String stmt ->
             stmt = stmt.trim()
             if (!stmt.isEmpty()) {
                 context.sql.execute(stmt)
@@ -142,6 +142,10 @@ class DBUnitHelper {
 
     def boolean hasPrimaryKeyOnTable(String tableName, String pkName) {
         context.databaseHelper.hasPrimaryKeyOnTable(tableName, pkName)
+    }
+
+    def boolean hasUniqueKeyOnTable(String tableName, String ukName) {
+        context.databaseHelper.hasUniqueKeyOnTable(tableName, ukName)
     }
 
     def String getPrimaryKey(String tableName) {
