@@ -20,17 +20,4 @@ class MigrateTo7_3_0Test extends Specification {
         size << 4
     }
 
-//    @Unroll
-//    def "should contains #step"(def index, def step) {
-//        setup:
-//        def migration = new MigrateTo7_2_0();
-//
-//        expect:
-//        migration.getMigrationSteps().get(index).getClass() == step
-//
-//        where:
-//        index || step
-//        0     || MigrateProcessDefXml
-//    }
-
 }

@@ -30,7 +30,10 @@ class MigrateTo7_3_0 extends VersionMigration {
                 new MigrateBonitaHomeEngine(),
                 new TenantResources(),
                 new MigrateSqlReservedKeywords(),
-                new DropOrphanWaitingEvents()
+                new DropOrphanWaitingEvents(),
+
+                //same as in 7_2_0 step, in case customer already migrated in 7.2.0+
+                new MigrateProcessDefXml()
         ]
     }
 }

@@ -43,8 +43,24 @@ class MigrateProcessDefXml extends MigrationStep {
         changeIdRef(processDefinitionXml)
         changeDescriptionAttributeToElement(processDefinitionXml)
         addNodeToWrapContractInputDefinitions(processDefinitionXml)
+        renameCallActivityContractInputMapping(processDefinitionXml)
 
         return getContent(processDefinitionXml)
+    }
+
+    def renameCallActivityContractInputMapping(Node processDefinitionXml) {
+        def list = processDefinitionXml.breadthFirst().findAll { node ->
+            node instanceof Node && node.name() == "contractInputs" && node.parent().name() == "callActivity"
+        } as Node[]
+        list.each { contractInputs ->
+            def callActivity = contractInputs.parent()
+            def contractInput = new Node(callActivity, "contractInput", contractInputs.attributes())
+            contractInputs.children().each { child ->
+                new Node(contractInput, "input", child.attributes(), child.value())
+            }
+            callActivity.remove(contractInputs)
+        }
+
     }
 
     def addNodeToWrapContractInputDefinitions(Node processDefinitionXml) {
