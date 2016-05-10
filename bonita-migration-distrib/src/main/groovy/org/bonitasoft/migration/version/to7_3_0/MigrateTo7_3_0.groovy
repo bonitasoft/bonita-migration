@@ -29,7 +29,8 @@ class MigrateTo7_3_0 extends VersionMigration {
         return [
                 new MigrateBonitaHomeEngine(),
                 new TenantResources(),
-                new MigrateSqlReservedKeywords()
+                new MigrateSqlReservedKeywords(),
+                new DropOrphanWaitingEvents()
         ]
     }
 }
