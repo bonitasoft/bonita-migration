@@ -13,6 +13,7 @@
  **/
 
 package org.bonitasoft.migration
+
 import groovy.json.JsonSlurper
 import org.bonitasoft.engine.api.TenantAPIAccessor
 import org.bonitasoft.engine.bdm.BusinessObjectModelConverter
@@ -29,9 +30,11 @@ import org.bonitasoft.engine.bpm.flownode.ActivityInstanceCriterion
 import org.bonitasoft.engine.bpm.flownode.MultiInstanceLoopCharacteristics
 import org.bonitasoft.engine.bpm.flownode.UserTaskDefinition
 import org.bonitasoft.engine.bpm.parameter.ParameterInstance
-import org.bonitasoft.engine.exception.NotFoundException
+import org.bonitasoft.engine.bpm.process.ProcessInstanceCriterion
 import org.bonitasoft.engine.command.BusinessDataCommandField
 import org.bonitasoft.engine.command.GetBusinessDataByQueryCommand
+import org.bonitasoft.engine.exception.NotFoundException
+import org.bonitasoft.engine.search.SearchOptionsBuilder
 import org.bonitasoft.engine.test.junit.BonitaEngineRule
 import org.bonitasoft.migration.filler.FillerUtils
 import org.junit.BeforeClass
@@ -322,7 +325,6 @@ class CheckMigratedTo7_2_0 {
     }
 
 
-
     @Test
     public void verifyBARsAreMigratedInDb() {
         def session = TenantAPIAccessor.getLoginAPI().login("userOfBARInDatabase", "bpm");
@@ -338,6 +340,8 @@ class CheckMigratedTo7_2_0 {
         def instances = processAPI.getPendingHumanTaskInstances(session.getUserId(), 0, 10, ActivityInstanceCriterion.NAME_ASC)
         assertThat(instances).hasSize(1)
         assertThat(instances.get(0).getState()).isNotEqualTo("failed")
+        processAPI.assignUserTask(instances.get(0).getId(), session.getUserId())
+        processAPI.executeFlowNode(session.getUserId(), instances.get(0).getId())
 
         def document = processAPI.getLastDocument(processInstance.id, "myDoc1")
         def content = processAPI.getDocumentContent(document.getContentStorageId())
@@ -349,7 +353,14 @@ class CheckMigratedTo7_2_0 {
 
         //check
         def resources = exportedBAR.getResources()
-        assertThat(resources).containsKeys(
+        assertThat(resources.keySet())
+                .hasSize(12)
+                .containsOnly(
+                "form-mapping.xml",
+                "process-infos.txt",
+                "process-design.xml",
+                "parameters.properties",
+                "actorMapping.xml",
                 "documents/initialContent1.txt",
                 "documents/initialContent2.txt",
                 "documents/initialContent3.txt",
@@ -365,9 +376,17 @@ class CheckMigratedTo7_2_0 {
         assertThat(resources.get("resources/content/other.html")).isEqualTo("<html>1".bytes)
         assertThat(new String(resources.get("connector/myConnector.impl"))).contains(MyConnector.class.getName())
         assertThat(new String(resources.get("userFilters/MyUserFilter.impl"))).contains("MyUserFilter")
+
+        processAPI.getProcessInstances(0, 10, ProcessInstanceCriterion.NAME_ASC).each {
+            assertThat(it.state).as("process {$it.name} - {$it.description} should be started").isIn("started", "completed");
+        }
+
+        processAPI.searchFlowNodeInstances(new SearchOptionsBuilder(0, 100).done()).getResult().each {
+            assertThat(it.state).as("flowNodeInstance {$it.name} should not be in failed state").isNotEqualTo("failed");
+
+        }
         TenantAPIAccessor.getLoginAPI().logout(session)
     }
-
 
 
     @Test
