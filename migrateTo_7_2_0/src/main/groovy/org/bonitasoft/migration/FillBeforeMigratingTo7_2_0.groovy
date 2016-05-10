@@ -12,6 +12,7 @@
  * Floor, Boston, MA 02110-1301, USA.
  **/
 package org.bonitasoft.migration
+
 import org.bonitasoft.engine.LocalServerTestsInitializer
 import org.bonitasoft.engine.api.CommandAPI
 import org.bonitasoft.engine.api.PlatformAPIAccessor
@@ -31,10 +32,10 @@ import org.bonitasoft.engine.bpm.contract.Type
 import org.bonitasoft.engine.bpm.form.FormMappingModelBuilder
 import org.bonitasoft.engine.bpm.process.ProcessDefinition
 import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder
-import org.bonitasoft.engine.exception.NotFoundException
 import org.bonitasoft.engine.command.BusinessDataCommandField
 import org.bonitasoft.engine.command.ExecuteBDMQueryCommand
 import org.bonitasoft.engine.command.GetBusinessDataByQueryCommand
+import org.bonitasoft.engine.exception.NotFoundException
 import org.bonitasoft.engine.expression.Expression
 import org.bonitasoft.engine.expression.ExpressionBuilder
 import org.bonitasoft.engine.form.FormMappingTarget
@@ -42,6 +43,7 @@ import org.bonitasoft.engine.io.IOUtil
 import org.bonitasoft.engine.operation.OperationBuilder
 import org.bonitasoft.engine.test.PlatformTestUtil
 import org.bonitasoft.migration.filler.*
+
 import static groovy.test.GroovyAssert.shouldFail
 /**
  * @author Baptiste Mesta
@@ -119,7 +121,7 @@ class FillBeforeMigratingTo7_2_0 {
 
     @FillerBdmInitializer
     def deployBDM() {
-        def businessObjectModel=createBusinessObjectModel()
+        def businessObjectModel = createBusinessObjectModel()
         def session = TenantAPIAccessor.getLoginAPI().login("install", "install")
         def tenantAdministrationAPI = TenantAPIAccessor.getTenantAdministrationAPI(session)
 
@@ -231,7 +233,7 @@ class FillBeforeMigratingTo7_2_0 {
         builder.addUserTask("step2", "myActor").addContract().addInput("myTaskContractInput", Type.BOOLEAN, "Serves description non-reg purposes")
         def task = builder.addAutomaticTask("taskWithNoDescription")
         task.addConnector("theConnector", "connectorId", "version", ConnectorEvent.ON_ENTER).addInput("input1", new ExpressionBuilder().createConstantStringExpression("input1Value"))
-                .addOutput(new OperationBuilder().createSetDataOperation("myData", new ExpressionBuilder().createInputExpression("outputValue",String.class.getName())))
+                .addOutput(new OperationBuilder().createSetDataOperation("myData", new ExpressionBuilder().createInputExpression("outputValue", String.class.getName())))
         task.addOperation(new OperationBuilder().createSetDataOperation("myData", new ExpressionBuilder().createConstantStringExpression("theNewValue")))
         builder.addTransition("step1", "step2")
         builder.addActor("myActor")
@@ -328,8 +330,6 @@ class FillBeforeMigratingTo7_2_0 {
     }
 
 
-
-
     @FillAction
     public void barInDatabase() {
         def session = TenantAPIAccessor.getLoginAPI().login("install", "install");
@@ -337,13 +337,42 @@ class FillBeforeMigratingTo7_2_0 {
         def identityAPI = TenantAPIAccessor.getIdentityAPI(session)
         def user = identityAPI.createUser("userOfBARInDatabase", "bpm")
 
+        def subProcessBuilder = new BusinessArchiveBuilder().createNewBusinessArchive()
+
+        def subProcessDefinitionBuilder = new ProcessDefinitionBuilder().createNewInstance("sub", "1.0")
+        subProcessDefinitionBuilder.addContract().addInput("subContractInput", Type.TEXT, "call activity expected contract input")
+
+        subProcessBuilder.setProcessDefinition(subProcessDefinitionBuilder.done())
+        subProcessBuilder.setActorMapping("""
+<actorMappings:actorMappings xmlns:actorMappings="http://www.bonitasoft.org/ns/actormapping/6.0">
+    <actorMapping name="theUser">
+        <users>
+            <user>userOfBARInDatabase</user>
+        </users>
+        <groups />
+        <roles />
+        <memberships />
+    </actorMapping>
+</actorMappings:actorMappings>
+""".getBytes())
+        def subProcessDefinition = processAPI.deploy(subProcessDefinitionBuilder.done())
+        processAPI.enableProcess(subProcessDefinition.getId())
+
         def builder = new BusinessArchiveBuilder().createNewBusinessArchive()
+
         def processDefinitionBuilder = new ProcessDefinitionBuilder().createNewInstance("barInDatabase", "1.1.0")
         processDefinitionBuilder.addActor("theUser")
         def task = processDefinitionBuilder.addUserTask("step1", "theUser")
+        def callActivityBuilder = task.addCallActivity("callActivity", new ExpressionBuilder().createConstantStringExpression("sub"), new ExpressionBuilder().createConstantStringExpression("1.0"))
+        callActivityBuilder.addProcessStartContractInput("subContractInput", new ExpressionBuilder().createConstantStringExpression("input value"))
+
         task.addConnector("theConnector", "connectorId", "version", ConnectorEvent.ON_ENTER).addInput("input1", new ExpressionBuilder().createConstantStringExpression("input1Value"))
-                .addOutput(new OperationBuilder().createSetDataOperation("myData", new ExpressionBuilder().createInputExpression("outputValue",String.class.getName())))
-        processDefinitionBuilder.addUserTask("step2", "theUser")
+                .addOutput(new OperationBuilder().createSetDataOperation("myData", new ExpressionBuilder().createInputExpression("outputValue", String.class.getName())))
+
+
+
+        processDefinitionBuilder.addUserTask("step2", "theUser");
+
         processDefinitionBuilder.addDocumentDefinition("myDoc1").addFile("initialContent1.txt").addContentFileName("MyFile.txt").addMimeType("plain/text")
         processDefinitionBuilder.addDocumentDefinition("myDoc2").addFile("initialContent2.txt").addContentFileName("MyFile.txt").addMimeType("plain/text")
         processDefinitionBuilder.addDocumentDefinition("myDoc3").addFile("initialContent3.txt").addContentFileName("MyFile.txt").addMimeType("plain/text")
@@ -394,6 +423,7 @@ class FillBeforeMigratingTo7_2_0 {
 
         def processDefinition = processAPI.deploy(builder.done())
         processAPI.enableProcess(processDefinition.getId())
+        processAPI.startProcess(processDefinition.getId())
 
         TenantAPIAccessor.getLoginAPI().logout(session)
     }
@@ -406,10 +436,10 @@ class FillBeforeMigratingTo7_2_0 {
         def identityAPI = TenantAPIAccessor.getIdentityAPI(session)
         def pageAPI = TenantAPIAccessor.getCustomPageAPI(session)
 
-        def zip = IOUtil.zip(["Index.groovy":"""
+        def zip = IOUtil.zip(["Index.groovy": """
     return ''
 """.getBytes(),
-        "page.properties":"""
+                              "page.properties": """
 name=custompage_mypage
 displayName=MyPage
 description=An example page
@@ -437,11 +467,11 @@ description=An example page
     </actorMapping>
 </actorMappings:actorMappings>
 """.getBytes())
-        builder.setFormMappings(new FormMappingModelBuilder().addProcessOverviewForm("the url of the page",FormMappingTarget.URL)
-        .addProcessStartForm("custompage_mypage",FormMappingTarget.INTERNAL)
-        .addTaskForm(null,FormMappingTarget.NONE,"step1")
-        .addTaskForm(null,FormMappingTarget.NONE,"step3")
-        .addTaskForm(null,FormMappingTarget.UNDEFINED,"step2").build())
+        builder.setFormMappings(new FormMappingModelBuilder().addProcessOverviewForm("the url of the page", FormMappingTarget.URL)
+                .addProcessStartForm("custompage_mypage", FormMappingTarget.INTERNAL)
+                .addTaskForm(null, FormMappingTarget.NONE, "step1")
+                .addTaskForm(null, FormMappingTarget.NONE, "step3")
+                .addTaskForm(null, FormMappingTarget.UNDEFINED, "step2").build())
 
 
         def processDefinition = processAPI.deploy(builder.done())
@@ -451,7 +481,7 @@ description=An example page
         assert urlMapping.url == "the url of the page"
         def internalMapping = pageAPI.resolvePageOrURL("process/formMappingProcess/1.1.0", ["IS_ADMIN": true], true);
         assert internalMapping.pageId == page.id
-        shouldFail(NotFoundException){
+        shouldFail(NotFoundException) {
             assert pageAPI.resolvePageOrURL("taskInstance/formMappingProcess/1.1.0/step1", ["IS_ADMIN": true], true);
         }
         shouldFail(NotFoundException) {
@@ -460,9 +490,6 @@ description=An example page
 
         TenantAPIAccessor.getLoginAPI().logout(session)
     }
-
-
-
 
     /**
      * stop platform after all fill actions
