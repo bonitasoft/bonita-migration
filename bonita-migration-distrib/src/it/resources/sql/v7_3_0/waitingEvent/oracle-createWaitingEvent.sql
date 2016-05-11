@@ -53,5 +53,5 @@ CREATE TABLE process_definition (
 @@
 INSERT INTO process_definition
     (tenantid, id, processId, name, version, description, deploymentDate, deployedBy, activationState, configurationState, displayName, displayDescription, lastUpdateDate, categoryId, iconPath, content_tenantid, content_id)
-    VALUES(1, 0, 123456789000, 'process', '1.0', '', 0, 0, '', '', '', '', 0, 0, '', 0, 0)
+    VALUES(1, 0, 123456789000, 'process', '1.0', '', 0, 0, 'ACTIVE', 'toto', '', '', 0, 0, '', 0, 0)
 @@
