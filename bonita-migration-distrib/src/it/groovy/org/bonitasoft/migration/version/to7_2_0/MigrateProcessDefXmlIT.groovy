@@ -13,9 +13,11 @@
  */
 package org.bonitasoft.migration.version.to7_2_0
 
+import oracle.sql.CLOB
 import org.bonitasoft.migration.DBUnitHelper
 import org.bonitasoft.migration.core.Logger
 import org.bonitasoft.migration.core.MigrationContext
+import org.bonitasoft.migration.core.MigrationStep
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -65,8 +67,12 @@ class MigrateProcessDefXmlIT extends Specification {
         def rows = dbUnitHelper.context.sql.rows("SELECT tenantid, id, content FROM process_content")
 
         def xmlContent = rows.get(0)["content"]
-        def returnedXml = xmlSlurper.parseText(xmlContent)
-        println xmlContent
+        def returnedXml
+        if (MigrationStep.DBVendor.ORACLE.equals(migrationContext.dbVendor)) {
+            returnedXml = xmlSlurper.parseText(((CLOB) xmlContent).asciiStream.text)
+        } else {
+            returnedXml = xmlSlurper.parseText(xmlContent)
+        }
         def returnChildren = returnedXml.'**'.findAll { node ->
             node.parent().name() == 'contractInput' && node.name() == 'input' && node.children().size() > 0
         }
