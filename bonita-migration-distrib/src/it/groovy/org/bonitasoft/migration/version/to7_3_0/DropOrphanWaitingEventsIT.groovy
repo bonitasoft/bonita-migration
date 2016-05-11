@@ -24,6 +24,23 @@ class DropOrphanWaitingEventsIT extends Specification {
     def setup() {
         cleanTables()
         dbUnitHelper.createTables("7_3_0/waitingEvent", "createWaitingEvent")
+
+        dbUnitHelper.context.sql.execute("""INSERT INTO waiting_event
+    (tenantid, id, kind, eventType, messageName, signalName, errorCode, processName, flowNodeName, flowNodeDefinitionId, subProcessId, processDefinitionId, rootProcessInstanceId, parentProcessInstanceId, flowNodeInstanceId, relatedActivityInstanceId, locked, active, progress, correlation1, correlation2, correlation3, correlation4, correlation5)
+    VALUES(1, 0, '', '', '', '', '', '', '', 0, 0, 123456789000, 0, 0, 0, 0, ${dbUnitHelper.falseValue()}, ${
+            dbUnitHelper.falseValue()
+        }, 0, '', '', '', '', '')""")
+        dbUnitHelper.context.sql.execute("""INSERT INTO waiting_event
+    (tenantid, id, kind, eventType, messageName, signalName, errorCode, processName, flowNodeName, flowNodeDefinitionId, subProcessId, processDefinitionId, rootProcessInstanceId, parentProcessInstanceId, flowNodeInstanceId, relatedActivityInstanceId, locked, active, progress, correlation1, correlation2, correlation3, correlation4, correlation5)
+    VALUES(1, 1, '', '', '', '', '', '', '', 0, 0, 8888888888888, 0, 0, 0, 0, ${dbUnitHelper.falseValue()}, ${
+            dbUnitHelper.falseValue()
+        }, 0, '', '', '', '', '')""")
+        dbUnitHelper.context.sql.execute("""INSERT INTO waiting_event
+    (tenantid, id, kind, eventType, messageName, signalName, errorCode, processName, flowNodeName, flowNodeDefinitionId, subProcessId, processDefinitionId, rootProcessInstanceId, parentProcessInstanceId, flowNodeInstanceId, relatedActivityInstanceId, locked, active, progress, correlation1, correlation2, correlation3, correlation4, correlation5)
+    VALUES(1, 2, '', '', '', '', '', '', '', 0, 0, 9999999999999, 0, 0, 0, 0, ${dbUnitHelper.falseValue()}, ${
+            dbUnitHelper.falseValue()
+        }, 0, '', '', '', '', '')""")
+
     }
 
     def cleanup() {
