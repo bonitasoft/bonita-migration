@@ -16,6 +16,7 @@ package org.bonitasoft.migration.version.to7_3_0
 
 import org.bonitasoft.migration.core.MigrationStep
 import org.bonitasoft.migration.core.VersionMigration
+import org.bonitasoft.migration.version.to7_2_0.MigrateProcessDefXml
 
 /**
  * @author Emmanuel Duchastenier
