@@ -15,6 +15,8 @@ import static groovy.io.FileType.DIRECTORIES
 class TenantResources extends MigrationStep {
 
 
+    public static final int TENANT_RESOURCE_SEQUENCE_ID = 10501
+
     @Override
     def execute(MigrationContext context) {
         def Map<Long, Long> resourcesCount = [:]
@@ -27,8 +29,7 @@ class TenantResources extends MigrationStep {
             resourcesCount.put(tenantId, 1)
             migrateClientBDMZip(context, resourcesCount, tenant, tenantId)
         }
-        insertSequences(resourcesCount, context)
-
+        context.databaseHelper.insertSequences(resourcesCount, context, TENANT_RESOURCE_SEQUENCE_ID)
     }
 
     void migrateClientBDMZip(MigrationContext context, Map<Long, Long> resourcesCount, File tenantFolder, long tenantId) {
@@ -41,12 +42,6 @@ class TenantResources extends MigrationStep {
         context.sql.executeInsert("INSERT INTO tenant_resource VALUES ($tenantId,$resourceId,${"client-bdm.zip"},${"BDM"},${clientBDMZip.bytes})")
         clientBDMZip.delete()
         resourcesCount.put(tenantId, resourceId + 1)
-    }
-
-    private static Map<Long, Long> insertSequences(LinkedHashMap<Long, Long> resourcesCount, context) {
-        return resourcesCount.each { it ->
-            context.sql.executeInsert("INSERT INTO sequence VALUES(${it.getKey()}, ${10501}, ${it.getValue()})")
-        }
     }
 
 
