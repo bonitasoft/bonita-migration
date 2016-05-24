@@ -15,6 +15,7 @@
 package org.bonitasoft.migration
 
 import org.bonitasoft.engine.api.TenantAPIAccessor
+import org.bonitasoft.engine.identity.UserUpdater
 import org.bonitasoft.engine.resources.TenantResourceType
 import org.bonitasoft.engine.service.TenantServiceSingleton
 import org.bonitasoft.engine.service.impl.ServiceAccessorFactory
@@ -72,4 +73,26 @@ class CheckMigratedTo7_3_0 extends Specification {
         TenantAPIAccessor.getTenantAdministrationAPI(session).getClientBDMZip() != null
     }
 
+    def "user avatar should be migrated"() {
+        setup:
+        session = TenantAPIAccessor.loginAPI.login("install", "install")
+        def identityAPI = TenantAPIAccessor.getIdentityAPI(session)
+        expect:
+        def icon = identityAPI.getIcon(identityAPI.getUserByUserName("userWithIcon").iconId)
+        icon.mimeType == "image/png"
+        icon.content == "the icon content".bytes
+    }
+
+    def "update user should create the icon"() {
+        setup:
+        session = TenantAPIAccessor.loginAPI.login("install", "install")
+        def identityAPI = TenantAPIAccessor.getIdentityAPI(session)
+        def user = identityAPI.createUser("newUserForIconTest", "bpm")
+        when:
+        def updatedUser = identityAPI.updateUser(user.id, new UserUpdater().setIcon("theIcon.gif", "the gif content".bytes))
+        then:
+        def icon = identityAPI.getIcon(updatedUser.iconId)
+        icon.mimeType == "image/gif"
+        icon.content == "the gif content".bytes
+    }
 }
