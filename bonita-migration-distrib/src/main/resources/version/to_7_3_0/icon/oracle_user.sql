@@ -1,0 +1,2 @@
+ALTER TABLE user_ DROP COLUMN iconpath;
+ALTER TABLE user_ DROP COLUMN iconname;

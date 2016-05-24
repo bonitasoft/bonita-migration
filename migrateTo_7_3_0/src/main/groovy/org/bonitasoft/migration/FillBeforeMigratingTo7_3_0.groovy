@@ -20,8 +20,11 @@ import org.bonitasoft.engine.bdm.model.BusinessObject
 import org.bonitasoft.engine.bdm.model.BusinessObjectModel
 import org.bonitasoft.engine.bdm.model.field.FieldType
 import org.bonitasoft.engine.bdm.model.field.SimpleField
+import org.bonitasoft.engine.identity.UserCreator
 import org.bonitasoft.engine.test.TestEngineImpl
 import org.bonitasoft.migration.filler.*
+
+import java.nio.file.Files
 
 /**
  * @author Baptiste Mesta
@@ -64,8 +67,15 @@ class FillBeforeMigratingTo7_3_0 {
     }
 
     @FillAction
-    public void fillSomething() {
+    public void createUserWithIcons() {
 
+        def login = TenantAPIAccessor.getLoginAPI().login("install", "install")
+        def identityAPI = TenantAPIAccessor.getIdentityAPI(login)
+        identityAPI.createUser(new UserCreator("userWithIcon", "bpm").setIconPath("/users/myIcon.png"))
+        identityAPI.createUser(new UserCreator("userWithoutIcon", "bpm"))
+        def iconDir = new File(System.getProperty("bonita.home")).toPath().resolve("client").resolve("tenants").resolve(String.valueOf(login.tenantId)).resolve("work").resolve("icons").resolve("users")
+        Files.createDirectories(iconDir)
+        iconDir.resolve("myIcon.png").write("the icon content")
     }
 
 
