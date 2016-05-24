@@ -593,4 +593,9 @@ END""")
         sql.rows("select t.id, t.name, t.status from tenant t order by t.id")
     }
 
+    def insertConfigurationFile(String fileName, long tenantId, String type, byte[] content) {
+        logger.debug(String.format("insert configuration file | tenant id: %3d | type: %-25s | file name: %s", tenantId, type, fileName))
+        sql.executeInsert("INSERT INTO configuration(tenant_id,content_type,resource_name,resource_content) VALUES (${tenantId}, ${type}, ${fileName}, ${content})");
+    }
+
 }
