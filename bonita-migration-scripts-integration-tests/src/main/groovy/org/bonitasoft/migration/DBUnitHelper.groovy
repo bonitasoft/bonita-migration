@@ -25,6 +25,7 @@ import org.dbunit.dataset.xml.FlatXmlDataSet
 import org.dbunit.ext.oracle.OracleConnection
 
 import java.sql.DriverManager
+import java.sql.SQLException
 
 /**
  * @author Baptiste Mesta
@@ -38,33 +39,33 @@ class DBUnitHelper {
             "sqlserver": true
     ]
     static Map falseValueMap = [
-    "oracle"   : 0,
-    "postgres" : false,
-    "mysql"    : false,
-    "sqlserver": false
+            "oracle"   : 0,
+            "postgres" : false,
+            "mysql"    : false,
+            "sqlserver": false
     ]
 
-    static trueValue(){
+    static trueValue() {
         trueValueMap.get(dbVendor())
     }
 
-    static falseValue(){
+    static falseValue() {
         falseValueMap.get(dbVendor())
 
     }
 
-    static String dbVendor(){
+    static String dbVendor() {
         System.getProperty("db.vendor")
     }
 
 
-    def static  dataSet(data) {
+    def static dataSet(data) {
         new ReplacementDataSet(new FlatXmlDataSet(new StringReader(new StreamingMarkupBuilder().bind {
             dataset data
         }.toString())), ["[NULL]": null], null)
     }
 
-    def static getCreateTables(String version, String feature){
+    def static getCreateTables(String version, String feature) {
         DBUnitHelper.class.getClassLoader().getResource("sql/v${version}/${dbVendor()}-${feature}.sql");
     }
 
@@ -83,7 +84,7 @@ class DBUnitHelper {
         new JdbcDatabaseTester(driverClass, url, user, password) {
             public IDatabaseConnection getConnection() {
                 if (dbVendor() == "oracle") {
-                    def conn = DriverManager.getConnection(getUrl(),getUser(), getPassword());
+                    def conn = DriverManager.getConnection(getUrl(), getUser(), getPassword());
                     return new OracleConnection(conn, getUser());
                 } else {
                     return super.getConnection();
@@ -114,7 +115,13 @@ class DBUnitHelper {
 
     def static dropTables(Sql sql, String[] tables) {
         tables.each {
-            sql.execute("DROP TABLE $it".toString())
+            def statement = "DROP TABLE " + it
+            println "executing statement [${statement}]"
+            try {
+                sql.execute(statement as String)
+            } catch (SQLException e) {
+                println "failure ignored, table may not exists:" + e.getMessage()
+            }
         }
     }
 
