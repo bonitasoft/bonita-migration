@@ -17,6 +17,22 @@ CREATE TABLE user_ (
   UNIQUE (tenantid, userName),
   PRIMARY KEY (tenantid, id)
 );
+CREATE TABLE group_ (
+  tenantid INT8 NOT NULL,
+  id INT8 NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  iconName VARCHAR(50),
+  iconPath VARCHAR(50),
+  PRIMARY KEY (tenantid, id)
+);
+CREATE TABLE role (
+  tenantid INT8 NOT NULL,
+  id INT8 NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  iconName VARCHAR(50),
+  iconPath VARCHAR(50),
+  PRIMARY KEY (tenantid, id)
+);
 CREATE TABLE sequence (
   tenantid INT8 NOT NULL,
   id INT8 NOT NULL,

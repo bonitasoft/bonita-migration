@@ -6,3 +6,5 @@ CREATE TABLE icon (
   CONSTRAINT pk_icon PRIMARY KEY (tenantId, id)
 );
 ALTER TABLE user_ add iconid NUMBER(19, 0);
+ALTER TABLE group_ add iconid NUMBER(19, 0);
+ALTER TABLE role add iconid NUMBER(19, 0);

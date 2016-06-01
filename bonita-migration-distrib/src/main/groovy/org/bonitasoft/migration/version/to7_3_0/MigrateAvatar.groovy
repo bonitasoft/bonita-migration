@@ -27,6 +27,7 @@ class MigrateAvatar extends MigrationStep {
 
 
     private static final MimetypesFileTypeMap MIMETYPES_FILE_TYPE_MAP = new MimetypesFileTypeMap();
+    public static final int ICON_SEQUENCE_ID = 27
 
     @Override
     def execute(MigrationContext context) {
@@ -35,8 +36,12 @@ class MigrateAvatar extends MigrationStep {
         MIMETYPES_FILE_TYPE_MAP.addMimeTypes("image/jpeg jpeg jpg jpe JPG");
         def helper = context.databaseHelper
         helper.executeScript("icon", "icon")
-        migrateUserIcons(context)
-        helper.executeScript("icon", "user")
+        def Map<Long, Long> ids = [:]
+        migrateIconForTable(ids, context, "user_")
+        migrateIconForTable(ids, context, "group_")
+        migrateIconForTable(ids, context, "role")
+        context.databaseHelper.insertSequences(ids, context, ICON_SEQUENCE_ID)
+        helper.executeScript("icon", "drop")
     }
 
 
@@ -45,10 +50,8 @@ class MigrateAvatar extends MigrationStep {
         return "Migrate user, group and role icons in database"
     }
 
-    def migrateUserIcons(MigrationContext context) {
-        //migrate user icons
-        def Map<Long, Long> ids = [:]
-        context.databaseHelper.sql.eachRow("SELECT u.tenantid, u.iconpath, u.id FROM user_ u WHERE u.iconpath IS NOT null") { row ->
+    def migrateIconForTable(Map ids, MigrationContext context, String table) {
+        context.databaseHelper.sql.eachRow("SELECT tenantid, iconpath, id FROM " + table + " WHERE iconpath IS NOT null") { row ->
 
             def tenantId = String.valueOf(row.tenantid)
             def icon = context.bonitaHome.toPath().resolve("client").resolve("tenants").resolve(tenantId).resolve("work").resolve("icons").resolve(row.iconpath.substring(1))
@@ -59,10 +62,8 @@ class MigrateAvatar extends MigrationStep {
             context.logger.info "store user icon ${icon} in database"
             def iconId = getNextId(ids, Long.valueOf(tenantId))
             context.sql.executeInsert("INSERT INTO icon (tenantid, id, mimetype, content) VALUES (${row.tenantid}, ${iconId}, ${MIMETYPES_FILE_TYPE_MAP.getContentType(icon.toFile()) ?: "image/png"}, ${icon.bytes})")
-            context.sql.executeUpdate("UPDATE user_ SET iconid = ${iconId} WHERE user_.tenantid = ${row.tenantid} AND user_.id = ${row.id}")
+            context.sql.executeUpdate("UPDATE " + table + " SET iconid = ? WHERE " + table + ".tenantid = ? AND " + table + ".id = ?", iconId, row.tenantid, row.id)
         }
-        context.databaseHelper.insertSequences(ids, context, 27)
-
     }
 
     def getNextId(Map map, long tenantId) {

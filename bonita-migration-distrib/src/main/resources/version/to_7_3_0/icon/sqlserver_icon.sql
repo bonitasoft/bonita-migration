@@ -8,3 +8,7 @@ CREATE TABLE icon (
 GO
 ALTER TABLE user_ add iconid NUMERIC(19, 0)
 GO
+ALTER TABLE group_ add iconid NUMERIC(19, 0)
+GO
+ALTER TABLE role add iconid NUMERIC(19, 0)
+GO

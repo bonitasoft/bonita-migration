@@ -17,6 +17,22 @@ CREATE TABLE user_ (
   UNIQUE (tenantid, userName),
   PRIMARY KEY (tenantid, id)
 ) ENGINE = INNODB;
+CREATE TABLE group_ (
+  tenantid BIGINT NOT NULL,
+  id BIGINT NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  iconName VARCHAR(50),
+  iconPath VARCHAR(50),
+  PRIMARY KEY (tenantid, id)
+) ENGINE = INNODB;
+CREATE TABLE role (
+  tenantid BIGINT NOT NULL,
+  id BIGINT NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  iconName VARCHAR(50),
+  iconPath VARCHAR(50),
+  PRIMARY KEY (tenantid, id)
+) ENGINE = INNODB;
 CREATE TABLE sequence (
   tenantid BIGINT NOT NULL,
   id BIGINT NOT NULL,
