@@ -13,6 +13,11 @@
  **/
 
 package org.bonitasoft.migration.filler
+
+import org.junit.Rule
+import org.junit.rules.MethodRule
+import org.junit.runners.model.Statement
+
 /**
  * @author Baptiste Mesta
  */
@@ -26,14 +31,58 @@ class FillerRunner {
         def fillerClass = Class.forName(className)
         def instance = fillerClass.newInstance()
 
-        executeAllMethodsHaving(fillerClass, FillerInitializer, instance)
-        executeAllMethodsHaving(fillerClass, FillerBdmInitializer, instance)
-        executeAllMethodsHaving(fillerClass, FillAction, instance)
-        executeAllMethodsHaving(fillerClass, FillerShutdown, instance)
+        def statement = new Statement(){
+            @Override
+            void evaluate() throws Throwable {
+                executeAllMethodsHaving(fillerClass, FillAction, instance)
+            }
+        }
+        statement = withFillerBdmInitializer(statement, fillerClass, instance)
+        statement = withRules(statement, fillerClass, instance);
+        statement = withFillerInitializer(statement, fillerClass, instance)
+        statement = withFillerShutdown(statement, fillerClass, instance)
+
+        statement.evaluate()
 
         println "FillerRunner: finished "
+        System.exit(0)
 
+    }
+    static def withFillerInitializer(Statement statement, fillerClass, instance){
+        return new Statement(){
+            @Override
+            void evaluate() throws Throwable {
+                executeAllMethodsHaving(fillerClass, FillerInitializer, instance)
+                statement.evaluate()
+            }
+        }
+    }
+    static def withFillerBdmInitializer(Statement statement, fillerClass, instance){
+        return new Statement(){
+            @Override
+            void evaluate() throws Throwable {
+                executeAllMethodsHaving(fillerClass, FillerBdmInitializer, instance)
+                statement.evaluate()
+            }
+        }
+    }
+    static def withFillerShutdown(Statement statement, fillerClass, instance){
+        return new Statement(){
+            @Override
+            void evaluate() throws Throwable {
+                statement.evaluate()
+                executeAllMethodsHaving(fillerClass, FillerShutdown, instance)
+            }
+        }
+    }
 
+    static def withRules(Statement statement, Class<?> aClass, Object instance) {
+        Statement newStatement = statement
+        aClass.getDeclaredFields().each { field -> if(field.getAnnotation(Rule) != null){
+           def rule = field.get(instance) as MethodRule
+            newStatement = rule.apply(newStatement,null,instance)
+        }};
+        return newStatement
     }
 
     private static void executeAllMethodsHaving(Class<?> fillerClass, Class clazz, instance) {
