@@ -18,6 +18,24 @@ CREATE TABLE user_ (
   PRIMARY KEY (tenantid, id)
 )
 GO
+CREATE TABLE group_ (
+  tenantid NUMERIC(19, 0) NOT NULL,
+  id NUMERIC(19, 0) NOT NULL,
+  name NVARCHAR(255) NOT NULL,
+  iconName NVARCHAR(50),
+  iconPath NVARCHAR(50),
+  PRIMARY KEY (tenantid, id)
+)
+GO
+CREATE TABLE role (
+  tenantid NUMERIC(19, 0) NOT NULL,
+  id NUMERIC(19, 0) NOT NULL,
+  name NVARCHAR(255) NOT NULL,
+  iconName NVARCHAR(50),
+  iconPath NVARCHAR(50),
+  PRIMARY KEY (tenantid, id)
+)
+GO
 CREATE TABLE sequence (
     tenantid NUMERIC(19, 0) NOT NULL,
     id NUMERIC(19, 0) NOT NULL,

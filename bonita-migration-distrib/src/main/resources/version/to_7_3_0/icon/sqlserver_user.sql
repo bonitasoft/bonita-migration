@@ -1,4 +1,0 @@
-ALTER TABLE user_ DROP COLUMN iconpath
-GO
-ALTER TABLE user_ DROP COLUMN iconname
-GO

@@ -1,0 +1,12 @@
+ALTER TABLE user_ DROP COLUMN iconpath
+GO
+ALTER TABLE user_ DROP COLUMN iconname
+GO
+ALTER TABLE group_ DROP COLUMN iconpath
+GO
+ALTER TABLE group_ DROP COLUMN iconname
+GO
+ALTER TABLE role DROP COLUMN iconpath
+GO
+ALTER TABLE role DROP COLUMN iconname
+GO
