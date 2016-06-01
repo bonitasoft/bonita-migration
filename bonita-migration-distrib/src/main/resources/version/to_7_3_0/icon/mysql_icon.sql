@@ -6,3 +6,5 @@ CREATE TABLE icon (
   CONSTRAINT pk_icon PRIMARY KEY (tenantId, id)
 ) ENGINE = INNODB;
 ALTER TABLE user_ add iconid BIGINT;
+ALTER TABLE group_ add iconid BIGINT;
+ALTER TABLE role add iconid BIGINT;

@@ -17,6 +17,22 @@ CREATE TABLE user_ (
   CONSTRAINT UK_User UNIQUE (tenantid, userName),
   PRIMARY KEY (tenantid, id)
 );
+CREATE TABLE group_ (
+  tenantid NUMBER(19, 0) NOT NULL,
+  id NUMBER(19, 0) NOT NULL,
+  name VARCHAR2(255 CHAR) NOT NULL,
+  iconName VARCHAR2(50 CHAR),
+  iconPath VARCHAR2(50 CHAR),
+  PRIMARY KEY (tenantid, id)
+);
+CREATE TABLE role (
+  tenantid NUMBER(19, 0) NOT NULL,
+  id NUMBER(19, 0) NOT NULL,
+  name VARCHAR2(255 CHAR) NOT NULL,
+  iconName VARCHAR2(50 CHAR),
+  iconPath VARCHAR2(50 CHAR),
+  PRIMARY KEY (tenantid, id)
+);
 CREATE TABLE sequence (
     tenantid NUMBER(19, 0) NOT NULL,
     id NUMBER(19, 0) NOT NULL,

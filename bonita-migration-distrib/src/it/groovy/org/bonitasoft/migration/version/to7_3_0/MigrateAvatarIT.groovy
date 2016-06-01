@@ -62,53 +62,92 @@ class MigrateAvatarIT extends Specification {
     def "should insert avatar into icon table "() {
         given:
         def tenant12Folder = createTenantDir(12L)
-        tenant12Folder.resolve("tmp_58693177498535435.jpeg.jpeg").toFile().setBytes([1, 2, 3] as byte[])
+        writeIcon(tenant12Folder, "users", "tmp_58693177498535435.jpeg.jpeg", "tenant 12 avatar of john")
         insertUser(12L, 45L, "john", "tmp_58693177498535435.jpeg.jpeg")
-        writeIcon(tenant12Folder, "avatar3307049340281126580.gif", "tenant 12 avatar of jack")
+        writeIcon(tenant12Folder, "users", "avatar3307049340281126580.gif", "tenant 12 avatar of jack")
         insertUser(12L, 46L, "jack", "avatar3307049340281126580.gif")
-        writeIcon(tenant12Folder, "avatar4407045230281126580.png", "tenant 12 avatar of james")
+        writeIcon(tenant12Folder, "users", "avatar4407045230281126580.png", "tenant 12 avatar of james")
         insertUser(12L, 47L, "james", "avatar4407045230281126580.png")
         insertUser(12L, 48L, "anOther", "noExisting.png")
+        writeIcon(tenant12Folder, "groups", "groupIcon.png", "icon of a group")
+        insertGroup(12L, 47L, "groupName", "groupIcon.png")
+        writeIcon(tenant12Folder, "roles", "roleIcon.png", "icon of a role")
+        insertRole(12L, 47L, "roleName", "roleIcon.png")
+
         def tenant13Folder = createTenantDir(13L)
-        writeIcon(tenant13Folder, "avatar4407045230281126580.jpg", "tenant 13 avatar of john")
+        writeIcon(tenant13Folder, "users", "avatar4407045230281126580.jpg", "tenant 13 avatar of john")
         insertUser(13L, 45L, "john", "avatar4407045230281126580.jpg")
-        writeIcon(tenant13Folder, "avatar5507045230281126580.jpg", "tenant 13 avatar of jack")
+        writeIcon(tenant13Folder, "users", "avatar5507045230281126580.jpg", "tenant 13 avatar of jack")
         insertUser(13L, 46L, "jack", "avatar5507045230281126580.jpg")
         when:
         new MigrateAvatar().execute(migrationContext)
         then:
-        assert getIconOf("john", 12L) == [tenantid: 12L, mimetype: "image/jpeg", content: [1, 2, 3] as byte[]]
-        assert getIconOf("jack", 12L) == [tenantid: 12L, mimetype: "image/gif", content: "tenant 12 avatar of jack".bytes]
-        assert getIconOf("james", 12L) == [tenantid: 12L, mimetype: "image/png", content: "tenant 12 avatar of james".bytes]
-        assert getIconOf("john", 13L) == [tenantid: 13L, mimetype: "image/jpeg", content: "tenant 13 avatar of john".bytes]
-        assert getIconOf("jack", 13L) == [tenantid: 13L, mimetype: "image/jpeg", content: "tenant 13 avatar of jack".bytes]
-        assert getIconOf("anOther", 12L) == null
-        assert migrationContext.sql.firstRow("SELECT nextid FROM sequence WHERE tenantid = ${12L} AND id = ${27L}").nextid == 4
+        assert getIconOfUser("john", 12L) == [tenantid: 12L, mimetype: "image/jpeg", content: "tenant 12 avatar of john".bytes]
+        assert getIconOfUser("jack", 12L) == [tenantid: 12L, mimetype: "image/gif", content: "tenant 12 avatar of jack".bytes]
+        assert getIconOfUser("james", 12L) == [tenantid: 12L, mimetype: "image/png", content: "tenant 12 avatar of james".bytes]
+        assert getIconOf("group_", "groupName", 12L) == [tenantid: 12L, mimetype: "image/png", content: "icon of a group".bytes]
+        assert getIconOf("role", "roleName", 12L) == [tenantid: 12L, mimetype: "image/png", content: "icon of a role".bytes]
+        assert getIconOfUser("john", 13L) == [tenantid: 13L, mimetype: "image/jpeg", content: "tenant 13 avatar of john".bytes]
+        assert getIconOfUser("jack", 13L) == [tenantid: 13L, mimetype: "image/jpeg", content: "tenant 13 avatar of jack".bytes]
+        assert getIconOfUser("anOther", 12L) == null
+        assert migrationContext.sql.firstRow("SELECT nextid FROM sequence WHERE tenantid = ${12L} AND id = ${27L}").nextid == 6
         assert migrationContext.sql.firstRow("SELECT nextid FROM sequence WHERE tenantid = ${13L} AND id = ${27L}").nextid == 3
-
     }
 
-    protected insertUser(Long tenantId, Long userId, String username, String iconName) {
-        migrationContext.sql.execute("INSERT INTO user_ (tenantid, id, enabled, userName, iconPath) VALUES (${tenantId},${userId}, ${true}, ${username}, ${("/users/" + iconName)})")
+    protected insertUser(Long tenantId, Long id, String username, String iconName) {
+        migrationContext.sql.execute("INSERT INTO user_ (tenantid, id, enabled, userName, iconPath) VALUES (${tenantId},${id}, ${true}, ${username}, ${("/users/" + iconName)})")
     }
 
-    protected writeIcon(Path tenant12Folder, String name, String content) {
-        tenant12Folder.resolve(name).toFile().write(content)
+    protected insertRole(Long tenantId, Long id, String name, String iconName) {
+        migrationContext.sql.execute("INSERT INTO role (tenantid, id, name, iconPath) VALUES (${tenantId},${id}, ${name}, ${("/roles/" + iconName)})")
+    }
+
+    protected insertGroup(Long tenantId, Long id, String name, String iconName) {
+        migrationContext.sql.execute("INSERT INTO group_ (tenantid, id, name, iconPath) VALUES (${tenantId},${id}, ${name}, ${("/groups/" + iconName)})")
+    }
+
+    protected writeIcon(Path tenant12Folder, String subFolder, String name, String content) {
+        def subFolderPath = tenant12Folder.resolve(subFolder)
+        if (!Files.exists(subFolderPath)) Files.createDirectory(subFolderPath)
+        subFolderPath.resolve(name).toFile().write(content)
     }
 
     Path createTenantDir(long tenantId) {
         def tenant12Folder
-        tenant12Folder = migrationContext.bonitaHome.toPath().resolve("client").resolve("tenants").resolve(String.valueOf(tenantId)).resolve("work").resolve("icons").resolve("users")
+        tenant12Folder = migrationContext.bonitaHome.toPath().resolve("client").resolve("tenants").resolve(String.valueOf(tenantId)).resolve("work").resolve("icons")
         Files.createDirectories(tenant12Folder)
         tenant12Folder
     }
 
-    protected getIconOf(username, tenantId) {
+    protected getIconOfUser(username, tenantId) {
 
         Map map = migrationContext.sql.firstRow("""SELECT icon.tenantid, icon.mimetype, icon.content FROM icon, user_
 WHERE user_.iconid = icon.id AND user_.tenantid = icon.tenantid AND user_.userName = ${
             username
         } AND user_.tenantid = ${tenantId}""") as Map
+        if (map == null) {
+            return null
+        }
+        if (MigrationStep.DBVendor.ORACLE.equals(migrationContext.dbVendor)) {
+            map.put("content", ((BLOB) map.get("content")).binaryStream.bytes)
+        }
+        map.collectEntries { it -> [it.key.toString().toLowerCase(), it.value] }
+    }
+
+
+    protected getIconOf(String table, String name, long tenantId) {
+        Map map = migrationContext.sql.firstRow("SELECT icon.tenantid, icon.mimetype, icon.content FROM icon,"
+                + table
+                + " WHERE "
+                + table
+                + ".iconid = icon.id AND "
+                + table
+                + ".tenantid = icon.tenantid AND "
+                + table
+                + ".name = ? AND "
+                + table
+                + ".tenantid = ?", name, tenantId) as Map
+
         if (map == null) {
             return null
         }
