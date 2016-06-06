@@ -46,6 +46,7 @@ import java.text.SimpleDateFormat
 import static groovy.test.GroovyAssert.shouldFail
 import static org.assertj.core.api.Assertions.assertThat
 import static org.assertj.core.api.Assertions.tuple
+
 /**
  * @author Laurent Leseigneur
  */
@@ -333,12 +334,12 @@ class CheckMigratedTo7_2_0 {
 
         def processInstance = processAPI.startProcess(processDefinitionId)
         def timeout = System.currentTimeMillis() + 15000
-        while (processAPI.getPendingHumanTaskInstances(session.getUserId(), 0, 10, ActivityInstanceCriterion.NAME_ASC).size() < 1 && System.currentTimeMillis() < timeout) {
+        while (processAPI.getPendingHumanTaskInstances(session.getUserId(), 0, 10, ActivityInstanceCriterion.NAME_ASC).size() < 2 && System.currentTimeMillis() < timeout) {
             Thread.sleep(200)
         }
 
         def instances = processAPI.getPendingHumanTaskInstances(session.getUserId(), 0, 10, ActivityInstanceCriterion.NAME_ASC)
-        assertThat(instances).hasSize(1)
+        assertThat(instances).hasSize(2)
         assertThat(instances.get(0).getState()).isNotEqualTo("failed")
         processAPI.assignUserTask(instances.get(0).getId(), session.getUserId())
         processAPI.executeFlowNode(session.getUserId(), instances.get(0).getId())
