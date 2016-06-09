@@ -14,26 +14,18 @@
 
 package org.bonitasoft.migration.version.to7_3_0
 
-import org.bonitasoft.migration.core.MigrationStep
-import org.bonitasoft.migration.core.VersionMigration
+import org.bonitasoft.migration.version.to7_2_0.MigrateProcessDefXml
 
 /**
- * @author Emmanuel Duchastenier
- * @author Guillaume Rosinosky
+ *
+ * Apply only changes on call activity instead of all the changes
+ *
+ * @author Baptiste Mesta
  */
-class MigrateTo7_3_0 extends VersionMigration {
+class MigrateProcessDefXmlCallActivity extends MigrateProcessDefXml {
 
     @Override
-    def List<MigrationStep> getMigrationSteps() {
-        //keep one line per step to avoid false-positive merge conflict
-        return [
-                new MigrateBonitaHomeEngine(),
-                new TenantResources(),
-                new MigrateAvatar(),
-                new MigrateSqlReservedKeywords(),
-                new DropOrphanWaitingEvents(),
-                //same as in 7_2_0 step, in case customer already migrated in 7.2.0+
-                new MigrateProcessDefXmlCallActivity()
-        ]
+    protected applyChangesOnXml(Node processDefinitionXml) {
+        renameCallActivityContractInputMapping(processDefinitionXml)
     }
 }

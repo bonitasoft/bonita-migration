@@ -13,6 +13,7 @@
  **/
 package org.bonitasoft.migration
 
+import org.bonitasoft.engine.api.APIClient
 import org.bonitasoft.engine.api.PlatformAPIAccessor
 import org.bonitasoft.engine.api.TenantAPIAccessor
 import org.bonitasoft.engine.bdm.BusinessObjectModelConverter
@@ -20,6 +21,11 @@ import org.bonitasoft.engine.bdm.model.BusinessObject
 import org.bonitasoft.engine.bdm.model.BusinessObjectModel
 import org.bonitasoft.engine.bdm.model.field.FieldType
 import org.bonitasoft.engine.bdm.model.field.SimpleField
+import org.bonitasoft.engine.bpm.bar.BusinessArchiveBuilder
+import org.bonitasoft.engine.bpm.bar.actorMapping.Actor
+import org.bonitasoft.engine.bpm.bar.actorMapping.ActorMapping
+import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder
+import org.bonitasoft.engine.expression.ExpressionBuilder
 import org.bonitasoft.engine.identity.UserCreator
 import org.bonitasoft.engine.test.TestEngineImpl
 import org.bonitasoft.migration.filler.*
@@ -85,6 +91,32 @@ class FillBeforeMigratingTo7_3_0 {
         def session = PlatformAPIAccessor.getPlatformLoginAPI().login("platformAdmin", "platform")
         PlatformAPIAccessor.getPlatformAPI(session).stopNode()
         PlatformAPIAccessor.getPlatformLoginAPI().logout(session)
+    }
+
+
+    @FillAction
+    public void createProcessWithCallActivities() {
+        def client = new APIClient()
+        client.login("install", "install")
+        client.identityAPI.createUser("userForProcessWithCallActivity", "bpm")
+        def builder = new ProcessDefinitionBuilder().createNewInstance("ProcessWithCallActivity", "1.0")
+        builder.addActor("myActor")
+        builder.addUserTask("userTask1", "myActor")
+        builder.addCallActivity("callMySelf", new ExpressionBuilder().createConstantStringExpression("ProcessWithCallActivity"), new ExpressionBuilder().createConstantStringExpression("1.0"))
+        builder.addTransition("userTask1", "callMySelf")
+
+        def mapping = new ActorMapping()
+        def actor = new Actor("myActor")
+        actor.addUser("userForProcessWithCallActivity")
+        mapping.addActor(actor)
+        def businessArchive = new BusinessArchiveBuilder().createNewBusinessArchive().setActorMapping(mapping).setProcessDefinition(builder.done()).done()
+
+
+        def processDefinition = client.processAPI.deploy(businessArchive)
+        client.processAPI.enableProcess(processDefinition.getId())
+
+
+        client.processAPI.startProcess(processDefinition.getId())
     }
 
 
