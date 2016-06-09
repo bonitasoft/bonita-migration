@@ -27,7 +27,7 @@ class MigrateTo7_3_0 extends VersionMigration {
     def List<MigrationStep> getMigrationSteps() {
         //keep one line per step to avoid false-positive merge conflict
         return [
-                new MigrateBonitaHomeEngine(),
+                new MigrateBonitaHome(),
                 new TenantResources(),
                 new MigrateAvatar(),
                 new MigrateSqlReservedKeywords(),
