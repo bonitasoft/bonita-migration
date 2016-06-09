@@ -1,7 +1,7 @@
 buildscript {
     repositories {
         mavenLocal()
-        maven { url = 'http://repositories.rd.lan/archiva/repository/releases/' }
+        maven { url = 'http://repositories.rd.lan/maven/releases/' }
     }
     dependencies {
         classpath group: 'org.bonitasoft.migration.plugin', name: 'bonita-migration-plugins',
@@ -25,17 +25,17 @@ database {
 }
 
 dependencies {
-	compile "org.codehaus.groovy:groovy-all:2.4.4"
-	compile "com.github.zafarkhaja:java-semver:0.9.0"
+    compile "org.codehaus.groovy:groovy-all:2.4.4"
+    compile "com.github.zafarkhaja:java-semver:0.9.0"
     testRuntime "cglib:cglib-nodep:2.2"
     testRuntime 'org.objenesis:objenesis:1.2'
     testCompile('org.dbunit:dbunit:2.5.1')
-    testCompile group: 'com.oracle', name: 'ojdbc', version:'6'
-    testCompile group: 'com.microsoft.jdbc', name: 'sqlserver', version:'4.0.2206.100'
+    testCompile group: 'com.oracle', name: 'ojdbc', version: '6'
+    testCompile group: 'com.microsoft.jdbc', name: 'sqlserver', version: '4.0.2206.100'
     testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
     testCompile group: 'org.assertj', name: 'assertj-core', version: '1.5.0'
 }
 
 startScripts {
-    classpath  = files('$APP_HOME/lib/*')
+    classpath = files('$APP_HOME/lib/*')
 }

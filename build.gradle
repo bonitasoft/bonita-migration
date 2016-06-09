@@ -3,7 +3,7 @@ import org.bonitasoft.migration.plugin.MigrationConstants
 buildscript {
     repositories {
         mavenLocal()
-        maven { url 'http://repositories.rd.lan/archiva/repository/releases/' }
+        maven { url 'http://repositories.rd.lan/maven/releases/' }
     }
     dependencies {
         classpath group: 'org.bonitasoft.migration.plugin', name: 'bonita-migration-plugins',
@@ -16,7 +16,7 @@ allprojects {
 
     repositories {
         mavenLocal()
-        maven { url 'http://repositories.rd.lan/archiva/repository/releases/' }
+        maven { url 'http://repositories.rd.lan/maven/releases/' }
         mavenCentral()
     }
 
