@@ -122,4 +122,15 @@ class CheckMigratedTo7_3_0 extends Specification {
     }
 
 
+    def "custom page with previously no process definition id should be migrated with a 0 instead of null"() {
+        given:
+        def client = new APIClient()
+        client.login("install", "install")
+        when:
+        def page = client.customPageAPI.getPageByName("custompage_APIBirthdayBonita")
+        then:
+        page != null
+        client.customPageAPI.getPageContent(page.id).size() > 0
+        page.processDefinitionId == null
+    }
 }
