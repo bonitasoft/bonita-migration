@@ -29,8 +29,11 @@ import org.bonitasoft.engine.expression.ExpressionBuilder
 import org.bonitasoft.engine.identity.UserCreator
 import org.bonitasoft.engine.test.TestEngineImpl
 import org.bonitasoft.migration.filler.*
+import org.bonitasoft.migration.test.TestUtil
 
 import java.nio.file.Files
+
+import static org.assertj.core.api.Assertions.assertThat
 
 /**
  * @author Baptiste Mesta
@@ -117,6 +120,16 @@ class FillBeforeMigratingTo7_3_0 {
 
 
         client.processAPI.startProcess(processDefinition.getId())
+    }
+
+
+    @FillAction
+    public void "create a page to check migration of not null process definition id in page mapping"() {
+        def client = new APIClient()
+        client.login("install", "install")
+        def content = TestUtil.createTestPageContent("custompage_APIBirthdayBonita", "APIBirthdayBonita", "a custom page to test the not null pdefid")
+        def page = client.customPageAPI.createPage("mypage.zip", content)
+        assertThat(page).isNotNull()
     }
 
 
