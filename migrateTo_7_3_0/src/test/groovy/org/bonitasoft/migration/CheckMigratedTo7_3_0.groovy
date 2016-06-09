@@ -14,14 +14,13 @@
 
 package org.bonitasoft.migration
 
-import org.bonitasoft.engine.api.TenantAPIAccessor
+import org.bonitasoft.engine.api.APIClient
+import org.bonitasoft.engine.bpm.flownode.ActivityInstanceCriterion
+import org.bonitasoft.engine.bpm.flownode.HumanTaskInstance
 import org.bonitasoft.engine.identity.UserUpdater
 import org.bonitasoft.engine.resources.TenantResourceType
 import org.bonitasoft.engine.service.TenantServiceSingleton
 import org.bonitasoft.engine.service.impl.ServiceAccessorFactory
-import org.bonitasoft.engine.session.APISession
-import org.bonitasoft.engine.test.TestEngine
-import org.bonitasoft.engine.test.annotation.Engine
 import org.bonitasoft.engine.test.junit.BonitaEngineRule
 import org.bonitasoft.migration.filler.FillerUtils
 import org.junit.Rule
@@ -35,23 +34,18 @@ class CheckMigratedTo7_3_0 extends Specification {
     @Rule
     public BonitaEngineRule bonitaEngineRule = BonitaEngineRule.create().reuseExistingPlatform()
 
-    @Engine
-    public TestEngine testEngine
-
-    def APISession session
-
 
     def setupSpec() {
         FillerUtils.initializeEngineSystemProperties()
     }
 
     def cleanup() {
-        TenantAPIAccessor.loginAPI.logout(session)
     }
 
     def "tenant resource service should work"() {
         setup:
-        session = TenantAPIAccessor.loginAPI.login("install", "install")
+        def client = new APIClient()
+        client.login("install", "install")
         def tenantResourcesService = TenantServiceSingleton.instance.getTenantResourcesService()
         def transactionService = ServiceAccessorFactory.instance.createPlatformServiceAccessor().transactionService
         when:
@@ -68,31 +62,64 @@ class CheckMigratedTo7_3_0 extends Specification {
 
     def "client BDM zip file must be put in database"() {
         setup:
-        session = TenantAPIAccessor.loginAPI.login("install", "install")
+        def client = new APIClient()
+        client.login("install", "install")
         expect:
-        TenantAPIAccessor.getTenantAdministrationAPI(session).getClientBDMZip() != null
+        client.tenantAdministrationAPI.getClientBDMZip() != null
+        cleanup:
+        client.logout()
     }
 
     def "user avatar should be migrated"() {
         setup:
-        session = TenantAPIAccessor.loginAPI.login("install", "install")
-        def identityAPI = TenantAPIAccessor.getIdentityAPI(session)
+        def client = new APIClient()
+        client.login("install", "install")
         expect:
-        def icon = identityAPI.getIcon(identityAPI.getUserByUserName("userWithIcon").iconId)
+        def icon = client.identityAPI.getIcon(client.identityAPI.getUserByUserName("userWithIcon").iconId)
         icon.mimeType == "image/png"
         icon.content == "the icon content".bytes
+        cleanup:
+        client.logout()
     }
 
     def "update user should create the icon"() {
         setup:
-        session = TenantAPIAccessor.loginAPI.login("install", "install")
-        def identityAPI = TenantAPIAccessor.getIdentityAPI(session)
-        def user = identityAPI.createUser("newUserForIconTest", "bpm")
+        def client = new APIClient()
+        client.login("install", "install")
+        def user = client.identityAPI.createUser("newUserForIconTest", "bpm")
         when:
-        def updatedUser = identityAPI.updateUser(user.id, new UserUpdater().setIcon("theIcon.gif", "the gif content".bytes))
+        def updatedUser = client.identityAPI.updateUser(user.id, new UserUpdater().setIcon("theIcon.gif", "the gif content".bytes))
         then:
-        def icon = identityAPI.getIcon(updatedUser.iconId)
+        def icon = client.identityAPI.getIcon(updatedUser.iconId)
         icon.mimeType == "image/gif"
         icon.content == "the gif content".bytes
+        cleanup:
+        client.logout()
     }
+
+    def "should be able to execute migrated process with call activity"() {
+
+        setup:
+        def client = new APIClient()
+        client.login("userForProcessWithCallActivity", "bpm")
+
+        def processDefinitionId = client.processAPI.getProcessDefinitionId("ProcessWithCallActivity", "1.0")
+
+        when:
+        client.processAPI.startProcess(processDefinitionId)
+        def HumanTaskInstance[] instances
+        def timeout = System.currentTimeMillis() + 3000
+        while ((instances = client.processAPI.getPendingHumanTaskInstances(client.session.userId, 0, 10, ActivityInstanceCriterion.DEFAULT)).size() < 2 && System.currentTimeMillis() < timeout) {
+            Thread.sleep(200)
+            println "wait 200"
+        }
+        then:
+        instances.size() == 2
+        client.processAPI.assignUserTask(instances[0].id, client.session.userId)
+        client.processAPI.executeUserTask(instances[0].id, [taskInput: true])
+        cleanup:
+        client.logout()
+    }
+
+
 }

@@ -36,6 +36,12 @@ class MigrateProcessDefXml extends MigrationStep {
 
     String migrateProcessDefinitionXML(def String processDefinitionXMLAsText) {
         def processDefinitionXml = new XmlParser().parseText(updateXmlNamespace(processDefinitionXMLAsText))
+        applyChangesOnXml(processDefinitionXml)
+
+        return getContent(processDefinitionXml)
+    }
+
+    protected applyChangesOnXml(Node processDefinitionXml) {
         removeBosVersion(processDefinitionXml)
         changeActorInitiator(processDefinitionXml)
         removeDependencies(processDefinitionXml)
@@ -44,8 +50,6 @@ class MigrateProcessDefXml extends MigrationStep {
         changeDescriptionAttributeToElement(processDefinitionXml)
         addNodeToWrapContractInputDefinitions(processDefinitionXml)
         renameCallActivityContractInputMapping(processDefinitionXml)
-
-        return getContent(processDefinitionXml)
     }
 
     def renameCallActivityContractInputMapping(Node processDefinitionXml) {
