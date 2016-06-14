@@ -37,6 +37,9 @@ class MigrateAvatar extends MigrationStep {
         def helper = context.databaseHelper
         helper.executeScript("icon", "icon")
         def Map<Long, Long> ids = [:]
+        context.sql.rows("select t.id from tenant t").each {
+            ids.put(it.id, 1)
+        }
         migrateIconForTable(ids, context, "user_")
         migrateIconForTable(ids, context, "group_")
         migrateIconForTable(ids, context, "role")

@@ -43,3 +43,8 @@ CREATE TABLE sequence (
     PRIMARY KEY (tenantid, id)
 )
 GO
+CREATE TABLE tenant (
+  id NUMERIC(19, 0) NOT NULL,
+  PRIMARY KEY (id)
+)
+GO
