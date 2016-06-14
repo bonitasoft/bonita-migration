@@ -38,4 +38,8 @@ CREATE TABLE sequence (
   id INT8 NOT NULL,
   nextid INT8 NOT NULL,
   PRIMARY KEY (tenantid, id)
-)
+);
+CREATE TABLE tenant (
+  id INT8 NOT NULL,
+  PRIMARY KEY (id)
+);

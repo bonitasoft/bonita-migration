@@ -38,4 +38,8 @@ CREATE TABLE sequence (
   id BIGINT NOT NULL,
   nextid BIGINT NOT NULL,
   PRIMARY KEY (tenantid, id)
-) ENGINE = INNODB
+) ENGINE = INNODB;
+CREATE TABLE tenant (
+  id BIGINT NOT NULL,
+  PRIMARY KEY (id)
+) ENGINE = INNODB;
