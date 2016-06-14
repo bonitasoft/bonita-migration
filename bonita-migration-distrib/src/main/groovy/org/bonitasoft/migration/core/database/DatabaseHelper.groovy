@@ -594,6 +594,8 @@ END""")
     }
 
     def insertSequences(Map<Long, Long> resourcesCount, context, Integer sequenceId) {
+        if (resourcesCount.isEmpty())
+            throw new IllegalStateException("There is no tenants on which insert the sequences")
         return resourcesCount.each { it ->
             context.sql.executeInsert("INSERT INTO sequence VALUES(${it.getKey()}, ${sequenceId}, ${it.getValue()})")
         }

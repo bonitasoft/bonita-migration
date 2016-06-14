@@ -56,12 +56,12 @@ class MigrateAvatarIT extends Specification {
     }
 
     private String[] dropTables() {
-        dbUnitHelper.dropTables(["icon", "user_", "sequence"] as String[])
+        dbUnitHelper.dropTables(["icon", "user_", "sequence", "tenant"] as String[])
     }
 
     def "should insert avatar into icon table "() {
         given:
-        def tenant12Folder = createTenantDir(12L)
+        def tenant12Folder = createTenantWithDirs(12L)
         writeIcon(tenant12Folder, "users", "tmp_58693177498535435.jpeg.jpeg", "tenant 12 avatar of john")
         insertUser(12L, 45L, "john", "tmp_58693177498535435.jpeg.jpeg")
         writeIcon(tenant12Folder, "users", "avatar3307049340281126580.gif", "tenant 12 avatar of jack")
@@ -74,11 +74,12 @@ class MigrateAvatarIT extends Specification {
         writeIcon(tenant12Folder, "roles", "roleIcon.png", "icon of a role")
         insertRole(12L, 47L, "roleName", "roleIcon.png")
 
-        def tenant13Folder = createTenantDir(13L)
+        def tenant13Folder = createTenantWithDirs(13L)
         writeIcon(tenant13Folder, "users", "avatar4407045230281126580.jpg", "tenant 13 avatar of john")
         insertUser(13L, 45L, "john", "avatar4407045230281126580.jpg")
         writeIcon(tenant13Folder, "users", "avatar5507045230281126580.jpg", "tenant 13 avatar of jack")
         insertUser(13L, 46L, "jack", "avatar5507045230281126580.jpg")
+        createTenantWithDirs(14L)
         when:
         new MigrateAvatar().execute(migrationContext)
         then:
@@ -92,6 +93,7 @@ class MigrateAvatarIT extends Specification {
         assert getIconOfUser("anOther", 12L) == null
         assert migrationContext.sql.firstRow("SELECT nextid FROM sequence WHERE tenantid = ${12L} AND id = ${27L}").nextid == 6
         assert migrationContext.sql.firstRow("SELECT nextid FROM sequence WHERE tenantid = ${13L} AND id = ${27L}").nextid == 3
+        assert migrationContext.sql.firstRow("SELECT nextid FROM sequence WHERE tenantid = ${14L} AND id = ${27L}").nextid == 1
     }
 
     protected insertUser(Long tenantId, Long id, String username, String iconName) {
@@ -112,8 +114,9 @@ class MigrateAvatarIT extends Specification {
         subFolderPath.resolve(name).toFile().write(content)
     }
 
-    Path createTenantDir(long tenantId) {
+    Path createTenantWithDirs(long tenantId) {
         def tenant12Folder
+        migrationContext.sql.executeInsert("INSERT INTO tenant VALUES($tenantId)")
         tenant12Folder = migrationContext.bonitaHome.toPath().resolve("client").resolve("tenants").resolve(String.valueOf(tenantId)).resolve("work").resolve("icons")
         Files.createDirectories(tenant12Folder)
         tenant12Folder
