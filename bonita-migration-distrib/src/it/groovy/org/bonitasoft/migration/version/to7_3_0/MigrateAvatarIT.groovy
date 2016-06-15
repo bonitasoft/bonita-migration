@@ -79,6 +79,7 @@ class MigrateAvatarIT extends Specification {
         insertUser(13L, 45L, "john", "avatar4407045230281126580.jpg")
         writeIcon(tenant13Folder, "users", "avatar5507045230281126580.jpg", "tenant 13 avatar of jack")
         insertUser(13L, 46L, "jack", "avatar5507045230281126580.jpg")
+
         createTenantWithDirs(14L)
         when:
         new MigrateAvatar().execute(migrationContext)
