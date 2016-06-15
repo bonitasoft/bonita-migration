@@ -38,7 +38,7 @@ class MigrateAvatar extends MigrationStep {
         helper.executeScript("icon", "icon")
         def Map<Long, Long> ids = [:]
         context.sql.rows("select t.id from tenant t").each {
-            ids.put(it.id, 1)
+            ids.put(it.id as Long, 1)
         }
         migrateIconForTable(ids, context, "user_")
         migrateIconForTable(ids, context, "group_")
@@ -69,7 +69,7 @@ class MigrateAvatar extends MigrationStep {
         }
     }
 
-    def getNextId(Map map, long tenantId) {
+    def getNextId(Map map, Long tenantId) {
         if (!map.containsKey(tenantId)) {
             map.put(tenantId, 1)
         }
