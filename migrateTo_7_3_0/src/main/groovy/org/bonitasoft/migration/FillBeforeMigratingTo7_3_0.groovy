@@ -21,6 +21,8 @@ import org.bonitasoft.engine.bdm.model.BusinessObject
 import org.bonitasoft.engine.bdm.model.BusinessObjectModel
 import org.bonitasoft.engine.bdm.model.field.FieldType
 import org.bonitasoft.engine.bdm.model.field.SimpleField
+import org.bonitasoft.engine.bpm.bar.BarResource
+import org.bonitasoft.engine.bpm.bar.BusinessArchive
 import org.bonitasoft.engine.bpm.bar.BusinessArchiveBuilder
 import org.bonitasoft.engine.bpm.bar.actorMapping.Actor
 import org.bonitasoft.engine.bpm.bar.actorMapping.ActorMapping
@@ -132,5 +134,40 @@ class FillBeforeMigratingTo7_3_0 {
         assertThat(page).isNotNull()
     }
 
+    @FillAction
+    public void "create processes with auto login resource in bar in different states"() {
+        def client = new APIClient()
+        client.login("install", "install")
+        client.identityAPI.createUser("userForAutoLogin", "bpm")
+        client.processAPI.deploy(buildProcessWithAutoLogin("DisabledProcess"))
+        client.processAPI.deployAndEnableProcess(buildProcessWithAutoLogin("EnabledProcess"))
+    }
 
+    private BusinessArchive buildProcessWithAutoLogin(String processName) {
+        def builder = new ProcessDefinitionBuilder().createNewInstance(processName, "1.0")
+        builder.addActor("myActor")
+        builder.addUserTask("userTask1", "myActor")
+
+        def mapping = new ActorMapping()
+        def actor = new Actor("myActor")
+        actor.addUser("userForAutoLogin")
+        mapping.addActor(actor)
+
+        final byte[] autoLoginProperties = """
+                #Wed Jun 15 20:02:10 CEST 2016
+                security.password.validator=org.bonitasoft.web.rest.server.api.organization.password.validator.DefaultPasswordValidator
+                forms.application.login.auto.password=secret
+                security.rest.api.authorizations.check.enabled=true
+                forms.application.login.auto=true
+                forms.application.login.auto.username=autologin-user
+                security.rest.api.authorizations.check.debug=false
+                """.bytes
+
+        def businessArchive = new BusinessArchiveBuilder().createNewBusinessArchive()
+                .setActorMapping(mapping)
+                .setProcessDefinition(builder.done())
+                .addExternalResource(new BarResource("forms/security-config.properties", autoLoginProperties)).done()
+        businessArchive
+    }
 }
+

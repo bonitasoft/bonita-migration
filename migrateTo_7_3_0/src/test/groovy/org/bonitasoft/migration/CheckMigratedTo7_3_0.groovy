@@ -14,7 +14,9 @@
 
 package org.bonitasoft.migration
 
+import groovy.json.JsonOutput
 import org.bonitasoft.engine.api.APIClient
+import org.bonitasoft.engine.api.PlatformAPIAccessor
 import org.bonitasoft.engine.bpm.flownode.ActivityInstanceCriterion
 import org.bonitasoft.engine.bpm.flownode.HumanTaskInstance
 import org.bonitasoft.engine.identity.UserUpdater
@@ -132,5 +134,32 @@ class CheckMigratedTo7_3_0 extends Specification {
         page != null
         client.customPageAPI.getPageContent(page.id).size() > 0
         page.processDefinitionId == null
+    }
+
+    def "should have auto login configuration file updated for tenant"() {
+        given:
+        def client = new APIClient()
+        client.login("install", "install")
+        def tenantId = client.session.tenantId
+        def platformSession = PlatformAPIAccessor.platformLoginAPI.login("platformAdmin", "platform")
+
+        when:
+        def platformAPI = PlatformAPIAccessor.getPlatformAPI(platformSession)
+        Map<Long, Map<String, byte[]>> allConfigurations = platformAPI.getClientTenantConfigurations()
+        def tenantMap = allConfigurations.get(tenantId as Long)
+        def content = tenantMap.get("autologin-v6.json")
+
+        then:
+        def expectedJsonContent = '''
+            [
+                {
+                    "processname": "EnabledProcess",
+                    "processversion": "1.0",
+                    "username": "autologin-user",
+                    "password": "secret"
+                }
+            ]
+            '''
+        JsonOutput.prettyPrint(new String(content)) == JsonOutput.prettyPrint(expectedJsonContent)
     }
 }
