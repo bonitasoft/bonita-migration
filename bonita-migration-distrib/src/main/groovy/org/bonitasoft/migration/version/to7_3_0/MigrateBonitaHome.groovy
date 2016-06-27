@@ -28,6 +28,7 @@ class MigrateBonitaHome extends MigrationStep {
         insert(context, "platform_portal/security-config.properties", 0, "PLATFORM_PORTAL")
 
         insert(context, "tenant_template_portal/authenticationManager-config.properties", 0, "TENANT_TEMPLATE_PORTAL")
+        insert(context, "tenant_template_portal/autologin-v6.json", 0, "TENANT_TEMPLATE_PORTAL")
         insert(context, "tenant_template_portal/compound-permissions-mapping.properties", 0, "TENANT_TEMPLATE_PORTAL")
         insert(context, "tenant_template_portal/console-config.properties", 0, "TENANT_TEMPLATE_PORTAL")
         insert(context, "tenant_template_portal/custom-permissions-mapping.properties", 0, "TENANT_TEMPLATE_PORTAL")
@@ -63,6 +64,7 @@ class MigrateBonitaHome extends MigrationStep {
 
 
             insert(context, "tenant_template_portal/authenticationManager-config.properties", tenantId, "TENANT_PORTAL")
+            insert(context, "tenant_template_portal/autologin-v6.json", tenantId, "TENANT_PORTAL")
             insert(context, "tenant_template_portal/compound-permissions-mapping.properties", tenantId, "TENANT_PORTAL")
             insert(context, "tenant_template_portal/console-config.properties", tenantId, "TENANT_PORTAL")
             insert(context, "tenant_template_portal/custom-permissions-mapping.properties", tenantId, "TENANT_PORTAL")
