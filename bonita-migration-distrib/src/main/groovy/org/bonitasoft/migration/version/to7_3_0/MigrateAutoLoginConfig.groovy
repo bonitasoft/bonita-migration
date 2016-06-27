@@ -49,9 +49,17 @@ class MigrateAutoLoginConfig extends MigrationStep {
                     b.name = 'forms/security-config.properties'
                     AND b.type = 'EXTERNAL'
                     AND d.activationstate = 'ENABLED'
-                    AND d.tenantid = ${tenantId}  """) { row ->
+                    AND d.tenantid = ${tenantId}
+                    ORDER BY d.name, d.version
+                      """) { row ->
                 Properties properties = new Properties()
-                def stream = new ByteArrayInputStream(row["props"])
+                def stream
+                if (DBVendor.ORACLE.equals(context.dbVendor)) {
+                    stream = (row["props"]).binaryStream
+                } else {
+                    stream = new ByteArrayInputStream(row["props"])
+                }
+
                 properties.load(stream)
                 def autologinProp = [processname: row["process_name"], processversion: row["process_version"], username: properties.get(USERNAME_KEY), password: properties.get(PASSWORD_KEY)]
                 tenantAutologins.add(autologinProp)

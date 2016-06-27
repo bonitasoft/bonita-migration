@@ -18,6 +18,7 @@ import groovy.sql.GroovyRowResult
 import org.bonitasoft.migration.DBUnitHelper
 import org.bonitasoft.migration.core.Logger
 import org.bonitasoft.migration.core.MigrationContext
+import org.bonitasoft.migration.core.MigrationStep
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -85,7 +86,18 @@ class MigrateAutoLoginConfigIT extends Specification {
         def migratedWithAutoLogin = getAutologinRow(TENANT_ID_WITH_AUTO_LOGIN)
         def migratedWithoutAutoLogin = getAutologinRow(TENANT_ID_WITHOUT_AUTO_LOGIN)
 
-        JsonOutput.prettyPrint(new String(migratedWithAutoLogin['resource_content'])) == JsonOutput.prettyPrint("""
+        def bytesWithAutoLogin
+        def bytesWitoutAutoLogin
+
+        if (MigrationStep.DBVendor.ORACLE.equals(migrationContext.dbVendor)) {
+            bytesWithAutoLogin = (migratedWithAutoLogin['resource_content']).binaryStream.bytes
+            bytesWitoutAutoLogin = (migratedWithoutAutoLogin['resource_content']).binaryStream.bytes
+        } else {
+            bytesWithAutoLogin = migratedWithAutoLogin['resource_content']
+            bytesWitoutAutoLogin = migratedWithoutAutoLogin['resource_content']
+        }
+
+        JsonOutput.prettyPrint(new String(bytesWithAutoLogin)) == JsonOutput.prettyPrint("""
             [
                 {
                     "processname": "Enabled Pool",
@@ -100,7 +112,7 @@ class MigrateAutoLoginConfigIT extends Specification {
                     "password": "secret"
                 }
             ]""")
-        JsonOutput.prettyPrint(new String(migratedWithoutAutoLogin['resource_content'])) == JsonOutput.prettyPrint("[]")
+        JsonOutput.prettyPrint(new String(bytesWitoutAutoLogin)) == JsonOutput.prettyPrint("[]")
     }
 
     private String[] dropTables() {
@@ -122,7 +134,7 @@ class MigrateAutoLoginConfigIT extends Specification {
 (tenantid, id, processid, name, version, description, deploymentdate, deployedby, activationstate, configurationstate, displayname, displaydescription, lastupdatedate, categoryid, iconpath, content_tenantid, content_id)
 VALUES(${tenantId}, ${id}, ${processDefinitionId}, ${processName}, ${processVersion}, '', 1466595046638, 4, ${
                     activationState
-                }, 'UNRESOLVED', 'Pool', '', 0, NULL, NULL, 1, 2);
+                }, 'UNRESOLVED', 'Pool', '', 0, NULL, NULL, 1, 2)
 
             """
         )
@@ -131,9 +143,8 @@ VALUES(${tenantId}, ${id}, ${processDefinitionId}, ${processName}, ${processVers
     private boolean insertBarResource(tenantId, id, processDefinitionId, resourceName, content) {
         dbUnitHelper.context.sql.execute(
                 """
-          INSERT INTO bar_resource
-(tenantid, id, process_id, name, "type", content)
-VALUES(${tenantId}, ${id}, ${processDefinitionId}, ${resourceName}, 'EXTERNAL', ${content});
+                INSERT INTO bar_resource (tenantid, id, process_id, name, type, content)
+                VALUES(${tenantId}, ${id}, ${processDefinitionId}, ${resourceName}, 'EXTERNAL', ${content})
 
             """
         )
