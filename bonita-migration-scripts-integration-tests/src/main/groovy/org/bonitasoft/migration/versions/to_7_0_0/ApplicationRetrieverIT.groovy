@@ -31,8 +31,8 @@ class ApplicationRetrieverIT extends GroovyTestCase {
     @Override
     void setUp() {
         sql = createSqlConnection();
-        tester = createTester()
-
+        tester = createTester(sql.connection)
+        dropTestTables()
         createTables(sql, "6_5_2", "simplified-application");
 
         tester.dataSet = dataSet {
@@ -59,8 +59,11 @@ class ApplicationRetrieverIT extends GroovyTestCase {
 
     @Override
     void tearDown() {
+        dropTestTables()
         tester.onTearDown();
+    }
 
+    private void dropTestTables() {
         def String[] strings = [
                 "business_app_page",
                 "business_app",
@@ -72,7 +75,7 @@ class ApplicationRetrieverIT extends GroovyTestCase {
 
 
     public void testMigrate_should_retrieve_applications_with_forbidden_token() throws Exception {
-        def invalidApplications = new InvalidApplicationTokenRetriever(sql, dbVendor()).retrieveInvalidApplications()
+        def invalidApplications = new InvalidApplicationTokenRetriever(sql, dbVendor()).retrieveApplications()
         Assertions.assertThat(invalidApplications).containsExactly(
                 new TenantApplications(tenantId: 1, applications:
                         [new Application(tenantId: 1, id: 12, token: "content", version: "1.0", displayName: "Content"),

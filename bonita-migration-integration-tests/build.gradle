@@ -161,6 +161,22 @@ subprojects {
                     throw new IllegalStateException("must specify db.root.user and db.root.password for postgres")
                 }
                 def sql = Sql.newInstance(genericUrl, dbRootUser, dbRootPassword, dbdriverClass)
+                // postgres 9.3 script version
+                sql.eachRow("""
+                    SELECT pid
+                    FROM pg_stat_activity
+                    WHERE upper(pg_stat_activity.datname) = upper('$databaseName')
+                      AND pid <> pg_backend_pid()
+                    """ as String) {
+                    logger.info("disconnect connexion id $it.pid from database $databaseName")
+                    sql.execute("""
+                    SELECT pg_terminate_backend(pg_stat_activity.pid)
+                    FROM pg_stat_activity
+                    WHERE pg_stat_activity.datname = '$databaseName'
+                    AND pid = $it.pid
+                        """ as String)
+                }
+
                 sql.executeUpdate("DROP DATABASE IF EXISTS $databaseName;".toString())
                 sql.executeUpdate("CREATE DATABASE $databaseName OWNER $dbuser;".toString())
                 sql.executeUpdate("GRANT ALL PRIVILEGES ON DATABASE $databaseName TO $dbuser;".toString())
@@ -170,15 +186,11 @@ subprojects {
                     throw new IllegalStateException("must specify db.databaseName,  db.root.user and db.root.password  for mysql")
                 }
                 def sql = Sql.newInstance(genericUrl, dbRootUser, dbRootPassword, dbdriverClass)
-                try {
+                sql.eachRow("select distinct db from mysql.db where db='" + databaseName + "'") {
                     sql.executeUpdate("DROP DATABASE " + databaseName)
-                } catch (Exception e) {
-                    println "can't drop database, maybe it did not exist"
                 }
-                try {
+                sql.eachRow("select distinct user from mysql.user where user ='" + databaseName + "'") {
                     sql.executeUpdate("DROP USER " + dbuser)
-                } catch (Exception e) {
-                    println "can't drop user, maybe it did not exist"
                 }
                 sql.executeUpdate("CREATE USER " + dbuser + " IDENTIFIED BY '" + dbpassword + "'")
                 sql.executeUpdate("CREATE DATABASE " + databaseName + " DEFAULT CHARACTER SET utf8")

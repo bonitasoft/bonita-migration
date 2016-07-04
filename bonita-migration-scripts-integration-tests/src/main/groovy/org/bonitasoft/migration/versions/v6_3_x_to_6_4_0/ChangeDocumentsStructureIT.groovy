@@ -30,15 +30,14 @@ import static org.bonitasoft.migration.DBUnitHelper.*
 class ChangeDocumentsStructureIT extends GroovyTestCase {
 
 
-
     Sql sql
     JdbcDatabaseTester tester
 
     @Override
     void setUp() {
         sql = createSqlConnection();
-        tester = createTester()
-
+        tester = createTester(sql.connection)
+        dropTestTables()
         createTables(sql, "documents")
 
         tester.dataSet = dataSet {
@@ -82,16 +81,18 @@ class ChangeDocumentsStructureIT extends GroovyTestCase {
     }
 
 
-
     @Override
     void tearDown() {
+        dropTestTables()
         tester.onTearDown();
+    }
 
-        def String[]  strings = ["document_mapping",
-                       "arch_document_mapping",
-                       "document",
-                       "tenant",
-                       "sequence"]
+    private void dropTestTables() {
+        def String[] strings = ["document_mapping",
+                                "arch_document_mapping",
+                                "document",
+                                "tenant",
+                                "sequence"]
         dropTables(sql, strings)
     }
 
@@ -108,10 +109,10 @@ class ChangeDocumentsStructureIT extends GroovyTestCase {
 
 
             for (int i = 0; i < updatedDocuments.getTable(table).getRowCount(); i++) {
-                print table+" "
+                print table + " "
                 updatedDocuments.getTable(table).getTableMetaData().getColumns().each { column ->
-                    print column.getColumnName()+ ": "
-                    print updatedDocuments.getTable(table).getValue(i,column.getColumnName())
+                    print column.getColumnName() + ": "
+                    print updatedDocuments.getTable(table).getValue(i, column.getColumnName())
                     print ", "
                 }
                 print "\n"

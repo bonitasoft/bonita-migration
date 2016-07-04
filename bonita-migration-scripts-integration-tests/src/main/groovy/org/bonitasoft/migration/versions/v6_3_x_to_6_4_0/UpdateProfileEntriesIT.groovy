@@ -18,8 +18,8 @@ class UpdateProfileEntriesIT extends GroovyTestCase {
     @Override
     void setUp() {
         sql = createSqlConnection();
-        tester = createTester()
-
+        tester = createTester(sql.connection)
+        dropTestTables()
         createTables(sql, "profiles")
 
         def time = new Date().getTime()
@@ -51,8 +51,11 @@ class UpdateProfileEntriesIT extends GroovyTestCase {
 
     @Override
     void tearDown() {
+        dropTestTables()
         tester.onTearDown();
+    }
 
+    private void dropTestTables() {
         def String[] strings = ["profileentry",
                                 "profile",
                                 "sequence",

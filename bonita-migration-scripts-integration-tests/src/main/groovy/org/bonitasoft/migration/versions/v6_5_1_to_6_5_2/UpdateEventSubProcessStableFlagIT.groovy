@@ -1,9 +1,11 @@
 package org.bonitasoft.migration.versions.v6_5_1_to_6_5_2
+
 import groovy.sql.Sql
 import org.bonitasoft.migration.CustomAssertion
 import org.dbunit.JdbcDatabaseTester
 
 import static org.bonitasoft.migration.DBUnitHelper.*
+
 /**
  * @author Elias Ricken de Medeiros
  */
@@ -15,22 +17,21 @@ class UpdateEventSubProcessStableFlagIT extends GroovyTestCase {
     @Override
     void setUp() {
         sql = createSqlConnection();
-        tester = createTester()
-
+        tester = createTester(sql.connection)
+        dropTestTables()
         createTables(sql, "6_5_1", "subproc");
 
         tester.dataSet = dataSet {
             tenant id: 1
             tenant id: 2
 
-            flownode_instance tenantId: 1, id: 200, kind:"subProc", stateId: 31, terminal: falseValue(), stateName:"executing", stable: falseValue()
-            flownode_instance tenantId: 1, id: 201, kind:"user", stateId: 31, terminal: falseValue(), stateName:"completing activity with boundary", stable: falseValue()
-            flownode_instance tenantId: 1, id: 202, kind:"subProc", stateId: 31, terminal: falseValue(), stateName:"executing", stable: falseValue()
+            flownode_instance tenantId: 1, id: 200, kind: "subProc", stateId: 31, terminal: falseValue(), stateName: "executing", stable: falseValue()
+            flownode_instance tenantId: 1, id: 201, kind: "user", stateId: 31, terminal: falseValue(), stateName: "completing activity with boundary", stable: falseValue()
+            flownode_instance tenantId: 1, id: 202, kind: "subProc", stateId: 31, terminal: falseValue(), stateName: "executing", stable: falseValue()
 
-            flownode_instance tenantId: 2, id: 200, kind:"subProc", stateId: 31, terminal: falseValue(), stateName:"executing", stable: trueValue()
-            flownode_instance tenantId: 2, id: 201, kind:"auto", stateId: 31, terminal: falseValue(), stateName:"completing activity with boundary", stable: falseValue()
-            flownode_instance tenantId: 2, id: 210, kind:"subProc", stateId: 31, terminal: falseValue(), stateName:"executing", stable: falseValue()
-
+            flownode_instance tenantId: 2, id: 200, kind: "subProc", stateId: 31, terminal: falseValue(), stateName: "executing", stable: trueValue()
+            flownode_instance tenantId: 2, id: 201, kind: "auto", stateId: 31, terminal: falseValue(), stateName: "completing activity with boundary", stable: falseValue()
+            flownode_instance tenantId: 2, id: 210, kind: "subProc", stateId: 31, terminal: falseValue(), stateName: "executing", stable: falseValue()
 
 
         }
@@ -41,8 +42,11 @@ class UpdateEventSubProcessStableFlagIT extends GroovyTestCase {
 
     @Override
     void tearDown() {
+        dropTestTables()
         tester.onTearDown();
+    }
 
+    private void dropTestTables() {
         def String[] strings = [
                 "flownode_instance",
                 "tenant"
@@ -58,13 +62,13 @@ class UpdateEventSubProcessStableFlagIT extends GroovyTestCase {
         def updatedSubProcesses = tester.connection.createDataSet("flownode_instance");
 
         CustomAssertion.assertEquals dataSet {
-            flownode_instance tenantId: 1, id: 200, kind:"subProc", stateId: 31, terminal: falseValue(), stateName:"executing", stable: trueValue()
-            flownode_instance tenantId: 1, id: 201, kind:"user", stateId: 31, terminal: falseValue(), stateName:"completing activity with boundary", stable: falseValue()
-            flownode_instance tenantId: 1, id: 202, kind:"subProc", stateId: 31, terminal: falseValue(), stateName:"executing", stable: trueValue()
+            flownode_instance tenantId: 1, id: 200, kind: "subProc", stateId: 31, terminal: falseValue(), stateName: "executing", stable: trueValue()
+            flownode_instance tenantId: 1, id: 201, kind: "user", stateId: 31, terminal: falseValue(), stateName: "completing activity with boundary", stable: falseValue()
+            flownode_instance tenantId: 1, id: 202, kind: "subProc", stateId: 31, terminal: falseValue(), stateName: "executing", stable: trueValue()
 
-            flownode_instance tenantId: 2, id: 200, kind:"subProc", stateId: 31, terminal: falseValue(), stateName:"executing", stable: trueValue()
-            flownode_instance tenantId: 2, id: 201, kind:"auto", stateId: 31, terminal: falseValue(), stateName:"completing activity with boundary", stable: falseValue()
-            flownode_instance tenantId: 2, id: 210, kind:"subProc", stateId: 31, terminal: falseValue(), stateName:"executing", stable: trueValue()
+            flownode_instance tenantId: 2, id: 200, kind: "subProc", stateId: 31, terminal: falseValue(), stateName: "executing", stable: trueValue()
+            flownode_instance tenantId: 2, id: 201, kind: "auto", stateId: 31, terminal: falseValue(), stateName: "completing activity with boundary", stable: falseValue()
+            flownode_instance tenantId: 2, id: 210, kind: "subProc", stateId: 31, terminal: falseValue(), stateName: "executing", stable: trueValue()
 
         }, updatedSubProcesses
     }

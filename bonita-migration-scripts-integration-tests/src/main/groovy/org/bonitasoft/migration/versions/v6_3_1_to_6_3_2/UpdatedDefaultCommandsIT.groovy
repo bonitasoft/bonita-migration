@@ -15,15 +15,11 @@ package org.bonitasoft.migration.versions.v6_3_1_to_6_3_2
 
 import groovy.sql.Sql
 import groovy.xml.StreamingMarkupBuilder
-
 import org.bonitasoft.migration.CustomAssertion
 import org.dbunit.JdbcDatabaseTester
 import org.dbunit.dataset.xml.FlatXmlDataSet
 
-import static org.bonitasoft.migration.DBUnitHelper.createSqlConnection
-import static org.bonitasoft.migration.DBUnitHelper.createTables
-import static org.bonitasoft.migration.DBUnitHelper.createTester
-
+import static org.bonitasoft.migration.DBUnitHelper.*
 
 /**
  * @author Elias Ricken de Medeiros
@@ -32,7 +28,7 @@ import static org.bonitasoft.migration.DBUnitHelper.createTester
 class UpdatedDefaultCommandsIT extends GroovyTestCase {
     final static String DBVENDOR
 
-    static{
+    static {
         DBVENDOR = System.getProperty("db.vendor");
     }
 
@@ -40,106 +36,108 @@ class UpdatedDefaultCommandsIT extends GroovyTestCase {
     Sql sql
 
     def dataSet(data) {
-        new FlatXmlDataSet(new StringReader(new StreamingMarkupBuilder().bind{ dataset data }.toString()))
+        new FlatXmlDataSet(new StringReader(new StreamingMarkupBuilder().bind { dataset data }.toString()))
     }
 
-    Map trueValue =  [
-        "oracle" : 1,
-        "postgres": true,
-        "mysql": true,
-        "sqlserver" :true
+    Map trueValue = [
+            "oracle"   : 1,
+            "postgres" : true,
+            "mysql"    : true,
+            "sqlserver": true
     ]
 
-    Map falseValue =  [
-        "oracle" : 0,
-        "postgres": false,
-        "mysql": false,
-        "sqlserver" :false
+    Map falseValue = [
+            "oracle"   : 0,
+            "postgres" : false,
+            "mysql"    : false,
+            "sqlserver": false
     ]
 
 
     @Override
     void setUp() {
         sql = createSqlConnection()
-        tester = createTester()
-        println ("setUp: create tables")
+        tester = createTester(sql.connection)
+        dropTestTables()
         createTables(sql, "6_3_1", "createTables");
 
         tester.dataSet = dataSet {
             //tenants
-            tenant id:1
-            tenant id:2
+            tenant id: 1
+            tenant id: 2
 
             //sequences
-            sequence tenantid:1, id:90, nextid:200
-            sequence tenantid:2, id:90, nextid:100
+            sequence tenantid: 1, id: 90, nextid: 200
+            sequence tenantid: 2, id: 90, nextid: 100
 
             //commands
-            command tenantid:1, id:10, name:"command1", implementation:"org.bonitasoft.engine.Command1", description:"Command1 descr", system:trueValue.get(DBVENDOR)
-            command tenantid:1, id:11, name:"command2", implementation:"org.bonitasoft.engine.Command2", description:"Command2 descr", system:falseValue.get(DBVENDOR)
-            command tenantid:1, id:12, name:"command3", implementation:"org.bonitasoft.engine.Command3", description:"Command3 descr", system:trueValue.get(DBVENDOR)
-            command tenantid:2, id:20, name:"command1", implementation:"org.bonitasoft.engine.Command1", description:"Command1 descr", system:trueValue.get(DBVENDOR)
-            command tenantid:2, id:30, name:"command2", implementation:"org.bonitasoft.engine.Command1", description:"Command1 descr", system:falseValue.get(DBVENDOR)
+            command tenantid: 1, id: 10, name: "command1", implementation: "org.bonitasoft.engine.Command1", description: "Command1 descr", system: trueValue.get(DBVENDOR)
+            command tenantid: 1, id: 11, name: "command2", implementation: "org.bonitasoft.engine.Command2", description: "Command2 descr", system: falseValue.get(DBVENDOR)
+            command tenantid: 1, id: 12, name: "command3", implementation: "org.bonitasoft.engine.Command3", description: "Command3 descr", system: trueValue.get(DBVENDOR)
+            command tenantid: 2, id: 20, name: "command1", implementation: "org.bonitasoft.engine.Command1", description: "Command1 descr", system: trueValue.get(DBVENDOR)
+            command tenantid: 2, id: 30, name: "command2", implementation: "org.bonitasoft.engine.Command1", description: "Command1 descr", system: falseValue.get(DBVENDOR)
         }
         tester.onSetup();
     }
 
     @Override
     void tearDown() {
+        dropTestTables()
         tester.onTearDown()
-        sql.execute("DROP TABLE sequence")
-        sql.execute("DROP TABLE command")
-        sql.execute("DROP TABLE tenant")
+    }
+
+    private void dropTestTables() {
+        dropTables(sql, ["sequence", "command", "tenant"] as String[])
     }
 
     void test_insert_new_system_command_should_add_a_new_line_per_tenant_and_update_sequence_table() {
         UpdatedDefaultCommands insertNewCommand = new UpdatedDefaultCommands();
-        CommandDescriptor command1ToInsert = new CommandDescriptor(name:"newCommand1", implementation:"org.bonitasoft.engine.NewCommand1", description:"new command 1 description");
-        CommandDescriptor command2ToInsert = new CommandDescriptor(name:"newCommand2", implementation:"org.bonitasoft.engine.NewCommand2", description:"new command 2 description");
+        CommandDescriptor command1ToInsert = new CommandDescriptor(name: "newCommand1", implementation: "org.bonitasoft.engine.NewCommand1", description: "new command 1 description");
+        CommandDescriptor command2ToInsert = new CommandDescriptor(name: "newCommand2", implementation: "org.bonitasoft.engine.NewCommand2", description: "new command 2 description");
         insertNewCommand.migrate(sql, [
-            command1ToInsert,
-            command2ToInsert
+                command1ToInsert,
+                command2ToInsert
         ], []);
 
         def updatedCommandsAndSequences = tester.connection.createDataSet("sequence", "command");
 
         CustomAssertion.assertEquals dataSet {
             //sequences
-            sequence tenantid:1, id:90, nextid:202
-            sequence tenantid:2, id:90, nextid:102
+            sequence tenantid: 1, id: 90, nextid: 202
+            sequence tenantid: 2, id: 90, nextid: 102
 
             //commands
-            command tenantid:1, id:10, name:"command1", implementation:"org.bonitasoft.engine.Command1", description:"Command1 descr", system:trueValue.get(DBVENDOR)
-            command tenantid:1, id:11, name:"command2", implementation:"org.bonitasoft.engine.Command2", description:"Command2 descr", system:falseValue.get(DBVENDOR)
-            command tenantid:1, id:12, name:"command3", implementation:"org.bonitasoft.engine.Command3", description:"Command3 descr", system:trueValue.get(DBVENDOR)
-            command tenantid:1, id:200, name:"newCommand1", implementation:"org.bonitasoft.engine.NewCommand1", description:"new command 1 description", system:trueValue.get(DBVENDOR)
-            command tenantid:1, id:201, name:"newCommand2", implementation:"org.bonitasoft.engine.NewCommand2", description:"new command 2 description", system:trueValue.get(DBVENDOR)
-            command tenantid:2, id:20, name:"command1", implementation:"org.bonitasoft.engine.Command1", description:"Command1 descr", system:trueValue.get(DBVENDOR)
-            command tenantid:2, id:30, name:"command2", implementation:"org.bonitasoft.engine.Command1", description:"Command1 descr", system:falseValue.get(DBVENDOR)
-            command tenantid:2, id:100, name:"newCommand1", implementation:"org.bonitasoft.engine.NewCommand1", description:"new command 1 description", system:trueValue.get(DBVENDOR)
-            command tenantid:2, id:101, name:"newCommand2", implementation:"org.bonitasoft.engine.NewCommand2", description:"new command 2 description", system:trueValue.get(DBVENDOR)
+            command tenantid: 1, id: 10, name: "command1", implementation: "org.bonitasoft.engine.Command1", description: "Command1 descr", system: trueValue.get(DBVENDOR)
+            command tenantid: 1, id: 11, name: "command2", implementation: "org.bonitasoft.engine.Command2", description: "Command2 descr", system: falseValue.get(DBVENDOR)
+            command tenantid: 1, id: 12, name: "command3", implementation: "org.bonitasoft.engine.Command3", description: "Command3 descr", system: trueValue.get(DBVENDOR)
+            command tenantid: 1, id: 200, name: "newCommand1", implementation: "org.bonitasoft.engine.NewCommand1", description: "new command 1 description", system: trueValue.get(DBVENDOR)
+            command tenantid: 1, id: 201, name: "newCommand2", implementation: "org.bonitasoft.engine.NewCommand2", description: "new command 2 description", system: trueValue.get(DBVENDOR)
+            command tenantid: 2, id: 20, name: "command1", implementation: "org.bonitasoft.engine.Command1", description: "Command1 descr", system: trueValue.get(DBVENDOR)
+            command tenantid: 2, id: 30, name: "command2", implementation: "org.bonitasoft.engine.Command1", description: "Command1 descr", system: falseValue.get(DBVENDOR)
+            command tenantid: 2, id: 100, name: "newCommand1", implementation: "org.bonitasoft.engine.NewCommand1", description: "new command 1 description", system: trueValue.get(DBVENDOR)
+            command tenantid: 2, id: 101, name: "newCommand2", implementation: "org.bonitasoft.engine.NewCommand2", description: "new command 2 description", system: trueValue.get(DBVENDOR)
         }, updatedCommandsAndSequences
     }
 
     void test_insert_existing_system_command_should_have_no_effects() {
         UpdatedDefaultCommands insertNewCommand = new UpdatedDefaultCommands();
         //only the name is important
-        CommandDescriptor commandToInsert = new CommandDescriptor(name:"command1", implementation:"org.bonitasoft.engine.NewCommand", description:"new command description");
+        CommandDescriptor commandToInsert = new CommandDescriptor(name: "command1", implementation: "org.bonitasoft.engine.NewCommand", description: "new command description");
         insertNewCommand.migrate(sql, [commandToInsert], []);
 
         def updatedCommandsAndSequences = tester.connection.createDataSet("sequence", "command");
 
         CustomAssertion.assertEquals dataSet {
             //sequences
-            sequence tenantid:1, id:90, nextid:200
-            sequence tenantid:2, id:90, nextid:100
+            sequence tenantid: 1, id: 90, nextid: 200
+            sequence tenantid: 2, id: 90, nextid: 100
 
             //commands
-            command tenantid:1, id:10, name:"command1", implementation:"org.bonitasoft.engine.Command1", description:"Command1 descr", system:trueValue.get(DBVENDOR)
-            command tenantid:1, id:11, name:"command2", implementation:"org.bonitasoft.engine.Command2", description:"Command2 descr", system:falseValue.get(DBVENDOR)
-            command tenantid:1, id:12, name:"command3", implementation:"org.bonitasoft.engine.Command3", description:"Command3 descr", system:trueValue.get(DBVENDOR)
-            command tenantid:2, id:20, name:"command1", implementation:"org.bonitasoft.engine.Command1", description:"Command1 descr", system:trueValue.get(DBVENDOR)
-            command tenantid:2, id:30, name:"command2", implementation:"org.bonitasoft.engine.Command1", description:"Command1 descr", system:falseValue.get(DBVENDOR)
+            command tenantid: 1, id: 10, name: "command1", implementation: "org.bonitasoft.engine.Command1", description: "Command1 descr", system: trueValue.get(DBVENDOR)
+            command tenantid: 1, id: 11, name: "command2", implementation: "org.bonitasoft.engine.Command2", description: "Command2 descr", system: falseValue.get(DBVENDOR)
+            command tenantid: 1, id: 12, name: "command3", implementation: "org.bonitasoft.engine.Command3", description: "Command3 descr", system: trueValue.get(DBVENDOR)
+            command tenantid: 2, id: 20, name: "command1", implementation: "org.bonitasoft.engine.Command1", description: "Command1 descr", system: trueValue.get(DBVENDOR)
+            command tenantid: 2, id: 30, name: "command2", implementation: "org.bonitasoft.engine.Command1", description: "Command1 descr", system: falseValue.get(DBVENDOR)
         }, updatedCommandsAndSequences
     }
 
@@ -151,13 +149,13 @@ class UpdatedDefaultCommandsIT extends GroovyTestCase {
 
         CustomAssertion.assertEquals dataSet {
             //sequences
-            sequence tenantid:1, id:90, nextid:200
-            sequence tenantid:2, id:90, nextid:100
+            sequence tenantid: 1, id: 90, nextid: 200
+            sequence tenantid: 2, id: 90, nextid: 100
 
             //commands
-            command tenantid:1, id:11, name:"command2", implementation:"org.bonitasoft.engine.Command2", description:"Command2 descr", system:falseValue.get(DBVENDOR)
-            command tenantid:1, id:12, name:"command3", implementation:"org.bonitasoft.engine.Command3", description:"Command3 descr", system:trueValue.get(DBVENDOR)
-            command tenantid:2, id:30, name:"command2", implementation:"org.bonitasoft.engine.Command1", description:"Command1 descr", system:falseValue.get(DBVENDOR)
+            command tenantid: 1, id: 11, name: "command2", implementation: "org.bonitasoft.engine.Command2", description: "Command2 descr", system: falseValue.get(DBVENDOR)
+            command tenantid: 1, id: 12, name: "command3", implementation: "org.bonitasoft.engine.Command3", description: "Command3 descr", system: trueValue.get(DBVENDOR)
+            command tenantid: 2, id: 30, name: "command2", implementation: "org.bonitasoft.engine.Command1", description: "Command1 descr", system: falseValue.get(DBVENDOR)
         }, updatedCommandsAndSequences
     }
 }

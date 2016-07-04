@@ -15,11 +15,14 @@ package org.bonitasoft.migration;
 
 import org.junit.runner.JUnitCore;
 
-
 public class DatabaseChecker6_4_2 extends DatabaseChecker6_4_1 {
-    
+
     public static void main(final String[] args) throws Exception {
         JUnitCore.main(DatabaseChecker6_4_2.class.getName());
     }
 
+    @Override
+    public void checkDates_are_retrieved_Correctly() throws Exception {
+        //nothing to do
+    }
 }
