@@ -24,14 +24,21 @@ import org.bonitasoft.migration.core.DatabaseMigrationStep
  * Emmanuel Duchastenier
  */
 class MigrateDateDataInstancesFromWrongXMLObject extends DatabaseMigrationStep {
+    private XStream xStream
+    private XmlParser xmlParser
 
     MigrateDateDataInstancesFromWrongXMLObject(final Sql sql, final String dbVendor) {
         super(sql, dbVendor)
+        xStream = new XStream(new StaxDriver())
+        xmlParser = new XmlParser()
     }
 
     @Override
     def migrate() {
+        //can be skip for performance issue
         migrateTable("data_instance", "SXMLObjectDataInstanceImpl", "SDateDataInstanceImpl");
+
+        //can be skip for performance issue
         migrateTable("arch_data_instance", "SAXMLObjectDataInstanceImpl", "SADateDataInstanceImpl");
     }
 
@@ -42,14 +49,13 @@ class MigrateDateDataInstancesFromWrongXMLObject extends DatabaseMigrationStep {
             def rowClobValue = row.clobValue
             def clobAsString = rowClobValue;
             // Special treatment of blobs in Oracle:
-            println "data to be migrated : $row.id --> $row.name"
             if (rowClobValue != null && dbVendor == "oracle") {
                 StringWriter w = new StringWriter();
                 IOUtils.copy(rowClobValue.getCharacterStream(), w);
                 clobAsString = w.toString();
             }
             if (clobAsString != null) {
-                def newDate = new XmlParser().parseText(clobAsString)
+                def newDate = xmlParser.parseText(clobAsString)
                 if (newDate.name().equals('date') || newDate.name().equals('null')) {
                     executeUpdate("UPDATE " + tableName + " set LONGVALUE=" + getDate(clobAsString) + ", CLOBVALUE=NULL, DISCRIMINANT='$newDiscriminant' WHERE tenantId=$tenantId AND id=$id")
                 }
@@ -60,7 +66,7 @@ class MigrateDateDataInstancesFromWrongXMLObject extends DatabaseMigrationStep {
     }
 
     def getDate(String xmlDate) {
-        def date = ((java.util.Date) new XStream(new StaxDriver()).fromXML(xmlDate))
+        def date = ((java.util.Date) xStream.fromXML(xmlDate))
         if (date == null) {
             return null
         } else {

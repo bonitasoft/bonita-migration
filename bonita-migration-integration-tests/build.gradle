@@ -186,9 +186,7 @@ subprojects {
                     throw new IllegalStateException("must specify db.databaseName,  db.root.user and db.root.password  for mysql")
                 }
                 def sql = Sql.newInstance(genericUrl, dbRootUser, dbRootPassword, dbdriverClass)
-                sql.eachRow("select distinct db from mysql.db where db='" + databaseName + "'") {
-                    sql.executeUpdate("DROP DATABASE " + databaseName)
-                }
+                sql.executeUpdate("DROP DATABASE IF EXISTS " + databaseName)
                 sql.eachRow("select distinct user from mysql.user where user ='" + databaseName + "'") {
                     sql.executeUpdate("DROP USER " + dbuser)
                 }
