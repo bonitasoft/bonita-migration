@@ -57,7 +57,11 @@ class MigrateAvatar extends MigrationStep {
         context.databaseHelper.sql.eachRow("SELECT tenantid, iconpath, id FROM " + table + " WHERE iconpath IS NOT null") { row ->
 
             def tenantId = String.valueOf(row.tenantid)
-            def icon = context.bonitaHome.toPath().resolve("client").resolve("tenants").resolve(tenantId).resolve("work").resolve("icons").resolve(row.iconpath.substring(1))
+            def iconPath = row.iconpath as String
+            if (iconPath == null || iconPath.isEmpty()) {
+                return
+            }
+            def icon = context.bonitaHome.toPath().resolve("client").resolve("tenants").resolve(tenantId).resolve("work").resolve("icons").resolve(iconPath.startsWith("/") ? iconPath.substring(1) : iconPath)
             if (!Files.isReadable(icon)) {
                 context.logger.info "user icon ${icon} does not exists in file system. Skip icon migration"
                 return
