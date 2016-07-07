@@ -73,6 +73,11 @@ class MigrateAvatarIT extends Specification {
         insertGroup(12L, 47L, "groupName", "groupIcon.png")
         writeIcon(tenant12Folder, "roles", "roleIcon.png", "icon of a role")
         insertRole(12L, 47L, "roleName", "roleIcon.png")
+        //empty iconpath
+        migrationContext.sql.execute("INSERT INTO role (tenantid, id, name, iconPath) VALUES (${12L},${48L}, ${'roleName2'}, ${('')})")
+        //not starting with /
+        migrationContext.sql.execute("INSERT INTO role (tenantid, id, name, iconPath) VALUES (${12L},${49L}, ${'roleName3'}, ${("roles/roleIcon3.png")})")
+        writeIcon(tenant12Folder, "roles", "roleIcon3.png", "icon of a role3")
 
         def tenant13Folder = createTenantWithDirs(13L)
         writeIcon(tenant13Folder, "users", "avatar4407045230281126580.jpg", "tenant 13 avatar of john")
@@ -92,7 +97,9 @@ class MigrateAvatarIT extends Specification {
         assert getIconOfUser("john", 13L) == [tenantid: 13L, mimetype: "image/jpeg", content: "tenant 13 avatar of john".bytes]
         assert getIconOfUser("jack", 13L) == [tenantid: 13L, mimetype: "image/jpeg", content: "tenant 13 avatar of jack".bytes]
         assert getIconOfUser("anOther", 12L) == null
-        assert migrationContext.sql.firstRow("SELECT nextid FROM sequence WHERE tenantid = ${12L} AND id = ${27L}").nextid == 6
+        assert getIconOf("role", "roleName2", 12L) == null
+        assert getIconOf("role", "roleName3", 12L) == [tenantid: 12L, mimetype: "image/png", content: "icon of a role3".bytes]
+        assert migrationContext.sql.firstRow("SELECT nextid FROM sequence WHERE tenantid = ${12L} AND id = ${27L}").nextid == 7
         assert migrationContext.sql.firstRow("SELECT nextid FROM sequence WHERE tenantid = ${13L} AND id = ${27L}").nextid == 3
         assert migrationContext.sql.firstRow("SELECT nextid FROM sequence WHERE tenantid = ${14L} AND id = ${27L}").nextid == 1
     }
