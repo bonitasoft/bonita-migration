@@ -19,9 +19,7 @@ import org.bonitasoft.migration.CustomAssertion
 import org.dbunit.JdbcDatabaseTester
 import org.dbunit.dataset.xml.FlatXmlDataSet
 
-import static org.bonitasoft.migration.DBUnitHelper.createSqlConnection
-import static org.bonitasoft.migration.DBUnitHelper.createTables
-import static org.bonitasoft.migration.DBUnitHelper.createTester
+import static org.bonitasoft.migration.DBUnitHelper.*
 
 class ResetFailedGatewaysIT extends GroovyTestCase {
     final static String DBVENDOR
@@ -55,9 +53,9 @@ class ResetFailedGatewaysIT extends GroovyTestCase {
     @Override
     void setUp() {
         sql = createSqlConnection();
-        tester = createTester()
+        tester = createTester(sql.connection)
 
-        println("setUp: create tables")
+        dropTestTables()
         createTables(sql, "6_3_2", "createTables");
 
         println("setUp: populating tables")
@@ -69,7 +67,6 @@ class ResetFailedGatewaysIT extends GroovyTestCase {
             //gateway that will be reset to executing and will have left no archived
             flownode_instance tenantid: 1, id: 112, name: 'gate', parentContainerId: 130, kind: 'gate', stateId: 3, stateName: "failed", prev_state_id: 61, terminal: falseValue.get(DBVENDOR), stable: falseValue.get(DBVENDOR), hitBys: "1,5,12", token_ref_id: 10
             arch_flownode_instance tenantid: 1, id: 212, sourceObjectId: 112, stateId: 0, stateName: "executing", terminal: falseValue.get(DBVENDOR), stable: falseValue.get(DBVENDOR), hitBys: "1,5,12"
-
 
             //gateway that will be reset to completed and will have left one  archived version
             flownode_instance tenantid: 1, id: 113, name: 'gate', parentContainerId: 131, kind: 'gate', stateId: 3, stateName: "failed", prev_state_id: 2, terminal: falseValue.get(DBVENDOR), stable: falseValue.get(DBVENDOR), hitBys: "FINISH:5", token_ref_id: 11
@@ -128,13 +125,17 @@ class ResetFailedGatewaysIT extends GroovyTestCase {
 
     @Override
     void tearDown() {
+        dropTestTables()
         tester.onTearDown()
-        sql.execute("DROP TABLE arch_data_mapping")
-        sql.execute("DROP TABLE arch_data_instance")
-        sql.execute("DROP TABLE flownode_instance")
-        sql.execute("DROP TABLE arch_flownode_instance")
-        sql.execute("DROP TABLE tenant")
-        sql.execute("DROP TABLE token")
+    }
+
+    private String[] dropTestTables() {
+        dropTables(sql, ["arch_data_mapping",
+                         "arch_data_instance",
+                         "flownode_instance",
+                         "arch_flownode_instance",
+                         "tenant",
+                         "token"] as String[])
     }
 
     void test_gateways_in_failed_are_reset() {

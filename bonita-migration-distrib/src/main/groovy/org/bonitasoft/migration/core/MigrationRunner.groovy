@@ -229,8 +229,10 @@ public class MigrationRunner {
     }
 
     public changePlatformVersion(groovy.sql.Sql sql, String version) {
-        sql.executeUpdate("UPDATE platform SET previousVersion = version");
-        sql.executeUpdate("UPDATE platform SET version = $version")
+        sql.withTransaction {
+            sql.executeUpdate("UPDATE platform SET previousVersion = version");
+            sql.executeUpdate("UPDATE platform SET version = $version")
+        }
         println "Platform version in database changed to $version"
     }
 

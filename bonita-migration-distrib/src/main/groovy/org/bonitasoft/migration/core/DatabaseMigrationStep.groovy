@@ -47,6 +47,7 @@ abstract class DatabaseMigrationStep {
     def boolean execute(String statement) {
         return sql.execute(adaptFor(statement))
     }
+
     def boolean execute(String statement, List<Object> params) {
         return sql.execute(adaptFor(statement), params)
     }
@@ -188,8 +189,8 @@ END""")
         execute("ALTER TABLE $table ADD $column $type ${defaultValue != null ? "DEFAULT $defaultValue" : ""} ${constraint != null ? constraint : ""}")
     }
 
-    def String addIndex(String tableName, String indexName, String ... columns) {
-        def concatenatedColumns = columns.collect{it}.join(", ")
+    def String addIndex(String tableName, String indexName, String... columns) {
+        def concatenatedColumns = columns.collect { it }.join(", ")
         String request = "CREATE INDEX $indexName ON $tableName ($concatenatedColumns)"
         println "Executing request: $request"
         execute(request)
@@ -208,14 +209,13 @@ END""")
     }
 
 
-
     def GroovyRowResult selectFirstRow(GString string) {
         return sql.firstRow(adaptFor(string))
     }
 
-    def long getAndUpdateNextSequenceId(long sequenceId, long tenantId){
+    def long getAndUpdateNextSequenceId(long sequenceId, long tenantId) {
         def long nextId = (Long) selectFirstRow("SELECT nextId from sequence WHERE id = $sequenceId and tenantId = $tenantId").get("nextId")
-        executeUpdate("UPDATE sequence SET nextId = ${nextId + 1 } WHERE tenantId = $tenantId and id = $sequenceId")
+        executeUpdate("UPDATE sequence SET nextId = ${nextId + 1} WHERE tenantId = $tenantId and id = $sequenceId")
         return nextId
     }
 

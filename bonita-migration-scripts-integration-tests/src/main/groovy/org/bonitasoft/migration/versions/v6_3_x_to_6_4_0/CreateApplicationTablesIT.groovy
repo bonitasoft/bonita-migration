@@ -13,112 +13,120 @@
  **/
 package org.bonitasoft.migration.versions.v6_3_x_to_6_4_0
 
-import org.bonitasoft.migration.versions.v6_3_9_to_6_4_0.CreateApplicationTables
-
-import static org.assertj.core.api.Assertions.assertThat
 import groovy.sql.Sql
 import groovy.xml.StreamingMarkupBuilder
-
 import org.bonitasoft.migration.CustomAssertion
+import org.bonitasoft.migration.versions.v6_3_9_to_6_4_0.CreateApplicationTables
 import org.dbunit.JdbcDatabaseTester
 import org.dbunit.dataset.xml.FlatXmlDataSet
 
-import static org.bonitasoft.migration.DBUnitHelper.createSqlConnection
-import static org.bonitasoft.migration.DBUnitHelper.createTables
-import static org.bonitasoft.migration.DBUnitHelper.createTester
-
+import static org.assertj.core.api.Assertions.assertThat
+import static org.bonitasoft.migration.DBUnitHelper.*
 
 /**
  * @author Elias Ricken de Medeiros
  *
  */
-class CreateApplicationTablesIT  extends GroovyTestCase {
+class CreateApplicationTablesIT extends GroovyTestCase {
     final static String DBVENDOR
 
-    static{
+    static {
         DBVENDOR = System.getProperty("db.vendor");
     }
 
 
-    static{
+    static {
         DBVENDOR = System.getProperty("db.vendor");
     }
 
-    def checkSql =  [
-        "mysql" : { tableName -> """
+    def checkSql = [
+            "mysql"    : { tableName ->
+                """
             SELECT * FROM information_schema.TABLES
             WHERE TABLE_SCHEMA = DATABASE()
             AND TABLE_NAME = $tableName
-        """ },
-        "oracle" : { tableName -> """
+        """
+            },
+            "oracle"   : { tableName ->
+                """
             SELECT *
             FROM all_tables
             WHERE TABLE_NAME = $tableName
-        """ },
-        "postgres" : { tableName ->  """
+        """
+            },
+            "postgres" : { tableName ->
+                """
                 SELECT *
                 FROM information_schema.tables
                 WHERE table_name = $tableName
-            """ },
-        "sqlserver" : { tableName ->  """
+            """
+            },
+            "sqlserver": { tableName ->
+                """
                 SELECT *
                 FROM INFORMATION_SCHEMA.TABLES
                 WHERE TABLE_NAME = $tableName
-            """ }
+            """
+            }
     ]
 
     def bussinessAppTable = [
-        "mysql" : "business_app",
-        "oracle" : "BUSINESS_APP",
-        "postgres" : "business_app",
-        "sqlserver" : "business_app"
+            "mysql"    : "business_app",
+            "oracle"   : "BUSINESS_APP",
+            "postgres" : "business_app",
+            "sqlserver": "business_app"
     ];
 
     def busAppPageTable = [
-        "mysql" : "business_app_page",
-        "oracle" : "BUSINESS_APP_PAGE",
-        "postgres" : "business_app_page",
-        "sqlserver" : "business_app_page"];
+            "mysql"    : "business_app_page",
+            "oracle"   : "BUSINESS_APP_PAGE",
+            "postgres" : "business_app_page",
+            "sqlserver": "business_app_page"];
 
     def busAppMenuTable = [
-        "mysql" : "business_app_menu",
-        "oracle" : "BUSINESS_APP_MENU",
-        "postgres" : "business_app_menu",
-        "sqlserver" : "business_app_menu"];
+            "mysql"    : "business_app_menu",
+            "oracle"   : "BUSINESS_APP_MENU",
+            "postgres" : "business_app_menu",
+            "sqlserver": "business_app_menu"];
 
     Sql sql
     JdbcDatabaseTester tester
 
     def dataSet(data) {
-        new FlatXmlDataSet(new StringReader(new StreamingMarkupBuilder().bind{ dataset data }.toString()))
+        new FlatXmlDataSet(new StringReader(new StreamingMarkupBuilder().bind { dataset data }.toString()))
     }
 
     @Override
     void setUp() {
         sql = createSqlConnection();
-        tester = createTester()
-
+        tester = createTester(sql.connection)
+        dropTestTables()
         createTables(sql, "6_4_0", "createAppRelatedTables");
-        println ("setUp: populating table")
+        println("setUp: populating table")
         tester.dataSet = dataSet {
-            tenant id:1
-            tenant id:2
-            tenant id:3
+            tenant id: 1
+            tenant id: 2
+            tenant id: 3
         }
         tester.onSetup();
     }
 
     @Override
     void tearDown() {
+        dropTestTables()
         tester.onTearDown();
+    }
 
-        sql.execute("DROP TABLE business_app_menu")
-        sql.execute("DROP TABLE business_app_page")
-        sql.execute("DROP TABLE page")
-        sql.execute("DROP TABLE business_app")
-        sql.execute("DROP TABLE profile")
-        sql.execute("DROP TABLE sequence")
-        sql.execute("DROP TABLE tenant")
+    private String[] dropTestTables() {
+        dropTables(sql, [
+                "business_app_menu",
+                "business_app_page",
+                "page",
+                "business_app",
+                "profile",
+                "sequence",
+                "tenant"
+        ] as String[])
     }
 
     void test_createApplicationTables_should_create_application_tables_and_update_sequence_table() {
@@ -136,15 +144,15 @@ class CreateApplicationTablesIT  extends GroovyTestCase {
 
         CustomAssertion.assertEquals dataSet {
             //sequences
-            sequence tenantid:1, id:10200, nextid:1
-            sequence tenantid:1, id:10201, nextid:1
-            sequence tenantid:1, id:10202, nextid:1
-            sequence tenantid:2, id:10200, nextid:1
-            sequence tenantid:2, id:10201, nextid:1
-            sequence tenantid:2, id:10202, nextid:1
-            sequence tenantid:3, id:10200, nextid:1
-            sequence tenantid:3, id:10201, nextid:1
-            sequence tenantid:3, id:10202, nextid:1
+            sequence tenantid: 1, id: 10200, nextid: 1
+            sequence tenantid: 1, id: 10201, nextid: 1
+            sequence tenantid: 1, id: 10202, nextid: 1
+            sequence tenantid: 2, id: 10200, nextid: 1
+            sequence tenantid: 2, id: 10201, nextid: 1
+            sequence tenantid: 2, id: 10202, nextid: 1
+            sequence tenantid: 3, id: 10200, nextid: 1
+            sequence tenantid: 3, id: 10201, nextid: 1
+            sequence tenantid: 3, id: 10202, nextid: 1
         }, updatedCommandsAndSequences
     }
 }

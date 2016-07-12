@@ -18,13 +18,20 @@ package org.bonitasoft.migration
 
 import groovy.sql.Sql
 import groovy.xml.StreamingMarkupBuilder
+import org.dbunit.DefaultOperationListener
+import org.dbunit.IOperationListener
 import org.dbunit.JdbcDatabaseTester
+import org.dbunit.database.DatabaseConfig
+import org.dbunit.database.DatabaseConnection
 import org.dbunit.database.IDatabaseConnection
 import org.dbunit.dataset.ReplacementDataSet
 import org.dbunit.dataset.xml.FlatXmlDataSet
+import org.dbunit.ext.mysql.MySqlConnection
+import org.dbunit.ext.mysql.MySqlDataTypeFactory
+import org.dbunit.ext.mysql.MySqlMetadataHandler
 import org.dbunit.ext.oracle.OracleConnection
 
-import java.sql.DriverManager
+import java.sql.Connection
 import java.sql.SQLException
 
 /**
@@ -73,24 +80,59 @@ class DBUnitHelper {
         createTables(sql, "6_4_0", feature);
     }
 
-    def static String[] createTables(sql, String version, String feature) {
-        println "Create tables of $feature"
-        getCreateTables(version, feature).text.split("@@").each({ stmt ->
-            sql.execute(stmt)
-        })
+    def static String[] createTables(Sql sql, String version, String feature) {
+        println "Create tables of sql/v${version}/$feature"
+        sql.withTransaction {
+            getCreateTables(version, feature).text.split("@@").each({ stmt ->
+                sql.execute(stmt)
+            })
+        }
     }
 
-    def static JdbcDatabaseTester createTester() {
-        new JdbcDatabaseTester(driverClass, url, user, password) {
+    def static IDatabaseConnection createIDatabaseConnection(Connection connection) {
+        switch (dbVendor()) {
+            case "oracle":
+                return new OracleConnection(connection, getUser())
+                break
+            case "mysql":
+                MySqlConnection mySqlConnection = new MySqlConnection(connection, getUser())
+                mySqlConnection.getConfig().setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY,
+                        new MySqlDataTypeFactory());
+                mySqlConnection.getConfig().setProperty(DatabaseConfig.PROPERTY_METADATA_HANDLER,
+                        new MySqlMetadataHandler());
+                return mySqlConnection
+                break
+            default:
+                return new DatabaseConnection(connection)
+                break
+
+        }
+    }
+
+    def static JdbcDatabaseTester createTester(Connection connection) {
+
+        def tester = new JdbcDatabaseTester(driverClass, url, user, password) {
+
+            @Override
             public IDatabaseConnection getConnection() {
-                if (dbVendor() == "oracle") {
-                    def conn = DriverManager.getConnection(getUrl(), getUser(), getPassword());
-                    return new OracleConnection(conn, getUser());
-                } else {
-                    return super.getConnection();
-                }
+                createIDatabaseConnection(connection)
+            }
+
+        }
+        IOperationListener operationListener = new DefaultOperationListener() {
+
+            @Override
+            void connectionRetrieved(IDatabaseConnection iDatabaseConnection) {
+                iDatabaseConnection.connection.setAutoCommit(false)
+            }
+
+            @Override
+            void operationSetUpFinished(IDatabaseConnection iDatabaseConnection) {
+                iDatabaseConnection.connection.commit()
             }
         }
+        tester.setOperationListener(operationListener)
+        tester
     }
 
     def static Sql createSqlConnection() {
@@ -118,7 +160,8 @@ class DBUnitHelper {
             def statement = "DROP TABLE " + it
             println "executing statement [${statement}]"
             try {
-                sql.execute(statement as String)
+                sql.withTransaction { sql.execute(statement as String) }
+                println "table ${it} DROPPED"
             } catch (SQLException e) {
                 println "failure ignored, table may not exists:" + e.getMessage()
             }

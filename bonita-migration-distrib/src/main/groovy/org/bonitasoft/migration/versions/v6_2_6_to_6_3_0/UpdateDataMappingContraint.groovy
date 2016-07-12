@@ -14,10 +14,7 @@
 package org.bonitasoft.migration.versions.v6_2_6_to_6_3_0
 
 import groovy.sql.Sql
-
 import org.bonitasoft.migration.core.MigrationUtil
-
-
 
 /**
  * @author Elias Ricken de Medeiros
@@ -30,27 +27,27 @@ class UpdateDataMappingContraint {
     private feature
 
     def upgradeNamedConstraint = [
-        { return hasNamedConstraint() },
-        {  return updateConstraint() }
+            { return hasNamedConstraint() },
+            { return updateConstraint() }
     ]
 
     def upgradeUnNamedConstraint = [
-        {  return hasConstraintCardinality() },
-        {  return updateConstraint() }
+            { return hasConstraintCardinality() },
+            { return updateConstraint() }
     ]
 
     def scripts = [
-        "mysql": upgradeNamedConstraint,
-        "postgres": upgradeNamedConstraint,
-        "oracle": upgradeUnNamedConstraint,
-        "sqlserver": upgradeUnNamedConstraint
+            "mysql"    : upgradeNamedConstraint,
+            "postgres" : upgradeNamedConstraint,
+            "oracle"   : upgradeUnNamedConstraint,
+            "sqlserver": upgradeUnNamedConstraint
     ];
 
-    public migrate () {
+    public migrate() {
         boolean migrated = true;
         for (request in scripts[dbvendor]) {
             boolean mustContinue = request()
-            if(!mustContinue) {
+            if (!mustContinue) {
                 println "The constraint is already up to date, nothing to do"
                 migrated = false;
                 break;
@@ -66,7 +63,7 @@ class UpdateDataMappingContraint {
 
     private boolean hasConstraintCardinality() {
         def firstRow = executeCheckConstraintRequest()
-        if(firstRow.nbConstraint == 1) {
+        if (firstRow.nbConstraint == 1) {
             return firstRow.nbColumn == 3
         }
         return true;
@@ -82,7 +79,7 @@ class UpdateDataMappingContraint {
         println "Updating constraint from 'UNIQUE (containerId, containerType, dataName) to 'UNIQUE (tenantId, containerId, containerType, dataName)'"
         try {
             MigrationUtil.executeDefaultSqlFile(feature, dbvendor, sql)
-        }catch(Throwable t){
+        } catch (Throwable t) {
             println "Unable to update the constraint, try to append  \"AND all_cons.OWNER = '<name of the user>'\" with the name in uppercase to the file in versions/6.2.6-6.3.0/Database/008_BS-296/oracle-check-constraint.sql"
             throw t
         }

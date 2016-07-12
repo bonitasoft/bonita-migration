@@ -1,10 +1,9 @@
 package org.bonitasoft.migration.versions.v6_4_0_to_6_4_1
 
-import static org.assertj.core.api.Assertions.*
-import static org.bonitasoft.migration.DBUnitHelper.*
 import groovy.sql.Sql
 
-import org.dbunit.JdbcDatabaseTester
+import static org.assertj.core.api.Assertions.assertThat
+import static org.bonitasoft.migration.DBUnitHelper.*
 
 /**
  * @author Emmanuel Duchastenier
@@ -12,24 +11,24 @@ import org.dbunit.JdbcDatabaseTester
 class MigrateDateDataInstancesFromWrongXMLObjectIT extends GroovyTestCase {
 
     Sql sql
-    JdbcDatabaseTester tester
 
     @Override
     void setUp() {
         sql = createSqlConnection();
-        tester = createTester()
-
+        droptesttables()
         createTables(sql, "data_instance")
     }
 
 
     @Override
     void tearDown() {
-        tester.onTearDown();
+        droptesttables()
+    }
 
+    private void droptesttables() {
         def String[] tables = [
-            "data_instance",
-            "arch_data_instance"
+                "data_instance",
+                "arch_data_instance"
         ]
         dropTables(sql, tables)
     }
@@ -37,12 +36,13 @@ class MigrateDateDataInstancesFromWrongXMLObjectIT extends GroovyTestCase {
     void test_migrate_should_move_data_instances_from_xmlobject_to_date_column() throws Exception {
         //given
         def Long dateTime = 1418660268855;
-        def xmlDate = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><date>2014-12-15 16:17:48.855 UTC</date>"; // equivalent to 1418660268855 in UTC and English locale (XStream defaults)
-        def xmlNullDate = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><null></null>";
+        def xmlDate = """<?xml version="1.0" encoding="UTF-8" ?><date>2014-12-15 16:17:48.855 UTC</date>""" as String;
+        // equivalent to 1418660268855 in UTC and English locale (XStream defaults)
+        def xmlNullDate = """<?xml version="1.0" encoding="UTF-8" ?><null></null>""" as String;
 
-        sql.executeInsert("INSERT INTO data_instance (tenantid, id, LONGVALUE, CLOBVALUE, DISCRIMINANT, CLASSNAME) VALUES (1, 14, null, '" + xmlDate + "', 'SXMLObjectDataInstanceImpl', 'java.util.Date')")
-        sql.executeInsert("INSERT INTO data_instance (tenantid, id, LONGVALUE, CLOBVALUE, DISCRIMINANT, CLASSNAME) VALUES (1, 15, null, '" + xmlNullDate + "', 'SXMLObjectDataInstanceImpl', 'java.util.Date')")
-        sql.executeInsert("INSERT INTO data_instance (tenantid, id, LONGVALUE, CLOBVALUE, DISCRIMINANT, CLASSNAME) VALUES (1, 16, null, null, 'SXMLObjectDataInstanceImpl', 'java.util.Date')")
+        sql.execute("INSERT INTO data_instance (tenantid, id, longvalue, clobvalue, discriminant, classname) VALUES (1, 14, null, '" + xmlDate + "', 'SXMLObjectDataInstanceImpl', 'java.util.Date')")
+        sql.execute("INSERT INTO data_instance (tenantid, id, longvalue, clobvalue, discriminant, classname) VALUES (1, 15, null, '" + xmlNullDate + "', 'SXMLObjectDataInstanceImpl', 'java.util.Date')")
+        sql.execute("INSERT INTO data_instance (tenantid, id, longvalue, clobvalue, discriminant, classname) VALUES (1, 16, null, null, 'SXMLObjectDataInstanceImpl', 'java.util.Date')")
         def dateDataInstanceMigration = new MigrateDateDataInstancesFromWrongXMLObject(sql, dbVendor())
 
         //when
@@ -80,10 +80,11 @@ class MigrateDateDataInstancesFromWrongXMLObjectIT extends GroovyTestCase {
     void test_migrate_should_move_archived_data_instances_from_xmlobject_to_date_column() throws Exception {
         //given
         def Long dateTime = 1418660268855;
-        def xmlDate = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><date>2014-12-15 16:17:48.855 UTC</date>"; // equivalent to 1418660268855 in UTC and English locale (XStream defaults)
+        def xmlDate = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><date>2014-12-15 16:17:48.855 UTC</date>";
+        // equivalent to 1418660268855 in UTC and English locale (XStream defaults)
         def xmlNullDate = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><null></null>";
 
-        sql.executeInsert("INSERT INTO arch_data_instance (tenantid, id, LONGVALUE, CLOBVALUE, DISCRIMINANT, ARCHIVEDATE, SOURCEOBJECTID, CLASSNAME) VALUES (1, 211, null, '" + xmlDate + "', 'SAXMLObjectDataInstanceImpl', 123456789, 14, 'java.util.Date')")
+        sql.executeInsert("INSERT INTO arch_data_instance (tenantid, id, LONGVALUE, CLOBVALUE, DISCRIMINANT, ARCHIVEDATE, SOURCEOBJECTID, CLASSNAME) VALUES (1, 211, null, '${xmlDate}', 'SAXMLObjectDataInstanceImpl', 123456789, 14, 'java.util.Date')")
         sql.executeInsert("INSERT INTO arch_data_instance (tenantid, id, LONGVALUE, CLOBVALUE, DISCRIMINANT, ARCHIVEDATE, SOURCEOBJECTID, CLASSNAME) VALUES (1, 212, null, '" + xmlNullDate + "', 'SAXMLObjectDataInstanceImpl', 123456789, 14, 'java.util.Date')")
         sql.executeInsert("INSERT INTO arch_data_instance (tenantid, id, LONGVALUE, CLOBVALUE, DISCRIMINANT, ARCHIVEDATE, SOURCEOBJECTID, CLASSNAME) VALUES (1, 213, null, null, 'SAXMLObjectDataInstanceImpl', 123456789, 14, 'java.util.Date')")
         def dateDataInstanceMigration = new MigrateDateDataInstancesFromWrongXMLObject(sql, dbVendor())

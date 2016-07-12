@@ -14,6 +14,7 @@
 package org.bonitasoft.migration;
 
 import java.io.InputStream;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,8 +64,8 @@ public class DatabaseFiller6_4_0 extends SimpleDatabaseFiller6_4_0 {
         final ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("DateDataVariableProcessToBeMigrated", "1.0.");
         builder.addActor("delivery");
         builder.addDateData("dateData", new ExpressionBuilder().createConstantDateExpression("2013-07-18T14:49:26.86+02:00"));
-        builder.addDateData("nullDateData", new ExpressionBuilder().createConstantDateExpression("2013-07-18T14:49:26.86+02:00"));
-        builder.addUserTask("ask for adress", "delivery");
+        builder.addDateData("nullDateData",  new ExpressionBuilder().createGroovyScriptExpression("nullDateDataScript","null",Date.class.getName()));
+        builder.addUserTask("ask for address", "delivery");
 
         final BusinessArchiveBuilder archiveBuilder = new BusinessArchiveBuilder().createNewBusinessArchive();
         archiveBuilder.setProcessDefinition(builder.done());
@@ -73,7 +74,6 @@ public class DatabaseFiller6_4_0 extends SimpleDatabaseFiller6_4_0 {
         processAPI.enableProcess(processDefinition.getId());
         for (int j = 0; j < nbProcessInstances; j++) {
             final ProcessInstance pi = processAPI.startProcess(processDefinition.getId());
-            processAPI.updateProcessDataInstance("nullDateData", pi.getId(), null);
         }
         final Map<String, String> map = new HashMap<String, String>(2);
         map.put("Process instances", String.valueOf(nbProcessInstances));
@@ -90,7 +90,7 @@ public class DatabaseFiller6_4_0 extends SimpleDatabaseFiller6_4_0 {
         final ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder().createNewInstance("ArchivedDateDataVariableProcessToBeMigrated", "1.0.");
         builder.addActor("delivery");
         builder.addDateData("dateData", new ExpressionBuilder().createConstantDateExpression("2013-07-18T14:49:26.86+02:00"));
-        builder.addDateData("nullDateData", new ExpressionBuilder().createConstantDateExpression("2013-07-18T14:49:26.86+02:00"));
+        builder.addDateData("nullDateData",  new ExpressionBuilder().createGroovyScriptExpression("nullDateDataScript","null",Date.class.getName()));
         builder.addAutomaticTask("ask for nothing");
 
         final BusinessArchiveBuilder archiveBuilder = new BusinessArchiveBuilder().createNewBusinessArchive();
@@ -100,7 +100,6 @@ public class DatabaseFiller6_4_0 extends SimpleDatabaseFiller6_4_0 {
         processAPI.enableProcess(processDefinition.getId());
         for (int j = 0; j < nbProcessInstances; j++) {
             final ProcessInstance pi = processAPI.startProcess(processDefinition.getId());
-            processAPI.updateProcessDataInstance("nullDateData", pi.getId(), null);
         }
         final Map<String, String> map = new HashMap<String, String>(2);
         map.put("Archived Process instances", String.valueOf(nbProcessInstances));

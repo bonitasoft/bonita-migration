@@ -33,8 +33,8 @@ class UpdateDefaultProfilesIT extends GroovyTestCase {
     @Override
     void setUp() {
         sql = createSqlConnection();
-        tester = createTester()
-
+        tester = createTester(sql.connection)
+        dropTestTables()
         createTables(sql, "profiles")
 
         def time = new Date().getTime()
@@ -68,8 +68,11 @@ class UpdateDefaultProfilesIT extends GroovyTestCase {
 
     @Override
     void tearDown() {
+        dropTestTables()
         tester.onTearDown();
+    }
 
+    private void dropTestTables() {
         def String[] strings = ["profileentry",
                                 "profile",
                                 "sequence",
@@ -86,7 +89,7 @@ class UpdateDefaultProfilesIT extends GroovyTestCase {
 
 
         def iterator = updatedProfileEntries.iterator()
-        while(iterator.next()) {
+        while (iterator.next()) {
 
             def data = iterator.getTableMetaData()
             println "table:" + data.getTableName()
@@ -95,7 +98,7 @@ class UpdateDefaultProfilesIT extends GroovyTestCase {
             def table = iterator.getTable()
             def rowCount = table.getRowCount()
             for (int i = 0; i < rowCount; i++) {
-                columns.each { row -> print row.columnName +": "+ table.getValue(i, row.columnName)+" " }
+                columns.each { row -> print row.columnName + ": " + table.getValue(i, row.columnName) + " " }
                 print "\n"
             }
         }

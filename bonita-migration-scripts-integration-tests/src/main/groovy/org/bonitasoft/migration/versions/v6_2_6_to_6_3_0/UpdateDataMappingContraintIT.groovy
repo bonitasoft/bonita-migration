@@ -11,7 +11,6 @@ import static org.bonitasoft.migration.DBUnitHelper.*
 
 class UpdateDataMappingContraintIT extends GroovyTestCase {
 
-
     final static DATA_SET
 
     final static String DBVENDOR
@@ -25,20 +24,20 @@ class UpdateDataMappingContraintIT extends GroovyTestCase {
         }
     }
 
-    JdbcDatabaseTester tester
     Sql sql
+    JdbcDatabaseTester tester
 
     @Override
     void setUp() {
         sql = createSqlConnection();
-        tester = createTester()
+        tester = createTester(sql.connection)
         dropTestTables()
     }
 
     @Override
     void tearDown() {
-        tester.onTearDown()
         dropTestTables()
+        tester.onTearDown()
     }
 
     void dropTestTables() {

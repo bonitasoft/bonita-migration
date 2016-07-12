@@ -13,11 +13,13 @@
  **/
 
 package org.bonitasoft.migration.versions.to_7_0_0
+
 import groovy.sql.Sql
 import org.bonitasoft.migration.CustomAssertion
 import org.dbunit.JdbcDatabaseTester
 
 import static org.bonitasoft.migration.DBUnitHelper.*
+
 /**
  * @author Elias Ricken de Medeiros
  */
@@ -28,8 +30,9 @@ class AddApplicationLayoutAndThemeIT extends GroovyTestCase {
     @Override
     void setUp() {
         sql = createSqlConnection();
-        tester = createTester()
+        tester = createTester(sql.connection)
 
+        dropTestTables()
         createTables(sql, "7_0_0", "app-without-layout-theme");
 
         tester.dataSet = dataSet {
@@ -52,8 +55,11 @@ class AddApplicationLayoutAndThemeIT extends GroovyTestCase {
 
     @Override
     void tearDown() {
+        dropTestTables()
         tester.onTearDown();
+    }
 
+    private void dropTestTables() {
         def String[] strings = [
                 "business_app",
                 "page",
@@ -76,40 +82,40 @@ class AddApplicationLayoutAndThemeIT extends GroovyTestCase {
 
             //tenant 1
             //layout
-            page tenantId:1, id:50, name:"custompage_defaultlayout", displayName:"Default layout",
+            page tenantId: 1, id: 50, name: "custompage_defaultlayout", displayName: "Default layout",
                     description: "This is the default layout definition for a newly-created application. It was created using the UI designer, so you can export it and edit it with the UI designer. It contains a horizontal menu widget and an iframe widget. The menu structure is defined in the application navigation. The application pages are displayed in the iframe.",
-                    installationDate:"<skip>", installedBy:-1 , provided: trueValue(), lastModificationDate:"<skip>", lastUpdatedBy: -1,
-                    contentName:"bonita-default-layout.zip", content:"<skip>", contentType:"layout", processDefinitionId:"<skip>"
+                    installationDate: "<skip>", installedBy: -1, provided: trueValue(), lastModificationDate: "<skip>", lastUpdatedBy: -1,
+                    contentName: "bonita-default-layout.zip", content: "<skip>", contentType: "layout", processDefinitionId: "<skip>"
             //theme
-            page tenantId:1, id:51, name:"custompage_defaulttheme", displayName:"Default theme",
+            page tenantId: 1, id: 51, name: "custompage_defaulttheme", displayName: "Default theme",
                     description: "Application theme based on Bootstrap \"Simplex\" theme. (see http://bootswatch.com/simplex/)",
-                    installationDate:"<skip>", installedBy:-1 , provided: trueValue(), lastModificationDate:"<skip>", lastUpdatedBy: -1,
-                    contentName:"bonita-default-theme.zip", content:"<skip>", contentType:"theme", processDefinitionId:"<skip>"
+                    installationDate: "<skip>", installedBy: -1, provided: trueValue(), lastModificationDate: "<skip>", lastUpdatedBy: -1,
+                    contentName: "bonita-default-theme.zip", content: "<skip>", contentType: "theme", processDefinitionId: "<skip>"
 
             //tenant 2
             //layout
-            page tenantId:2, id:100, name:"custompage_defaultlayout", displayName:"Default layout",
+            page tenantId: 2, id: 100, name: "custompage_defaultlayout", displayName: "Default layout",
                     description: "This is the default layout definition for a newly-created application. It was created using the UI designer, so you can export it and edit it with the UI designer. It contains a horizontal menu widget and an iframe widget. The menu structure is defined in the application navigation. The application pages are displayed in the iframe.",
-                    installationDate:"<skip>", installedBy:-1 , provided: trueValue(), lastModificationDate:"<skip>", lastUpdatedBy: -1,
-                    contentName:"bonita-default-layout.zip", content:"<skip>", contentType:"layout", processDefinitionId:"<skip>"
+                    installationDate: "<skip>", installedBy: -1, provided: trueValue(), lastModificationDate: "<skip>", lastUpdatedBy: -1,
+                    contentName: "bonita-default-layout.zip", content: "<skip>", contentType: "layout", processDefinitionId: "<skip>"
             //theme
-            page tenantId:2, id:101, name:"custompage_defaulttheme", displayName:"Default theme",
+            page tenantId: 2, id: 101, name: "custompage_defaulttheme", displayName: "Default theme",
                     description: "Application theme based on Bootstrap \"Simplex\" theme. (see http://bootswatch.com/simplex/)",
-                    installationDate:"<skip>", installedBy:-1 , provided: trueValue(), lastModificationDate:"<skip>", lastUpdatedBy: -1,
-                    contentName:"bonita-default-theme.zip", content:"<skip>", contentType:"theme", processDefinitionId:"<skip>"
+                    installationDate: "<skip>", installedBy: -1, provided: trueValue(), lastModificationDate: "<skip>", lastUpdatedBy: -1,
+                    contentName: "bonita-default-theme.zip", content: "<skip>", contentType: "theme", processDefinitionId: "<skip>"
 
             //tenant 1
             business_app tenantId: 1, id: 10, token: "app10", version: "1.0", description: "The 10th application", iconPath: "/icon.png", creationDate: "<skip>",
-                    createdBy: 1, lastUpdateDate: "<skip>", updatedBy: 1, state: "ACTIVATED", displayName: "Application 10", homepageid:"<skip>", profileId:"<skip>",
-                    layoutId: 50, themeId:51
+                    createdBy: 1, lastUpdateDate: "<skip>", updatedBy: 1, state: "ACTIVATED", displayName: "Application 10", homepageid: "<skip>", profileId: "<skip>",
+                    layoutId: 50, themeId: 51
             business_app tenantId: 1, id: 11, token: "app11", version: "1.0", description: "The 11th application", iconPath: "/icon.png", creationDate: "<skip>",
-                    createdBy: 1, lastUpdateDate: "<skip>", updatedBy: 1, state: "ACTIVATED", displayName: "Application 11", homepageid:"<skip>", profileId:"<skip>",
-                    layoutId: 50, themeId:51
+                    createdBy: 1, lastUpdateDate: "<skip>", updatedBy: 1, state: "ACTIVATED", displayName: "Application 11", homepageid: "<skip>", profileId: "<skip>",
+                    layoutId: 50, themeId: 51
 
             //tenant2
             business_app tenantId: 2, id: 11, token: "app11", version: "1.0", description: "The 11th application", iconPath: "/icon.png", creationDate: "<skip>",
-                    createdBy: 1, lastUpdateDate: "<skip>", updatedBy: 1, state: "ACTIVATED", displayName: "Application 11", homepageid:"<skip>", profileId:"<skip>",
-                    layoutId: 100, themeId:101
+                    createdBy: 1, lastUpdateDate: "<skip>", updatedBy: 1, state: "ACTIVATED", displayName: "Application 11", homepageid: "<skip>", profileId: "<skip>",
+                    layoutId: 100, themeId: 101
 
         }, updatedData
 

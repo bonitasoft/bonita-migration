@@ -2,7 +2,6 @@ package org.bonitasoft.migration.versions.v6_4_0_to_6_4_1
 
 import groovy.sql.Sql
 import org.assertj.core.api.Assertions
-import org.dbunit.JdbcDatabaseTester
 
 import static org.bonitasoft.migration.DBUnitHelper.*
 
@@ -13,13 +12,11 @@ class AddArchDocumentMappingIndexIT extends GroovyTestCase {
 
 
     Sql sql
-    JdbcDatabaseTester tester
 
     @Override
     void setUp() {
-        sql = createSqlConnection();
-        tester = createTester()
-
+        sql = createSqlConnection()
+        dropTestTables()
         createTables(sql, "documents")
 
     }
@@ -27,8 +24,10 @@ class AddArchDocumentMappingIndexIT extends GroovyTestCase {
 
     @Override
     void tearDown() {
-        tester.onTearDown();
+        dropTestTables()
+    }
 
+    private void dropTestTables() {
         def String[] strings = [
                 "document_content",
                 "document_mapping",
