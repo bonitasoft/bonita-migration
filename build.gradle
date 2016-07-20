@@ -38,10 +38,11 @@ allprojects {
             '7.2.2',
             '7.2.3',
             '7.2.4',
-            '7.3.0'
+            '7.3.0',
+            '7.3.1'
     ]
     ext.overridedVersions = [
-            :
+            '7.3.1': '7.3.1-SNAPSHOT'
     ]
     configurations {
         deployerJars
@@ -90,8 +91,8 @@ configure(project.subprojects.findAll {
         classpath = project.configurations.drivers
     }
     dependencies {
-        compile group: 'org.bonitasoft.migration', name: 'bonita-migration-common', version: project.getVersion()
-        compile group: 'org.bonitasoft.migration', name: 'bonita-migration-distrib', version: project.getVersion()
+        compile project(':bonita-migration-common')
+        compile project(':bonita-migration-distrib')
         compile group: 'org.postgresql', name: 'postgresql', version: '9.3-1102-jdbc41'
         compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.26'
         compile group: 'com.oracle', name: 'ojdbc', version: '6'

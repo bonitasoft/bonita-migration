@@ -80,8 +80,9 @@ class Migration {
 
 
     def List<VersionMigration> getMigrationVersionsToRun() {
-        def version = getPlatformVersion()
+        def version = Version.valueOf(getPlatformVersion().normalVersion)
         verifyPlatformIsValid(version)
+        logger.info("Detected version in database: " + version)
         if (version < FIRST_VERSION_WITHOUT_BONITA_HOME) {
             verifyPlatformIsTheSameInBonitaHome(version)
         }
