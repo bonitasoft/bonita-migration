@@ -76,7 +76,11 @@ class MigrationContext {
         dbPassword = getSystemPropertyOrFromConfigFile(DB_PASSWORD, properties, true)
         //if not set it will be ask later
         targetVersion = getSystemPropertyOrFromConfigFile(TARGET_VERSION, properties, false)?.toVersion()
-        bonitaHome = new File(getSystemPropertyOrFromConfigFile(BONITA_HOME, properties, false))
+
+        def file = getSystemPropertyOrFromConfigFile(BONITA_HOME, properties, false)
+        if (file != null) {
+            bonitaHome = new File(file)
+        }
         def level = getSystemPropertyOrFromConfigFile(LOGGER_LEVEL, properties, false)
         if (level != null) {
             logger.setLevel(level)
