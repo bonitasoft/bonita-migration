@@ -112,20 +112,72 @@ subprojects {
             }
             def props = [user: dbRootUser, password: dbRootPassword] as Properties
             def sql = Sql.newInstance(dburl, props, dbdriverClass)
-            try {
-                sql.executeUpdate("DROP user " + dbuser + " cascade");
-            } catch (Exception e) {
-                println "can't drop database, maybe it did not exist, cause = "
-                e.printStackTrace()
+            sql.execute("""
+                declare
+                  v_count number;
+                  v_banner varchar2(50) := 'Oracle Database 12c%';
 
-            }
-            //do not use gstring because it create prepared statement
-            sql.executeUpdate("CREATE USER " + dbuser + " IDENTIFIED BY " + dbpassword);
-            sql.executeUpdate("GRANT connect, resource TO " + dbuser + " IDENTIFIED BY " + dbpassword);
-            sql.executeUpdate("GRANT select ON sys.dba_pending_transactions TO " + dbuser);
-            sql.executeUpdate("GRANT select ON sys.pending_trans\$ TO " + dbuser);
-            sql.executeUpdate("GRANT select ON sys.dba_2pc_pending TO " + dbuser);
-            sql.executeUpdate("GRANT execute ON sys.dbms_system TO " + dbuser);
+                  cursor c1 is
+                    select s.sid, s.serial#, s.username """
+                    + ''' from gv$session s ''' + """
+                    where s.type != 'BACKGROUND' and (upper(s.username) = upper('${
+                dbuser
+            }') OR upper(s.username) = upper('${
+                dbuser
+            }_bdm'));
+
+                  cursor c2 is
+                """
+                    + ''' select v.banner from v$version v; '''
+                    + """
+                                    begin
+                  -- disconnect sessions
+                  for session_rec in c1
+                  loop
+                    execute immediate 'ALTER SYSTEM DISCONNECT SESSION session_rec.sid,session_rec.serial# IMMEDIATE';
+                  end loop;
+
+                  -- for oracle 12c
+                  for cur_banner in c2 loop
+                    if cur_banner.banner LIKE v_banner
+                    then
+                      execute immediate 'alter session set "_ORACLE_SCRIPT"=true';
+                    end if;
+                  end loop;
+
+
+                  -- drop user if exists
+                  select count(1) into v_count from dba_users where upper(username) = upper('${dbuser}');
+                  if v_count != 0
+                  then
+                    execute immediate 'drop user ${dbuser} cascade';
+                  end if;
+
+                  select count(1) into v_count from dba_users where upper(username) = upper('${dbuser}_bdm');
+                  if v_count != 0
+                  then
+                    execute immediate 'drop user ${dbuser}_bdm cascade';
+                  end if;
+
+                  -- recreate user
+                  execute immediate 'CREATE USER ${dbuser} IDENTIFIED BY ${dbpassword}';
+                  execute immediate 'ALTER USER ${dbuser} QUOTA 300M ON USERS';
+                  execute immediate 'GRANT connect, resource TO ${dbuser}';
+                  execute immediate 'GRANT select ON sys.dba_pending_transactions TO ${dbuser}';
+                  execute immediate 'GRANT select ON sys.pending_trans\$ TO ${dbuser}';
+                  execute immediate 'GRANT select ON sys.dba_2pc_pending TO ${dbuser}';
+                  execute immediate 'GRANT execute ON sys.dbms_system TO ${dbuser}';
+
+                  execute immediate 'CREATE USER ${dbuser}_bdm IDENTIFIED BY ${dbpassword}';
+                  execute immediate 'ALTER USER ${dbuser}_bdm QUOTA 300M ON USERS';
+                  execute immediate 'GRANT connect, resource TO ${dbuser}_bdm';
+                  execute immediate 'GRANT select ON sys.dba_pending_transactions TO ${dbuser}_bdm';
+                  execute immediate 'GRANT select ON sys.pending_trans\$ TO ${dbuser}_bdm';
+                  execute immediate 'GRANT select ON sys.dba_2pc_pending TO ${dbuser}_bdm';
+                  execute immediate 'GRANT execute ON sys.dbms_system TO ${dbuser}_bdm';
+                end;
+                """
+            )
         } else if (dbvendor.equals("sqlserver")) {
             println "cleaning sqlserver database $dburl"
             if (dbRootUser == null || dbRootUser.isEmpty() || dbRootPassword == null || dbRootPassword.isEmpty()) {
