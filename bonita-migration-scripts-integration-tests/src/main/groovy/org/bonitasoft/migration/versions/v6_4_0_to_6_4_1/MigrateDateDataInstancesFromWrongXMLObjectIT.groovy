@@ -10,6 +10,7 @@ import static org.bonitasoft.migration.DBUnitHelper.*
  */
 class MigrateDateDataInstancesFromWrongXMLObjectIT extends GroovyTestCase {
 
+    public static final int SAMPLE_SIZE = 1000
     Sql sql
 
     @Override
@@ -39,10 +40,13 @@ class MigrateDateDataInstancesFromWrongXMLObjectIT extends GroovyTestCase {
         def xmlDate = """<?xml version="1.0" encoding="UTF-8" ?><date>2014-12-15 16:17:48.855 UTC</date>""" as String;
         // equivalent to 1418660268855 in UTC and English locale (XStream defaults)
         def xmlNullDate = """<?xml version="1.0" encoding="UTF-8" ?><null></null>""" as String;
-
-        sql.execute("INSERT INTO data_instance (tenantid, id, longvalue, clobvalue, discriminant, classname) VALUES (1, 14, null, '" + xmlDate + "', 'SXMLObjectDataInstanceImpl', 'java.util.Date')")
-        sql.execute("INSERT INTO data_instance (tenantid, id, longvalue, clobvalue, discriminant, classname) VALUES (1, 15, null, '" + xmlNullDate + "', 'SXMLObjectDataInstanceImpl', 'java.util.Date')")
-        sql.execute("INSERT INTO data_instance (tenantid, id, longvalue, clobvalue, discriminant, classname) VALUES (1, 16, null, null, 'SXMLObjectDataInstanceImpl', 'java.util.Date')")
+        def counter = 0
+        while (counter < SAMPLE_SIZE) {
+            sql.execute "INSERT INTO data_instance (tenantid, id, longvalue, clobvalue, discriminant, classname) VALUES (1, ?, null, '" + xmlDate + "', 'SXMLObjectDataInstanceImpl', 'java.util.Date')", 14 + counter
+            sql.execute "INSERT INTO data_instance (tenantid, id, longvalue, clobvalue, discriminant, classname) VALUES (1, ? , null, '" + xmlNullDate + "', 'SXMLObjectDataInstanceImpl', 'java.util.Date')", 15 + counter
+            sql.execute "INSERT INTO data_instance (tenantid, id, longvalue, clobvalue, discriminant, classname) VALUES (1, ?, null, null, 'SXMLObjectDataInstanceImpl', 'java.util.Date')", 16 + counter
+            counter = counter + 3
+        }
         def dateDataInstanceMigration = new MigrateDateDataInstancesFromWrongXMLObject(sql, dbVendor())
 
         //when
@@ -84,9 +88,13 @@ class MigrateDateDataInstancesFromWrongXMLObjectIT extends GroovyTestCase {
         // equivalent to 1418660268855 in UTC and English locale (XStream defaults)
         def xmlNullDate = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><null></null>";
 
-        sql.executeInsert("INSERT INTO arch_data_instance (tenantid, id, LONGVALUE, CLOBVALUE, DISCRIMINANT, ARCHIVEDATE, SOURCEOBJECTID, CLASSNAME) VALUES (1, 211, null, '${xmlDate}', 'SAXMLObjectDataInstanceImpl', 123456789, 14, 'java.util.Date')")
-        sql.executeInsert("INSERT INTO arch_data_instance (tenantid, id, LONGVALUE, CLOBVALUE, DISCRIMINANT, ARCHIVEDATE, SOURCEOBJECTID, CLASSNAME) VALUES (1, 212, null, '" + xmlNullDate + "', 'SAXMLObjectDataInstanceImpl', 123456789, 14, 'java.util.Date')")
-        sql.executeInsert("INSERT INTO arch_data_instance (tenantid, id, LONGVALUE, CLOBVALUE, DISCRIMINANT, ARCHIVEDATE, SOURCEOBJECTID, CLASSNAME) VALUES (1, 213, null, null, 'SAXMLObjectDataInstanceImpl', 123456789, 14, 'java.util.Date')")
+        def counter = 0
+        while (counter < SAMPLE_SIZE) {
+            sql.executeInsert "INSERT INTO arch_data_instance (tenantid, id, LONGVALUE, CLOBVALUE, DISCRIMINANT, ARCHIVEDATE, SOURCEOBJECTID, CLASSNAME) VALUES (1, ? , null, '${xmlDate}', 'SAXMLObjectDataInstanceImpl', 123456789, 14, 'java.util.Date')", 211 + counter
+            sql.executeInsert "INSERT INTO arch_data_instance (tenantid, id, LONGVALUE, CLOBVALUE, DISCRIMINANT, ARCHIVEDATE, SOURCEOBJECTID, CLASSNAME) VALUES (1, ? , null, '" + xmlNullDate + "', 'SAXMLObjectDataInstanceImpl', 123456789, 14, 'java.util.Date')", 212 + counter
+            sql.executeInsert "INSERT INTO arch_data_instance (tenantid, id, LONGVALUE, CLOBVALUE, DISCRIMINANT, ARCHIVEDATE, SOURCEOBJECTID, CLASSNAME) VALUES (1, ? , null, null, 'SAXMLObjectDataInstanceImpl', 123456789, 14, 'java.util.Date')", 213 + counter
+            counter = counter + 3
+        }
         def dateDataInstanceMigration = new MigrateDateDataInstancesFromWrongXMLObject(sql, dbVendor())
 
         //when
