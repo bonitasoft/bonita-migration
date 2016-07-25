@@ -29,7 +29,7 @@ class MigrationRunner {
 
     def run(boolean isSp) {
         Date migrationStartDate = new Date()
-        def lastVersion
+        String lastVersion
         versionMigrations.each {
             logger.info "Execute migration to version " + it.getVersion()
             it.context = context
@@ -51,12 +51,14 @@ class MigrationRunner {
         logSuccessfullyCompleted(migrationStartDate, lastVersion)
     }
 
-    private void logSuccessfullyCompleted(Date migrationStartDate, lastVersion) {
+    private void logSuccessfullyCompleted(Date migrationStartDate, String lastVersion) {
         def end = new Date()
         logger.info("--------------------------------------------------------------------------------------")
         logger.info(" Migration successfully completed, in " + TimeCategory.minus(end, migrationStartDate))
         logger.info(" The version of your Bonita BPM installation is now: $lastVersion")
-        logger.info(" Now, you must reapply the customizations of your bonita home.")
+        if (Version.valueOf(lastVersion) < Version.valueOf("7.3.0")) {
+            logger.info(" Now, you must reapply the customizations of your bonita home.")
+        }
         logger.info("--------------------------------------------------------------------------------------")
     }
 
