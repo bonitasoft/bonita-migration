@@ -13,7 +13,6 @@
  **/
 package org.bonitasoft.migration
 
-import org.bonitasoft.engine.test.TestEngineImpl
 import org.bonitasoft.engine.api.APIClient
 import org.bonitasoft.engine.api.PlatformAPIAccessor
 import org.bonitasoft.engine.bpm.bar.BusinessArchiveBuilder
@@ -22,10 +21,12 @@ import org.bonitasoft.engine.bpm.bar.actorMapping.ActorMapping
 import org.bonitasoft.engine.bpm.contract.Type
 import org.bonitasoft.engine.bpm.flownode.ActivityInstanceCriterion
 import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder
+import org.bonitasoft.engine.test.TestEngineImpl
 import org.bonitasoft.migration.filler.FillAction
 import org.bonitasoft.migration.filler.FillerInitializer
 import org.bonitasoft.migration.filler.FillerShutdown
 import org.bonitasoft.migration.filler.FillerUtils
+
 /**
  * @author Baptiste Mesta
  */
