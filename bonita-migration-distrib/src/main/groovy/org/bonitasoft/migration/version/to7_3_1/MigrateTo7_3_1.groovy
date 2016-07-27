@@ -24,7 +24,7 @@ class MigrateTo7_3_1 extends VersionMigration {
     @Override
     def List<MigrationStep> getMigrationSteps() {
         //keep one line per step to avoid false-positive merge conflict
-        return [
+        return [new FixDependenciesName()
         ]
     }
 }

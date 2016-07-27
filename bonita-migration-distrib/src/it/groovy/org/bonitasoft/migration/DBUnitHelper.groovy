@@ -70,21 +70,24 @@ class DBUnitHelper {
         }.toString())), ["[NULL]": null], null)
     }
 
-    def getCreateTables(String version, String feature) {
-        DBUnitHelper.class.getClassLoader().getResource("sql/v${version}/${context.dbVendor.name().toLowerCase()}-${feature}.sql");
-    }
 
-    def String[] createTables(String version, String feature) {
-        println "Create tables of $feature in version $version"
-
-        //warning : don't end with @@ to avoid blank statement (error)
-        getCreateTables(version, feature).text.split("@@|GO|;").each({ String stmt ->
+    def executeScript(URL resource) {
+        resource.text.split("@@|GO|;").each({ String stmt ->
             stmt = stmt.trim()
             if (!stmt.isEmpty()) {
                 context.sql.execute(stmt)
             }
         })
+    }
 
+    def String[] createTables(String folder, String feature) {
+        println "Create tables from sql file in $folder with suffix $feature"
+        executeScript(DBUnitHelper.class.getClassLoader().getResource("sql/v${folder}/${context.dbVendor.name().toLowerCase()}-${feature}.sql"))
+    }
+
+    def String[] createTables(String folder) {
+        println "Create tables from sql file in $folder"
+        executeScript(DBUnitHelper.class.getClassLoader().getResource("sql/v${folder}/${context.dbVendor.name().toLowerCase()}.sql"))
     }
 
     def boolean hasTable(String tableName) {
