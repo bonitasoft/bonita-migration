@@ -30,6 +30,7 @@ import org.bonitasoft.migration.versions.v6_3_x_to_6_4_0.UpdateProfileEntriesIT
 import org.bonitasoft.migration.versions.v6_4_0_to_6_4_1.AddArchDocumentMappingIndexIT
 import org.bonitasoft.migration.versions.v6_4_0_to_6_4_1.MigrateDateDataInstancesFromWrongXMLObjectIT
 import org.bonitasoft.migration.versions.v6_5_1_to_6_5_2.UpdateEventSubProcessStableFlagIT
+import org.bonitasoft.migration.versions.v6_5_4_to_v7_0_0.PageTableIT
 import org.junit.runner.JUnitCore
 
 /**
@@ -75,6 +76,8 @@ class DBUnitTestSuite extends TestSuite {
         suite.addTestSuite(AddApplicationLayoutAndThemeIT.class)
         suite.addTestSuite(ApplicationPageRetrieverIT.class)
         suite.addTestSuite(ApplicationRetrieverIT.class)
+        suite.addTestSuite(PageTableIT.class)
+
         return suite
     }
 }

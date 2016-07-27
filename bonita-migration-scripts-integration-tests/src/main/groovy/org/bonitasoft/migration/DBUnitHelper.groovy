@@ -81,11 +81,14 @@ class DBUnitHelper {
     }
 
     def static String[] createTables(Sql sql, String version, String feature) {
-        println "Create tables of sql/v${version}/$feature"
+        println "Create tables of [sql/v${version}/$feature]"
         sql.withTransaction {
-            getCreateTables(version, feature).text.split("@@").each({ stmt ->
-                sql.execute(stmt)
-            })
+            getCreateTables(version, feature).text.split("@@").each { stmt ->
+                if (!stmt.trim().isEmpty()) {
+                    println "executing SQL statement:\n${stmt.trim()}"
+                    sql.execute(stmt)
+                }
+            }
         }
     }
 
@@ -158,7 +161,7 @@ class DBUnitHelper {
     def static dropTables(Sql sql, String[] tables) {
         tables.each {
             def statement = "DROP TABLE " + it
-            println "executing statement [${statement}]"
+            println "executing statement:\n${statement.trim()}"
             try {
                 sql.withTransaction { sql.execute(statement as String) }
                 println "table ${it} DROPPED"
