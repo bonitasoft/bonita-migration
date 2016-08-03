@@ -15,4 +15,5 @@ include 'bonita-migration-common',
         'migrateTo_7_2_3',
         'migrateTo_7_2_4',
         'migrateTo_7_3_0',
-        'migrateTo_7_3_1'
+        'migrateTo_7_3_1',
+        'migrateTo_7_3_2'
