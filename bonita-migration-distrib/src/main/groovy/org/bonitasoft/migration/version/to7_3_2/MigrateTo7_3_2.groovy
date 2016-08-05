@@ -23,7 +23,7 @@ class MigrateTo7_3_2 extends VersionMigration {
 
     @Override
     def List<MigrationStep> getMigrationSteps() {
-        return [
-        ]
+        //keep one line per step to avoid false-positive merge conflict
+        [new RemoveRefBizDataUniqueKey()]
     }
 }
