@@ -271,6 +271,37 @@ END""")
         }
 
     }
+
+    /**
+     * remove unique constraint on table.
+     * specific to oracle:
+     *  in case index has been modified after constraint creation
+     *  such as tablespace rebuild, table import export
+     *  add drop of index
+     * @param tableName
+     * @param ukName
+     * @return
+     */
+    def dropUniqueKey(String tableName, String ukName) {
+        if (hasUniqueKeyOnTable(tableName, ukName)) {
+            switch (dbVendor) {
+                case DBVendor.POSTGRES:
+                case DBVendor.SQLSERVER:
+                    sql.execute("ALTER TABLE " + tableName + " DROP CONSTRAINT " + ukName)
+                    break
+                case DBVendor.ORACLE:
+                    sql.execute("ALTER TABLE " + tableName + " DROP CONSTRAINT " + ukName)
+                    if (hasIndexOnTable(tableName, ukName)) {
+                        sql.execute("DROP INDEX " + ukName)
+                    }
+                    break
+                case DBVendor.MYSQL:
+                    sql.execute("ALTER TABLE " + tableName + " DROP INDEX " + ukName)
+            }
+
+        }
+    }
+
     /**
      * remove existing index if already exists and create new index
      * @param tableName
