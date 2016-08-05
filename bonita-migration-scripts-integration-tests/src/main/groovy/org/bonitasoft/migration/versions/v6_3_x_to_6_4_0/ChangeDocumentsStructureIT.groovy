@@ -45,6 +45,7 @@ class ChangeDocumentsStructureIT extends GroovyTestCase {
 
             //sequences
             sequence tenantid: 1, id: 10090, nextid: 304
+            sequence tenantid: 2, id: 10090, nextid: 235
 
             document_content tenantid: 1, id: 99, documentId: '-4561234568646477', content: "the old content1".getBytes()
             document_content tenantid: 1, id: 100, documentId: '-4561234568646452', content: "the content1".getBytes()
@@ -77,6 +78,7 @@ class ChangeDocumentsStructureIT extends GroovyTestCase {
             arch_document_mapping tenantid: 1, id: 1316, sourceobjectid: 300, processinstanceid: 800, documentName: "oldmydoc1", documentAuthor: 901, documentCreationDate: 4567890017, documentHasContent: falseValue(), documentContentFileName: "oldfile2.txt", documentContentMimeType: "plain/text", contentStorageId: '[NULL]', documentURL: "http//myurl.com/myfile215.txt", archivedate: 4567892116
             arch_document_mapping tenantid: 1, id: 1317, sourceobjectid: 299, processinstanceid: 804, documentName: "archedDoc", documentAuthor: 901, documentCreationDate: 4567892325, documentHasContent: falseValue(), documentContentFileName: "archedDoc.txt", documentContentMimeType: "plain/text", contentStorageId: '[NULL]', documentURL: "http//myurl.com/myfile.txt", archivedate: 4567892315
         }
+
         tester.onSetup();
     }
 
@@ -88,12 +90,14 @@ class ChangeDocumentsStructureIT extends GroovyTestCase {
     }
 
     private void dropTestTables() {
-        def String[] strings = ["document_mapping",
-                                "arch_document_mapping",
-                                "document",
-                                "tenant",
-                                "sequence"]
-        dropTables(sql, strings)
+        def String[] tables = ["document_mapping",
+                               "arch_document_mapping",
+                               "document",
+                               "tenant",
+                               "sequence"]
+
+
+        dropTables(sql, tables)
     }
 
 
@@ -123,6 +127,7 @@ class ChangeDocumentsStructureIT extends GroovyTestCase {
         CustomAssertion.assertEquals dataSet {
 
             sequence tenantid: 1, id: 10090, nextid: 321
+            sequence tenantid: 2, id: 10090, nextid: 235
 
             document tenantid: 1, id: 99, author: 901, creationdate: 4567890001, hascontent: trueValue(), filename: "oldfile1.txt", mimetype: "plain/text", content: "the old content1".getBytes(), url: "[NULL]"
             document tenantid: 1, id: 100, author: 900, creationdate: 4567890003, hascontent: trueValue(), filename: "file1.txt", mimetype: "plain/text", content: "the content1".getBytes(), url: "[NULL]"

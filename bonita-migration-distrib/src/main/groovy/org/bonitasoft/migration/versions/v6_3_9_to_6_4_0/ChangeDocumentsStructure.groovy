@@ -41,7 +41,6 @@ class ChangeDocumentsStructure extends DatabaseMigrationStep {
         def trueValue = dbVendor == "oracle" ? 1 : true;
         def tenantsId = MigrationUtil.getTenantsId(dbVendor, sql)
         IOUtil.executeWrappedWithTabs {
-
             /*
              *     remove foreign key
              */
@@ -85,43 +84,45 @@ class ChangeDocumentsStructure extends DatabaseMigrationStep {
             executeUpdate(getUpdateDocumentMappingQuery("arch_document_mapping"))
 
             tenantsId.each { tenantId ->
-                //get max id for document (=10090)
                 def nextId = sql.firstRow("SELECT nextid FROM sequence WHERE tenantid = $tenantId AND id = 10090").nextid
-                //create new document when mapping is an url
-                sql.eachRow("SELECT * FROM document_mapping WHERE tenantid = $tenantId AND documentHasContent = $falseValue") { row ->
-                    sql.executeInsert("INSERT INTO document (tenantid,id,author,creationdate,hascontent,filename,mimetype,url,documentid) VALUES ($tenantId,$nextId,$row.documentAuthor,$row.documentCreationDate,$row.documentHasContent,$row.documentContentFileName,$row.documentContentMimeType,$row.documentURL,'temp')")
-                    executeUpdate("UPDATE document_mapping SET documentid = $nextId WHERE document_mapping.id = $row.id AND document_mapping.tenantid = $tenantId")
-                    nextId++
-                }
-                sql.eachRow("SELECT * FROM arch_document_mapping WHERE tenantid = $tenantId AND documentHasContent = $falseValue") { row ->
-                    sql.executeInsert("INSERT INTO document (tenantid,id,author,creationdate,hascontent,filename,mimetype,url,documentid) VALUES ($tenantId,$nextId,$row.documentAuthor,$row.documentCreationDate,$row.documentHasContent,$row.documentContentFileName,$row.documentContentMimeType,$row.documentURL,'temp')")
-                    executeUpdate("UPDATE arch_document_mapping SET documentid = $nextId WHERE arch_document_mapping.id = $row.id AND arch_document_mapping.tenantid = $tenantId")
-                    nextId++
-                }
-                sql.eachRow("SELECT * FROM document WHERE tenantid = $tenantId AND hascontent = $trueValue") { row ->
-                    executeUpdate("UPDATE document SET url = null WHERE document.id = $row.id AND document.tenantid = $tenantId")
-                }
-                executeUpdate("UPDATE sequence SET nextid = $nextId WHERE tenantid=$tenantId AND id = 10090")
-                sql.eachRow("SELECT DISTINCT sourceobjectid FROM arch_document_mapping WHERE tenantid = $tenantId") { row ->
-                    def version = "1";
-                    sql.eachRow("SELECT id from arch_document_mapping WHERE tenantid = $tenantId AND sourceobjectid = $row.sourceobjectid ORDER BY documentCreationDate ASC") { archmapping ->
-                        if (version == "1") {
-                            version = "2"
-                            return
-                        }
-                        executeUpdate("UPDATE arch_document_mapping SET version = $version WHERE tenantid = $tenantId AND id = $archmapping.id ")
-                        version = String.valueOf(Integer.valueOf(version) + 1)
-                    }
-                    if (version != "1") {
-                        executeUpdate("UPDATE document_mapping SET version = $version WHERE tenantid = $tenantId AND id = $row.sourceobjectid ")
-                    }
-                }
+                MigrateDocument migrateDocument = getMigrateDocument(dbVendor, tenantId, nextId, falseValue, trueValue)
+                migrateDocument.createTempSequence()
+                migrateDocument.createTempDocTable()
+                sql.execute("""
+                    INSERT INTO document(tenantid, id, author, creationdate, hascontent, filename, mimetype, url, documentid)
+                    SELECT d.tenantId, t.doc_id, d.documentAuthor, d.documentCreationDate, d.documentHasContent, d.documentContentFileName, d.documentContentMimeType, d.documentURL,'not used'
+                    FROM document_mapping d
+                        INNER JOIN temp_doc t on d.tenantid = t.tenant_id and d.id = t.doc_mapping_id
+                    WHERE tenantid = ?
+                    AND documentHasContent = ?  """, tenantId, falseValue)
+                migrateDocument.updateDocumentMapping()
+                migrateDocument.createTempArchDocTable()
+                sql.execute("""
+                    INSERT INTO document(tenantid, id, author, creationdate, hascontent, filename, mimetype, url, documentid)
+                    SELECT d.tenantId, t.doc_id, d.documentAuthor, d.documentCreationDate, d.documentHasContent, d.documentContentFileName, d.documentContentMimeType, d.documentURL, 'not used'
+                    FROM arch_document_mapping d
+                        INNER JOIN temp_arch_doc t on d.tenantid = t.tenant_id and d.id = t.arch_doc_mapping_id
+                    WHERE tenantid = ?
+                    AND documentHasContent = ?  """, tenantId, falseValue)
+                migrateDocument.updateArchDocumentMapping()
+                sql.execute("UPDATE document SET url = null WHERE tenantid = ? AND hascontent = ? ", tenantId, trueValue)
+                migrateDocument.updateSequenceValue()
+                migrateDocument.createTempArchVersionTable()
+                sql.execute("CREATE INDEX temp_arch_version_idx1 ON temp_arch_version (tenantid, id) ")
+                sql.execute("CREATE INDEX temp_arch_version_idx2 ON temp_arch_version (tenantid, sourceobjectid) ")
+                migrateDocument.updateArchDocumentMappingVersion()
+                migrateDocument.createTempVersionTable()
+                sql.execute("CREATE INDEX temp_arch_idx ON temp_version (tenantid, sourceobjectid) ")
+                migrateDocument.updateDocumentMappingVersion()
+                migrateDocument.dropTempSequence()
+                sql.execute("drop table temp_arch_doc")
+                sql.execute("drop table temp_doc")
+                sql.execute("drop table temp_arch_version")
+                sql.execute("drop table temp_version")
+
             }
 
-            /*
-             *     remove old columns
-             */
-            //document
+            // remove old columns
             dropColumn("document", "documentId")
 
             //document_mapping
@@ -153,11 +154,25 @@ class ChangeDocumentsStructure extends DatabaseMigrationStep {
             addColumn("document_mapping", "index_", "INT", "'-1'", "NOT NULL")
             addColumn("arch_document_mapping", "index_", "INT", "'-1'", "NOT NULL")
 
+            sql.commit()
         }
+    }
 
-        /*
-         *  Add column to support list of documents
-         */
+    MigrateDocument getMigrateDocument(def dbVendor, def tenantId, def nextId, def falseValue, def trueValue) {
+        switch (dbVendor) {
+            case "postgres":
+                return new MigrateDocumentPostgres(sql, tenantId, nextId, falseValue, trueValue)
+            case "oracle":
+                return new MigrateDocumentOracle(sql, tenantId, nextId, falseValue, trueValue)
+            case "mysql":
+                return new MigrateDocumentMysql(sql, tenantId, nextId, falseValue, trueValue)
+            case "sqlserver":
+                return new MigrateDocumentSqlServer(sql, tenantId, nextId, falseValue, trueValue)
+                break
+            default:
+                //not supported
+                break
+        }
 
     }
 
@@ -172,6 +187,7 @@ class ChangeDocumentsStructure extends DatabaseMigrationStep {
             default:
                 return "UPDATE document SET (author, creationdate, hascontent, filename, mimetype, url) = (${tableName}.documentAuthor, ${tableName}.documentCreationDate, ${tableName}.documentHasContent, ${tableName}.documentContentFileName, ${tableName}.documentContentMimeType, ${tableName}.documentURL) FROM ${tableName} WHERE ${tableName}.contentStorageId = document.documentId AND ${tableName}.tenantid = document.tenantid"
         }
+
     }
 
     private GString getUpdateDocumentMappingQuery(tableName) {
