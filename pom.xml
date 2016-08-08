@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.bonitasoft.migration</groupId>
     <artifactId>bonita-migration</artifactId>
-    <version>1.24.2</version>
+    <version>1.24.3-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -49,7 +49,7 @@
         <!-- specify the previous version of that is migrated -->
         <previous.bonita.version>6.5.3</previous.bonita.version>
         <!-- specify the in-development version of bonita -->
-        <current.bonita.version>6.5.4</current.bonita.version>
+        <current.bonita.version>-w</current.bonita.version>
         <!-- specify the name of the release next release of bonita that will be migrated -->
         <next.bonita.version>7.0.0</next.bonita.version>
         <groovy.version>1.8.6</groovy.version>

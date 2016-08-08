@@ -4,7 +4,7 @@
 	<parent>
     <artifactId>bonita-migration</artifactId>
     <groupId>org.bonitasoft.migration</groupId>
-    <version>1.24.2</version>
+    <version>1.24.3-SNAPSHOT</version>
   </parent>
 	<artifactId>bonita-migration-7.0.0-checker</artifactId>
 
