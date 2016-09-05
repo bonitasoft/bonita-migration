@@ -16,6 +16,7 @@ package org.bonitasoft.migration.version.to7_0_2
 
 import org.bonitasoft.migration.core.MigrationContext
 import org.bonitasoft.migration.core.MigrationStep
+
 /**
  * @author Elias Ricken de Medeiros
  */
@@ -26,7 +27,7 @@ class UpdateDefaultPortalTheme extends MigrationStep {
         def currentTime = System.currentTimeMillis()
         // Portal
         def zip = this.getClass().getResourceAsStream("/version/to_7_0_2/bonita-portal-theme.zip")
-        def css = this.getClass().getResourceAsStream("/version/to_7_0_2/bonita-portal-theme.zip")
+        def css = this.getClass().getResourceAsStream("/version/to_7_0_2/bonita.css")
 
         def type = "PORTAL"
         context.sql.executeUpdate("UPDATE theme SET lastUpdateDate = $currentTime WHERE isDefault = ${true} AND type = $type")
