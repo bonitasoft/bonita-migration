@@ -1,41 +1,47 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <def:processDefinition id="0" name="MyProcess to be migrated" version="to_7.4" xmlns:def="http://www.bonitasoft.org/ns/process/client/7.2">
     <description>2-lines
-description</description>
+        description
+    </description>
     <displayDescription>2-lines
-display description</displayDescription>
-    <parameters/>
+        display description
+    </displayDescription>
+    <parameters />
     <actors>
-        <actor name="myActor" initiator="false"/>
-        <actor name="myActorInitiator" initiator="true"/>
+        <actor name="myActor" initiator="false" />
+        <actor name="myActorInitiator" initiator="true" />
     </actors>
     <actorInitiator>myActorInitiator</actorInitiator>
     <flowElements id="6094469777999024355">
         <automaticTask id="8220222047516848075" name="step1">
             <outgoingTransition>6635186239573405354</outgoingTransition>
             <description>autoTaskDesc</description>
-            <dataDefinitions/>
-            <BusinessDataDefinitions/>
-            <operations/>
-            <boundaryEvents/>
+            <dataDefinitions />
+            <BusinessDataDefinitions />
+            <operations />
+            <boundaryEvents />
         </automaticTask>
-        <userTask id="6155503270385840845" name="step2" actorName="myActor">
+        <userTask id="6155503270385840845" name="step2" actorName="myActor" expectedDuration="3600000">
             <incomingTransition>6635186239573405354</incomingTransition>
-            <dataDefinitions/>
-            <BusinessDataDefinitions/>
-            <operations/>
-            <boundaryEvents/>
+            <dataDefinitions />
+            <BusinessDataDefinitions />
+            <operations />
+            <boundaryEvents />
             <contract>
                 <inputDefinitions>
                     <inputDefinition type="BOOLEAN" name="myTaskContractInput" multiple="false">
-                        <inputDefinitions/>
+                        <inputDefinitions />
                         <description>Serves description non-reg purposes</description>
                     </inputDefinition>
                 </inputDefinitions>
-                <constraints/>
+                <constraints />
             </contract>
-            <context/>
+            <context />
         </userTask>
+        <manualTask id="7906409025814023985" name="manual with expected duration" actorName="Truck Driver" priority="urgent" expectedDuration="50000">
+        </manualTask>
+        <manualTask id="5906409025814023985" name="manual with no expected duration" actorName="Truck Driver" priority="urgent">
+        </manualTask>
         <automaticTask id="7245567505613071487" name="taskWithNoDescription">
             <connector id="7665971355058232374" name="theConnector" connectorId="connectorId" activationEvent="ON_ENTER" version="version" failAction="FAIL">
                 <inputs>
@@ -47,38 +53,38 @@ display description</displayDescription>
                 </inputs>
                 <outputs>
                     <operation operatorType="ASSIGNMENT">
-                        <leftOperand name="myData" type="DATA"/>
+                        <leftOperand name="myData" type="DATA" />
                         <rightOperand id="5972481088581331540" name="outputValue" expressionType="TYPE_INPUT" returnType="java.lang.String">
                             <content>outputValue</content>
                         </rightOperand>
                     </operation>
                 </outputs>
             </connector>
-            <dataDefinitions/>
-            <BusinessDataDefinitions/>
+            <dataDefinitions />
+            <BusinessDataDefinitions />
             <operations>
                 <operation operatorType="ASSIGNMENT">
-                    <leftOperand name="myData" type="DATA"/>
+                    <leftOperand name="myData" type="DATA" />
                     <rightOperand id="5733000003075670864" name="theNewValue" expressionType="TYPE_CONSTANT" returnType="java.lang.String">
                         <content>theNewValue</content>
                     </rightOperand>
                 </operation>
             </operations>
-            <boundaryEvents/>
+            <boundaryEvents />
         </automaticTask>
         <automaticTask id="7095435811291558234" name="step3">
-            <dataDefinitions/>
-            <BusinessDataDefinitions/>
-            <operations/>
+            <dataDefinitions />
+            <BusinessDataDefinitions />
+            <operations />
             <multiInstanceLoopCharacteristics isSequential="false">
                 <loopCardinality id="6999576769763716891" name="12" expressionType="TYPE_CONSTANT" returnType="java.lang.Integer">
                     <content>12</content>
                 </loopCardinality>
             </multiInstanceLoopCharacteristics>
-            <boundaryEvents/>
+            <boundaryEvents />
         </automaticTask>
         <transitions>
-            <transition id="6635186239573405354" name="8220222047516848075_-&gt;_6155503270385840845" source="8220222047516848075" target="6155503270385840845"/>
+            <transition id="6635186239573405354" name="8220222047516848075_-&gt;_6155503270385840845" source="8220222047516848075" target="6155503270385840845" />
         </transitions>
         <dataDefinitions>
             <dataDefinition id="7248244421827640412" name="myData" transient="false" className="java.lang.String">
@@ -104,39 +110,33 @@ display description</displayDescription>
                 </defaultValue>
             </businessDataDefinition>
         </businessDataDefinitions>
-        <documentDefinitions/>
-        <documentListDefinitions/>
-        <connectors/>
-        <elementFinder/>
+        <documentDefinitions />
+        <documentListDefinitions />
+        <connectors />
+        <elementFinder />
     </flowElements>
-    <stringIndexes>
-        <stringIndex index="1"/>
-        <stringIndex index="2"/>
-        <stringIndex index="3"/>
-        <stringIndex index="4"/>
-        <stringIndex index="5"/>
-    </stringIndexes>
+
     <contract>
         <inputDefinitions>
             <inputDefinition type="BOOLEAN" name="isOk" multiple="true">
-                <inputDefinitions/>
+                <inputDefinitions />
                 <description>the is ok contract input</description>
             </inputDefinition>
             <inputDefinition name="request" multiple="false">
                 <inputDefinitions>
                     <inputDefinition type="TEXT" name="name" multiple="false">
-                        <inputDefinitions/>
+                        <inputDefinitions />
                         <description>name of the request</description>
                     </inputDefinition>
                     <inputDefinition type="INTEGER" name="value" multiple="false">
-                        <inputDefinitions/>
+                        <inputDefinitions />
                         <description>request amount</description>
                     </inputDefinition>
                 </inputDefinitions>
                 <description>a request</description>
             </inputDefinition>
         </inputDefinitions>
-        <constraints/>
+        <constraints />
     </contract>
-    <context/>
+    <context />
 </def:processDefinition>

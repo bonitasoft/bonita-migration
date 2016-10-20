@@ -43,6 +43,8 @@ import org.junit.Rule
  */
 class FillBeforeMigratingTo7_4_0 {
 
+    public static final long ONE_HOUR = 1000L * 60L * 60L
+
     @Rule
     public BonitaEngineRule bonitaEngineRule = BonitaEngineRule.create().keepPlatformOnShutdown()
 
@@ -91,8 +93,8 @@ class FillBeforeMigratingTo7_4_0 {
         def builder = new ProcessDefinitionBuilder().createNewInstance("MyProcess to be migrated", "to_7.4")
         builder.addDescription("2-lines\ndescription")
         builder.addDisplayDescription("2-lines\ndisplay description")
-        builder.addAutomaticTask("step1").addDescription("autoTaskDesc")
-        builder.addUserTask("step2", "myActor").addContract().addInput("myTaskContractInput", Type.BOOLEAN, "Serves description non-reg purposes")
+        builder.addAutomaticTask("auto1").addDescription("autoTaskDesc")
+        builder.addUserTask("user1", "myActor").addExpectedDuration(ONE_HOUR).addContract().addInput("myTaskContractInput", Type.BOOLEAN, "Serves description non-reg purposes")
         def task = builder.addAutomaticTask("taskWithNoDescription")
         task.addConnector("theConnector", "connectorId", "version", ConnectorEvent.ON_ENTER).addInput("input1", new ExpressionBuilder().createConstantStringExpression("input1Value"))
                 .addOutput(new OperationBuilder().createSetDataOperation("myData", new ExpressionBuilder().createInputExpression("outputValue", String.class.getName())))
@@ -101,13 +103,18 @@ class FillBeforeMigratingTo7_4_0 {
         builder.addCallActivity("call", unknown, unknown).addProcessStartContractInput("theInput", new ExpressionBuilder().createConstantStringExpression("theValue"))
         builder.addAutomaticTask("auto2")
         builder.addAutomaticTask("auto3")
+
+        builder.addUserTask("user2", "myActor").addDescription("without expectedDuration")
+        builder.addManualTask("manual1", "myActor").addExpectedDuration(ONE_HOUR).addDescription("with expectedDuration")
+        builder.addManualTask("manual2", "myActor").addDescription("with expectedDuration")
+
         builder.addGateway("gate1", GatewayType.INCLUSIVE)
         builder.addStartEvent("start")
         builder.addEndEvent("end").addTerminateEventTrigger()
 
-        builder.addTransition("start", "step1")
-        builder.addTransition("step1", "step2")
-        builder.addTransition("step2", "gate1")
+        builder.addTransition("start", "auto1")
+        builder.addTransition("auto1", "user1")
+        builder.addTransition("user1", "gate1")
         def falseExpr = new ExpressionBuilder().createConstantBooleanExpression(false)
         builder.addTransition("gate1", "call", falseExpr)
         builder.addTransition("gate1", "auto2", falseExpr)
@@ -122,7 +129,7 @@ class FillBeforeMigratingTo7_4_0 {
         builder.addXMLData("xmlData", new ExpressionBuilder().createGroovyScriptExpression("theScript", "'<tag>'+isOk+'</tag>'", String.class.getName(),
                 new ExpressionBuilder().createContractInputExpression("isOk", List.class.getName()))).addDescription("xml data depends on myData")
         def integerExpression = new ExpressionBuilder().createConstantIntegerExpression(12)
-        builder.addAutomaticTask("step3").addMultiInstance(false, integerExpression)
+        builder.addAutomaticTask("auto4").addMultiInstance(false, integerExpression)
         builder.addBusinessData("myBizData", "com.company.model.TestEntity", new ExpressionBuilder().createGroovyScriptExpression("createBusinessData",
                 """
 def testEntity = new com.company.model.TestEntity()
