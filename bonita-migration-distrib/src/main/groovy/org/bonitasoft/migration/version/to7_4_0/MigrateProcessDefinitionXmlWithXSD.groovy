@@ -59,6 +59,22 @@ class MigrateProcessDefinitionXmlWithXSD extends MigrationStep {
     protected applyChangesOnXml(Node processDefinitionXml) {
         addUnderscoreToAllIDs(processDefinitionXml)
         updateActorsAndRefToInitiator(processDefinitionXml)
+        changeExpectedDurationToExpression(processDefinitionXml)
+    }
+
+    def changeExpectedDurationToExpression(Node processDefinitionXml) {
+        def humanTasks = processDefinitionXml.breadthFirst().findAll {
+            it instanceof Node && (it.name() == "userTask" || it.name() == "manualTask")
+        } as Node[]
+        humanTasks.each { task ->
+            def expectedDuration = task.attributes().get("expectedDuration")
+            if (expectedDuration != null) {
+                task.attributes().remove('expectedDuration')
+                def expressionAttributes = [expressionType: "TYPE_CONSTANT", id: '_' + generateId(), returnType: "java.lang.Long", name: "expectedDuration expression"]
+                def expressionNode = task.appendNode("expectedDuration", expressionAttributes)
+                expressionNode.appendNode("content", expectedDuration.value)
+            }
+        }
     }
 
     def String updateBusinessDataDefinitionTag(String processDefinitionXMLAsText) {
