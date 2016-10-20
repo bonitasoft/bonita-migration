@@ -16,10 +16,7 @@ package org.bonitasoft.migration
 
 import org.bonitasoft.engine.api.APIClient
 import org.bonitasoft.engine.bpm.contract.Type
-import org.bonitasoft.engine.bpm.flownode.ActivityInstanceCriterion
-import org.bonitasoft.engine.bpm.flownode.CallActivityDefinition
-import org.bonitasoft.engine.bpm.flownode.MultiInstanceLoopCharacteristics
-import org.bonitasoft.engine.bpm.flownode.UserTaskDefinition
+import org.bonitasoft.engine.bpm.flownode.*
 import org.bonitasoft.engine.test.junit.BonitaEngineRule
 import org.bonitasoft.migration.filler.FillerUtils
 import org.junit.Rule
@@ -32,6 +29,7 @@ import static org.assertj.core.groups.Tuple.tuple
  * @author Emmanuel Duchastenier
  */
 class CheckMigratedTo7_4_0 extends Specification {
+
 
     @Rule
     public BonitaEngineRule bonitaEngineRule = BonitaEngineRule.create().reuseExistingPlatform()
@@ -60,33 +58,48 @@ class CheckMigratedTo7_4_0 extends Specification {
         assert dataDefinition.name == "myData"
         assert dataDefinition.description == "my data description"
 
-        def step1 = definition.getFlowElementContainer().getActivity("step1")
-        def step2 = definition.getFlowElementContainer().getActivity("step2")
+        def auto1 = definition.getFlowElementContainer().getActivity("auto1")
+        def auto3 = definition.getFlowElementContainer().getActivity("taskWithNoDescription")
 
-        assert step1 != null
-        assert step1.getOutgoingTransitions().size() == 1
-        assert step1.getOutgoingTransitions().get(0).getTarget() == step2.getId()
-        assert step1.description == "autoTaskDesc"
+        def userTask1 = (UserTaskDefinition) definition.getFlowElementContainer().getActivity("user1")
+        def userTask2 = (UserTaskDefinition) definition.getFlowElementContainer().getActivity("user2")
 
-        assert step2 != null
-        assert step2.getIncomingTransitions().size() == 1
-        assert step2.getIncomingTransitions().get(0).getSource() == step1.getId()
-        assert ((UserTaskDefinition) step2).getContract().getInputs().get(0).description == "Serves description non-reg purposes"
+        def manualTask1 = (ManualTaskDefinition) definition.getFlowElementContainer().getActivity("manual1")
+        def manualTask2 = (ManualTaskDefinition) definition.getFlowElementContainer().getActivity("manual2")
 
-        // Check that we do not add a sub-element 'description' if there was no attribute 'description':
-        def autoTask3 = definition.getFlowElementContainer().getActivity("taskWithNoDescription")
-        assert autoTask3.description == null
-        assert autoTask3.getConnectors().size() == 1
-        assert autoTask3.getConnectors().get(0).getName() == "theConnector"
-        assert autoTask3.getConnectors().get(0).getInputs().size() == 1
-        assert autoTask3.getConnectors().get(0).getInputs().get("input1").getName() == "input1Value"
-        assert autoTask3.getConnectors().get(0).getOutputs().size() == 1
-        assert autoTask3.getOperations().size() == 1
-        assert autoTask3.getOperations().get(0).getLeftOperand().name == "myData"
+        assert userTask1 != null
+        assert userTask1.getIncomingTransitions().size() == 1
+        assert userTask1.getIncomingTransitions().get(0).getSource() == auto1.getId()
+        assert userTask1.getContract().getInputs().get(0).description == "Serves description non-reg purposes"
+        assert userTask1.getExpectedDuration() != null
+        assert userTask1.getExpectedDuration().content == "3600000"
+        assert userTask1.getExpectedDuration().returnType == Long.class.name
+
+        assert auto1 != null
+        assert auto1.getOutgoingTransitions().size() == 1
+        assert auto1.getOutgoingTransitions().get(0).getTarget() == userTask1.getId()
+        assert auto1.description == "autoTaskDesc"
+
+        assert userTask2.getExpectedDuration() == null
+
+        assert manualTask1.getExpectedDuration() != null
+        assert manualTask1.getExpectedDuration().content == "3600000"
+        assert manualTask1.getExpectedDuration().returnType == Long.class.name
+
+        assert manualTask2.getExpectedDuration() == null
+
+        assert auto3.description == null
+        assert auto3.getConnectors().size() == 1
+        assert auto3.getConnectors().get(0).getName() == "theConnector"
+        assert auto3.getConnectors().get(0).getInputs().size() == 1
+        assert auto3.getConnectors().get(0).getInputs().get("input1").getName() == "input1Value"
+        assert auto3.getConnectors().get(0).getOutputs().size() == 1
+        assert auto3.getOperations().size() == 1
+        assert auto3.getOperations().get(0).getLeftOperand().name == "myData"
 
         assert definition.getFlowElementContainer().getTransitions().size() == 9
         assertThat(definition.getFlowElementContainer().getTransitions()).extracting("source", "target")
-                .contains(tuple(step1.getId(), step2.getId()))
+                .contains(tuple(auto1.getId(), userTask1.getId()))
 
         assert definition.getActorInitiator().getName() == "myActorInitiator"
         assert definition.getActorsList().size() == 2
@@ -99,10 +112,10 @@ class CheckMigratedTo7_4_0 extends Specification {
         assert definition.getFlowElementContainer().getDataDefinition("xmlData").getDefaultValueExpression().getDependencies().size() == 1
 
 
-        def step3 = definition.getFlowElementContainer().getActivity("step3")
-        assert step3.loopCharacteristics instanceof MultiInstanceLoopCharacteristics
-        assert !(step3.loopCharacteristics as MultiInstanceLoopCharacteristics).sequential
-        assert (step3.loopCharacteristics as MultiInstanceLoopCharacteristics).loopCardinality.content == "12"
+        def auto4 = definition.getFlowElementContainer().getActivity("auto4")
+        assert auto4.loopCharacteristics instanceof MultiInstanceLoopCharacteristics
+        assert !(auto4.loopCharacteristics as MultiInstanceLoopCharacteristics).sequential
+        assert (auto4.loopCharacteristics as MultiInstanceLoopCharacteristics).loopCardinality.content == "12"
 
         assert definition.contract.inputs.size() == 2
         assert definition.contract.inputs[0].multiple
@@ -118,8 +131,16 @@ class CheckMigratedTo7_4_0 extends Specification {
         assert definition.getFlowElementContainer().getGateway("gate1").getDefaultTransition().target == definition.getFlowElementContainer().getActivity("auto3").id
         assert (definition.getFlowElementContainer().getActivity("call") as CallActivityDefinition).processStartContractInputs.containsKey("theInput")
 
-        def humanTaskInstance = processAPI.getPendingHumanTaskInstances(client.session.userId, 0, 10, ActivityInstanceCriterion.DEFAULT)[0]
-        humanTaskInstance.flownodeDefinitionId == step2.id
+        def humanTaskInstances = processAPI.getPendingHumanTaskInstances(client.session.userId, 0, 10, ActivityInstanceCriterion.NAME_ASC)
+        def flownodeDefinitionIds = humanTaskInstances.collect() {
+            [name: it.name, id: it.flownodeDefinitionId]
+        }
+        flownodeDefinitionIds == [
+                [name: manualTask1.name, id: manualTask1.id],
+                [name: manualTask2.name, id: manualTask2.id],
+                [name: userTask1.name, id: userTask1.id],
+                [name: userTask2.name, id: userTask2.id]
+        ]
 
         cleanup:
         client.logout()

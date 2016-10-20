@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:processDefinition xmlns:tns="http://www.bonitasoft.org/ns/process/client/7.4" name="MyProcess to be migrated" version="to_7.4" id="_0">
+  <description>2-lines
+        description
+    </description>
+  <displayDescription>2-lines
+        display description
+    </displayDescription>
+  <parameters/>
+  <actors>
+    <actor name="myActor" initiator="false" id="_6949101533695256468"/>
+    <actor name="myActorInitiator" initiator="true" id="_6487318153186844264"/>
+  </actors>
+  <actorInitiator>_6487318153186844264</actorInitiator>
+  <flowElements id="_6094469777999024355">
+    <automaticTask name="step1" id="_8220222047516848075">
+      <outgoingTransition>_6635186239573405354</outgoingTransition>
+      <description>autoTaskDesc</description>
+      <dataDefinitions/>
+      <businessDataDefinitions/>
+      <operations/>
+      <boundaryEvents/>
+    </automaticTask>
+    <userTask name="step2" actorName="myActor" id="_6155503270385840845">
+      <incomingTransition>_6635186239573405354</incomingTransition>
+      <dataDefinitions/>
+      <businessDataDefinitions/>
+      <operations/>
+      <boundaryEvents/>
+      <contract>
+        <inputDefinitions>
+          <inputDefinition type="BOOLEAN" name="myTaskContractInput" multiple="false">
+            <inputDefinitions/>
+            <description>Serves description non-reg purposes</description>
+          </inputDefinition>
+        </inputDefinitions>
+        <constraints/>
+      </contract>
+      <context/>
+      <expectedDuration expressionType="TYPE_CONSTANT" id="_5176382139023390599" returnType="java.lang.Long" name="expectedDuration expression">
+        <content>3600000</content>
+      </expectedDuration>
+    </userTask>
+    <manualTask name="manual with expected duration" actorName="Truck Driver" priority="urgent" id="_7906409025814023985">
+      <expectedDuration expressionType="TYPE_CONSTANT" id="_5133568295964818359" returnType="java.lang.Long" name="expectedDuration expression">
+        <content>50000</content>
+      </expectedDuration>
+    </manualTask>
+    <manualTask name="manual with no expected duration" actorName="Truck Driver" priority="urgent" id="_5906409025814023985"/>
+    <automaticTask name="taskWithNoDescription" id="_7245567505613071487">
+      <connector name="theConnector" connectorId="connectorId" activationEvent="ON_ENTER" version="version" failAction="FAIL" id="_7665971355058232374">
+        <inputs>
+          <input name="input1">
+            <expression name="input1Value" expressionType="TYPE_CONSTANT" returnType="java.lang.String" id="_5118970177971223300">
+              <content>input1Value</content>
+            </expression>
+          </input>
+        </inputs>
+        <outputs>
+          <operation operatorType="ASSIGNMENT">
+            <leftOperand name="myData" type="DATA"/>
+            <rightOperand name="outputValue" expressionType="TYPE_INPUT" returnType="java.lang.String" id="_5972481088581331540">
+              <content>outputValue</content>
+            </rightOperand>
+          </operation>
+        </outputs>
+      </connector>
+      <dataDefinitions/>
+      <businessDataDefinitions/>
+      <operations>
+        <operation operatorType="ASSIGNMENT">
+          <leftOperand name="myData" type="DATA"/>
+          <rightOperand name="theNewValue" expressionType="TYPE_CONSTANT" returnType="java.lang.String" id="_5733000003075670864">
+            <content>theNewValue</content>
+          </rightOperand>
+        </operation>
+      </operations>
+      <boundaryEvents/>
+    </automaticTask>
+    <automaticTask name="step3" id="_7095435811291558234">
+      <dataDefinitions/>
+      <businessDataDefinitions/>
+      <operations/>
+      <multiInstanceLoopCharacteristics isSequential="false">
+        <loopCardinality name="12" expressionType="TYPE_CONSTANT" returnType="java.lang.Integer" id="_6999576769763716891">
+          <content>12</content>
+        </loopCardinality>
+      </multiInstanceLoopCharacteristics>
+      <boundaryEvents/>
+    </automaticTask>
+    <transitions>
+      <transition name="8220222047516848075_-&gt;_6155503270385840845" id="_6635186239573405354" source="_8220222047516848075" target="_6155503270385840845"/>
+    </transitions>
+    <dataDefinitions>
+      <dataDefinition name="myData" transient="false" className="java.lang.String" id="_7248244421827640412">
+        <description>my data description</description>
+        <defaultValue name="myDataValue" expressionType="TYPE_CONSTANT" returnType="java.lang.String" id="_8933069563166549713">
+          <content>myDataValue</content>
+        </defaultValue>
+      </dataDefinition>
+      <xmlDataDefinition name="xmlData" transient="false" className="java.lang.String" id="_5313758574868491192">
+        <description>xml data depends on myData</description>
+        <defaultValue name="theScript" expressionType="TYPE_READ_ONLY_SCRIPT" returnType="java.lang.String" interpreter="GROOVY" id="_8454743058292349995">
+          <content>'&lt;tag&gt;'+isOk+'&lt;/tag&gt;'</content>
+          <expression name="isOk" expressionType="TYPE_CONTRACT_INPUT" returnType="java.util.List" id="_8638724559799263372">
+            <content>isOk</content>
+          </expression>
+        </defaultValue>
+      </xmlDataDefinition>
+    </dataDefinitions>
+    <businessDataDefinitions>
+      <businessDataDefinition name="myBizData" className="java.lang.Integer" multiple="false" id="_5561270193286606980">
+        <defaultValue name="12" expressionType="TYPE_CONSTANT" returnType="java.lang.Integer" id="_7150365913152339418">
+          <content>12</content>
+        </defaultValue>
+      </businessDataDefinition>
+    </businessDataDefinitions>
+    <documentDefinitions/>
+    <documentListDefinitions/>
+    <connectors/>
+    <elementFinder/>
+  </flowElements>
+  <contract>
+    <inputDefinitions>
+      <inputDefinition type="BOOLEAN" name="isOk" multiple="true">
+        <inputDefinitions/>
+        <description>the is ok contract input</description>
+      </inputDefinition>
+      <inputDefinition name="request" multiple="false">
+        <inputDefinitions>
+          <inputDefinition type="TEXT" name="name" multiple="false">
+            <inputDefinitions/>
+            <description>name of the request</description>
+          </inputDefinition>
+          <inputDefinition type="INTEGER" name="value" multiple="false">
+            <inputDefinitions/>
+            <description>request amount</description>
+          </inputDefinition>
+        </inputDefinitions>
+        <description>a request</description>
+      </inputDefinition>
+    </inputDefinitions>
+    <constraints/>
+  </contract>
+  <context/>
+</tns:processDefinition>

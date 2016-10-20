@@ -34,6 +34,7 @@ dependencies {
     testCompile group: 'com.microsoft.jdbc', name: 'sqlserver', version: '4.0.2206.100'
     testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
     testCompile group: 'org.assertj', name: 'assertj-core', version: '1.5.0'
+    testCompile group: 'xmlunit', name: 'xmlunit', version: '1.5'
 }
 
 startScripts {
