@@ -254,6 +254,18 @@ END""")
         sql.execute(request)
     }
 
+    /**
+     * drop all foreign keys found on table
+     * @param table
+     * @return
+     */
+    def dropAllForeignKeys(String tableName) {
+        def query = getScriptContent("/database/allForeignKeys", "foreignKey")
+        sql.eachRow(query, [tableName]) { row ->
+            dropForeignKey(row.table_name, row.constraint_name)
+        }
+    }
+
     def dropPrimaryKey(String tableName) {
         def query = getScriptContent("/database/primaryKey", "primaryKey")
         sql.eachRow(query, [tableName]) { row ->
