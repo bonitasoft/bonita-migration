@@ -157,8 +157,20 @@ public class IOUtil {
         return baos.toByteArray();
     }
 
+    static void printInRectangleWithTitle(String title, String... lines) {
+        def maxSize = getMaxSize(lines)
+        printLine(maxSize)
+        println String.format("|%1\$-${maxSize}s|", title)
+        printLine(maxSize)
+        lines.each {
+            println String.format("|%1\$-${maxSize}s|", it)
+        }
+        printLine(maxSize)
+
+    }
+
     static void printInRectangle(String... lines) {
-        def maxSize = lines.collect { it.size() }.max() + 2
+        def maxSize = getMaxSize(lines)
         printLine(maxSize)
         lines.each {
             int spaces = maxSize - it.size()
@@ -170,6 +182,11 @@ public class IOUtil {
             print LINE_SEPARATOR
         }
         printLine(maxSize)
+    }
+
+    private static Object getMaxSize(String... lines) {
+        def maxSize = lines.collect { it.size() }.max() + 2
+        maxSize
     }
 
     static printSpaces(int size) {
@@ -202,6 +219,7 @@ public class IOUtil {
             }
         }
     }
+
     public static void unzip(InputStream inputStream, File outputDirectory) {
 
         byte[] buff = new byte[1024]

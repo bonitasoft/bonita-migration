@@ -17,7 +17,6 @@
 package org.bonitasoft.migration
 
 import groovy.xml.StreamingMarkupBuilder
-import oracle.sql.BLOB
 import org.bonitasoft.migration.core.MigrationContext
 import org.bonitasoft.migration.core.MigrationStep
 import org.bonitasoft.migration.core.database.schema.IndexDefinition
@@ -196,16 +195,6 @@ class DBUnitHelper {
                 println("table [$it] does not exists")
             }
         }
-    }
-
-    def String getOracleBlobAsString(blobValue) {
-        def bytesContent
-        if (MigrationStep.DBVendor.ORACLE.equals(context.dbVendor)) {
-            bytesContent = ((BLOB) blobValue).binaryStream.bytes
-        } else {
-            bytesContent = blobValue
-        }
-        new String(bytesContent)
     }
 
 }

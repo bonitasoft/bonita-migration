@@ -30,6 +30,7 @@ class MigrationRunner {
     def run(boolean isSp) {
         Date migrationStartDate = new Date()
         String lastVersion
+        def warnings = [:]
         versionMigrations.each {
             logger.info "Execute migration to version " + it.getVersion()
             it.context = context
@@ -42,6 +43,10 @@ class MigrationRunner {
                 logger.info "| Execute migration step: " + step.description
                 Date stepStartDate = new Date()
                 step.execute(context)
+                def stepWarningMessage = step.warning
+                if (stepWarningMessage != null) {
+                    warnings.put("migration to version:${it.version} - step:${step.description}", stepWarningMessage)
+                }
                 MigrationUtil.printSuccessMigration(stepStartDate, migrationStartDate)
                 logger.info "---------------"
             }
@@ -49,6 +54,12 @@ class MigrationRunner {
             lastVersion = it.getVersion()
         }
         logSuccessfullyCompleted(migrationStartDate, lastVersion)
+        if (!warnings.isEmpty()) {
+            println "[WARNING] However, some warnings require your attention:"
+            warnings.each {
+                IOUtil.printInRectangleWithTitle(it.key, it.value.split("\n"))
+            }
+        }
     }
 
     private void logSuccessfullyCompleted(Date migrationStartDate, String lastVersion) {

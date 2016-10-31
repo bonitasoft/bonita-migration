@@ -24,7 +24,8 @@ class MigrateTo7_4_0 extends VersionMigration {
     def List<MigrationStep> getMigrationSteps() {
         //keep one line per step to avoid false-positive merge conflict
         return [
-                new MigrateProcessDefinitionXmlWithXSD()
+                new MigrateProcessDefinitionXmlWithXSD(),
+                new WarnAboutCSRF()
         ]
     }
 }
