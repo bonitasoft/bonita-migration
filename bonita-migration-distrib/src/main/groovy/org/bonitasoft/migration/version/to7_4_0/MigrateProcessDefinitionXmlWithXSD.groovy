@@ -20,13 +20,19 @@ import org.bonitasoft.migration.core.MigrationStep
 import org.codehaus.groovy.runtime.InvokerHelper
 
 import javax.xml.XMLConstants
+import javax.xml.transform.stream.StreamResult
 import javax.xml.transform.stream.StreamSource
 import javax.xml.validation.SchemaFactory
+
+import static javax.xml.transform.TransformerFactory.newInstance
 
 /**
  * @author Emmanuel Duchastenier
  */
 class MigrateProcessDefinitionXmlWithXSD extends MigrationStep {
+
+    public static final String PROCESS_DEFINITION_7_4 = "/version/to_7_4_0/ProcessDefinition.xsd"
+    public static final String PROCESS_DEFINITION_XSL = "/version/to_7_4_0/ProcessDefinition.xsl"
 
     Logger logger
 
@@ -44,73 +50,21 @@ class MigrateProcessDefinitionXmlWithXSD extends MigrationStep {
 
     def boolean validateXML(String xmlContent) {
         SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
-                .newSchema(new StreamSource(this.getClass().getResourceAsStream("/version/to_7_4_0/ProcessDefinition.xsd")))
+                .newSchema(new StreamSource(this.getClass().getResourceAsStream(PROCESS_DEFINITION_7_4)))
                 .newValidator()
                 .validate(new StreamSource(new StringReader(xmlContent)))
         true
     }
 
     String migrateProcessDefinitionXML(def String processDefinitionXMLAsText) {
-        def processDefinitionXml = new XmlParser().parseText(updateBusinessDataDefinitionTag(updateXmlNamespace(processDefinitionXMLAsText)))
-        applyChangesOnXml(processDefinitionXml)
-        return getContent(processDefinitionXml)
+        applyChangesOnXml(new XmlParser().parseText(processDefinitionXMLAsText))
     }
 
-    protected applyChangesOnXml(Node processDefinitionXml) {
-        addUnderscoreToAllIDs(processDefinitionXml)
-        updateActorsAndRefToInitiator(processDefinitionXml)
-        changeExpectedDurationToExpression(processDefinitionXml)
-    }
-
-    def changeExpectedDurationToExpression(Node processDefinitionXml) {
-        def humanTasks = processDefinitionXml.breadthFirst().findAll {
-            it instanceof Node && (it.name() == "userTask" || it.name() == "manualTask")
-        } as Node[]
-        humanTasks.each { task ->
-            def expectedDuration = task.attributes().get("expectedDuration")
-            if (expectedDuration != null) {
-                task.attributes().remove('expectedDuration')
-                def expressionAttributes = [expressionType: "TYPE_CONSTANT", id: '_' + generateId(), returnType: "java.lang.Long", name: "expectedDuration expression"]
-                def expressionNode = task.appendNode("expectedDuration", expressionAttributes)
-                expressionNode.appendNode("content", expectedDuration.value)
-            }
-        }
-    }
-
-    def String updateBusinessDataDefinitionTag(String processDefinitionXMLAsText) {
-        processDefinitionXMLAsText.replaceAll("BusinessDataDefinition", "businessDataDefinition")
-    }
-
-    def addUnderscoreToAllIDs(Node processDefinitionXml) {
-        processDefinitionXml.breadthFirst().findAll { node ->
-            node instanceof Node && (node.name() == 'outgoingTransition' || node.name() == 'incomingTransition' || node.name() == 'defaultTransition')
-        }.each { Node node ->
-            node.setValue('_' + node.text())
-        }
-        def nodesWithId = processDefinitionXml.breadthFirst().findAll { node ->
-            node instanceof Node && node?.@id
-        } as Node[]
-        List<String> alreadySeenIds = [];
-        nodesWithId.each { node ->
-            String idValue = node.attributes().remove 'id'
-            if (alreadySeenIds.contains(idValue)) {
-                logger.debug "$idValue already seen..."
-                idValue = generateId()
-                logger.debug "replacing it by $idValue"
-            }
-            alreadySeenIds.add(idValue)
-            node.attributes().put('id', '_' + idValue)
-        }
-        processDefinitionXml.breadthFirst().findAll { node ->
-            node instanceof Node && node.name() == 'transition'
-        }.each { Node node ->
-            node.attributes().put('source', '_' + (node.attributes().remove('source') as String))
-            node.attributes().put('target', '_' + (node.attributes().remove('target') as String))
-        }
-    }
-
-    String generateId() {
-        Math.abs(UUID.randomUUID().getLeastSignificantBits())
+    protected String applyChangesOnXml(Node processDefinitionXml) {
+        def transformer = newInstance().newTransformer(new StreamSource(this.getClass().getResourceAsStream(PROCESS_DEFINITION_XSL)))
+        StringWriter stringWriter = new StringWriter()
+        transformer.transform(new StreamSource(new StringReader(getContent(processDefinitionXml))), new StreamResult(stringWriter))
+        stringWriter.toString()
     }
 
     public String getContent(Node processDefinitionXml) {
@@ -134,28 +88,6 @@ class MigrateProcessDefinitionXmlWithXSD extends MigrationStep {
     @Override
     String getDescription() {
         return "Update process definition xml to the new 7.4 format"
-    }
-
-
-    def updateActorsAndRefToInitiator(Node processDefinitionXml) {
-        def actors = processDefinitionXml.breadthFirst().findAll {
-            it instanceof Node && it.name() == "actor"
-        } as Node[]
-        actors.each { actor ->
-            def _id = "_" + generateId()
-            actor.attributes().put("id", _id);
-            def initiatorAttribute = actor.attribute("initiator")
-            if (initiatorAttribute != null && initiatorAttribute == 'true') {
-                def init = processDefinitionXml.find { it.name() == "actorInitiator" } as Node
-                init.setValue(_id) // Add the reference ID of the actor ID who is initiator
-            }
-        }
-    }
-
-    def String updateXmlNamespace(String processDefinitionXMLAsText) {
-        processDefinitionXMLAsText.replaceAll("http://www.bonitasoft.org/ns/process/client/\\d\\.\\d", "http://www.bonitasoft.org/ns/process/client/7.4")
-                .replaceAll("def:", "tns:")
-                .replaceAll(" xmlns:def=", " xmlns:tns=")
     }
 
 }

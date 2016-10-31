@@ -1,0 +1,2301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<def:processDefinition xmlns:def="http://www.bonitasoft.org/ns/process/client/7.2" name="Case Management 1" version="4.2">
+    <description />
+    <displayDescription />
+    <stringIndexes>
+        <stringIndex index="1" />
+        <stringIndex index="2" />
+        <stringIndex index="3" />
+        <stringIndex index="4" />
+        <stringIndex index="5" />
+    </stringIndexes>
+    <flowElements>
+        <transitions>
+            <transition id="8708518094060667174" name="5284619971503180899_-&gt;_5131547185708786256" source="5284619971503180899" target="5131547185708786256" />
+            <transition id="3726432527510291027" name="6559385374862575671_-&gt;_6043540511902874619" source="6559385374862575671" target="6043540511902874619" />
+            <transition id="8780970870210803366" name="6282720202155372783_-&gt;_6747265813567100048" source="6282720202155372783" target="6747265813567100048" />
+            <transition id="1681187939036870771" name="5570469029173393118_-&gt;_6532837051238578845" source="5570469029173393118" target="6532837051238578845" />
+            <transition id="5129053422177042951" name="8740442512721043373_-&gt;_5284619971503180899" source="8740442512721043373" target="5284619971503180899">
+                <condition expressionType="TYPE_VARIABLE" id="5045116129535151234" interpreter="" name="toKnowledgeBase" returnType="java.lang.Boolean">
+                    <content>toKnowledgeBase</content>
+                </condition>
+            </transition>
+            <transition id="3676744004838275363" name="5601791958648071995_-&gt;_7950301452155827015" source="5601791958648071995" target="7950301452155827015" />
+            <transition id="8390449272778935413" name="7950301452155827015_-&gt;_4972612442591281896" source="7950301452155827015" target="4972612442591281896" />
+            <transition id="4940897591181330277" name="7474187031290902189_-&gt;_6559385374862575671" source="7474187031290902189" target="6559385374862575671" />
+            <transition id="2755434642911837749" name="9133354468693036659_-&gt;_7474187031290902189" source="9133354468693036659" target="7474187031290902189" />
+            <transition id="7631547659768251886" name="5121473806849610400_-&gt;_6747265813567100048" source="5121473806849610400" target="6747265813567100048" />
+            <transition id="6696395667075255030" name="8647303993829328429_-&gt;_5601791958648071995" source="8647303993829328429" target="5601791958648071995" />
+            <transition id="6979517777050711861" name="6358573222672815621_-&gt;_5570469029173393118" source="6358573222672815621" target="5570469029173393118" />
+            <transition id="1699401646918251263" name="4915449729145248998_-&gt;_5121473806849610400" source="4915449729145248998" target="5121473806849610400" />
+            <transition id="3261452445873978270" name="8740442512721043373_-&gt;_5131547185708786256" source="8740442512721043373" target="5131547185708786256" />
+            <transition id="8243460599707253933" name="5131547185708786256_-&gt;_6891317404031079915" source="5131547185708786256" target="6891317404031079915" />
+            <transition id="6476390392861575772" name="6983254747415814260_-&gt;_7950301452155827015" source="6983254747415814260" target="7950301452155827015" />
+            <transition id="6102198584908533332" name="8030096449542810032_-&gt;_6747265813567100048" source="8030096449542810032" target="6747265813567100048" />
+            <transition id="6747902105739151931" name="6043540511902874619_-&gt;_8030096449542810032" source="6043540511902874619" target="8030096449542810032" />
+            <transition id="1039807502635518114" name="4972612442591281896_-&gt;_8740442512721043373" source="4972612442591281896" target="8740442512721043373" />
+            <transition id="5321345745679399707" name="8767320682082881459_-&gt;_9133354468693036659" source="8767320682082881459" target="9133354468693036659" />
+            <transition id="6439389329852025701" name="6510072777140807992_-&gt;_8047715825474229134" source="6510072777140807992" target="8047715825474229134" />
+            <transition id="4415020773623941803" name="5121473806849610400_-&gt;_6282720202155372783" source="5121473806849610400" target="6282720202155372783">
+                <condition expressionType="TYPE_VARIABLE" id="3370417466856814883" interpreter="" name="needOnsiteVisit" returnType="java.lang.Boolean">
+                    <content>needOnsiteVisit</content>
+                </condition>
+            </transition>
+            <transition id="3709218378730814303" name="8030096449542810032_-&gt;_4915449729145248998" source="8030096449542810032" target="4915449729145248998">
+                <condition expressionType="TYPE_VARIABLE" id="7164805826056308831" interpreter="" name="needsAdvancedSupport" returnType="java.lang.Boolean">
+                    <content>needsAdvancedSupport</content>
+                </condition>
+            </transition>
+            <transition id="8130414319214312079" name="7474187031290902189_-&gt;_6358573222672815621" source="7474187031290902189" target="6358573222672815621">
+                <condition expressionType="TYPE_VARIABLE" id="9169925587267110726" interpreter="" name="hasCaseBeenRejected" returnType="java.lang.Boolean">
+                    <content>hasCaseBeenRejected</content>
+                </condition>
+            </transition>
+            <transition id="5155229659613382115" name="8030096449542810032_-&gt;_6282720202155372783" source="8030096449542810032" target="6282720202155372783">
+                <condition expressionType="TYPE_VARIABLE" id="3035022307062104041" interpreter="" name="needOnsiteVisit" returnType="java.lang.Boolean">
+                    <content>needOnsiteVisit</content>
+                </condition>
+            </transition>
+            <transition id="8665237905263736387" name="6747265813567100048_-&gt;_8647303993829328429" source="6747265813567100048" target="8647303993829328429" />
+            <transition id="2234652981644183606" name="8647303993829328429_-&gt;_6983254747415814260" source="8647303993829328429" target="6983254747415814260">
+                <condition expressionType="TYPE_READ_ONLY_SCRIPT" id="1772552425991325187" interpreter="GROOVY" name="isTwitter" returnType="java.lang.Boolean">
+                    <content>"Twitter".equalsIgnoreCase(b_supportCase.getSource());</content>
+                    <expression expressionType="TYPE_BUSINESS_DATA" id="9118275565786254793" name="b_supportCase" returnType="com.company.model.SupportCase">
+                        <content>b_supportCase</content>
+                    </expression>
+                </condition>
+            </transition>
+            <transition id="3857453627518467273" name="6891317404031079915_-&gt;_5988535013710546677" source="6891317404031079915" target="5988535013710546677" />
+            <transition id="7301162770733514619" name="6358573222672815621_-&gt;_7978375344209172554" source="6358573222672815621" target="7978375344209172554">
+                <condition expressionType="TYPE_READ_ONLY_SCRIPT" id="411511738166655507" interpreter="GROOVY" name="isTwitter" returnType="java.lang.Boolean">
+                    <content>"Twitter".equalsIgnoreCase(b_supportCase.getSource());</content>
+                    <expression expressionType="TYPE_BUSINESS_DATA" id="4141849814321351561" name="b_supportCase" returnType="com.company.model.SupportCase">
+                        <content>b_supportCase</content>
+                    </expression>
+                </condition>
+            </transition>
+            <transition id="6564577068437030329" name="5988535013710546677_-&gt;_6510072777140807992" source="5988535013710546677" target="6510072777140807992" />
+            <transition id="8680486741507001383" name="7978375344209172554_-&gt;_7152478018725486142" source="7978375344209172554" target="7152478018725486142" />
+        </transitions>
+        <connectors />
+        <businessDataDefinitions>
+            <businessDataDefinition className="com.company.model.SupportCase" multiple="false" name="b_supportCase">
+                <description />
+            </businessDataDefinition>
+            <businessDataDefinition className="com.company.model.Reporter" multiple="false" name="b_reporter">
+                <description />
+            </businessDataDefinition>
+            <businessDataDefinition className="com.company.model.SatisfactionIndex" multiple="false" name="b_satisfaction">
+                <description />
+                <defaultValue expressionType="TYPE_READ_ONLY_SCRIPT" id="862366651266150495" interpreter="GROOVY" name="initData" returnType="com.company.model.SatisfactionIndex">
+                    <content>import com.company.model.SatisfactionIndex;
+
+
+                        new SatisfactionIndex();
+                    </content>
+                </defaultValue>
+            </businessDataDefinition>
+        </businessDataDefinitions>
+        <dataDefinitions>
+            <dataDefinition className="java.lang.Boolean" name="needsAdvancedSupport" transient="false" />
+            <textDataDefinition className="java.lang.String" longText="true" name="messageForAdvancedSupportTeam" transient="false">
+                <defaultValue expressionType="TYPE_READ_ONLY_SCRIPT" id="1323727721781180504" interpreter="GROOVY" name="default" returnType="java.lang.String">
+                    <content>""</content>
+                </defaultValue>
+            </textDataDefinition>
+            <dataDefinition className="java.lang.Boolean" name="needOnsiteVisit" transient="false" />
+            <textDataDefinition className="java.lang.String" longText="true" name="resolvedMessage" transient="false" />
+            <textDataDefinition className="java.lang.String" longText="true" name="onsiteVisitComment" transient="false" />
+            <dataDefinition className="java.lang.Boolean" name="hasCaseBeenRejected" transient="false">
+                <defaultValue expressionType="TYPE_CONSTANT" id="8971560838341218147" interpreter="" name="false" returnType="java.lang.Boolean">
+                    <content>false</content>
+                </defaultValue>
+            </dataDefinition>
+            <dataDefinition className="java.lang.Boolean" name="hasAttachment" transient="false" />
+            <dataDefinition className="java.lang.Boolean" name="toKnowledgeBase" transient="false" />
+            <textDataDefinition className="java.lang.String" longText="true" name="directMessage" transient="false" />
+            <textDataDefinition className="java.lang.String" longText="true" name="bonitaPassword" transient="false" />
+            <dataDefinition className="java.lang.Long" name="bonitaUserId" transient="false" />
+            <textDataDefinition className="java.lang.String" longText="true" name="bonitaUsername" transient="false" />
+            <textDataDefinition className="java.lang.String" longText="true" name="corporateEmailUsername" transient="false" />
+            <textDataDefinition className="java.lang.String" longText="true" name="firstName" transient="false" />
+            <textDataDefinition className="java.lang.String" longText="true" name="lastName" transient="false" />
+        </dataDefinitions>
+        <documentDefinitions />
+        <documentListDefinitions />
+        <endEvent id="8047715825474229134" name="End : Case Closed">
+            <incomingTransition>6439389329852025701</incomingTransition>
+            <terminateEventTrigger />
+        </endEvent>
+        <endEvent id="7152478018725486142" name="Twitter - Case Rejected">
+            <incomingTransition>8680486741507001383</incomingTransition>
+        </endEvent>
+        <endEvent id="6532837051238578845" name="Web - Case Rejected">
+            <incomingTransition>1681187939036870771</incomingTransition>
+        </endEvent>
+        <intermediateCatchEvent id="5988535013710546677" interrupting="true" name="30 minutes">
+            <incomingTransition>3857453627518467273</incomingTransition>
+            <outgoingTransition>6564577068437030329</outgoingTransition>
+            <timerEventTrigger type="DURATION">
+                <expression expressionType="TYPE_READ_ONLY_SCRIPT" id="6690024296663436183" interpreter="GROOVY" name="00:30:00" returnType="java.lang.Long">
+                    <content>1800000L</content>
+                </expression>
+            </timerEventTrigger>
+        </intermediateCatchEvent>
+        <startEvent id="8767320682082881459" interrupting="true" name="Start">
+            <outgoingTransition>5321345745679399707</outgoingTransition>
+        </startEvent>
+        <gateway gatewayType="EXCLUSIVE" id="5131547185708786256" name="Porte1">
+            <incomingTransition>3261452445873978270</incomingTransition>
+            <incomingTransition>8708518094060667174</incomingTransition>
+            <outgoingTransition>8243460599707253933</outgoingTransition>
+        </gateway>
+        <gateway gatewayType="EXCLUSIVE" id="8740442512721043373" name="Update knowledge base?">
+            <incomingTransition>1039807502635518114</incomingTransition>
+            <outgoingTransition>5129053422177042951</outgoingTransition>
+            <defaultTransition>3261452445873978270</defaultTransition>
+        </gateway>
+        <gateway gatewayType="EXCLUSIVE" id="7950301452155827015" name="Notification complete">
+            <incomingTransition>3676744004838275363</incomingTransition>
+            <incomingTransition>6476390392861575772</incomingTransition>
+            <outgoingTransition>8390449272778935413</outgoingTransition>
+        </gateway>
+        <gateway gatewayType="EXCLUSIVE" id="8647303993829328429" name="Case source">
+            <incomingTransition>8665237905263736387</incomingTransition>
+            <outgoingTransition>2234652981644183606</outgoingTransition>
+            <defaultTransition>6696395667075255030</defaultTransition>
+        </gateway>
+        <gateway gatewayType="EXCLUSIVE" id="5121473806849610400" name="Status">
+            <incomingTransition>1699401646918251263</incomingTransition>
+            <outgoingTransition>4415020773623941803</outgoingTransition>
+            <defaultTransition>7631547659768251886</defaultTransition>
+        </gateway>
+        <gateway gatewayType="EXCLUSIVE" id="8030096449542810032" name="Need advanced support ?">
+            <incomingTransition>6747902105739151931</incomingTransition>
+            <outgoingTransition>3709218378730814303</outgoingTransition>
+            <outgoingTransition>5155229659613382115</outgoingTransition>
+            <defaultTransition>6102198584908533332</defaultTransition>
+        </gateway>
+        <gateway gatewayType="EXCLUSIVE" id="6358573222672815621" name="Source">
+            <incomingTransition>8130414319214312079</incomingTransition>
+            <outgoingTransition>7301162770733514619</outgoingTransition>
+            <defaultTransition>6979517777050711861</defaultTransition>
+        </gateway>
+        <gateway gatewayType="EXCLUSIVE" id="7474187031290902189" name="Case rejected?">
+            <incomingTransition>2755434642911837749</incomingTransition>
+            <outgoingTransition>8130414319214312079</outgoingTransition>
+            <defaultTransition>4940897591181330277</defaultTransition>
+        </gateway>
+        <automaticTask id="6891317404031079915" name="Create Portal Access and mail link">
+            <incomingTransition>8243460599707253933</incomingTransition>
+            <outgoingTransition>3857453627518467273</outgoingTransition>
+            <connector activationEvent="ON_FINISH" connectorId="scripting-groovy-script" failAction="FAIL" name="createBonitaUser" version="1.0.0">
+                <inputs>
+                    <input name="script">
+                        <expression expressionType="TYPE_CONSTANT" id="6986505302915397856" interpreter="" name="createUser" returnType="java.lang.String">
+                            <content>import java.sql.ResultSet;
+
+                                import java.util.logging.Logger;
+
+                                import org.bonitasoft.engine.identity.User;
+
+                                import org.bonitasoft.engine.identity.ContactDataCreator;
+
+                                import org.bonitasoft.engine.identity.Group;
+
+                                import org.bonitasoft.engine.identity.Role;
+
+                                import org.bonitasoft.engine.identity.RoleCriterion;
+
+                                import org.bonitasoft.engine.identity.User;
+
+
+                                import org.bonitasoft.engine.identity.UserCreator;
+
+                                import org.bonitasoft.engine.profile.Profile;
+
+                                import org.bonitasoft.engine.profile.ProfileMemberCreator;
+
+                                import org.bonitasoft.engine.profile.ProfileSearchDescriptor;
+
+                                import org.bonitasoft.engine.search.SearchOptionsBuilder;
+
+                                import org.bonitasoft.engine.search.SearchResult;
+
+
+                                import com.bonitasoft.engine.api.APIAccessor;
+
+                                import com.bonitasoft.engine.api.IdentityAPI;
+
+                                import com.bonitasoft.engine.api.ProfileAPI;
+
+
+                                IdentityAPI identityAPI = apiAccessor.getIdentityAPI();
+
+                                UserCreator userCreator = new UserCreator(bonitaUsername, bonitaPassword);
+
+                                userCreator.setFirstName(firstName);
+
+                                userCreator.setLastName(lastName);
+
+
+                                User user = identityAPI.createUser(userCreator);
+
+
+                                Group group = identityAPI.getGroupByPath("/acme");
+
+                                Role role = identityAPI.getRoles(0,1, RoleCriterion.NAME_ASC).get(0);
+
+
+                                identityAPI.addUserMembership(user.getId(), group.getId(), role.getId() );
+
+
+                                ProfileAPI orgProfileAPI = apiAccessor.getProfileAPI();
+
+                                SearchOptionsBuilder searchOptionsBuilder = new SearchOptionsBuilder(0,10);
+
+                                searchOptionsBuilder.filter(ProfileSearchDescriptor.NAME, "User");
+
+
+                                SearchResult&lt;Profile&gt; searchResultProfile =
+
+                                orgProfileAPI.searchProfiles(searchOptionsBuilder.done());
+
+
+                                Profile profile = searchResultProfile.getResult().get(0);
+
+                                ProfileMemberCreator profileMemberCreator = new ProfileMemberCreator( profile.getId());
+
+                                profileMemberCreator.setUserId(user.getId());
+
+                                orgProfileAPI.createProfileMember(profileMemberCreator);
+
+
+                                return user.getId();
+
+                            </content>
+                        </expression>
+                    </input>
+                    <input name="variables">
+                        <expression expressionType="TYPE_LIST" id="3040137919462394932" name="Table of expression containing the following expressions: [(lastName,lastName,)(bonitaUsername,bonitaUsername,)(bonitaPassword,bonitaPassword,)(apiAccessor,apiAccessor,)(firstName,firstName,)]." returnType="java.util.List">
+                            <content>Table of expression containing the following expressions: [(lastName,lastName,)(bonitaUsername,bonitaUsername,)(bonitaPassword,bonitaPassword,)(apiAccessor,apiAccessor,)(firstName,firstName,)].</content>
+                            <expression expressionType="TYPE_LIST" id="7723565496673255496" name="Table of expression containing the following expressions: [(lastName,lastName,)(bonitaUsername,bonitaUsername,)(bonitaPassword,bonitaPassword,)(apiAccessor,apiAccessor,)(firstName,firstName,)]._0" returnType="java.util.List">
+                                <content>Table of expression containing the following expressions: [(lastName,lastName,)(bonitaUsername,bonitaUsername,)(bonitaPassword,bonitaPassword,)(apiAccessor,apiAccessor,)(firstName,firstName,)]._0</content>
+                                <expression expressionType="TYPE_CONSTANT" id="5916900713115240022" interpreter="" name="lastName" returnType="java.lang.String">
+                                    <content>lastName</content>
+                                </expression>
+                                <expression expressionType="TYPE_VARIABLE" id="733010526028085644" interpreter="" name="lastName" returnType="java.lang.String">
+                                    <content>lastName</content>
+                                </expression>
+                            </expression>
+                            <expression expressionType="TYPE_LIST" id="7864042014784241709" name="Table of expression containing the following expressions: [(lastName,lastName,)(bonitaUsername,bonitaUsername,)(bonitaPassword,bonitaPassword,)(apiAccessor,apiAccessor,)(firstName,firstName,)]._1" returnType="java.util.List">
+                                <content>Table of expression containing the following expressions: [(lastName,lastName,)(bonitaUsername,bonitaUsername,)(bonitaPassword,bonitaPassword,)(apiAccessor,apiAccessor,)(firstName,firstName,)]._1</content>
+                                <expression expressionType="TYPE_CONSTANT" id="9141568234341679163" interpreter="" name="bonitaUsername" returnType="java.lang.String">
+                                    <content>bonitaUsername</content>
+                                </expression>
+                                <expression expressionType="TYPE_VARIABLE" id="6483707501901400145" interpreter="" name="bonitaUsername" returnType="java.lang.String">
+                                    <content>bonitaUsername</content>
+                                </expression>
+                            </expression>
+                            <expression expressionType="TYPE_LIST" id="6935226932320124155" name="Table of expression containing the following expressions: [(lastName,lastName,)(bonitaUsername,bonitaUsername,)(bonitaPassword,bonitaPassword,)(apiAccessor,apiAccessor,)(firstName,firstName,)]._2" returnType="java.util.List">
+                                <content>Table of expression containing the following expressions: [(lastName,lastName,)(bonitaUsername,bonitaUsername,)(bonitaPassword,bonitaPassword,)(apiAccessor,apiAccessor,)(firstName,firstName,)]._2</content>
+                                <expression expressionType="TYPE_CONSTANT" id="1099781849985075828" interpreter="" name="bonitaPassword" returnType="java.lang.String">
+                                    <content>bonitaPassword</content>
+                                </expression>
+                                <expression expressionType="TYPE_VARIABLE" id="3046702465979596822" interpreter="" name="bonitaPassword" returnType="java.lang.String">
+                                    <content>bonitaPassword</content>
+                                </expression>
+                            </expression>
+                            <expression expressionType="TYPE_LIST" id="3597962361814598536" name="Table of expression containing the following expressions: [(lastName,lastName,)(bonitaUsername,bonitaUsername,)(bonitaPassword,bonitaPassword,)(apiAccessor,apiAccessor,)(firstName,firstName,)]._3" returnType="java.util.List">
+                                <content>Table of expression containing the following expressions: [(lastName,lastName,)(bonitaUsername,bonitaUsername,)(bonitaPassword,bonitaPassword,)(apiAccessor,apiAccessor,)(firstName,firstName,)]._3</content>
+                                <expression expressionType="TYPE_CONSTANT" id="5023066624418102252" interpreter="" name="apiAccessor" returnType="java.lang.String">
+                                    <content>apiAccessor</content>
+                                </expression>
+                                <expression expressionType="TYPE_ENGINE_CONSTANT" id="1994835083654351253" interpreter="" name="apiAccessor" returnType="com.bonitasoft.engine.api.APIAccessor">
+                                    <content>apiAccessor</content>
+                                </expression>
+                            </expression>
+                            <expression expressionType="TYPE_LIST" id="7529221469378295105" name="Table of expression containing the following expressions: [(lastName,lastName,)(bonitaUsername,bonitaUsername,)(bonitaPassword,bonitaPassword,)(apiAccessor,apiAccessor,)(firstName,firstName,)]._4" returnType="java.util.List">
+                                <content>Table of expression containing the following expressions: [(lastName,lastName,)(bonitaUsername,bonitaUsername,)(bonitaPassword,bonitaPassword,)(apiAccessor,apiAccessor,)(firstName,firstName,)]._4</content>
+                                <expression expressionType="TYPE_CONSTANT" id="3941595296731055925" interpreter="" name="firstName" returnType="java.lang.String">
+                                    <content>firstName</content>
+                                </expression>
+                                <expression expressionType="TYPE_VARIABLE" id="1359859110424760204" interpreter="" name="firstName" returnType="java.lang.String">
+                                    <content>firstName</content>
+                                </expression>
+                            </expression>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs>
+                    <operation operatorType="ASSIGNMENT">
+                        <leftOperand name="bonitaUserId" type="DATA" />
+                        <rightOperand expressionType="TYPE_INPUT" id="1491520971212539305" interpreter="" name="result" returnType="java.lang.Object">
+                            <content>result</content>
+                        </rightOperand>
+                    </operation>
+                </outputs>
+            </connector>
+            <connector activationEvent="ON_FINISH" connectorId="email" failAction="FAIL" name="sendMailToEmployeeToPortalConnexion" version="1.0.0">
+                <inputs>
+                    <input name="smtpPort">
+                        <expression expressionType="TYPE_PARAMETER" id="4652111657993455937" interpreter="" name="mailPort" returnType="java.lang.Integer">
+                            <content>mailPort</content>
+                        </expression>
+                    </input>
+                    <input name="to">
+                        <expression expressionType="TYPE_JAVA_METHOD_CALL" id="7888711523132095989" interpreter="" name="b_reporter - com.company.model.Reporter#getEmail" returnType="java.lang.String">
+                            <content>getEmail</content>
+                            <expression expressionType="TYPE_BUSINESS_DATA" id="1229145202073421645" name="b_reporter" returnType="com.company.model.Reporter">
+                                <content>b_reporter</content>
+                            </expression>
+                        </expression>
+                    </input>
+                    <input name="headers">
+                        <expression expressionType="TYPE_LIST" id="8860844338766328005" name="Table of expression containing the following expressions: []." returnType="java.util.List">
+                            <content>Table of expression containing the following expressions: [].</content>
+                        </expression>
+                    </input>
+                    <input name="smtpHost">
+                        <expression expressionType="TYPE_PARAMETER" id="9118627041969324729" interpreter="" name="mailHost" returnType="java.lang.String">
+                            <content>mailHost</content>
+                        </expression>
+                    </input>
+                    <input name="subject">
+                        <expression expressionType="TYPE_CONSTANT" id="2795601539281797476" interpreter="" name="Your access to BonitaBPM Demo" returnType="java.lang.String">
+                            <content>Your access to BonitaBPM Demo</content>
+                        </expression>
+                    </input>
+                    <input name="charset">
+                        <expression expressionType="TYPE_CONSTANT" id="4711534361486671264" interpreter="" name="UTF-8" returnType="java.lang.String">
+                            <content>UTF-8</content>
+                        </expression>
+                    </input>
+                    <input name="from">
+                        <expression expressionType="TYPE_PARAMETER" id="1800538478839744876" interpreter="" name="mailUsername" returnType="java.lang.String">
+                            <content>mailUsername</content>
+                        </expression>
+                    </input>
+                    <input name="password">
+                        <expression expressionType="TYPE_PARAMETER" id="2274442493022682445" interpreter="" name="mailPassword" returnType="java.lang.String">
+                            <content>mailPassword</content>
+                        </expression>
+                    </input>
+                    <input name="message">
+                        <expression expressionType="TYPE_READ_ONLY_SCRIPT" id="5883737399702669115" interpreter="GROOVY" name="sendMail" returnType="java.lang.String">
+                            <content>"""&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt;&lt;html xmlns:def="http://www.w3.org/1999/xhtml"&gt;&lt;head&gt;&lt;meta http-equiv="Content-Type" content="text/html; charset=utf-8" /&gt;&lt;title&gt;Bonitasoft&lt;/title&gt;&lt;style&gt;
+
+                                .ReadMsgBody{width: 100%;background-color:#F2F2F2;}
+
+                                .ExternalClass{width: 100%;}&lt;/style&gt;&lt;/head&gt;&lt;body style="background-color:#F2F2F2;font-family:Arial, Helvetica, sans-serif;font-size:14px;color:#003952;"&gt;&lt;center&gt;&lt;table align="center" cellpadding="0" cellspacing="0" id="tablemain" width="600" style="border-collapse:collapse;padding:0;margin:0px auto;" bgcolor="#FFFFFF" border="0"&gt;&lt;tr valign="top"&gt;&lt;!--HEADER--&gt;&lt;td width="350" bgcolor="#FFFFFF"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/blue_green_yellow_350_43.png" width="350" height="43" border="0" style="background-color:#F2F2F2;"/&gt;&lt;/td&gt;&lt;!--LOGO--&gt;&lt;td width="250" rowspan="2"&gt;&lt;a href="http://www.bonitasoft.com/?utm_medium=email&amp;utm_source=loopfuse&amp;utm_campaign=the_campaign_name&amp;utm_content=top_logo" target="_blank"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/logo_top_250_95.png" alt="Bonita BPM" height="95" width="250" border="0" title="Bonitasoft Logo" style="background-color:#F2F2F2;"/&gt;&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="2" bgcolor="#FFFFFF"&gt;&lt;table width="600" align="left" cellpadding="0" cellspacing="0" border="0"&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/spacer_10.png" height="10" width="10" border="0"/&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td width="20"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/spacer_20.png" height="20" width="20" border="0"/&gt;&lt;/td&gt;&lt;td width="560" style="text-align:left;"&gt;&lt;!--TEXT 1--&gt;&lt;p style="text-align:left;"&gt;&lt;br/&gt;&lt;strong&gt;Dear """ + firstName + """ """ + lastName + """&lt;/strong&gt;,&lt;br/&gt;&lt;/p&gt;&lt;/td&gt;&lt;td width="20"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/spacer_20.png" height="20" width="20" border="0"/&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/spacer_10.png" height="10" width="10" border="0"/&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="2" bgcolor="#FFFFFF"&gt;&lt;table width="600" align="left" cellpadding="0" cellspacing="0" border="0"&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/spacer_10.png" height="10" width="10" border="0"/&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td width="20"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/spacer_20.png" height="20" width="20" border="0"/&gt;&lt;/td&gt;&lt;td width="560" style="text-align:left;"&gt;&lt;!--TEXT 2--&gt;&lt;p style="text-align:left;"&gt;We hope that your Demonstration went well. To show you dynamic interaction in realtime and to make it more waouh effect please login with following parameters &lt;br/&gt;&lt;br/&gt; Click -&gt; "&lt;a href=" """ +presalesLink + """ " target="_blank" style="color:#E31837;"&gt;Access the Bonita Portal in live&lt;/a&gt;." &lt;br/&gt;&lt;br/&gt;
+
+                                login = """ + bonitaUsername + """ &lt;br/&gt;&lt;br/&gt;
+
+                                password = """ + bonitaPassword + """
+
+                                &lt;/p&gt;&lt;/td&gt;&lt;td width="20"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/spacer_20.png" height="20" width="20" border="0"/&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/spacer_10.png" height="10" width="10" border="0"/&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td bgcolor="#FFFFFF" colspan="2"&gt;&lt;table width="600" align="left" cellpadding="0" cellspacing="0" border="0"&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/spacer_10.png" height="10" width="10" border="0"/&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td width="20"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/spacer_20.png" height="20" width="20" border="0"/&gt;&lt;/td&gt;&lt;td width="160" style="text-align:left;"&gt;&lt;!-- SIGNATURE --&gt;&lt;p style="text-align:left;"&gt;
+
+                                Yours sincerely,&lt;br/&gt;&lt;a href="http://www.bonitasoft.com/?utm_medium=email&amp;utm_source=loopfuse&amp;utm_campaign=the_campaign_name&amp;utm_content=bottom_logo" target="_blank"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/primary_logo.png" alt="Bonitasoft" height="30" width="120" border="0" title="Bonitasoft Logo"/&gt;&lt;/a&gt;&lt;br/&gt;
+
+                                The Bonitasoft Support team
+
+                                &lt;/p&gt;&lt;/td&gt;&lt;td width="420"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/spacer_20.png" height="20" width="20" border="0"/&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/spacer_10.png" height="10" width="10" border="0"/&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td width="600" colspan="2"&gt;&lt;!-- FOOTER --&gt;&lt;table width="600" align="left" cellpadding="0" cellspacing="0" bgcolor="#E31837" border="0"&gt;&lt;tr&gt;&lt;td width="20"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/spacer_20.png" height="30" width="20" border="0"/&gt;&lt;/td&gt;&lt;td width="30"&gt;&lt;a href="http://www.twitter.com/bonitasoft" target="_blank"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/twitter_30.png" alt="twittter icon" height="30" width="30" border="0" title="Twitter" /&gt;&lt;/a&gt;&lt;/td&gt;&lt;td width="30"&gt;&lt;a href="http://www.facebook.com/bonitasoftbpm" target="_blank"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/facebook_30.png" alt="twittter icon" height="30" width="30" border="0" title="Twitter" /&gt;&lt;/a&gt;&lt;/td&gt;&lt;td width="30"&gt;&lt;a href="http://www.youtube.com/bonitasoft" target="_blank"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/youtube_30.png" alt="youtube icon" height="30" width="30" border="0" title="Youtube" /&gt;&lt;/a&gt;&lt;/td&gt;&lt;td width="30"&gt;&lt;a href="http://www.slideshare.net/bonitasoft" target="_blank"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/slideshare_30.png" alt="slideshare icon" height="30" width="30" border="0" title="Slideshare" /&gt;&lt;/a&gt;&lt;/td&gt;&lt;td width="30"&gt;&lt;a href="http://www.linkedin.com/groups?gid=3182097" target="_blank"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/linkedin_30.png" alt="linkedin icon" height="30" width="30" border="0" title="Linkedin" /&gt;&lt;/a&gt;&lt;/td&gt;&lt;td width="20"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/spacer_20.png" height="30" width="20" border="0"/&gt;&lt;/td&gt;&lt;td width="320"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/copyright_320_30.png" height="30" width="320" border="0"/&gt;&lt;/td&gt;&lt;td width="70"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/beefficient_70_30.png" height="30" width="70" border="0"/&gt;&lt;/td&gt;&lt;td width="20"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/spacer_20.png" height="30" width="20" border="0"/&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/center&gt;&lt;/body&gt;&lt;/html&gt;"""
+
+                            </content>
+                            <expression expressionType="TYPE_VARIABLE" id="7079145676306533815" name="lastName" returnType="java.lang.String">
+                                <content>lastName</content>
+                            </expression>
+                            <expression expressionType="TYPE_PARAMETER" id="362142036860030229" name="presalesLink" returnType="java.lang.String">
+                                <content>presalesLink</content>
+                            </expression>
+                            <expression expressionType="TYPE_VARIABLE" id="601716761999356425" name="bonitaUsername" returnType="java.lang.String">
+                                <content>bonitaUsername</content>
+                            </expression>
+                            <expression expressionType="TYPE_VARIABLE" id="1173673040650548267" name="bonitaPassword" returnType="java.lang.String">
+                                <content>bonitaPassword</content>
+                            </expression>
+                            <expression expressionType="TYPE_VARIABLE" id="6908425511152041127" name="firstName" returnType="java.lang.String">
+                                <content>firstName</content>
+                            </expression>
+                        </expression>
+                    </input>
+                    <input name="sslSupport">
+                        <expression expressionType="TYPE_CONSTANT" id="8753899305104329810" interpreter="" name="true" returnType="java.lang.Boolean">
+                            <content>true</content>
+                        </expression>
+                    </input>
+                    <input name="starttlsSupport">
+                        <expression expressionType="TYPE_CONSTANT" id="913257019048937527" interpreter="" name="false" returnType="java.lang.Boolean">
+                            <content>false</content>
+                        </expression>
+                    </input>
+                    <input name="userName">
+                        <expression expressionType="TYPE_PARAMETER" id="58037352814721304" interpreter="" name="mailUsername" returnType="java.lang.String">
+                            <content>mailUsername</content>
+                        </expression>
+                    </input>
+                    <input name="html">
+                        <expression expressionType="TYPE_CONSTANT" id="6042863371252678847" interpreter="" name="true" returnType="java.lang.Boolean">
+                            <content>true</content>
+                        </expression>
+                    </input>
+                    <input name="attachments">
+                        <expression expressionType="TYPE_LIST" id="6192411819906088193" name="List of expression containing the following expressions: (ExpressionNotDefinedSetAsNull,)." returnType="java.util.List">
+                            <content>List of expression containing the following expressions: (ExpressionNotDefinedSetAsNull,).</content>
+                            <expression expressionType="TYPE_READ_ONLY_SCRIPT" id="5399039923192839058" interpreter="GROOVY" name="ExpressionNotDefinedSetAsNull" returnType="java.lang.Object">
+                                <content>null</content>
+                            </expression>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs />
+            </connector>
+            <dataDefinitions />
+            <operations>
+                <operation operatorType="ASSIGNMENT">
+                    <leftOperand name="bonitaUsername" type="DATA" />
+                    <rightOperand expressionType="TYPE_READ_ONLY_SCRIPT" id="4866964162379466407" interpreter="GROOVY" name="bonitaUsername" returnType="java.lang.String">
+                        <content>firstName+"."+lastName</content>
+                        <expression expressionType="TYPE_VARIABLE" id="4815778320318220818" name="lastName" returnType="java.lang.String">
+                            <content>lastName</content>
+                        </expression>
+                        <expression expressionType="TYPE_VARIABLE" id="1250117317629621203" name="firstName" returnType="java.lang.String">
+                            <content>firstName</content>
+                        </expression>
+                    </rightOperand>
+                </operation>
+            </operations>
+            <boundaryEvents />
+        </automaticTask>
+        <automaticTask id="6510072777140807992" name="Delete User Portal Access">
+            <incomingTransition>6564577068437030329</incomingTransition>
+            <outgoingTransition>6439389329852025701</outgoingTransition>
+            <connector activationEvent="ON_FINISH" connectorId="scripting-groovy-script" failAction="FAIL" name="deleteBonitaUser" version="1.0.0">
+                <inputs>
+                    <input name="script">
+                        <expression expressionType="TYPE_CONSTANT" id="4340170695450314941" interpreter="" name="deleteUser" returnType="java.lang.String">
+                            <content>import com.bonitasoft.engine.api.APIAccessor;
+
+                                import com.bonitasoft.engine.api.IdentityAPI;
+
+                                import org.bonitasoft.engine.identity.User;
+
+
+                                IdentityAPI identityAPI = apiAccessor.getIdentityAPI();
+
+
+                                User user = identityAPI.deleteUser(bonitaUserId);
+                            </content>
+                        </expression>
+                    </input>
+                    <input name="variables">
+                        <expression expressionType="TYPE_LIST" id="1435025060578702015" name="Table of expression containing the following expressions: [(bonitaUserId,bonitaUserId,)(apiAccessor,apiAccessor,)]." returnType="java.util.List">
+                            <content>Table of expression containing the following expressions: [(bonitaUserId,bonitaUserId,)(apiAccessor,apiAccessor,)].</content>
+                            <expression expressionType="TYPE_LIST" id="8301975882463397678" name="Table of expression containing the following expressions: [(bonitaUserId,bonitaUserId,)(apiAccessor,apiAccessor,)]._0" returnType="java.util.List">
+                                <content>Table of expression containing the following expressions: [(bonitaUserId,bonitaUserId,)(apiAccessor,apiAccessor,)]._0</content>
+                                <expression expressionType="TYPE_CONSTANT" id="7014002894100085425" interpreter="" name="bonitaUserId" returnType="java.lang.String">
+                                    <content>bonitaUserId</content>
+                                </expression>
+                                <expression expressionType="TYPE_VARIABLE" id="6244989926739521701" interpreter="" name="bonitaUserId" returnType="java.lang.Long">
+                                    <content>bonitaUserId</content>
+                                </expression>
+                            </expression>
+                            <expression expressionType="TYPE_LIST" id="2570982988203051071" name="Table of expression containing the following expressions: [(bonitaUserId,bonitaUserId,)(apiAccessor,apiAccessor,)]._1" returnType="java.util.List">
+                                <content>Table of expression containing the following expressions: [(bonitaUserId,bonitaUserId,)(apiAccessor,apiAccessor,)]._1</content>
+                                <expression expressionType="TYPE_CONSTANT" id="7714563498747120930" interpreter="" name="apiAccessor" returnType="java.lang.String">
+                                    <content>apiAccessor</content>
+                                </expression>
+                                <expression expressionType="TYPE_ENGINE_CONSTANT" id="906907804780508082" interpreter="" name="apiAccessor" returnType="com.bonitasoft.engine.api.APIAccessor">
+                                    <content>apiAccessor</content>
+                                </expression>
+                            </expression>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs />
+            </connector>
+            <dataDefinitions />
+            <operations />
+            <boundaryEvents />
+        </automaticTask>
+        <automaticTask id="5284619971503180899" name="Add resolution to the knowledge base ">
+            <incomingTransition>5129053422177042951</incomingTransition>
+            <outgoingTransition>8708518094060667174</outgoingTransition>
+            <connector activationEvent="ON_FINISH" connectorId="salesforce-createsobject" failAction="IGNORE" name="createSolutionFromTheResolution" version="1.0.1">
+                <inputs>
+                    <input name="readTimeout">
+                        <expression expressionType="TYPE_CONSTANT" id="1850247313957303794" interpreter="" name="0" returnType="java.lang.Integer">
+                            <content>0</content>
+                        </expression>
+                    </input>
+                    <input name="authEndpoint">
+                        <expression expressionType="TYPE_CONSTANT" id="4221024595580665448" interpreter="" name="https://login.salesforce.com/services/Soap/u/24.0" returnType="java.lang.String">
+                            <content>https://login.salesforce.com/services/Soap/u/24.0</content>
+                        </expression>
+                    </input>
+                    <input name="username">
+                        <expression expressionType="TYPE_PARAMETER" id="8293757047797728440" interpreter="" name="salesForceUsername" returnType="java.lang.String">
+                            <content>salesForceUsername</content>
+                        </expression>
+                    </input>
+                    <input name="connectionTimeout">
+                        <expression expressionType="TYPE_CONSTANT" id="2190335611129381731" interpreter="" name="0" returnType="java.lang.Integer">
+                            <content>0</content>
+                        </expression>
+                    </input>
+                    <input name="sObjectType">
+                        <expression expressionType="TYPE_CONSTANT" id="40808689363533958" interpreter="" name="Solution" returnType="java.lang.String">
+                            <content>Solution</content>
+                        </expression>
+                    </input>
+                    <input name="securityToken">
+                        <expression expressionType="TYPE_PARAMETER" id="4491874129895078723" interpreter="" name="salesForceSecurityToken" returnType="java.lang.String">
+                            <content>salesForceSecurityToken</content>
+                        </expression>
+                    </input>
+                    <input name="serviceEndpoint">
+                        <expression expressionType="TYPE_CONSTANT" id="6968198137180278193" interpreter="" name="https://login.salesforce.com/services/Soap/u/24.0" returnType="java.lang.String">
+                            <content>https://login.salesforce.com/services/Soap/u/24.0</content>
+                        </expression>
+                    </input>
+                    <input name="proxyPort">
+                        <expression expressionType="TYPE_CONSTANT" id="7426740194374170910" interpreter="" name="0" returnType="java.lang.Integer">
+                            <content>0</content>
+                        </expression>
+                    </input>
+                    <input name="password">
+                        <expression expressionType="TYPE_PARAMETER" id="3886621186459912702" interpreter="" name="salesForcePassword" returnType="java.lang.String">
+                            <content>salesForcePassword</content>
+                        </expression>
+                    </input>
+                    <input name="fieldValues">
+                        <expression expressionType="TYPE_LIST" id="5203681503918273681" name="Table of expression containing the following expressions: [(SolutionName,b_supportCase - com.company.model.SupportCase#getTitle,)(Status,Draft,)(SolutionNote,solution,)]." returnType="java.util.List">
+                            <content>Table of expression containing the following expressions: [(SolutionName,b_supportCase - com.company.model.SupportCase#getTitle,)(Status,Draft,)(SolutionNote,solution,)].</content>
+                            <expression expressionType="TYPE_LIST" id="7658193169089839720" name="Table of expression containing the following expressions: [(SolutionName,b_supportCase - com.company.model.SupportCase#getTitle,)(Status,Draft,)(SolutionNote,solution,)]._0" returnType="java.util.List">
+                                <content>Table of expression containing the following expressions: [(SolutionName,b_supportCase - com.company.model.SupportCase#getTitle,)(Status,Draft,)(SolutionNote,solution,)]._0</content>
+                                <expression expressionType="TYPE_CONSTANT" id="2015269556784678811" interpreter="" name="SolutionName" returnType="java.lang.String">
+                                    <content>SolutionName</content>
+                                </expression>
+                                <expression expressionType="TYPE_JAVA_METHOD_CALL" id="7130717154428211064" interpreter="" name="b_supportCase - com.company.model.SupportCase#getTitle" returnType="java.lang.String">
+                                    <content>getTitle</content>
+                                    <expression expressionType="TYPE_BUSINESS_DATA" id="3795065207617504614" name="b_supportCase" returnType="com.company.model.SupportCase">
+                                        <content>b_supportCase</content>
+                                    </expression>
+                                </expression>
+                            </expression>
+                            <expression expressionType="TYPE_LIST" id="2626320336638687298" name="Table of expression containing the following expressions: [(SolutionName,b_supportCase - com.company.model.SupportCase#getTitle,)(Status,Draft,)(SolutionNote,solution,)]._1" returnType="java.util.List">
+                                <content>Table of expression containing the following expressions: [(SolutionName,b_supportCase - com.company.model.SupportCase#getTitle,)(Status,Draft,)(SolutionNote,solution,)]._1</content>
+                                <expression expressionType="TYPE_CONSTANT" id="6119232886594384243" interpreter="" name="Status" returnType="java.lang.String">
+                                    <content>Status</content>
+                                </expression>
+                                <expression expressionType="TYPE_CONSTANT" id="2636982888562801670" interpreter="" name="Draft" returnType="java.lang.String">
+                                    <content>Draft</content>
+                                </expression>
+                            </expression>
+                            <expression expressionType="TYPE_LIST" id="5223331292088482965" name="Table of expression containing the following expressions: [(SolutionName,b_supportCase - com.company.model.SupportCase#getTitle,)(Status,Draft,)(SolutionNote,solution,)]._2" returnType="java.util.List">
+                                <content>Table of expression containing the following expressions: [(SolutionName,b_supportCase - com.company.model.SupportCase#getTitle,)(Status,Draft,)(SolutionNote,solution,)]._2</content>
+                                <expression expressionType="TYPE_CONSTANT" id="8168930212406708512" interpreter="" name="SolutionNote" returnType="java.lang.String">
+                                    <content>SolutionNote</content>
+                                </expression>
+                                <expression expressionType="TYPE_READ_ONLY_SCRIPT" id="7551625873974736407" interpreter="GROOVY" name="solution" returnType="java.lang.String">
+                                    <content>return "Twitter".equalsIgnoreCase(b_supportCase.getSource()) ? directMessage : resolvedMessage;</content>
+                                    <expression expressionType="TYPE_VARIABLE" id="1991079965335898852" name="directMessage" returnType="java.lang.String">
+                                        <content>directMessage</content>
+                                    </expression>
+                                    <expression expressionType="TYPE_BUSINESS_DATA" id="6917947279282451327" name="b_supportCase" returnType="com.company.model.SupportCase">
+                                        <content>b_supportCase</content>
+                                    </expression>
+                                    <expression expressionType="TYPE_VARIABLE" id="4780559371459935171" name="resolvedMessage" returnType="java.lang.String">
+                                        <content>resolvedMessage</content>
+                                    </expression>
+                                </expression>
+                            </expression>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs>
+                    <operation operatorType="ASSIGNMENT">
+                        <leftOperand name="solutionNumber" type="DATA" />
+                        <rightOperand expressionType="TYPE_INPUT" id="5268060022318740843" interpreter="" name="sObjectId" returnType="java.lang.String">
+                            <content>sObjectId</content>
+                        </rightOperand>
+                    </operation>
+                </outputs>
+            </connector>
+            <connector activationEvent="ON_FINISH" connectorId="salesforce-createsobject" failAction="IGNORE" name="linkCaseToSolution" version="1.0.1">
+                <inputs>
+                    <input name="readTimeout">
+                        <expression expressionType="TYPE_CONSTANT" id="5187840445554772889" interpreter="" name="0" returnType="java.lang.Integer">
+                            <content>0</content>
+                        </expression>
+                    </input>
+                    <input name="authEndpoint">
+                        <expression expressionType="TYPE_CONSTANT" id="4914814651862763384" interpreter="" name="https://login.salesforce.com/services/Soap/u/24.0" returnType="java.lang.String">
+                            <content>https://login.salesforce.com/services/Soap/u/24.0</content>
+                        </expression>
+                    </input>
+                    <input name="username">
+                        <expression expressionType="TYPE_PARAMETER" id="4332114052911578972" interpreter="" name="salesForceUsername" returnType="java.lang.String">
+                            <content>salesForceUsername</content>
+                        </expression>
+                    </input>
+                    <input name="connectionTimeout">
+                        <expression expressionType="TYPE_CONSTANT" id="5850261093173314022" interpreter="" name="0" returnType="java.lang.Integer">
+                            <content>0</content>
+                        </expression>
+                    </input>
+                    <input name="sObjectType">
+                        <expression expressionType="TYPE_CONSTANT" id="4132025790458839743" interpreter="" name="CaseSolution" returnType="java.lang.String">
+                            <content>CaseSolution</content>
+                        </expression>
+                    </input>
+                    <input name="securityToken">
+                        <expression expressionType="TYPE_PARAMETER" id="1657270146432349151" interpreter="" name="salesForceSecurityToken" returnType="java.lang.String">
+                            <content>salesForceSecurityToken</content>
+                        </expression>
+                    </input>
+                    <input name="serviceEndpoint">
+                        <expression expressionType="TYPE_CONSTANT" id="7389821142658598853" interpreter="" name="https://login.salesforce.com/services/Soap/u/24.0" returnType="java.lang.String">
+                            <content>https://login.salesforce.com/services/Soap/u/24.0</content>
+                        </expression>
+                    </input>
+                    <input name="proxyPort">
+                        <expression expressionType="TYPE_CONSTANT" id="5813568401448352662" interpreter="" name="0" returnType="java.lang.Integer">
+                            <content>0</content>
+                        </expression>
+                    </input>
+                    <input name="password">
+                        <expression expressionType="TYPE_PARAMETER" id="6936020342115223161" interpreter="" name="salesForcePassword" returnType="java.lang.String">
+                            <content>salesForcePassword</content>
+                        </expression>
+                    </input>
+                    <input name="fieldValues">
+                        <expression expressionType="TYPE_LIST" id="5676217141355330250" name="Table of expression containing the following expressions: [(CaseId,b_supportCase - com.company.model.SupportCase#getCrmCaseId,)(SolutionId,solutionNumber,)]." returnType="java.util.List">
+                            <content>Table of expression containing the following expressions: [(CaseId,b_supportCase - com.company.model.SupportCase#getCrmCaseId,)(SolutionId,solutionNumber,)].</content>
+                            <expression expressionType="TYPE_LIST" id="7513351146511184570" name="Table of expression containing the following expressions: [(CaseId,b_supportCase - com.company.model.SupportCase#getCrmCaseId,)(SolutionId,solutionNumber,)]._0" returnType="java.util.List">
+                                <content>Table of expression containing the following expressions: [(CaseId,b_supportCase - com.company.model.SupportCase#getCrmCaseId,)(SolutionId,solutionNumber,)]._0</content>
+                                <expression expressionType="TYPE_CONSTANT" id="6154251813559254242" interpreter="" name="CaseId" returnType="java.lang.String">
+                                    <content>CaseId</content>
+                                </expression>
+                                <expression expressionType="TYPE_JAVA_METHOD_CALL" id="1862076311648815187" interpreter="" name="b_supportCase - com.company.model.SupportCase#getCrmCaseId" returnType="java.lang.String">
+                                    <content>getCrmCaseId</content>
+                                    <expression expressionType="TYPE_BUSINESS_DATA" id="737864869539590892" name="b_supportCase" returnType="com.company.model.SupportCase">
+                                        <content>b_supportCase</content>
+                                    </expression>
+                                </expression>
+                            </expression>
+                            <expression expressionType="TYPE_LIST" id="3271044104763492771" name="Table of expression containing the following expressions: [(CaseId,b_supportCase - com.company.model.SupportCase#getCrmCaseId,)(SolutionId,solutionNumber,)]._1" returnType="java.util.List">
+                                <content>Table of expression containing the following expressions: [(CaseId,b_supportCase - com.company.model.SupportCase#getCrmCaseId,)(SolutionId,solutionNumber,)]._1</content>
+                                <expression expressionType="TYPE_CONSTANT" id="7838951626987322655" interpreter="" name="SolutionId" returnType="java.lang.String">
+                                    <content>SolutionId</content>
+                                </expression>
+                                <expression expressionType="TYPE_VARIABLE" id="748150450401295947" interpreter="" name="solutionNumber" returnType="java.lang.String">
+                                    <content>solutionNumber</content>
+                                </expression>
+                            </expression>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs />
+            </connector>
+            <dataDefinitions>
+                <textDataDefinition className="java.lang.String" longText="true" name="solutionNumber" transient="false" />
+            </dataDefinitions>
+            <operations />
+            <boundaryEvents />
+        </automaticTask>
+        <userTask actorName="Support Manager" expectedDuration="54000000" id="4972612442591281896" name="Close case" priority="NORMAL">
+            <description>This task is only for the support managar to close the case.</description>
+            <displayName expressionType="TYPE_READ_ONLY_SCRIPT" id="5010166964639350358" interpreter="GROOVY" name="title" returnType="java.lang.String">
+                <content>String title = "Close case - " + b_supportCase.getTitle();
+
+                    if(title.length() &gt; 70){
+
+                    return title.substring(0, 70) + "..";
+
+                    }
+
+                    return title;
+                </content>
+                <expression expressionType="TYPE_BUSINESS_DATA" id="1784153960386051104" name="b_supportCase" returnType="com.company.model.SupportCase">
+                    <content>b_supportCase</content>
+                </expression>
+            </displayName>
+            <incomingTransition>8390449272778935413</incomingTransition>
+            <outgoingTransition>1039807502635518114</outgoingTransition>
+            <connector activationEvent="ON_FINISH" connectorId="salesforce-updatesobject" failAction="IGNORE" name="updateCaseInSalesForce" version="1.0.1">
+                <inputs>
+                    <input name="readTimeout">
+                        <expression expressionType="TYPE_CONSTANT" id="5614417175392205698" interpreter="" name="0" returnType="java.lang.Integer">
+                            <content>0</content>
+                        </expression>
+                    </input>
+                    <input name="authEndpoint">
+                        <expression expressionType="TYPE_CONSTANT" id="5804778189357298120" interpreter="" name="https://login.salesforce.com/services/Soap/u/24.0" returnType="java.lang.String">
+                            <content>https://login.salesforce.com/services/Soap/u/24.0</content>
+                        </expression>
+                    </input>
+                    <input name="username">
+                        <expression expressionType="TYPE_PARAMETER" id="6949562170676104749" interpreter="" name="salesForceUsername" returnType="java.lang.String">
+                            <content>salesForceUsername</content>
+                        </expression>
+                    </input>
+                    <input name="connectionTimeout">
+                        <expression expressionType="TYPE_CONSTANT" id="8072760382362502609" interpreter="" name="0" returnType="java.lang.Integer">
+                            <content>0</content>
+                        </expression>
+                    </input>
+                    <input name="sObjectType">
+                        <expression expressionType="TYPE_CONSTANT" id="1910289012665007215" interpreter="" name="Case" returnType="java.lang.String">
+                            <content>Case</content>
+                        </expression>
+                    </input>
+                    <input name="securityToken">
+                        <expression expressionType="TYPE_PARAMETER" id="2480875580697392866" interpreter="" name="salesForceSecurityToken" returnType="java.lang.String">
+                            <content>salesForceSecurityToken</content>
+                        </expression>
+                    </input>
+                    <input name="sObjectId">
+                        <expression expressionType="TYPE_JAVA_METHOD_CALL" id="3632697224410607690" interpreter="" name="b_supportCase - com.company.model.SupportCase#getCrmCaseId" returnType="java.lang.String">
+                            <content>getCrmCaseId</content>
+                            <expression expressionType="TYPE_BUSINESS_DATA" id="6958828553309605385" name="b_supportCase" returnType="com.company.model.SupportCase">
+                                <content>b_supportCase</content>
+                            </expression>
+                        </expression>
+                    </input>
+                    <input name="serviceEndpoint">
+                        <expression expressionType="TYPE_CONSTANT" id="8210156025141702757" interpreter="" name="https://login.salesforce.com/services/Soap/u/24.0" returnType="java.lang.String">
+                            <content>https://login.salesforce.com/services/Soap/u/24.0</content>
+                        </expression>
+                    </input>
+                    <input name="proxyPort">
+                        <expression expressionType="TYPE_CONSTANT" id="8264954932633058682" interpreter="" name="0" returnType="java.lang.Integer">
+                            <content>0</content>
+                        </expression>
+                    </input>
+                    <input name="password">
+                        <expression expressionType="TYPE_PARAMETER" id="585845513286863007" interpreter="" name="salesForcePassword" returnType="java.lang.String">
+                            <content>salesForcePassword</content>
+                        </expression>
+                    </input>
+                    <input name="fieldValues">
+                        <expression expressionType="TYPE_LIST" id="8700518027285542056" name="Table of expression containing the following expressions: [(Status,b_supportCase - com.company.model.SupportCase#getStatus,)]." returnType="java.util.List">
+                            <content>Table of expression containing the following expressions: [(Status,b_supportCase - com.company.model.SupportCase#getStatus,)].</content>
+                            <expression expressionType="TYPE_LIST" id="5204239016392675063" name="Table of expression containing the following expressions: [(Status,b_supportCase - com.company.model.SupportCase#getStatus,)]._0" returnType="java.util.List">
+                                <content>Table of expression containing the following expressions: [(Status,b_supportCase - com.company.model.SupportCase#getStatus,)]._0</content>
+                                <expression expressionType="TYPE_CONSTANT" id="4956229593967576473" interpreter="" name="Status" returnType="java.lang.String">
+                                    <content>Status</content>
+                                </expression>
+                                <expression expressionType="TYPE_JAVA_METHOD_CALL" id="7149404074924816718" interpreter="" name="b_supportCase - com.company.model.SupportCase#getStatus" returnType="java.lang.String">
+                                    <content>getStatus</content>
+                                    <expression expressionType="TYPE_BUSINESS_DATA" id="1241008701938906733" name="b_supportCase" returnType="com.company.model.SupportCase">
+                                        <content>b_supportCase</content>
+                                    </expression>
+                                </expression>
+                            </expression>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs />
+            </connector>
+            <dataDefinitions />
+            <operations>
+                <operation operatorType="ASSIGNMENT">
+                    <leftOperand name="bonitaPassword" type="DATA" />
+                    <rightOperand expressionType="TYPE_CONSTANT" id="8494009855819627915" interpreter="" name="bpm" returnType="java.lang.String">
+                        <content>bpm</content>
+                    </rightOperand>
+                </operation>
+                <operation operatorType="ASSIGNMENT">
+                    <leftOperand name="corporateEmailUsername" type="DATA" />
+                    <rightOperand expressionType="TYPE_JAVA_METHOD_CALL" id="1693783690282446985" interpreter="" name="b_reporter - com.company.model.Reporter#getEmail" returnType="java.lang.String">
+                        <content>getEmail</content>
+                        <expression expressionType="TYPE_BUSINESS_DATA" id="6822184020240321257" name="b_reporter" returnType="com.company.model.Reporter">
+                            <content>b_reporter</content>
+                        </expression>
+                    </rightOperand>
+                </operation>
+                <operation operatorType="ASSIGNMENT">
+                    <leftOperand name="firstName" type="DATA" />
+                    <rightOperand expressionType="TYPE_JAVA_METHOD_CALL" id="1915282367148504013" interpreter="" name="b_reporter - com.company.model.Reporter#getFirstName" returnType="java.lang.String">
+                        <content>getFirstName</content>
+                        <expression expressionType="TYPE_BUSINESS_DATA" id="5972846695576680518" name="b_reporter" returnType="com.company.model.Reporter">
+                            <content>b_reporter</content>
+                        </expression>
+                    </rightOperand>
+                </operation>
+                <operation operatorType="ASSIGNMENT">
+                    <leftOperand name="lastName" type="DATA" />
+                    <rightOperand expressionType="TYPE_JAVA_METHOD_CALL" id="5470906817711554537" interpreter="" name="b_reporter - com.company.model.Reporter#getLastName" returnType="java.lang.String">
+                        <content>getLastName</content>
+                        <expression expressionType="TYPE_BUSINESS_DATA" id="5284145534741493331" name="b_reporter" returnType="com.company.model.Reporter">
+                            <content>b_reporter</content>
+                        </expression>
+                    </rightOperand>
+                </operation>
+                <operation operatorType="ASSIGNMENT">
+                    <leftOperand name="toKnowledgeBase" type="DATA" />
+                    <rightOperand expressionType="TYPE_CONTRACT_INPUT" id="3551788077814203796" interpreter="" name="addToKnowledgeBase" returnType="java.lang.Boolean">
+                        <content>addToKnowledgeBase</content>
+                    </rightOperand>
+                </operation>
+                <operation operator="setStatus:java.lang.String" operatorType="JAVA_METHOD">
+                    <leftOperand name="b_supportCase" type="BUSINESS_DATA" />
+                    <rightOperand expressionType="TYPE_CONSTANT" id="2309404903805073891" interpreter="" name="Closed" returnType="java.lang.String">
+                        <content>Closed</content>
+                    </rightOperand>
+                </operation>
+            </operations>
+            <boundaryEvents />
+            <contract>
+                <inputDefinitions>
+                    <inputDefinition multiple="false" name="addToKnowledgeBase" type="BOOLEAN">
+                        <description>add knowledgebase</description>
+                        <inputDefinitions />
+                        <inputDefinitions />
+                    </inputDefinition>
+                </inputDefinitions>
+            </contract>
+            <context>
+                <contextEntry key="b_supportCase_ref">
+                    <expression expressionType="TYPE_BUSINESS_DATA_REFERENCE" id="9023329492920059704" name="b_supportCase" returnType="org.bonitasoft.engine.business.data.BusinessDataReference">
+                        <content>b_supportCase</content>
+                    </expression>
+                </contextEntry>
+                <contextEntry key="b_reporter_ref">
+                    <expression expressionType="TYPE_BUSINESS_DATA_REFERENCE" id="6340268202366289525" name="b_reporter" returnType="org.bonitasoft.engine.business.data.BusinessDataReference">
+                        <content>b_reporter</content>
+                    </expression>
+                </contextEntry>
+                <contextEntry key="b_satisfaction_ref">
+                    <expression expressionType="TYPE_BUSINESS_DATA_REFERENCE" id="319132153672519312" name="b_satisfaction" returnType="org.bonitasoft.engine.business.data.BusinessDataReference">
+                        <content>b_satisfaction</content>
+                    </expression>
+                </contextEntry>
+            </context>
+        </userTask>
+        <automaticTask id="6747265813567100048" name="Update satisfaction index">
+            <incomingTransition>6102198584908533332</incomingTransition>
+            <incomingTransition>7631547659768251886</incomingTransition>
+            <incomingTransition>8780970870210803366</incomingTransition>
+            <outgoingTransition>8665237905263736387</outgoingTransition>
+            <dataDefinitions />
+            <operations>
+                <operation operator="setScore:java.lang.Integer" operatorType="JAVA_METHOD">
+                    <leftOperand name="b_satisfaction" type="BUSINESS_DATA" />
+                    <rightOperand expressionType="TYPE_READ_ONLY_SCRIPT" id="8386370921235173339" interpreter="GROOVY" name="score" returnType="java.lang.Integer">
+                        <content>return CustomerSupportUtil.calculateScore(b_supportCase.getCreatedDate(), responseTimeThresholdForFullScoreInMins, responseTimeThresholdForHalfScoreInMins)</content>
+                        <expression expressionType="TYPE_PARAMETER" id="7773020426261579564" name="responseTimeThresholdForFullScoreInMins" returnType="java.lang.Integer">
+                            <content>responseTimeThresholdForFullScoreInMins</content>
+                        </expression>
+                        <expression expressionType="TYPE_PARAMETER" id="5948163919471267210" name="responseTimeThresholdForHalfScoreInMins" returnType="java.lang.Integer">
+                            <content>responseTimeThresholdForHalfScoreInMins</content>
+                        </expression>
+                        <expression expressionType="TYPE_BUSINESS_DATA" id="3089691853917209612" name="b_supportCase" returnType="com.company.model.SupportCase">
+                            <content>b_supportCase</content>
+                        </expression>
+                    </rightOperand>
+                </operation>
+                <operation operator="setResolutionDate:java.util.Date" operatorType="JAVA_METHOD">
+                    <leftOperand name="b_satisfaction" type="BUSINESS_DATA" />
+                    <rightOperand expressionType="TYPE_READ_ONLY_SCRIPT" id="6496549916615921047" interpreter="GROOVY" name="date" returnType="java.util.Date">
+                        <content>Date now = new Date();
+
+                            return now;
+                        </content>
+                    </rightOperand>
+                </operation>
+                <operation operator="setSupportCaseId:java.lang.Long" operatorType="JAVA_METHOD">
+                    <leftOperand name="b_satisfaction" type="BUSINESS_DATA" />
+                    <rightOperand expressionType="TYPE_JAVA_METHOD_CALL" id="250363076556731786" interpreter="" name="b_supportCase - com.company.model.SupportCase#getPersistenceId" returnType="java.lang.Long">
+                        <content>getPersistenceId</content>
+                        <expression expressionType="TYPE_BUSINESS_DATA" id="5604434879949391489" name="b_supportCase" returnType="com.company.model.SupportCase">
+                            <content>b_supportCase</content>
+                        </expression>
+                    </rightOperand>
+                </operation>
+            </operations>
+            <boundaryEvents />
+        </automaticTask>
+        <automaticTask id="6983254747415814260" name="Notify of case resolution via twitter">
+            <incomingTransition>2234652981644183606</incomingTransition>
+            <outgoingTransition>6476390392861575772</outgoingTransition>
+            <connector activationEvent="ON_FINISH" connectorId="TwitterDirectMessage" failAction="FAIL" name="sendDirectMessageToReporter" version="1.0.0">
+                <inputs>
+                    <input name="message">
+                        <expression expressionType="TYPE_VARIABLE" id="1749044625576707557" interpreter="" name="directMessage" returnType="java.lang.String">
+                            <content>directMessage</content>
+                        </expression>
+                    </input>
+                    <input name="consumerKey">
+                        <expression expressionType="TYPE_PARAMETER" id="2155458437618970851" interpreter="" name="twitterConsumerKey" returnType="java.lang.String">
+                            <content>twitterConsumerKey</content>
+                        </expression>
+                    </input>
+                    <input name="accessToken">
+                        <expression expressionType="TYPE_PARAMETER" id="5297837942413214823" interpreter="" name="twitterAccessToken" returnType="java.lang.String">
+                            <content>twitterAccessToken</content>
+                        </expression>
+                    </input>
+                    <input name="accessSecret">
+                        <expression expressionType="TYPE_PARAMETER" id="5225355432194784098" interpreter="" name="twitterAccessSecret" returnType="java.lang.String">
+                            <content>twitterAccessSecret</content>
+                        </expression>
+                    </input>
+                    <input name="recipient">
+                        <expression expressionType="TYPE_JAVA_METHOD_CALL" id="8952911176634447559" interpreter="" name="b_reporter - com.company.model.Reporter#getTwitterId" returnType="java.lang.String">
+                            <content>getTwitterId</content>
+                            <expression expressionType="TYPE_BUSINESS_DATA" id="7312549421732380211" name="b_reporter" returnType="com.company.model.Reporter">
+                                <content>b_reporter</content>
+                            </expression>
+                        </expression>
+                    </input>
+                    <input name="consumerSecret">
+                        <expression expressionType="TYPE_PARAMETER" id="6140182812993895852" interpreter="" name="twitterConsumerSecret" returnType="java.lang.String">
+                            <content>twitterConsumerSecret</content>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs />
+            </connector>
+            <dataDefinitions />
+            <operations />
+            <boundaryEvents />
+        </automaticTask>
+        <automaticTask id="5601791958648071995" name="Notify of case resolution via mail">
+            <incomingTransition>6696395667075255030</incomingTransition>
+            <outgoingTransition>3676744004838275363</outgoingTransition>
+            <connector activationEvent="ON_FINISH" connectorId="email" failAction="FAIL" name="sendMailToReporter" version="1.0.0">
+                <inputs>
+                    <input name="smtpPort">
+                        <expression expressionType="TYPE_PARAMETER" id="4658595513985711652" interpreter="" name="mailPort" returnType="java.lang.Integer">
+                            <content>mailPort</content>
+                        </expression>
+                    </input>
+                    <input name="to">
+                        <expression expressionType="TYPE_JAVA_METHOD_CALL" id="8590189527744663146" interpreter="" name="b_reporter - com.company.model.Reporter#getEmail" returnType="java.lang.String">
+                            <content>getEmail</content>
+                            <expression expressionType="TYPE_BUSINESS_DATA" id="3782009968820899129" name="b_reporter" returnType="com.company.model.Reporter">
+                                <content>b_reporter</content>
+                            </expression>
+                        </expression>
+                    </input>
+                    <input name="headers">
+                        <expression expressionType="TYPE_LIST" id="8329520030048341815" name="Table of expression containing the following expressions: []." returnType="java.util.List">
+                            <content>Table of expression containing the following expressions: [].</content>
+                        </expression>
+                    </input>
+                    <input name="smtpHost">
+                        <expression expressionType="TYPE_PARAMETER" id="7607296604337845659" interpreter="" name="mailHost" returnType="java.lang.String">
+                            <content>mailHost</content>
+                        </expression>
+                    </input>
+                    <input name="subject">
+                        <expression expressionType="TYPE_READ_ONLY_SCRIPT" id="6442044999780253550" interpreter="GROOVY" name="subject" returnType="java.lang.String">
+                            <content>String.format("[Resolved] Case - %s", b_supportCase.getTitle());</content>
+                            <expression expressionType="TYPE_BUSINESS_DATA" id="4770779287476746835" name="b_supportCase" returnType="com.company.model.SupportCase">
+                                <content>b_supportCase</content>
+                            </expression>
+                        </expression>
+                    </input>
+                    <input name="charset">
+                        <expression expressionType="TYPE_CONSTANT" id="7602373554815417555" interpreter="" name="UTF-8" returnType="java.lang.String">
+                            <content>UTF-8</content>
+                        </expression>
+                    </input>
+                    <input name="from">
+                        <expression expressionType="TYPE_PARAMETER" id="1810697730896084696" interpreter="" name="mailUsername" returnType="java.lang.String">
+                            <content>mailUsername</content>
+                        </expression>
+                    </input>
+                    <input name="password">
+                        <expression expressionType="TYPE_PARAMETER" id="6039303130608978040" interpreter="" name="mailPassword" returnType="java.lang.String">
+                            <content>mailPassword</content>
+                        </expression>
+                    </input>
+                    <input name="message">
+                        <expression expressionType="TYPE_READ_ONLY_SCRIPT" id="7068110978016821684" interpreter="GROOVY" name="mail" returnType="java.lang.String">
+                            <content>"""&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt;&lt;html xmlns:def="http://www.w3.org/1999/xhtml"&gt;&lt;head&gt;&lt;meta http-equiv="Content-Type" content="text/html; charset=utf-8" /&gt;&lt;title&gt;Bonitasoft&lt;/title&gt;&lt;style&gt;
+
+                                .ReadMsgBody{width: 100%;background-color:#F2F2F2;}
+
+                                .ExternalClass{width: 100%;}&lt;/style&gt;&lt;/head&gt;&lt;body style="background-color:#F2F2F2;font-family:Arial, Helvetica, sans-serif;font-size:14px;color:#003952;"&gt;&lt;center&gt;&lt;table align="center" cellpadding="0" cellspacing="0" id="tablemain" width="600" style="border-collapse:collapse;padding:0;margin:0px auto;" bgcolor="#FFFFFF" border="0"&gt;&lt;tr valign="top"&gt;&lt;!--HEADER--&gt;&lt;td width="350" bgcolor="#FFFFFF"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/blue_green_yellow_350_43.png" width="350" height="43" border="0" style="background-color:#F2F2F2;"/&gt;&lt;/td&gt;&lt;!--LOGO--&gt;&lt;td width="250" rowspan="2"&gt;&lt;a href="http://www.bonitasoft.com/?utm_medium=email&amp;utm_source=loopfuse&amp;utm_campaign=the_campaign_name&amp;utm_content=top_logo" target="_blank"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/logo_top_250_95.png" alt="Bonita BPM" height="95" width="250" border="0" title="Bonitasoft Logo" style="background-color:#F2F2F2;"/&gt;&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="2" bgcolor="#FFFFFF"&gt;&lt;table width="600" align="left" cellpadding="0" cellspacing="0" border="0"&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/spacer_10.png" height="10" width="10" border="0"/&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td width="20"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/spacer_20.png" height="20" width="20" border="0"/&gt;&lt;/td&gt;&lt;td width="560" style="text-align:left;"&gt;&lt;!--TEXT 1--&gt;&lt;p style="text-align:left;"&gt;&lt;br/&gt;&lt;strong&gt;Dear """ + b_reporter.getFirstName() + """ """ + b_reporter.getLastName() + """&lt;/strong&gt;,&lt;br/&gt;&lt;/p&gt;&lt;/td&gt;&lt;td width="20"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/spacer_20.png" height="20" width="20" border="0"/&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/spacer_10.png" height="10" width="10" border="0"/&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="2" bgcolor="#FFFFFF"&gt;&lt;table width="600" align="left" cellpadding="0" cellspacing="0" border="0"&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/spacer_10.png" height="10" width="10" border="0"/&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td width="20"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/spacer_20.png" height="20" width="20" border="0"/&gt;&lt;/td&gt;&lt;td width="560" style="text-align:left;"&gt;&lt;!--TEXT 2--&gt;&lt;p style="text-align:left;"&gt;The case &lt;strong&gt;""" + b_supportCase.getTitle() + """&lt;/strong&gt; has been resolved. Find below the resolution message :&lt;br/&gt;&lt;br/&gt;&lt;strong&gt;""" + resolvedMessage + """&lt;/strong&gt;&lt;/p&gt;&lt;/td&gt;&lt;td width="20"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/spacer_20.png" height="20" width="20" border="0"/&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/spacer_10.png" height="10" width="10" border="0"/&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td bgcolor="#FFFFFF" colspan="2"&gt;&lt;table width="600" align="left" cellpadding="0" cellspacing="0" border="0"&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/spacer_10.png" height="10" width="10" border="0"/&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td width="20"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/spacer_20.png" height="20" width="20" border="0"/&gt;&lt;/td&gt;&lt;td width="260" style="text-align:left;"&gt;&lt;!-- SIGNATURE --&gt;&lt;p style="text-align:left;"&gt;
+
+                                Best Regards,&lt;br/&gt;
+
+                                Yours sincerely,&lt;br/&gt;&lt;a href="http://www.bonitasoft.com/?utm_medium=email&amp;utm_source=loopfuse&amp;utm_campaign=the_campaign_name&amp;utm_content=bottom_logo" target="_blank"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/primary_logo.png" alt="Bonitasoft" height="30" width="120" border="0" title="Bonitasoft Logo"/&gt;&lt;/a&gt;&lt;br/&gt;
+
+                                The Bonitasoft Support team
+
+                                &lt;/p&gt;&lt;/td&gt;&lt;td width="420"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/spacer_20.png" height="20" width="20" border="0"/&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/spacer_10.png" height="10" width="10" border="0"/&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td width="600" colspan="2"&gt;&lt;!-- FOOTER --&gt;&lt;table width="600" align="left" cellpadding="0" cellspacing="0" bgcolor="#E31837" border="0"&gt;&lt;tr&gt;&lt;td width="20"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/spacer_20.png" height="30" width="20" border="0"/&gt;&lt;/td&gt;&lt;td width="30"&gt;&lt;a href="http://www.twitter.com/bonitasoft" target="_blank"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/twitter_30.png" alt="twittter icon" height="30" width="30" border="0" title="Twitter" /&gt;&lt;/a&gt;&lt;/td&gt;&lt;td width="30"&gt;&lt;a href="http://www.facebook.com/bonitasoftbpm" target="_blank"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/facebook_30.png" alt="twittter icon" height="30" width="30" border="0" title="Twitter" /&gt;&lt;/a&gt;&lt;/td&gt;&lt;td width="30"&gt;&lt;a href="http://www.youtube.com/bonitasoft" target="_blank"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/youtube_30.png" alt="youtube icon" height="30" width="30" border="0" title="Youtube" /&gt;&lt;/a&gt;&lt;/td&gt;&lt;td width="30"&gt;&lt;a href="http://www.slideshare.net/bonitasoft" target="_blank"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/slideshare_30.png" alt="slideshare icon" height="30" width="30" border="0" title="Slideshare" /&gt;&lt;/a&gt;&lt;/td&gt;&lt;td width="30"&gt;&lt;a href="http://www.linkedin.com/groups?gid=3182097" target="_blank"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/linkedin_30.png" alt="linkedin icon" height="30" width="30" border="0" title="Linkedin" /&gt;&lt;/a&gt;&lt;/td&gt;&lt;td width="20"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/spacer_20.png" height="30" width="20" border="0"/&gt;&lt;/td&gt;&lt;td width="320"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/copyright_320_30.png" height="30" width="320" border="0"/&gt;&lt;/td&gt;&lt;td width="70"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/beefficient_70_30.png" height="30" width="70" border="0"/&gt;&lt;/td&gt;&lt;td width="20"&gt;&lt;img src="http://www.bonitasoft.com/landing/img/spacer_20.png" height="30" width="20" border="0"/&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/center&gt;&lt;/body&gt;&lt;/html&gt;"""
+                            </content>
+                            <expression expressionType="TYPE_BUSINESS_DATA" id="4484655163193377756" name="b_reporter" returnType="com.company.model.Reporter">
+                                <content>b_reporter</content>
+                            </expression>
+                            <expression expressionType="TYPE_BUSINESS_DATA" id="9026922127174618955" name="b_supportCase" returnType="com.company.model.SupportCase">
+                                <content>b_supportCase</content>
+                            </expression>
+                            <expression expressionType="TYPE_VARIABLE" id="8135799218010308101" name="resolvedMessage" returnType="java.lang.String">
+                                <content>resolvedMessage</content>
+                            </expression>
+                        </expression>
+                    </input>
+                    <input name="sslSupport">
+                        <expression expressionType="TYPE_CONSTANT" id="1604071066236336453" interpreter="" name="true" returnType="java.lang.Boolean">
+                            <content>true</content>
+                        </expression>
+                    </input>
+                    <input name="starttlsSupport">
+                        <expression expressionType="TYPE_CONSTANT" id="4830310517390161415" interpreter="" name="false" returnType="java.lang.Boolean">
+                            <content>false</content>
+                        </expression>
+                    </input>
+                    <input name="userName">
+                        <expression expressionType="TYPE_PARAMETER" id="6801846062963538098" interpreter="" name="mailUsername" returnType="java.lang.String">
+                            <content>mailUsername</content>
+                        </expression>
+                    </input>
+                    <input name="html">
+                        <expression expressionType="TYPE_CONSTANT" id="5752173993472670058" interpreter="" name="true" returnType="java.lang.Boolean">
+                            <content>true</content>
+                        </expression>
+                    </input>
+                    <input name="attachments">
+                        <expression expressionType="TYPE_LIST" id="8246531426005237770" name="List of expression containing the following expressions: ()." returnType="java.util.List">
+                            <content>List of expression containing the following expressions: ().</content>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs />
+            </connector>
+            <dataDefinitions />
+            <operations />
+            <boundaryEvents />
+        </automaticTask>
+        <userTask actorName="Advanced Support" expectedDuration="54000000" id="4915449729145248998" name="Case Resolution by Advanced Support" priority="NORMAL">
+            <description>This task is for the Advanced Support Team to analyse and resolve the case. An onsite visit can be requested if needed. If the case can be directly resolved, the team should provide a resolution note to be sent to the customer</description>
+            <displayName expressionType="TYPE_READ_ONLY_SCRIPT" id="8462144165195825759" interpreter="GROOVY" name="title" returnType="java.lang.String">
+                <content>String title = "Analyse case - " + b_supportCase.getTitle();
+
+                    if(title.length() &gt; 70){
+
+                    return title.substring(0, 70) + "..";
+
+                    }
+
+                    return title;
+                </content>
+                <expression expressionType="TYPE_BUSINESS_DATA" id="1618491066621276557" name="b_supportCase" returnType="com.company.model.SupportCase">
+                    <content>b_supportCase</content>
+                </expression>
+            </displayName>
+            <incomingTransition>3709218378730814303</incomingTransition>
+            <outgoingTransition>1699401646918251263</outgoingTransition>
+            <connector activationEvent="ON_FINISH" connectorId="salesforce-updatesobject" failAction="IGNORE" name="updateCaseInSalesForce" version="1.0.1">
+                <inputs>
+                    <input name="readTimeout">
+                        <expression expressionType="TYPE_CONSTANT" id="8528463444755368107" interpreter="" name="0" returnType="java.lang.Integer">
+                            <content>0</content>
+                        </expression>
+                    </input>
+                    <input name="authEndpoint">
+                        <expression expressionType="TYPE_CONSTANT" id="491821761841115510" interpreter="" name="https://login.salesforce.com/services/Soap/u/24.0" returnType="java.lang.String">
+                            <content>https://login.salesforce.com/services/Soap/u/24.0</content>
+                        </expression>
+                    </input>
+                    <input name="username">
+                        <expression expressionType="TYPE_PARAMETER" id="460299206760286185" interpreter="" name="salesForceUsername" returnType="java.lang.String">
+                            <content>salesForceUsername</content>
+                        </expression>
+                    </input>
+                    <input name="connectionTimeout">
+                        <expression expressionType="TYPE_CONSTANT" id="8992660537475745235" interpreter="" name="0" returnType="java.lang.Integer">
+                            <content>0</content>
+                        </expression>
+                    </input>
+                    <input name="sObjectType">
+                        <expression expressionType="TYPE_CONSTANT" id="7959659163612721177" interpreter="" name="Case" returnType="java.lang.String">
+                            <content>Case</content>
+                        </expression>
+                    </input>
+                    <input name="securityToken">
+                        <expression expressionType="TYPE_PARAMETER" id="1271958207599100519" interpreter="" name="salesForceSecurityToken" returnType="java.lang.String">
+                            <content>salesForceSecurityToken</content>
+                        </expression>
+                    </input>
+                    <input name="sObjectId">
+                        <expression expressionType="TYPE_JAVA_METHOD_CALL" id="7323246124575538288" interpreter="" name="b_supportCase - com.company.model.SupportCase#getCrmCaseId" returnType="java.lang.String">
+                            <content>getCrmCaseId</content>
+                            <expression expressionType="TYPE_BUSINESS_DATA" id="7095653248098256169" name="b_supportCase" returnType="com.company.model.SupportCase">
+                                <content>b_supportCase</content>
+                            </expression>
+                        </expression>
+                    </input>
+                    <input name="serviceEndpoint">
+                        <expression expressionType="TYPE_CONSTANT" id="2097714558114447029" interpreter="" name="https://login.salesforce.com/services/Soap/u/24.0" returnType="java.lang.String">
+                            <content>https://login.salesforce.com/services/Soap/u/24.0</content>
+                        </expression>
+                    </input>
+                    <input name="proxyPort">
+                        <expression expressionType="TYPE_CONSTANT" id="8480929860164536840" interpreter="" name="0" returnType="java.lang.Integer">
+                            <content>0</content>
+                        </expression>
+                    </input>
+                    <input name="password">
+                        <expression expressionType="TYPE_PARAMETER" id="1285090316456381480" interpreter="" name="salesForcePassword" returnType="java.lang.String">
+                            <content>salesForcePassword</content>
+                        </expression>
+                    </input>
+                    <input name="fieldValues">
+                        <expression expressionType="TYPE_LIST" id="4662254697953905034" name="Table of expression containing the following expressions: [(Status,b_supportCase - com.company.model.SupportCase#getStatus,)]." returnType="java.util.List">
+                            <content>Table of expression containing the following expressions: [(Status,b_supportCase - com.company.model.SupportCase#getStatus,)].</content>
+                            <expression expressionType="TYPE_LIST" id="5543885661989586398" name="Table of expression containing the following expressions: [(Status,b_supportCase - com.company.model.SupportCase#getStatus,)]._0" returnType="java.util.List">
+                                <content>Table of expression containing the following expressions: [(Status,b_supportCase - com.company.model.SupportCase#getStatus,)]._0</content>
+                                <expression expressionType="TYPE_CONSTANT" id="289736501433382197" interpreter="" name="Status" returnType="java.lang.String">
+                                    <content>Status</content>
+                                </expression>
+                                <expression expressionType="TYPE_JAVA_METHOD_CALL" id="4796498560972507390" interpreter="" name="b_supportCase - com.company.model.SupportCase#getStatus" returnType="java.lang.String">
+                                    <content>getStatus</content>
+                                    <expression expressionType="TYPE_BUSINESS_DATA" id="8006398057458452506" name="b_supportCase" returnType="com.company.model.SupportCase">
+                                        <content>b_supportCase</content>
+                                    </expression>
+                                </expression>
+                            </expression>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs />
+            </connector>
+            <connector activationEvent="ON_FINISH" connectorId="salesforce-createsobject" failAction="IGNORE" name="createCommentAgainstSalesForceCase" version="1.0.1">
+                <inputs>
+                    <input name="readTimeout">
+                        <expression expressionType="TYPE_CONSTANT" id="4640913319086568765" interpreter="" name="0" returnType="java.lang.Integer">
+                            <content>0</content>
+                        </expression>
+                    </input>
+                    <input name="authEndpoint">
+                        <expression expressionType="TYPE_CONSTANT" id="6917034374913177898" interpreter="" name="https://login.salesforce.com/services/Soap/u/24.0" returnType="java.lang.String">
+                            <content>https://login.salesforce.com/services/Soap/u/24.0</content>
+                        </expression>
+                    </input>
+                    <input name="username">
+                        <expression expressionType="TYPE_PARAMETER" id="6387606707862090092" interpreter="" name="salesForceUsername" returnType="java.lang.String">
+                            <content>salesForceUsername</content>
+                        </expression>
+                    </input>
+                    <input name="connectionTimeout">
+                        <expression expressionType="TYPE_CONSTANT" id="6238967804999583884" interpreter="" name="0" returnType="java.lang.Integer">
+                            <content>0</content>
+                        </expression>
+                    </input>
+                    <input name="sObjectType">
+                        <expression expressionType="TYPE_CONSTANT" id="4480062712452759910" interpreter="" name="CaseComment" returnType="java.lang.String">
+                            <content>CaseComment</content>
+                        </expression>
+                    </input>
+                    <input name="securityToken">
+                        <expression expressionType="TYPE_PARAMETER" id="2215981353147449669" interpreter="" name="salesForceSecurityToken" returnType="java.lang.String">
+                            <content>salesForceSecurityToken</content>
+                        </expression>
+                    </input>
+                    <input name="serviceEndpoint">
+                        <expression expressionType="TYPE_CONSTANT" id="1527356532827048031" interpreter="" name="https://login.salesforce.com/services/Soap/u/24.0" returnType="java.lang.String">
+                            <content>https://login.salesforce.com/services/Soap/u/24.0</content>
+                        </expression>
+                    </input>
+                    <input name="proxyPort">
+                        <expression expressionType="TYPE_CONSTANT" id="5991929607961427945" interpreter="" name="0" returnType="java.lang.Integer">
+                            <content>0</content>
+                        </expression>
+                    </input>
+                    <input name="password">
+                        <expression expressionType="TYPE_PARAMETER" id="5229679236997268665" interpreter="" name="salesForcePassword" returnType="java.lang.String">
+                            <content>salesForcePassword</content>
+                        </expression>
+                    </input>
+                    <input name="fieldValues">
+                        <expression expressionType="TYPE_LIST" id="8800987392003060097" name="Table of expression containing the following expressions: [(ParentId,b_supportCase - com.company.model.SupportCase#getCrmCaseId,)(CommentBody,comment,)]." returnType="java.util.List">
+                            <content>Table of expression containing the following expressions: [(ParentId,b_supportCase - com.company.model.SupportCase#getCrmCaseId,)(CommentBody,comment,)].</content>
+                            <expression expressionType="TYPE_LIST" id="4289949263541979795" name="Table of expression containing the following expressions: [(ParentId,b_supportCase - com.company.model.SupportCase#getCrmCaseId,)(CommentBody,comment,)]._0" returnType="java.util.List">
+                                <content>Table of expression containing the following expressions: [(ParentId,b_supportCase - com.company.model.SupportCase#getCrmCaseId,)(CommentBody,comment,)]._0</content>
+                                <expression expressionType="TYPE_CONSTANT" id="3353096451220553714" interpreter="" name="ParentId" returnType="java.lang.String">
+                                    <content>ParentId</content>
+                                </expression>
+                                <expression expressionType="TYPE_JAVA_METHOD_CALL" id="2087163487527090457" interpreter="" name="b_supportCase - com.company.model.SupportCase#getCrmCaseId" returnType="java.lang.String">
+                                    <content>getCrmCaseId</content>
+                                    <expression expressionType="TYPE_BUSINESS_DATA" id="1451847726719745329" name="b_supportCase" returnType="com.company.model.SupportCase">
+                                        <content>b_supportCase</content>
+                                    </expression>
+                                </expression>
+                            </expression>
+                            <expression expressionType="TYPE_LIST" id="7628787520791164814" name="Table of expression containing the following expressions: [(ParentId,b_supportCase - com.company.model.SupportCase#getCrmCaseId,)(CommentBody,comment,)]._1" returnType="java.util.List">
+                                <content>Table of expression containing the following expressions: [(ParentId,b_supportCase - com.company.model.SupportCase#getCrmCaseId,)(CommentBody,comment,)]._1</content>
+                                <expression expressionType="TYPE_CONSTANT" id="4445680884576072918" interpreter="" name="CommentBody" returnType="java.lang.String">
+                                    <content>CommentBody</content>
+                                </expression>
+                                <expression expressionType="TYPE_READ_ONLY_SCRIPT" id="3258816269819296679" interpreter="GROOVY" name="comment" returnType="java.lang.String">
+                                    <content>if(needOnsiteVisit) return "An onsite visit has to be scheduled";
+
+                                        return "Twitter".equalsIgnoreCase(b_supportCase.getSource()) ? directMessage : resolvedMessage;
+                                    </content>
+                                    <expression expressionType="TYPE_VARIABLE" id="8484462916164536734" name="directMessage" returnType="java.lang.String">
+                                        <content>directMessage</content>
+                                    </expression>
+                                    <expression expressionType="TYPE_BUSINESS_DATA" id="1086330899288115326" name="b_supportCase" returnType="com.company.model.SupportCase">
+                                        <content>b_supportCase</content>
+                                    </expression>
+                                    <expression expressionType="TYPE_VARIABLE" id="2076343479780134130" name="needOnsiteVisit" returnType="java.lang.Boolean">
+                                        <content>needOnsiteVisit</content>
+                                    </expression>
+                                    <expression expressionType="TYPE_VARIABLE" id="8615774459620049838" name="resolvedMessage" returnType="java.lang.String">
+                                        <content>resolvedMessage</content>
+                                    </expression>
+                                </expression>
+                            </expression>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs />
+            </connector>
+            <dataDefinitions />
+            <operations>
+                <operation operator="setStatus:java.lang.String" operatorType="JAVA_METHOD">
+                    <leftOperand name="b_supportCase" type="BUSINESS_DATA" />
+                    <rightOperand expressionType="TYPE_CONTRACT_INPUT" id="2030273091336028208" interpreter="" name="status" returnType="java.lang.String">
+                        <content>status</content>
+                    </rightOperand>
+                </operation>
+                <operation operatorType="ASSIGNMENT">
+                    <leftOperand name="messageForAdvancedSupportTeam" type="DATA" />
+                    <rightOperand expressionType="TYPE_CONTRACT_INPUT" id="5478762058496717064" interpreter="" name="message" returnType="java.lang.String">
+                        <content>message</content>
+                    </rightOperand>
+                </operation>
+                <operation operatorType="ASSIGNMENT">
+                    <leftOperand name="needOnsiteVisit" type="DATA" />
+                    <rightOperand expressionType="TYPE_READ_ONLY_SCRIPT" id="643249118437949394" interpreter="GROOVY" name="onsite" returnType="java.lang.Boolean">
+                        <content>boolean onsite = false;
+
+
+                            if(status.equals("Schedule Onsite Visit")){
+
+                            onsite = true;
+
+                            }
+
+                            return onsite;
+                        </content>
+                        <expression expressionType="TYPE_CONTRACT_INPUT" id="2101438334641325238" name="status" returnType="java.lang.String">
+                            <content>status</content>
+                        </expression>
+                    </rightOperand>
+                </operation>
+            </operations>
+            <boundaryEvents />
+            <contract>
+                <inputDefinitions>
+                    <inputDefinition multiple="false" name="status" type="TEXT">
+                        <description>status</description>
+                        <inputDefinitions />
+                        <inputDefinitions />
+                    </inputDefinition>
+                    <inputDefinition multiple="false" name="message" type="TEXT">
+                        <description>message</description>
+                        <inputDefinitions />
+                        <inputDefinitions />
+                    </inputDefinition>
+                </inputDefinitions>
+            </contract>
+            <context>
+                <contextEntry key="b_supportCase_ref">
+                    <expression expressionType="TYPE_BUSINESS_DATA_REFERENCE" id="6609964980601599130" name="b_supportCase" returnType="org.bonitasoft.engine.business.data.BusinessDataReference">
+                        <content>b_supportCase</content>
+                    </expression>
+                </contextEntry>
+                <contextEntry key="b_reporter_ref">
+                    <expression expressionType="TYPE_BUSINESS_DATA_REFERENCE" id="2174767913405102340" name="b_reporter" returnType="org.bonitasoft.engine.business.data.BusinessDataReference">
+                        <content>b_reporter</content>
+                    </expression>
+                </contextEntry>
+                <contextEntry key="b_satisfaction_ref">
+                    <expression expressionType="TYPE_BUSINESS_DATA_REFERENCE" id="3419824041502226269" name="b_satisfaction" returnType="org.bonitasoft.engine.business.data.BusinessDataReference">
+                        <content>b_satisfaction</content>
+                    </expression>
+                </contextEntry>
+            </context>
+        </userTask>
+        <callActivity callableElementType="PROCESS" id="6282720202155372783" name="Schedule onsite visit">
+            <incomingTransition>5155229659613382115</incomingTransition>
+            <incomingTransition>4415020773623941803</incomingTransition>
+            <outgoingTransition>8780970870210803366</outgoingTransition>
+            <dataDefinitions />
+            <operations />
+            <boundaryEvents />
+            <callableElement expressionType="TYPE_CONSTANT" id="6458335243833030167" interpreter="" name="Onsite Visit" returnType="java.lang.String">
+                <content>Onsite Visit</content>
+            </callableElement>
+            <callableElementVersion expressionType="TYPE_CONSTANT" id="1152826420657734060" interpreter="" name="4.2" returnType="java.lang.String">
+                <content>4.2</content>
+            </callableElementVersion>
+            <dataInputOperation operatorType="ASSIGNMENT">
+                <leftOperand name="commentFromSupportTeam" type="DATA" />
+                <rightOperand expressionType="TYPE_VARIABLE" id="7989444095481000919" interpreter="" name="onsiteVisitComment" returnType="java.lang.String">
+                    <content>onsiteVisitComment</content>
+                </rightOperand>
+            </dataInputOperation>
+            <dataInputOperation operatorType="ASSIGNMENT">
+                <leftOperand name="b_supportCase" type="BUSINESS_DATA" />
+                <rightOperand expressionType="TYPE_BUSINESS_DATA" id="5215591596067473633" interpreter="" name="b_supportCase" returnType="com.company.model.SupportCase">
+                    <content>b_supportCase</content>
+                </rightOperand>
+            </dataInputOperation>
+            <dataInputOperation operatorType="ASSIGNMENT">
+                <leftOperand name="b_reporter" type="BUSINESS_DATA" />
+                <rightOperand expressionType="TYPE_BUSINESS_DATA" id="3242643122414699162" interpreter="" name="b_reporter" returnType="com.company.model.Reporter">
+                    <content>b_reporter</content>
+                </rightOperand>
+            </dataInputOperation>
+            <dataInputOperation operatorType="ASSIGNMENT">
+                <leftOperand name="needsAdvancedSupport" type="DATA" />
+                <rightOperand expressionType="TYPE_VARIABLE" id="4239393824630552807" interpreter="" name="needsAdvancedSupport" returnType="java.lang.Boolean">
+                    <content>needsAdvancedSupport</content>
+                </rightOperand>
+            </dataInputOperation>
+            <dataInputOperation operatorType="ASSIGNMENT">
+                <leftOperand name="resolvedMessage" type="DATA" />
+                <rightOperand expressionType="TYPE_VARIABLE" id="8845334415501275405" interpreter="" name="resolvedMessage" returnType="java.lang.String">
+                    <content>resolvedMessage</content>
+                </rightOperand>
+            </dataInputOperation>
+            <dataInputOperation operatorType="ASSIGNMENT">
+                <leftOperand name="directMessage" type="DATA" />
+                <rightOperand expressionType="TYPE_VARIABLE" id="1927870332682350800" interpreter="" name="directMessage" returnType="java.lang.String">
+                    <content>directMessage</content>
+                </rightOperand>
+            </dataInputOperation>
+            <dataInputOperation operatorType="ASSIGNMENT">
+                <leftOperand name="messageFromAdvancedSupportTeam" type="DATA" />
+                <rightOperand expressionType="TYPE_VARIABLE" id="7127200543993872244" interpreter="" name="messageForAdvancedSupportTeam" returnType="java.lang.String">
+                    <content>messageForAdvancedSupportTeam</content>
+                </rightOperand>
+            </dataInputOperation>
+            <dataOutputOperation operatorType="ASSIGNMENT">
+                <leftOperand name="resolvedMessage" type="DATA" />
+                <rightOperand expressionType="TYPE_VARIABLE" id="1350764357432983840" name="resolvedMessage" returnType="java.lang.String">
+                    <content>resolvedMessage</content>
+                </rightOperand>
+            </dataOutputOperation>
+            <dataOutputOperation operatorType="ASSIGNMENT">
+                <leftOperand name="directMessage" type="DATA" />
+                <rightOperand expressionType="TYPE_VARIABLE" id="8831720881663620460" name="directMessage" returnType="java.lang.String">
+                    <content>directMessage</content>
+                </rightOperand>
+            </dataOutputOperation>
+            <dataOutputOperation operatorType="ASSIGNMENT">
+                <leftOperand name="needsAdvancedSupport" type="DATA" />
+                <rightOperand expressionType="TYPE_VARIABLE" id="2190835127516969844" name="needsAdvancedSupport" returnType="java.lang.Boolean">
+                    <content>needsAdvancedSupport</content>
+                </rightOperand>
+            </dataOutputOperation>
+            <dataOutputOperation operatorType="ASSIGNMENT">
+                <leftOperand name="b_supportCase" type="BUSINESS_DATA" />
+                <rightOperand expressionType="TYPE_BUSINESS_DATA" id="2133413231656153268" name="b_supportCase" returnType="com.company.model.SupportCase">
+                    <content>b_supportCase</content>
+                </rightOperand>
+            </dataOutputOperation>
+            <dataOutputOperation operatorType="ASSIGNMENT">
+                <leftOperand name="b_reporter" type="BUSINESS_DATA" />
+                <rightOperand expressionType="TYPE_BUSINESS_DATA" id="7877437870802385526" name="b_reporter" returnType="com.company.model.Reporter">
+                    <content>b_reporter</content>
+                </rightOperand>
+            </dataOutputOperation>
+            <dataOutputOperation operatorType="ASSIGNMENT">
+                <leftOperand name="messageForAdvancedSupportTeam" type="DATA" />
+                <rightOperand expressionType="TYPE_VARIABLE" id="6904332379479848388" name="messageFromAdvancedSupportTeam" returnType="java.lang.String">
+                    <content>messageFromAdvancedSupportTeam</content>
+                </rightOperand>
+            </dataOutputOperation>
+            <contractInput />
+        </callActivity>
+        <automaticTask id="5570469029173393118" name="Notify of rejection via mail">
+            <incomingTransition>6979517777050711861</incomingTransition>
+            <outgoingTransition>1681187939036870771</outgoingTransition>
+            <connector activationEvent="ON_FINISH" connectorId="email" failAction="FAIL" name="sendMailToReporter" version="1.0.0">
+                <inputs>
+                    <input name="smtpPort">
+                        <expression expressionType="TYPE_PARAMETER" id="8875713058556129705" interpreter="" name="mailPort" returnType="java.lang.Integer">
+                            <content>mailPort</content>
+                        </expression>
+                    </input>
+                    <input name="to">
+                        <expression expressionType="TYPE_JAVA_METHOD_CALL" id="2341703874692334961" interpreter="" name="b_reporter - com.company.model.Reporter#getEmail" returnType="java.lang.String">
+                            <content>getEmail</content>
+                            <expression expressionType="TYPE_BUSINESS_DATA" id="1119829404691444856" name="b_reporter" returnType="com.company.model.Reporter">
+                                <content>b_reporter</content>
+                            </expression>
+                        </expression>
+                    </input>
+                    <input name="headers">
+                        <expression expressionType="TYPE_LIST" id="2457393232705207295" name="Table of expression containing the following expressions: []." returnType="java.util.List">
+                            <content>Table of expression containing the following expressions: [].</content>
+                        </expression>
+                    </input>
+                    <input name="smtpHost">
+                        <expression expressionType="TYPE_PARAMETER" id="7401345436582037352" interpreter="" name="mailHost" returnType="java.lang.String">
+                            <content>mailHost</content>
+                        </expression>
+                    </input>
+                    <input name="subject">
+                        <expression expressionType="TYPE_READ_ONLY_SCRIPT" id="8035569178184730244" interpreter="GROOVY" name="subject" returnType="java.lang.String">
+                            <content>String.format("[Case Rejected] The case '%s' has been rejected",b_supportCase.getTitle());</content>
+                            <expression expressionType="TYPE_BUSINESS_DATA" id="7129831631712859583" name="b_supportCase" returnType="com.company.model.SupportCase">
+                                <content>b_supportCase</content>
+                            </expression>
+                        </expression>
+                    </input>
+                    <input name="charset">
+                        <expression expressionType="TYPE_CONSTANT" id="7925448012558714582" interpreter="" name="UTF-8" returnType="java.lang.String">
+                            <content>UTF-8</content>
+                        </expression>
+                    </input>
+                    <input name="from">
+                        <expression expressionType="TYPE_PARAMETER" id="2690000762416053871" interpreter="" name="mailUsername" returnType="java.lang.String">
+                            <content>mailUsername</content>
+                        </expression>
+                    </input>
+                    <input name="password">
+                        <expression expressionType="TYPE_PARAMETER" id="2920174869257892998" interpreter="" name="mailPassword" returnType="java.lang.String">
+                            <content>mailPassword</content>
+                        </expression>
+                    </input>
+                    <input name="message">
+                        <expression expressionType="TYPE_READ_ONLY_SCRIPT" id="7018304010061694259" interpreter="GROOVY" name="body" returnType="java.lang.String">
+                            <content>String.format("Dear %s %s, &lt;br/&gt; The case &lt;strong&gt;'%s'&lt;/strong&gt; that you have reported has been rejected as it does not qualify as a valid complaint.&lt;br/&gt; " +
+
+                                "Please ensure that you provide all the relevant details clearly so that we can assist you better &lt;br/&gt;&lt;br/&gt; Best Regards, &lt;br/&gt;Customer Support Team",
+
+                                b_reporter.getFirstName(), b_reporter.getLastName() == null ? "" : b_reporter.getLastName() , b_supportCase.getTitle());
+                            </content>
+                            <expression expressionType="TYPE_BUSINESS_DATA" id="2324289141337537928" name="b_reporter" returnType="com.company.model.Reporter">
+                                <content>b_reporter</content>
+                            </expression>
+                            <expression expressionType="TYPE_BUSINESS_DATA" id="6368749890298527918" name="b_supportCase" returnType="com.company.model.SupportCase">
+                                <content>b_supportCase</content>
+                            </expression>
+                        </expression>
+                    </input>
+                    <input name="sslSupport">
+                        <expression expressionType="TYPE_CONSTANT" id="5722663336992522630" interpreter="" name="true" returnType="java.lang.Boolean">
+                            <content>true</content>
+                        </expression>
+                    </input>
+                    <input name="starttlsSupport">
+                        <expression expressionType="TYPE_CONSTANT" id="1585583737146720883" interpreter="" name="false" returnType="java.lang.Boolean">
+                            <content>false</content>
+                        </expression>
+                    </input>
+                    <input name="userName">
+                        <expression expressionType="TYPE_PARAMETER" id="7075277607499878323" interpreter="" name="mailUsername" returnType="java.lang.String">
+                            <content>mailUsername</content>
+                        </expression>
+                    </input>
+                    <input name="html">
+                        <expression expressionType="TYPE_CONSTANT" id="6768462854057248840" interpreter="" name="true" returnType="java.lang.Boolean">
+                            <content>true</content>
+                        </expression>
+                    </input>
+                    <input name="attachments">
+                        <expression expressionType="TYPE_LIST" id="6507565814385064626" name="List of expression containing the following expressions: ()." returnType="java.util.List">
+                            <content>List of expression containing the following expressions: ().</content>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs />
+            </connector>
+            <dataDefinitions />
+            <operations />
+            <boundaryEvents />
+        </automaticTask>
+        <automaticTask id="7978375344209172554" name="Notify of rejection via twitter">
+            <incomingTransition>7301162770733514619</incomingTransition>
+            <outgoingTransition>8680486741507001383</outgoingTransition>
+            <connector activationEvent="ON_FINISH" connectorId="TwitterDirectMessage" failAction="FAIL" name="sendDirectMessageToReporter" version="1.0.0">
+                <inputs>
+                    <input name="message">
+                        <expression expressionType="TYPE_VARIABLE" id="3829487800653691293" interpreter="" name="directMessage" returnType="java.lang.String">
+                            <content>directMessage</content>
+                        </expression>
+                    </input>
+                    <input name="consumerKey">
+                        <expression expressionType="TYPE_PARAMETER" id="3333123891287404888" interpreter="" name="twitterConsumerKey" returnType="java.lang.String">
+                            <content>twitterConsumerKey</content>
+                        </expression>
+                    </input>
+                    <input name="accessToken">
+                        <expression expressionType="TYPE_PARAMETER" id="788688021756817751" interpreter="" name="twitterAccessToken" returnType="java.lang.String">
+                            <content>twitterAccessToken</content>
+                        </expression>
+                    </input>
+                    <input name="accessSecret">
+                        <expression expressionType="TYPE_PARAMETER" id="4652519325982540022" interpreter="" name="twitterAccessSecret" returnType="java.lang.String">
+                            <content>twitterAccessSecret</content>
+                        </expression>
+                    </input>
+                    <input name="recipient">
+                        <expression expressionType="TYPE_JAVA_METHOD_CALL" id="3493286792358573881" interpreter="" name="b_reporter - com.company.model.Reporter#getTwitterId" returnType="java.lang.String">
+                            <content>getTwitterId</content>
+                            <expression expressionType="TYPE_BUSINESS_DATA" id="5412191154691066883" name="b_reporter" returnType="com.company.model.Reporter">
+                                <content>b_reporter</content>
+                            </expression>
+                        </expression>
+                    </input>
+                    <input name="consumerSecret">
+                        <expression expressionType="TYPE_PARAMETER" id="7293797479318468241" interpreter="" name="twitterConsumerSecret" returnType="java.lang.String">
+                            <content>twitterConsumerSecret</content>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs />
+            </connector>
+            <dataDefinitions />
+            <operations />
+            <boundaryEvents />
+        </automaticTask>
+        <userTask actorName="General Support" expectedDuration="54000000" id="9133354468693036659" name="Preliminary case analysis by general support" priority="NORMAL">
+            <description>This task is for the General Support Team to do a preliminary analysis of the logged case. If the case is not really a complaint, then it can be rejected right away. Otherwise, it can be 'Opened' for further analysis and resolution</description>
+            <displayName expressionType="TYPE_READ_ONLY_SCRIPT" id="3063238672567349526" interpreter="GROOVY" name="title" returnType="java.lang.String">
+                <content>String title = "Analyse the new case - " + b_supportCase.getTitle();
+                    //String title = "Analyse the new case";
+
+                    if(title.length() &gt; 70){
+
+                    return title.substring(0, 70) + "..";
+
+                    }
+
+                    return title;
+                </content>
+                <expression expressionType="TYPE_BUSINESS_DATA" id="5958376583160939359" name="b_supportCase" returnType="com.company.model.SupportCase">
+                    <content>b_supportCase</content>
+                </expression>
+            </displayName>
+            <incomingTransition>5321345745679399707</incomingTransition>
+            <outgoingTransition>2755434642911837749</outgoingTransition>
+            <dataDefinitions />
+            <operations>
+                <operation operator="setCategory:java.lang.String" operatorType="JAVA_METHOD">
+                    <leftOperand name="b_supportCase" type="BUSINESS_DATA" />
+                    <rightOperand expressionType="TYPE_CONTRACT_INPUT" id="4464822497852148996" interpreter="" name="category" returnType="java.lang.String">
+                        <content>category</content>
+                    </rightOperand>
+                </operation>
+                <operation operator="setSeverity:java.lang.String" operatorType="JAVA_METHOD">
+                    <leftOperand name="b_supportCase" type="BUSINESS_DATA" />
+                    <rightOperand expressionType="TYPE_CONTRACT_INPUT" id="5526137612325570926" interpreter="" name="severity" returnType="java.lang.String">
+                        <content>severity</content>
+                    </rightOperand>
+                </operation>
+                <operation operator="setStatus:java.lang.String" operatorType="JAVA_METHOD">
+                    <leftOperand name="b_supportCase" type="BUSINESS_DATA" />
+                    <rightOperand expressionType="TYPE_CONTRACT_INPUT" id="9026440999911273303" interpreter="" name="status" returnType="java.lang.String">
+                        <content>status</content>
+                    </rightOperand>
+                </operation>
+                <operation operatorType="ASSIGNMENT">
+                    <leftOperand name="hasCaseBeenRejected" type="DATA" />
+                    <rightOperand expressionType="TYPE_READ_ONLY_SCRIPT" id="6740259817381804428" interpreter="GROOVY" name="status" returnType="java.lang.Boolean">
+                        <content>if(status == "Rejected"){
+
+                            return true;
+
+                            }
+                        </content>
+                        <expression expressionType="TYPE_CONTRACT_INPUT" id="2649411189445082456" name="status" returnType="java.lang.String">
+                            <content>status</content>
+                        </expression>
+                    </rightOperand>
+                </operation>
+            </operations>
+            <boundaryEvents />
+            <contract>
+                <inputDefinitions>
+                    <inputDefinition multiple="false" name="category" type="TEXT">
+                        <description>category</description>
+                        <inputDefinitions />
+                        <inputDefinitions />
+                    </inputDefinition>
+                    <inputDefinition multiple="false" name="severity" type="TEXT">
+                        <description>severity</description>
+                        <inputDefinitions />
+                        <inputDefinitions />
+                    </inputDefinition>
+                    <inputDefinition multiple="false" name="status" type="TEXT">
+                        <description>status</description>
+                        <inputDefinitions />
+                        <inputDefinitions />
+                    </inputDefinition>
+                </inputDefinitions>
+            </contract>
+            <context>
+                <contextEntry key="b_supportCase_ref">
+                    <expression expressionType="TYPE_BUSINESS_DATA_REFERENCE" id="4890176908460343170" name="b_supportCase" returnType="org.bonitasoft.engine.business.data.BusinessDataReference">
+                        <content>b_supportCase</content>
+                    </expression>
+                </contextEntry>
+                <contextEntry key="b_reporter_ref">
+                    <expression expressionType="TYPE_BUSINESS_DATA_REFERENCE" id="5784893517652602941" name="b_reporter" returnType="org.bonitasoft.engine.business.data.BusinessDataReference">
+                        <content>b_reporter</content>
+                    </expression>
+                </contextEntry>
+                <contextEntry key="b_satisfaction_ref">
+                    <expression expressionType="TYPE_BUSINESS_DATA_REFERENCE" id="6445964954862663167" name="b_satisfaction" returnType="org.bonitasoft.engine.business.data.BusinessDataReference">
+                        <content>b_satisfaction</content>
+                    </expression>
+                </contextEntry>
+            </context>
+        </userTask>
+        <automaticTask id="6559385374862575671" name="Create contact and case in Sales Force">
+            <incomingTransition>4940897591181330277</incomingTransition>
+            <outgoingTransition>3726432527510291027</outgoingTransition>
+            <connector activationEvent="ON_FINISH" connectorId="salesforce-createsobject" failAction="IGNORE" name="createContactInSalesForce" version="1.0.1">
+                <inputs>
+                    <input name="readTimeout">
+                        <expression expressionType="TYPE_CONSTANT" id="1167738567050281642" interpreter="" name="0" returnType="java.lang.Integer">
+                            <content>0</content>
+                        </expression>
+                    </input>
+                    <input name="authEndpoint">
+                        <expression expressionType="TYPE_CONSTANT" id="3551295854006613882" interpreter="" name="https://login.salesforce.com/services/Soap/u/24.0" returnType="java.lang.String">
+                            <content>https://login.salesforce.com/services/Soap/u/24.0</content>
+                        </expression>
+                    </input>
+                    <input name="username">
+                        <expression expressionType="TYPE_PARAMETER" id="666593764845110309" interpreter="" name="salesForceUsername" returnType="java.lang.String">
+                            <content>salesForceUsername</content>
+                        </expression>
+                    </input>
+                    <input name="connectionTimeout">
+                        <expression expressionType="TYPE_CONSTANT" id="4920822904534840387" interpreter="" name="0" returnType="java.lang.Integer">
+                            <content>0</content>
+                        </expression>
+                    </input>
+                    <input name="sObjectType">
+                        <expression expressionType="TYPE_READ_ONLY_SCRIPT" id="177031253361380095" interpreter="GROOVY" name="objectTypeName" returnType="java.lang.String">
+                            <content>import java.util.logging.Logger;
+
+
+                                Logger logger = Logger.getLogger("org.bonitasoft.test");
+
+                                logger.info(b_reporter.getCrmContactId());
+
+                                if(CustomerSupportUtil.isNullOrEmpty(b_reporter.getCrmContactId())) {
+
+                                return "Contact"
+
+                                }
+
+                                //If contact already exists, don't create a new one
+
+                                return "NonExistentSalesForceType";
+                            </content>
+                            <expression expressionType="TYPE_BUSINESS_DATA" id="547420279288740265" name="b_reporter" returnType="com.company.model.Reporter">
+                                <content>b_reporter</content>
+                            </expression>
+                        </expression>
+                    </input>
+                    <input name="securityToken">
+                        <expression expressionType="TYPE_PARAMETER" id="2832180897528825994" interpreter="" name="salesForceSecurityToken" returnType="java.lang.String">
+                            <content>salesForceSecurityToken</content>
+                        </expression>
+                    </input>
+                    <input name="serviceEndpoint">
+                        <expression expressionType="TYPE_CONSTANT" id="6564845753838551990" interpreter="" name="https://login.salesforce.com/services/Soap/u/24.0" returnType="java.lang.String">
+                            <content>https://login.salesforce.com/services/Soap/u/24.0</content>
+                        </expression>
+                    </input>
+                    <input name="proxyPort">
+                        <expression expressionType="TYPE_CONSTANT" id="7868326520800888792" interpreter="" name="0" returnType="java.lang.Integer">
+                            <content>0</content>
+                        </expression>
+                    </input>
+                    <input name="password">
+                        <expression expressionType="TYPE_PARAMETER" id="2689946254559232123" interpreter="" name="salesForcePassword" returnType="java.lang.String">
+                            <content>salesForcePassword</content>
+                        </expression>
+                    </input>
+                    <input name="fieldValues">
+                        <expression expressionType="TYPE_LIST" id="3025565710764953439" name="Table of expression containing the following expressions: [(LastName,lastName,)(Email,b_reporter - com.company.model.Reporter#getEmail,)(FirstName,firstName,)]." returnType="java.util.List">
+                            <content>Table of expression containing the following expressions: [(LastName,lastName,)(Email,b_reporter - com.company.model.Reporter#getEmail,)(FirstName,firstName,)].</content>
+                            <expression expressionType="TYPE_LIST" id="7065673422569979322" name="Table of expression containing the following expressions: [(LastName,lastName,)(Email,b_reporter - com.company.model.Reporter#getEmail,)(FirstName,firstName,)]._0" returnType="java.util.List">
+                                <content>Table of expression containing the following expressions: [(LastName,lastName,)(Email,b_reporter - com.company.model.Reporter#getEmail,)(FirstName,firstName,)]._0</content>
+                                <expression expressionType="TYPE_CONSTANT" id="6942494170081900448" interpreter="" name="LastName" returnType="java.lang.String">
+                                    <content>LastName</content>
+                                </expression>
+                                <expression expressionType="TYPE_READ_ONLY_SCRIPT" id="1700737258604902917" interpreter="GROOVY" name="lastName" returnType="java.lang.String">
+                                    <content>if(CustomerSupportUtil.isNullOrEmpty(b_reporter.getLastName())) return b_reporter.getFirstName();
+
+                                        return b_reporter.getLastName();
+                                    </content>
+                                    <expression expressionType="TYPE_BUSINESS_DATA" id="8614219626731190544" name="b_reporter" returnType="com.company.model.Reporter">
+                                        <content>b_reporter</content>
+                                    </expression>
+                                </expression>
+                            </expression>
+                            <expression expressionType="TYPE_LIST" id="6147971567349548460" name="Table of expression containing the following expressions: [(LastName,lastName,)(Email,b_reporter - com.company.model.Reporter#getEmail,)(FirstName,firstName,)]._1" returnType="java.util.List">
+                                <content>Table of expression containing the following expressions: [(LastName,lastName,)(Email,b_reporter - com.company.model.Reporter#getEmail,)(FirstName,firstName,)]._1</content>
+                                <expression expressionType="TYPE_CONSTANT" id="7501247189885666045" interpreter="" name="Email" returnType="java.lang.String">
+                                    <content>Email</content>
+                                </expression>
+                                <expression expressionType="TYPE_JAVA_METHOD_CALL" id="7052080700353039574" interpreter="" name="b_reporter - com.company.model.Reporter#getEmail" returnType="java.lang.String">
+                                    <content>getEmail</content>
+                                    <expression expressionType="TYPE_BUSINESS_DATA" id="4251205320473921924" name="b_reporter" returnType="com.company.model.Reporter">
+                                        <content>b_reporter</content>
+                                    </expression>
+                                </expression>
+                            </expression>
+                            <expression expressionType="TYPE_LIST" id="1083633119171857833" name="Table of expression containing the following expressions: [(LastName,lastName,)(Email,b_reporter - com.company.model.Reporter#getEmail,)(FirstName,firstName,)]._2" returnType="java.util.List">
+                                <content>Table of expression containing the following expressions: [(LastName,lastName,)(Email,b_reporter - com.company.model.Reporter#getEmail,)(FirstName,firstName,)]._2</content>
+                                <expression expressionType="TYPE_CONSTANT" id="745819407141744878" interpreter="" name="FirstName" returnType="java.lang.String">
+                                    <content>FirstName</content>
+                                </expression>
+                                <expression expressionType="TYPE_READ_ONLY_SCRIPT" id="5112049142976724296" interpreter="GROOVY" name="firstName" returnType="java.lang.String">
+                                    <content>if("Web".equalsIgnoreCase(b_supportCase.getSource())) return b_reporter.getFirstName();
+
+                                        return "";
+                                    </content>
+                                    <expression expressionType="TYPE_BUSINESS_DATA" id="8542066783985055704" name="b_reporter" returnType="com.company.model.Reporter">
+                                        <content>b_reporter</content>
+                                    </expression>
+                                    <expression expressionType="TYPE_BUSINESS_DATA" id="8894011590655260939" name="b_supportCase" returnType="com.company.model.SupportCase">
+                                        <content>b_supportCase</content>
+                                    </expression>
+                                </expression>
+                            </expression>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs>
+                    <operation operator="setCrmContactId:java.lang.String" operatorType="JAVA_METHOD">
+                        <leftOperand name="b_reporter" type="BUSINESS_DATA" />
+                        <rightOperand expressionType="TYPE_INPUT" id="7452710695476281472" interpreter="" name="sObjectId" returnType="java.lang.String">
+                            <content>sObjectId</content>
+                        </rightOperand>
+                    </operation>
+                </outputs>
+            </connector>
+            <connector activationEvent="ON_FINISH" connectorId="salesforce-createsobject" failAction="IGNORE" name="createCaseInSalesForce" version="1.0.1">
+                <inputs>
+                    <input name="readTimeout">
+                        <expression expressionType="TYPE_CONSTANT" id="5374795021590049566" interpreter="" name="0" returnType="java.lang.Integer">
+                            <content>0</content>
+                        </expression>
+                    </input>
+                    <input name="authEndpoint">
+                        <expression expressionType="TYPE_CONSTANT" id="5368044348115761077" interpreter="" name="https://login.salesforce.com/services/Soap/u/24.0" returnType="java.lang.String">
+                            <content>https://login.salesforce.com/services/Soap/u/24.0</content>
+                        </expression>
+                    </input>
+                    <input name="username">
+                        <expression expressionType="TYPE_PARAMETER" id="2548362440916946216" interpreter="" name="salesForceUsername" returnType="java.lang.String">
+                            <content>salesForceUsername</content>
+                        </expression>
+                    </input>
+                    <input name="connectionTimeout">
+                        <expression expressionType="TYPE_CONSTANT" id="5520900134792547108" interpreter="" name="0" returnType="java.lang.Integer">
+                            <content>0</content>
+                        </expression>
+                    </input>
+                    <input name="sObjectType">
+                        <expression expressionType="TYPE_CONSTANT" id="5603070697472937798" interpreter="" name="Case" returnType="java.lang.String">
+                            <content>Case</content>
+                        </expression>
+                    </input>
+                    <input name="securityToken">
+                        <expression expressionType="TYPE_PARAMETER" id="7011824861792154932" interpreter="" name="salesForceSecurityToken" returnType="java.lang.String">
+                            <content>salesForceSecurityToken</content>
+                        </expression>
+                    </input>
+                    <input name="serviceEndpoint">
+                        <expression expressionType="TYPE_CONSTANT" id="1917682584290374666" interpreter="" name="https://login.salesforce.com/services/Soap/u/24.0" returnType="java.lang.String">
+                            <content>https://login.salesforce.com/services/Soap/u/24.0</content>
+                        </expression>
+                    </input>
+                    <input name="proxyPort">
+                        <expression expressionType="TYPE_CONSTANT" id="7611263161637647686" interpreter="" name="0" returnType="java.lang.Integer">
+                            <content>0</content>
+                        </expression>
+                    </input>
+                    <input name="password">
+                        <expression expressionType="TYPE_PARAMETER" id="4594414813027782026" interpreter="" name="salesForcePassword" returnType="java.lang.String">
+                            <content>salesForcePassword</content>
+                        </expression>
+                    </input>
+                    <input name="fieldValues">
+                        <expression expressionType="TYPE_LIST" id="2972568671774198413" name="Table of expression containing the following expressions: [(ContactId,b_reporter - com.company.model.Reporter#getCrmContactId,)(Description,b_supportCase - com.company.model.SupportCase#getDescription,)(Status,b_supportCase - com.company.model.SupportCase#getStatus,)(Subject,b_supportCase - com.company.model.SupportCase#getTitle,)(Priority,b_supportCase - com.company.model.SupportCase#getSeverity,)(Origin,b_supportCase - com.company.model.SupportCase#getSource,)(SuppliedEmail,b_reporter - com.company.model.Reporter#getEmail,)(Type,b_supportCase - com.company.model.SupportCase#getCategory,)]." returnType="java.util.List">
+                            <content>Table of expression containing the following expressions: [(ContactId,b_reporter - com.company.model.Reporter#getCrmContactId,)(Description,b_supportCase - com.company.model.SupportCase#getDescription,)(Status,b_supportCase - com.company.model.SupportCase#getStatus,)(Subject,b_supportCase - com.company.model.SupportCase#getTitle,)(Priority,b_supportCase - com.company.model.SupportCase#getSeverity,)(Origin,b_supportCase - com.company.model.SupportCase#getSource,)(SuppliedEmail,b_reporter - com.company.model.Reporter#getEmail,)(Type,b_supportCase - com.company.model.SupportCase#getCategory,)].</content>
+                            <expression expressionType="TYPE_LIST" id="651756936822476277" name="Table of expression containing the following expressions: [(ContactId,b_reporter - com.company.model.Reporter#getCrmContactId,)(Description,b_supportCase - com.company.model.SupportCase#getDescription,)(Status,b_supportCase - com.company.model.SupportCase#getStatus,)(Subject,b_supportCase - com.company.model.SupportCase#getTitle,)(Priority,b_supportCase - com.company.model.SupportCase#getSeverity,)(Origin,b_supportCase - com.company.model.SupportCase#getSource,)(SuppliedEmail,b_reporter - com.company.model.Reporter#getEmail,)(Type,b_supportCase - com.company.model.SupportCase#getCategory,)]._0" returnType="java.util.List">
+                                <content>Table of expression containing the following expressions: [(ContactId,b_reporter - com.company.model.Reporter#getCrmContactId,)(Description,b_supportCase - com.company.model.SupportCase#getDescription,)(Status,b_supportCase - com.company.model.SupportCase#getStatus,)(Subject,b_supportCase - com.company.model.SupportCase#getTitle,)(Priority,b_supportCase - com.company.model.SupportCase#getSeverity,)(Origin,b_supportCase - com.company.model.SupportCase#getSource,)(SuppliedEmail,b_reporter - com.company.model.Reporter#getEmail,)(Type,b_supportCase - com.company.model.SupportCase#getCategory,)]._0</content>
+                                <expression expressionType="TYPE_CONSTANT" id="3172765743913583652" interpreter="" name="ContactId" returnType="java.lang.String">
+                                    <content>ContactId</content>
+                                </expression>
+                                <expression expressionType="TYPE_JAVA_METHOD_CALL" id="7144358661448682168" interpreter="" name="b_reporter - com.company.model.Reporter#getCrmContactId" returnType="java.lang.String">
+                                    <content>getCrmContactId</content>
+                                    <expression expressionType="TYPE_BUSINESS_DATA" id="2513824965228711718" name="b_reporter" returnType="com.company.model.Reporter">
+                                        <content>b_reporter</content>
+                                    </expression>
+                                </expression>
+                            </expression>
+                            <expression expressionType="TYPE_LIST" id="2901416294688274526" name="Table of expression containing the following expressions: [(ContactId,b_reporter - com.company.model.Reporter#getCrmContactId,)(Description,b_supportCase - com.company.model.SupportCase#getDescription,)(Status,b_supportCase - com.company.model.SupportCase#getStatus,)(Subject,b_supportCase - com.company.model.SupportCase#getTitle,)(Priority,b_supportCase - com.company.model.SupportCase#getSeverity,)(Origin,b_supportCase - com.company.model.SupportCase#getSource,)(SuppliedEmail,b_reporter - com.company.model.Reporter#getEmail,)(Type,b_supportCase - com.company.model.SupportCase#getCategory,)]._1" returnType="java.util.List">
+                                <content>Table of expression containing the following expressions: [(ContactId,b_reporter - com.company.model.Reporter#getCrmContactId,)(Description,b_supportCase - com.company.model.SupportCase#getDescription,)(Status,b_supportCase - com.company.model.SupportCase#getStatus,)(Subject,b_supportCase - com.company.model.SupportCase#getTitle,)(Priority,b_supportCase - com.company.model.SupportCase#getSeverity,)(Origin,b_supportCase - com.company.model.SupportCase#getSource,)(SuppliedEmail,b_reporter - com.company.model.Reporter#getEmail,)(Type,b_supportCase - com.company.model.SupportCase#getCategory,)]._1</content>
+                                <expression expressionType="TYPE_CONSTANT" id="1707053687475226667" interpreter="" name="Description" returnType="java.lang.String">
+                                    <content>Description</content>
+                                </expression>
+                                <expression expressionType="TYPE_JAVA_METHOD_CALL" id="2831841828813948570" interpreter="" name="b_supportCase - com.company.model.SupportCase#getDescription" returnType="java.lang.String">
+                                    <content>getDescription</content>
+                                    <expression expressionType="TYPE_BUSINESS_DATA" id="8169395617237517384" name="b_supportCase" returnType="com.company.model.SupportCase">
+                                        <content>b_supportCase</content>
+                                    </expression>
+                                </expression>
+                            </expression>
+                            <expression expressionType="TYPE_LIST" id="6860740462428861150" name="Table of expression containing the following expressions: [(ContactId,b_reporter - com.company.model.Reporter#getCrmContactId,)(Description,b_supportCase - com.company.model.SupportCase#getDescription,)(Status,b_supportCase - com.company.model.SupportCase#getStatus,)(Subject,b_supportCase - com.company.model.SupportCase#getTitle,)(Priority,b_supportCase - com.company.model.SupportCase#getSeverity,)(Origin,b_supportCase - com.company.model.SupportCase#getSource,)(SuppliedEmail,b_reporter - com.company.model.Reporter#getEmail,)(Type,b_supportCase - com.company.model.SupportCase#getCategory,)]._2" returnType="java.util.List">
+                                <content>Table of expression containing the following expressions: [(ContactId,b_reporter - com.company.model.Reporter#getCrmContactId,)(Description,b_supportCase - com.company.model.SupportCase#getDescription,)(Status,b_supportCase - com.company.model.SupportCase#getStatus,)(Subject,b_supportCase - com.company.model.SupportCase#getTitle,)(Priority,b_supportCase - com.company.model.SupportCase#getSeverity,)(Origin,b_supportCase - com.company.model.SupportCase#getSource,)(SuppliedEmail,b_reporter - com.company.model.Reporter#getEmail,)(Type,b_supportCase - com.company.model.SupportCase#getCategory,)]._2</content>
+                                <expression expressionType="TYPE_CONSTANT" id="4023842209495600294" interpreter="" name="Status" returnType="java.lang.String">
+                                    <content>Status</content>
+                                </expression>
+                                <expression expressionType="TYPE_JAVA_METHOD_CALL" id="5545046688370048017" interpreter="" name="b_supportCase - com.company.model.SupportCase#getStatus" returnType="java.lang.String">
+                                    <content>getStatus</content>
+                                    <expression expressionType="TYPE_BUSINESS_DATA" id="2870499053085703077" name="b_supportCase" returnType="com.company.model.SupportCase">
+                                        <content>b_supportCase</content>
+                                    </expression>
+                                </expression>
+                            </expression>
+                            <expression expressionType="TYPE_LIST" id="241474637993103269" name="Table of expression containing the following expressions: [(ContactId,b_reporter - com.company.model.Reporter#getCrmContactId,)(Description,b_supportCase - com.company.model.SupportCase#getDescription,)(Status,b_supportCase - com.company.model.SupportCase#getStatus,)(Subject,b_supportCase - com.company.model.SupportCase#getTitle,)(Priority,b_supportCase - com.company.model.SupportCase#getSeverity,)(Origin,b_supportCase - com.company.model.SupportCase#getSource,)(SuppliedEmail,b_reporter - com.company.model.Reporter#getEmail,)(Type,b_supportCase - com.company.model.SupportCase#getCategory,)]._3" returnType="java.util.List">
+                                <content>Table of expression containing the following expressions: [(ContactId,b_reporter - com.company.model.Reporter#getCrmContactId,)(Description,b_supportCase - com.company.model.SupportCase#getDescription,)(Status,b_supportCase - com.company.model.SupportCase#getStatus,)(Subject,b_supportCase - com.company.model.SupportCase#getTitle,)(Priority,b_supportCase - com.company.model.SupportCase#getSeverity,)(Origin,b_supportCase - com.company.model.SupportCase#getSource,)(SuppliedEmail,b_reporter - com.company.model.Reporter#getEmail,)(Type,b_supportCase - com.company.model.SupportCase#getCategory,)]._3</content>
+                                <expression expressionType="TYPE_CONSTANT" id="51140726355937136" interpreter="" name="Subject" returnType="java.lang.String">
+                                    <content>Subject</content>
+                                </expression>
+                                <expression expressionType="TYPE_JAVA_METHOD_CALL" id="2231793314333112731" interpreter="" name="b_supportCase - com.company.model.SupportCase#getTitle" returnType="java.lang.String">
+                                    <content>getTitle</content>
+                                    <expression expressionType="TYPE_BUSINESS_DATA" id="2981820594311966951" name="b_supportCase" returnType="com.company.model.SupportCase">
+                                        <content>b_supportCase</content>
+                                    </expression>
+                                </expression>
+                            </expression>
+                            <expression expressionType="TYPE_LIST" id="2735637152780367472" name="Table of expression containing the following expressions: [(ContactId,b_reporter - com.company.model.Reporter#getCrmContactId,)(Description,b_supportCase - com.company.model.SupportCase#getDescription,)(Status,b_supportCase - com.company.model.SupportCase#getStatus,)(Subject,b_supportCase - com.company.model.SupportCase#getTitle,)(Priority,b_supportCase - com.company.model.SupportCase#getSeverity,)(Origin,b_supportCase - com.company.model.SupportCase#getSource,)(SuppliedEmail,b_reporter - com.company.model.Reporter#getEmail,)(Type,b_supportCase - com.company.model.SupportCase#getCategory,)]._4" returnType="java.util.List">
+                                <content>Table of expression containing the following expressions: [(ContactId,b_reporter - com.company.model.Reporter#getCrmContactId,)(Description,b_supportCase - com.company.model.SupportCase#getDescription,)(Status,b_supportCase - com.company.model.SupportCase#getStatus,)(Subject,b_supportCase - com.company.model.SupportCase#getTitle,)(Priority,b_supportCase - com.company.model.SupportCase#getSeverity,)(Origin,b_supportCase - com.company.model.SupportCase#getSource,)(SuppliedEmail,b_reporter - com.company.model.Reporter#getEmail,)(Type,b_supportCase - com.company.model.SupportCase#getCategory,)]._4</content>
+                                <expression expressionType="TYPE_CONSTANT" id="4435870891253187059" interpreter="" name="Priority" returnType="java.lang.String">
+                                    <content>Priority</content>
+                                </expression>
+                                <expression expressionType="TYPE_JAVA_METHOD_CALL" id="381150226501513614" interpreter="" name="b_supportCase - com.company.model.SupportCase#getSeverity" returnType="java.lang.String">
+                                    <content>getSeverity</content>
+                                    <expression expressionType="TYPE_BUSINESS_DATA" id="8578335341918570709" name="b_supportCase" returnType="com.company.model.SupportCase">
+                                        <content>b_supportCase</content>
+                                    </expression>
+                                </expression>
+                            </expression>
+                            <expression expressionType="TYPE_LIST" id="5846396507267157424" name="Table of expression containing the following expressions: [(ContactId,b_reporter - com.company.model.Reporter#getCrmContactId,)(Description,b_supportCase - com.company.model.SupportCase#getDescription,)(Status,b_supportCase - com.company.model.SupportCase#getStatus,)(Subject,b_supportCase - com.company.model.SupportCase#getTitle,)(Priority,b_supportCase - com.company.model.SupportCase#getSeverity,)(Origin,b_supportCase - com.company.model.SupportCase#getSource,)(SuppliedEmail,b_reporter - com.company.model.Reporter#getEmail,)(Type,b_supportCase - com.company.model.SupportCase#getCategory,)]._5" returnType="java.util.List">
+                                <content>Table of expression containing the following expressions: [(ContactId,b_reporter - com.company.model.Reporter#getCrmContactId,)(Description,b_supportCase - com.company.model.SupportCase#getDescription,)(Status,b_supportCase - com.company.model.SupportCase#getStatus,)(Subject,b_supportCase - com.company.model.SupportCase#getTitle,)(Priority,b_supportCase - com.company.model.SupportCase#getSeverity,)(Origin,b_supportCase - com.company.model.SupportCase#getSource,)(SuppliedEmail,b_reporter - com.company.model.Reporter#getEmail,)(Type,b_supportCase - com.company.model.SupportCase#getCategory,)]._5</content>
+                                <expression expressionType="TYPE_CONSTANT" id="5767898493303669485" interpreter="" name="Origin" returnType="java.lang.String">
+                                    <content>Origin</content>
+                                </expression>
+                                <expression expressionType="TYPE_JAVA_METHOD_CALL" id="6948807685553408844" interpreter="" name="b_supportCase - com.company.model.SupportCase#getSource" returnType="java.lang.String">
+                                    <content>getSource</content>
+                                    <expression expressionType="TYPE_BUSINESS_DATA" id="2603302841629718359" name="b_supportCase" returnType="com.company.model.SupportCase">
+                                        <content>b_supportCase</content>
+                                    </expression>
+                                </expression>
+                            </expression>
+                            <expression expressionType="TYPE_LIST" id="7213141517872773174" name="Table of expression containing the following expressions: [(ContactId,b_reporter - com.company.model.Reporter#getCrmContactId,)(Description,b_supportCase - com.company.model.SupportCase#getDescription,)(Status,b_supportCase - com.company.model.SupportCase#getStatus,)(Subject,b_supportCase - com.company.model.SupportCase#getTitle,)(Priority,b_supportCase - com.company.model.SupportCase#getSeverity,)(Origin,b_supportCase - com.company.model.SupportCase#getSource,)(SuppliedEmail,b_reporter - com.company.model.Reporter#getEmail,)(Type,b_supportCase - com.company.model.SupportCase#getCategory,)]._6" returnType="java.util.List">
+                                <content>Table of expression containing the following expressions: [(ContactId,b_reporter - com.company.model.Reporter#getCrmContactId,)(Description,b_supportCase - com.company.model.SupportCase#getDescription,)(Status,b_supportCase - com.company.model.SupportCase#getStatus,)(Subject,b_supportCase - com.company.model.SupportCase#getTitle,)(Priority,b_supportCase - com.company.model.SupportCase#getSeverity,)(Origin,b_supportCase - com.company.model.SupportCase#getSource,)(SuppliedEmail,b_reporter - com.company.model.Reporter#getEmail,)(Type,b_supportCase - com.company.model.SupportCase#getCategory,)]._6</content>
+                                <expression expressionType="TYPE_CONSTANT" id="4622458786151352987" interpreter="" name="SuppliedEmail" returnType="java.lang.String">
+                                    <content>SuppliedEmail</content>
+                                </expression>
+                                <expression expressionType="TYPE_JAVA_METHOD_CALL" id="6294095836516797932" interpreter="" name="b_reporter - com.company.model.Reporter#getEmail" returnType="java.lang.String">
+                                    <content>getEmail</content>
+                                    <expression expressionType="TYPE_BUSINESS_DATA" id="1712961363325466166" name="b_reporter" returnType="com.company.model.Reporter">
+                                        <content>b_reporter</content>
+                                    </expression>
+                                </expression>
+                            </expression>
+                            <expression expressionType="TYPE_LIST" id="2635892687614136204" name="Table of expression containing the following expressions: [(ContactId,b_reporter - com.company.model.Reporter#getCrmContactId,)(Description,b_supportCase - com.company.model.SupportCase#getDescription,)(Status,b_supportCase - com.company.model.SupportCase#getStatus,)(Subject,b_supportCase - com.company.model.SupportCase#getTitle,)(Priority,b_supportCase - com.company.model.SupportCase#getSeverity,)(Origin,b_supportCase - com.company.model.SupportCase#getSource,)(SuppliedEmail,b_reporter - com.company.model.Reporter#getEmail,)(Type,b_supportCase - com.company.model.SupportCase#getCategory,)]._7" returnType="java.util.List">
+                                <content>Table of expression containing the following expressions: [(ContactId,b_reporter - com.company.model.Reporter#getCrmContactId,)(Description,b_supportCase - com.company.model.SupportCase#getDescription,)(Status,b_supportCase - com.company.model.SupportCase#getStatus,)(Subject,b_supportCase - com.company.model.SupportCase#getTitle,)(Priority,b_supportCase - com.company.model.SupportCase#getSeverity,)(Origin,b_supportCase - com.company.model.SupportCase#getSource,)(SuppliedEmail,b_reporter - com.company.model.Reporter#getEmail,)(Type,b_supportCase - com.company.model.SupportCase#getCategory,)]._7</content>
+                                <expression expressionType="TYPE_CONSTANT" id="6973777305897419556" interpreter="" name="Type" returnType="java.lang.String">
+                                    <content>Type</content>
+                                </expression>
+                                <expression expressionType="TYPE_JAVA_METHOD_CALL" id="3253037319542255788" interpreter="" name="b_supportCase - com.company.model.SupportCase#getCategory" returnType="java.lang.String">
+                                    <content>getCategory</content>
+                                    <expression expressionType="TYPE_BUSINESS_DATA" id="6136106138117228664" name="b_supportCase" returnType="com.company.model.SupportCase">
+                                        <content>b_supportCase</content>
+                                    </expression>
+                                </expression>
+                            </expression>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs>
+                    <operation operator="setCrmCaseId:java.lang.String" operatorType="JAVA_METHOD">
+                        <leftOperand name="b_supportCase" type="BUSINESS_DATA" />
+                        <rightOperand expressionType="TYPE_INPUT" id="6819201100279269452" interpreter="" name="sObjectId" returnType="java.lang.String">
+                            <content>sObjectId</content>
+                        </rightOperand>
+                    </operation>
+                </outputs>
+            </connector>
+            <dataDefinitions />
+            <operations />
+            <boundaryEvents />
+        </automaticTask>
+        <userTask actorName="General Support" expectedDuration="54000000" id="6043540511902874619" name="Case Resolution by General Support" priority="NORMAL">
+            <description>This task is for the General Support Team to provide a case resolution. The team should provide a resolution note which will be sent to the customer via email or twitter direct message based on the case source (logged via web or twitter)</description>
+            <displayName expressionType="TYPE_READ_ONLY_SCRIPT" id="1970176968972351668" interpreter="GROOVY" name="title" returnType="java.lang.String">
+                <content>String title = "Resolve case";
+
+                    //String title = "Resolve case - " + b_supportCase.getTitle();
+
+                    if(title.length() &gt; 70){
+
+                    return title.substring(0, 70) + "..";
+
+                    }
+
+                    return title;
+                </content>
+                <expression expressionType="TYPE_BUSINESS_DATA" id="7332798052632973163" name="b_supportCase" returnType="com.company.model.SupportCase">
+                    <content>b_supportCase</content>
+                </expression>
+            </displayName>
+            <incomingTransition>3726432527510291027</incomingTransition>
+            <outgoingTransition>6747902105739151931</outgoingTransition>
+            <connector activationEvent="ON_FINISH" connectorId="salesforce-updatesobject" failAction="IGNORE" name="updateCaseInSalesForce" version="1.0.1">
+                <inputs>
+                    <input name="readTimeout">
+                        <expression expressionType="TYPE_CONSTANT" id="7264810899514540958" interpreter="" name="0" returnType="java.lang.Integer">
+                            <content>0</content>
+                        </expression>
+                    </input>
+                    <input name="authEndpoint">
+                        <expression expressionType="TYPE_CONSTANT" id="5126323319722624813" interpreter="" name="https://login.salesforce.com/services/Soap/u/24.0" returnType="java.lang.String">
+                            <content>https://login.salesforce.com/services/Soap/u/24.0</content>
+                        </expression>
+                    </input>
+                    <input name="username">
+                        <expression expressionType="TYPE_CONSTANT" id="1872344096680005363" interpreter="" name="salesForceUsername" returnType="java.lang.String">
+                            <content>salesForceUsername</content>
+                        </expression>
+                    </input>
+                    <input name="connectionTimeout">
+                        <expression expressionType="TYPE_CONSTANT" id="5981826970378847793" interpreter="" name="0" returnType="java.lang.Integer">
+                            <content>0</content>
+                        </expression>
+                    </input>
+                    <input name="sObjectType">
+                        <expression expressionType="TYPE_CONSTANT" id="901213218098428904" interpreter="" name="Case" returnType="java.lang.String">
+                            <content>Case</content>
+                        </expression>
+                    </input>
+                    <input name="securityToken">
+                        <expression expressionType="TYPE_CONSTANT" id="2260184290759166296" interpreter="" name="salesForceSecurityToken" returnType="java.lang.String">
+                            <content>salesForceSecurityToken</content>
+                        </expression>
+                    </input>
+                    <input name="sObjectId">
+                        <expression expressionType="TYPE_JAVA_METHOD_CALL" id="1787845982055937814" interpreter="" name="b_supportCase - com.company.model.SupportCase#getCrmCaseId" returnType="java.lang.String">
+                            <content>getCrmCaseId</content>
+                            <expression expressionType="TYPE_BUSINESS_DATA" id="5948458946580624400" name="b_supportCase" returnType="com.company.model.SupportCase">
+                                <content>b_supportCase</content>
+                            </expression>
+                        </expression>
+                    </input>
+                    <input name="serviceEndpoint">
+                        <expression expressionType="TYPE_CONSTANT" id="4685500384350849280" interpreter="" name="https://login.salesforce.com/services/Soap/u/24.0" returnType="java.lang.String">
+                            <content>https://login.salesforce.com/services/Soap/u/24.0</content>
+                        </expression>
+                    </input>
+                    <input name="proxyPort">
+                        <expression expressionType="TYPE_CONSTANT" id="4421484692773227010" interpreter="" name="0" returnType="java.lang.Integer">
+                            <content>0</content>
+                        </expression>
+                    </input>
+                    <input name="password">
+                        <expression expressionType="TYPE_CONSTANT" id="5061690946419473457" interpreter="" name="salesForcePassword" returnType="java.lang.String">
+                            <content>salesForcePassword</content>
+                        </expression>
+                    </input>
+                    <input name="fieldValues">
+                        <expression expressionType="TYPE_LIST" id="8010923331103798222" name="Table of expression containing the following expressions: [(Status,b_supportCase - com.company.model.SupportCase#getStatus,)]." returnType="java.util.List">
+                            <content>Table of expression containing the following expressions: [(Status,b_supportCase - com.company.model.SupportCase#getStatus,)].</content>
+                            <expression expressionType="TYPE_LIST" id="3058229411720023494" name="Table of expression containing the following expressions: [(Status,b_supportCase - com.company.model.SupportCase#getStatus,)]._0" returnType="java.util.List">
+                                <content>Table of expression containing the following expressions: [(Status,b_supportCase - com.company.model.SupportCase#getStatus,)]._0</content>
+                                <expression expressionType="TYPE_CONSTANT" id="260008196320114154" interpreter="" name="Status" returnType="java.lang.String">
+                                    <content>Status</content>
+                                </expression>
+                                <expression expressionType="TYPE_JAVA_METHOD_CALL" id="212430399947650386" interpreter="" name="b_supportCase - com.company.model.SupportCase#getStatus" returnType="java.lang.String">
+                                    <content>getStatus</content>
+                                    <expression expressionType="TYPE_BUSINESS_DATA" id="3548113348476224368" name="b_supportCase" returnType="com.company.model.SupportCase">
+                                        <content>b_supportCase</content>
+                                    </expression>
+                                </expression>
+                            </expression>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs />
+            </connector>
+            <connector activationEvent="ON_FINISH" connectorId="salesforce-createsobject" failAction="IGNORE" name="createCommentForCaseInSalesForce" version="1.0.1">
+                <inputs>
+                    <input name="readTimeout">
+                        <expression expressionType="TYPE_CONSTANT" id="5881415847241271904" interpreter="" name="0" returnType="java.lang.Integer">
+                            <content>0</content>
+                        </expression>
+                    </input>
+                    <input name="authEndpoint">
+                        <expression expressionType="TYPE_CONSTANT" id="3395707085623115521" interpreter="" name="https://login.salesforce.com/services/Soap/u/24.0" returnType="java.lang.String">
+                            <content>https://login.salesforce.com/services/Soap/u/24.0</content>
+                        </expression>
+                    </input>
+                    <input name="username">
+                        <expression expressionType="TYPE_PARAMETER" id="8550866670624095660" interpreter="" name="salesForceUsername" returnType="java.lang.String">
+                            <content>salesForceUsername</content>
+                        </expression>
+                    </input>
+                    <input name="connectionTimeout">
+                        <expression expressionType="TYPE_CONSTANT" id="561040929541238844" interpreter="" name="0" returnType="java.lang.Integer">
+                            <content>0</content>
+                        </expression>
+                    </input>
+                    <input name="sObjectType">
+                        <expression expressionType="TYPE_CONSTANT" id="1317802428690548091" interpreter="" name="CaseComment" returnType="java.lang.String">
+                            <content>CaseComment</content>
+                        </expression>
+                    </input>
+                    <input name="securityToken">
+                        <expression expressionType="TYPE_PARAMETER" id="9035557801673797906" interpreter="" name="salesForceSecurityToken" returnType="java.lang.String">
+                            <content>salesForceSecurityToken</content>
+                        </expression>
+                    </input>
+                    <input name="serviceEndpoint">
+                        <expression expressionType="TYPE_CONSTANT" id="5917504671828100578" interpreter="" name="https://login.salesforce.com/services/Soap/u/24.0" returnType="java.lang.String">
+                            <content>https://login.salesforce.com/services/Soap/u/24.0</content>
+                        </expression>
+                    </input>
+                    <input name="proxyPort">
+                        <expression expressionType="TYPE_CONSTANT" id="8704356175359656085" interpreter="" name="0" returnType="java.lang.Integer">
+                            <content>0</content>
+                        </expression>
+                    </input>
+                    <input name="password">
+                        <expression expressionType="TYPE_PARAMETER" id="2441123120916941351" interpreter="" name="salesForcePassword" returnType="java.lang.String">
+                            <content>salesForcePassword</content>
+                        </expression>
+                    </input>
+                    <input name="fieldValues">
+                        <expression expressionType="TYPE_LIST" id="1519812089440483508" name="Table of expression containing the following expressions: [(ParentId,b_supportCase - com.company.model.SupportCase#getCrmCaseId,)(CommentBody,comment,)]." returnType="java.util.List">
+                            <content>Table of expression containing the following expressions: [(ParentId,b_supportCase - com.company.model.SupportCase#getCrmCaseId,)(CommentBody,comment,)].</content>
+                            <expression expressionType="TYPE_LIST" id="6841144590781597719" name="Table of expression containing the following expressions: [(ParentId,b_supportCase - com.company.model.SupportCase#getCrmCaseId,)(CommentBody,comment,)]._0" returnType="java.util.List">
+                                <content>Table of expression containing the following expressions: [(ParentId,b_supportCase - com.company.model.SupportCase#getCrmCaseId,)(CommentBody,comment,)]._0</content>
+                                <expression expressionType="TYPE_CONSTANT" id="2095241380187452492" interpreter="" name="ParentId" returnType="java.lang.String">
+                                    <content>ParentId</content>
+                                </expression>
+                                <expression expressionType="TYPE_JAVA_METHOD_CALL" id="5160465136571793708" interpreter="" name="b_supportCase - com.company.model.SupportCase#getCrmCaseId" returnType="java.lang.String">
+                                    <content>getCrmCaseId</content>
+                                    <expression expressionType="TYPE_BUSINESS_DATA" id="4563151946322590064" name="b_supportCase" returnType="com.company.model.SupportCase">
+                                        <content>b_supportCase</content>
+                                    </expression>
+                                </expression>
+                            </expression>
+                            <expression expressionType="TYPE_LIST" id="8858802334868456668" name="Table of expression containing the following expressions: [(ParentId,b_supportCase - com.company.model.SupportCase#getCrmCaseId,)(CommentBody,comment,)]._1" returnType="java.util.List">
+                                <content>Table of expression containing the following expressions: [(ParentId,b_supportCase - com.company.model.SupportCase#getCrmCaseId,)(CommentBody,comment,)]._1</content>
+                                <expression expressionType="TYPE_CONSTANT" id="1295348771068987460" interpreter="" name="CommentBody" returnType="java.lang.String">
+                                    <content>CommentBody</content>
+                                </expression>
+                                <expression expressionType="TYPE_READ_ONLY_SCRIPT" id="2870967863715250861" interpreter="GROOVY" name="comment" returnType="java.lang.String">
+                                    <content>if(needsAdvancedSupport) return "The case has been escalated to advanced support team."
+
+                                        return "Twitter".equalsIgnoreCase(b_supportCase.getSource()) ? directMessage : resolvedMessage;
+                                    </content>
+                                    <expression expressionType="TYPE_VARIABLE" id="8116077817494523251" name="needsAdvancedSupport" returnType="java.lang.Boolean">
+                                        <content>needsAdvancedSupport</content>
+                                    </expression>
+                                    <expression expressionType="TYPE_VARIABLE" id="8541891028620496740" name="directMessage" returnType="java.lang.String">
+                                        <content>directMessage</content>
+                                    </expression>
+                                    <expression expressionType="TYPE_BUSINESS_DATA" id="6998816499680131878" name="b_supportCase" returnType="com.company.model.SupportCase">
+                                        <content>b_supportCase</content>
+                                    </expression>
+                                    <expression expressionType="TYPE_VARIABLE" id="6947334070211753405" name="resolvedMessage" returnType="java.lang.String">
+                                        <content>resolvedMessage</content>
+                                    </expression>
+                                </expression>
+                            </expression>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs />
+            </connector>
+            <dataDefinitions>
+                <textDataDefinition className="java.lang.String" longText="true" name="status" transient="true" />
+            </dataDefinitions>
+            <operations>
+                <operation operator="setStatus:java.lang.String" operatorType="JAVA_METHOD">
+                    <leftOperand name="b_supportCase" type="BUSINESS_DATA" />
+                    <rightOperand expressionType="TYPE_CONTRACT_INPUT" id="2579547377402428374" interpreter="" name="status" returnType="java.lang.String">
+                        <content>status</content>
+                    </rightOperand>
+                </operation>
+                <operation operatorType="ASSIGNMENT">
+                    <leftOperand name="resolvedMessage" type="DATA" />
+                    <rightOperand expressionType="TYPE_CONTRACT_INPUT" id="6096193621070071315" interpreter="" name="resolutionMessage" returnType="java.lang.String">
+                        <content>resolutionMessage</content>
+                    </rightOperand>
+                </operation>
+                <operation operatorType="ASSIGNMENT">
+                    <leftOperand name="needsAdvancedSupport" type="DATA" />
+                    <rightOperand expressionType="TYPE_READ_ONLY_SCRIPT" id="3500437752400989468" interpreter="GROOVY" name="advSup" returnType="java.lang.Boolean">
+                        <content>boolean advSup = false;
+
+
+                            if(status.equals( "Escalate to Advanced Support")){
+
+                            advSup = true;
+
+                            }
+
+                            return advSup;
+
+                        </content>
+                        <expression expressionType="TYPE_CONTRACT_INPUT" id="7442922916311447462" name="status" returnType="java.lang.String">
+                            <content>status</content>
+                        </expression>
+                    </rightOperand>
+                </operation>
+                <operation operatorType="ASSIGNMENT">
+                    <leftOperand name="needOnsiteVisit" type="DATA" />
+                    <rightOperand expressionType="TYPE_READ_ONLY_SCRIPT" id="2567073444078240215" interpreter="GROOVY" name="visit" returnType="java.lang.Boolean">
+                        <content>boolean visit = false;
+
+
+                            if(status.equals("Schedule Onsite Visit")){
+
+                            visit = true;
+
+                            }
+
+                            return visit;
+                        </content>
+                        <expression expressionType="TYPE_CONTRACT_INPUT" id="2752106096566683773" name="status" returnType="java.lang.String">
+                            <content>status</content>
+                        </expression>
+                    </rightOperand>
+                </operation>
+            </operations>
+            <boundaryEvents />
+            <contract>
+                <inputDefinitions>
+                    <inputDefinition multiple="false" name="status" type="TEXT">
+                        <description>status</description>
+                        <inputDefinitions />
+                        <inputDefinitions />
+                    </inputDefinition>
+                    <inputDefinition multiple="false" name="resolutionMessage" type="TEXT">
+                        <description>resolution message</description>
+                        <inputDefinitions />
+                        <inputDefinitions />
+                    </inputDefinition>
+                </inputDefinitions>
+            </contract>
+            <context>
+                <contextEntry key="b_supportCase_ref">
+                    <expression expressionType="TYPE_BUSINESS_DATA_REFERENCE" id="3560068482868790161" name="b_supportCase" returnType="org.bonitasoft.engine.business.data.BusinessDataReference">
+                        <content>b_supportCase</content>
+                    </expression>
+                </contextEntry>
+                <contextEntry key="b_reporter_ref">
+                    <expression expressionType="TYPE_BUSINESS_DATA_REFERENCE" id="821535135373279242" name="b_reporter" returnType="org.bonitasoft.engine.business.data.BusinessDataReference">
+                        <content>b_reporter</content>
+                    </expression>
+                </contextEntry>
+                <contextEntry key="b_satisfaction_ref">
+                    <expression expressionType="TYPE_BUSINESS_DATA_REFERENCE" id="5807698762160255071" name="b_satisfaction" returnType="org.bonitasoft.engine.business.data.BusinessDataReference">
+                        <content>b_satisfaction</content>
+                    </expression>
+                </contextEntry>
+            </context>
+        </userTask>
+    </flowElements>
+    <actors>
+        <actor name="General Support">
+            <description />
+        </actor>
+        <actor name="Advanced Support">
+            <description />
+        </actor>
+        <actor name="Support Manager">
+            <description />
+        </actor>
+    </actors>
+    <parameters>
+        <parameter name="twitterAccessToken" type="java.lang.String">
+            <description />
+        </parameter>
+        <parameter name="twitterAccessSecret" type="java.lang.String">
+            <description />
+        </parameter>
+        <parameter name="responseTimeThresholdForFullScoreInMins" type="java.lang.Integer">
+            <description />
+        </parameter>
+        <parameter name="salesForceUsername" type="java.lang.String">
+            <description />
+        </parameter>
+        <parameter name="mailHost" type="java.lang.String">
+            <description />
+        </parameter>
+        <parameter name="mailPassword" type="java.lang.String">
+            <description />
+        </parameter>
+        <parameter name="twitterConsumerSecret" type="java.lang.String">
+            <description />
+        </parameter>
+        <parameter name="zTimerMinuterie" type="java.lang.Double">
+            <description />
+        </parameter>
+        <parameter name="salesForcePassword" type="java.lang.String">
+            <description />
+        </parameter>
+        <parameter name="mailPort" type="java.lang.Integer">
+            <description />
+        </parameter>
+        <parameter name="presalesLink" type="java.lang.String">
+            <description />
+        </parameter>
+        <parameter name="twitterConsumerKey" type="java.lang.String">
+            <description />
+        </parameter>
+        <parameter name="salesForceSecurityToken" type="java.lang.String">
+            <description />
+        </parameter>
+        <parameter name="responseTimeThresholdForHalfScoreInMins" type="java.lang.Integer">
+            <description />
+        </parameter>
+        <parameter name="mailUsername" type="java.lang.String">
+            <description />
+        </parameter>
+    </parameters>
+    <contract />
+    <context>
+        <contextEntry key="b_supportCase_ref">
+            <expression expressionType="TYPE_BUSINESS_DATA_REFERENCE" id="4782978768149630733" name="b_supportCase" returnType="org.bonitasoft.engine.business.data.BusinessDataReference">
+                <content>b_supportCase</content>
+            </expression>
+        </contextEntry>
+        <contextEntry key="b_reporter_ref">
+            <expression expressionType="TYPE_BUSINESS_DATA_REFERENCE" id="3190450918319804086" name="b_reporter" returnType="org.bonitasoft.engine.business.data.BusinessDataReference">
+                <content>b_reporter</content>
+            </expression>
+        </contextEntry>
+        <contextEntry key="b_satisfaction_ref">
+            <expression expressionType="TYPE_BUSINESS_DATA_REFERENCE" id="1003960160082805367" name="b_satisfaction" returnType="org.bonitasoft.engine.business.data.BusinessDataReference">
+                <content>b_satisfaction</content>
+            </expression>
+        </contextEntry>
+    </context>
+</def:processDefinition>

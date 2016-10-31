@@ -1,0 +1,609 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<def:processDefinition xmlns:def="http://www.bonitasoft.org/ns/process/client/7.2" name="Procurement request" version="1.0">
+    <description>Process for a procurement request</description>
+    <displayDescription>Process for a procurement request</displayDescription>
+    <stringIndexes>
+        <stringIndex index="1" />
+        <stringIndex index="2" />
+        <stringIndex index="3" />
+        <stringIndex index="4" />
+        <stringIndex index="5" />
+    </stringIndexes>
+    <flowElements>
+        <transitions>
+            <transition id="9195143581064804792" name="7522772312703355627_-&gt;_5717634864840189936" source="7522772312703355627" target="5717634864840189936" />
+            <transition id="6174275761814521066" name="6585684869571941076_-&gt;_8261408913211009388" source="6585684869571941076" target="8261408913211009388">
+                <condition expressionType="TYPE_READ_ONLY_SCRIPT" id="1287833271744675966" interpreter="GROOVY" name="hasNotSelectedSupplier" returnType="java.lang.Boolean">
+                    <content>return request.getSelectedSupplier() == null;</content>
+                    <expression expressionType="TYPE_BUSINESS_DATA" id="2349526231171810900" name="request" returnType="com.company.model.Request">
+                        <content>request</content>
+                    </expression>
+                </condition>
+            </transition>
+            <transition id="3069854623864146600" name="8461861035719407544_-&gt;_6585684869571941076" source="8461861035719407544" target="6585684869571941076" />
+            <transition id="7904196158016895819" name="7888771630578132844_-&gt;_8461861035719407544" source="7888771630578132844" target="8461861035719407544" />
+            <transition id="8204341616882435939" name="8755546273456091623_-&gt;_7874789213004062016" source="8755546273456091623" target="7874789213004062016" />
+            <transition id="8171534706978605342" name="6585684869571941076_-&gt;_8755546273456091623" source="6585684869571941076" target="8755546273456091623" />
+            <transition id="42942078593418669" name="5717634864840189936_-&gt;_7888771630578132844" source="5717634864840189936" target="7888771630578132844" />
+            <transition id="421181182345431267" name="8261408913211009388_-&gt;_5697343188056573685" source="8261408913211009388" target="5697343188056573685" />
+        </transitions>
+        <connectors>
+            <connector activationEvent="ON_ENTER" connectorId="bdmCreateProcurementRequest" failAction="FAIL" name="createRequest" version="1.0.0">
+                <inputs>
+                    <input name="summary">
+                        <expression expressionType="TYPE_CONTRACT_INPUT" id="8073143257009011208" interpreter="" name="summary" returnType="java.lang.String">
+                            <content>summary</content>
+                        </expression>
+                    </input>
+                    <input name="description">
+                        <expression expressionType="TYPE_CONTRACT_INPUT" id="8933658592041548453" interpreter="" name="description" returnType="java.lang.String">
+                            <content>description</content>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs>
+                    <operation operatorType="ASSIGNMENT">
+                        <leftOperand name="request" type="BUSINESS_DATA" />
+                        <rightOperand expressionType="TYPE_INPUT" id="4625805117540645888" interpreter="" name="request" returnType="com.company.model.Request">
+                            <content>request</content>
+                        </rightOperand>
+                    </operation>
+                </outputs>
+            </connector>
+            <connector activationEvent="ON_ENTER" connectorId="bdmAddQuotationsToProcurementRequest" failAction="FAIL" name="addQuotations" version="1.0.0">
+                <inputs>
+                    <input name="request">
+                        <expression expressionType="TYPE_BUSINESS_DATA" id="8668154199307762148" interpreter="" name="request" returnType="com.company.model.Request">
+                            <content>request</content>
+                        </expression>
+                    </input>
+                    <input name="suppliers">
+                        <expression expressionType="TYPE_READ_ONLY_SCRIPT" id="7710717753880167944" interpreter="GROOVY" name="getSuppliers" returnType="java.util.List">
+                            <content>import com.company.model.Supplier;
+
+
+                                List&lt;Supplier&gt; suppliers = new ArrayList&lt;Supplier&gt;();
+
+                                for (Long supplierId : supplierIds)
+
+                                {
+
+                                Supplier supplier = supplierDAO.findById(supplierId);
+
+                                suppliers.add(supplier);
+
+                                }
+
+                                return suppliers;
+                            </content>
+                            <expression expressionType="TYPE_CONTRACT_INPUT" id="661029788105814308" name="supplierIds" returnType="java.util.List">
+                                <content>supplierIds</content>
+                            </expression>
+                            <expression expressionType="TYPE_BUSINESS_OBJECT_DAO" id="858824807223151719" interpreter="" name="supplierDAO" returnType="com.company.model.SupplierDAO">
+                                <content>supplierDAO</content>
+                            </expression>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs>
+                    <operation operatorType="ASSIGNMENT">
+                        <leftOperand name="quotations" type="BUSINESS_DATA" />
+                        <rightOperand expressionType="TYPE_INPUT" id="3020544893041527479" interpreter="" name="quotations" returnType="java.util.List">
+                            <content>quotations</content>
+                        </rightOperand>
+                    </operation>
+                </outputs>
+            </connector>
+        </connectors>
+        <businessDataDefinitions>
+            <businessDataDefinition className="com.company.model.Quotation" multiple="true" name="quotations">
+                <description />
+                <defaultValue expressionType="TYPE_READ_ONLY_SCRIPT" id="2187390790972032690" interpreter="GROOVY" name="&lt;empty-name&gt;" returnType="java.util.List">
+                    <content>[]</content>
+                </defaultValue>
+            </businessDataDefinition>
+            <businessDataDefinition className="com.company.model.Request" multiple="false" name="request">
+                <description />
+            </businessDataDefinition>
+        </businessDataDefinitions>
+        <dataDefinitions />
+        <documentDefinitions>
+            <documentDefinition mimeType="application/octet-stream" name="quotationRequestTemplate">
+                <fileName>New Purchase Order.jrxml</fileName>
+                <description />
+                <file>New Purchase Order.jrxml</file>
+            </documentDefinition>
+            <documentDefinition mimeType="application/octet-stream" name="quotationRequest">
+                <description />
+            </documentDefinition>
+        </documentDefinitions>
+        <documentListDefinitions />
+        <endEvent id="5697343188056573685" name="End - Procurement request aborted">
+            <incomingTransition>421181182345431267</incomingTransition>
+        </endEvent>
+        <endEvent id="7874789213004062016" name="End - Procurement request succeeded">
+            <incomingTransition>8204341616882435939</incomingTransition>
+        </endEvent>
+        <startEvent id="7522772312703355627" interrupting="true" name="Specify need &amp; identify suitable suppliers">
+            <outgoingTransition>9195143581064804792</outgoingTransition>
+        </startEvent>
+        <gateway gatewayType="EXCLUSIVE" id="6585684869571941076" name="Is aborted requested?">
+            <incomingTransition>3069854623864146600</incomingTransition>
+            <outgoingTransition>6174275761814521066</outgoingTransition>
+            <defaultTransition>8171534706978605342</defaultTransition>
+        </gateway>
+        <automaticTask id="8261408913211009388" name="Abort request">
+            <incomingTransition>6174275761814521066</incomingTransition>
+            <outgoingTransition>421181182345431267</outgoingTransition>
+            <dataDefinitions />
+            <operations>
+                <operation operator="setStatus:java.lang.String" operatorType="JAVA_METHOD">
+                    <leftOperand name="request" type="BUSINESS_DATA" />
+                    <rightOperand expressionType="TYPE_CONSTANT" id="7266817085236396994" interpreter="" name="Aborted" returnType="java.lang.String">
+                        <content>Aborted</content>
+                    </rightOperand>
+                </operation>
+            </operations>
+            <boundaryEvents />
+        </automaticTask>
+        <automaticTask id="7888771630578132844" name="Update request after quotations received">
+            <incomingTransition>42942078593418669</incomingTransition>
+            <outgoingTransition>7904196158016895819</outgoingTransition>
+            <dataDefinitions />
+            <operations>
+                <operation operator="setStatus:java.lang.String" operatorType="JAVA_METHOD">
+                    <leftOperand name="request" type="BUSINESS_DATA" />
+                    <rightOperand expressionType="TYPE_CONSTANT" id="6641212571739469780" interpreter="" name="Pending for review" returnType="java.lang.String">
+                        <content>Pending for review</content>
+                    </rightOperand>
+                </operation>
+            </operations>
+            <boundaryEvents />
+        </automaticTask>
+        <userTask actorName="Employee actor" expectedDuration="3600000" id="5717634864840189936" name="Complete quotation" priority="NORMAL">
+            <incomingTransition>9195143581064804792</incomingTransition>
+            <outgoingTransition>42942078593418669</outgoingTransition>
+            <connector activationEvent="ON_ENTER" connectorId="jasper" failAction="FAIL" name="generateQuotationRequest" version="1.0.0">
+                <inputs>
+                    <input name="outputFormat">
+                        <expression expressionType="TYPE_CONSTANT" id="3975488812141660485" interpreter="" name="PDF" returnType="java.lang.String">
+                            <content>PDF</content>
+                        </expression>
+                    </input>
+                    <input name="jrxmlDocument">
+                        <expression expressionType="TYPE_CONSTANT" id="3357009713772186238" name="quotationRequestTemplate" returnType="java.lang.String">
+                            <content>quotationRequestTemplate</content>
+                        </expression>
+                    </input>
+                    <input name="parameters">
+                        <expression expressionType="TYPE_LIST" id="4098770533077726663" name="Table of expression containing the following expressions: [(supplierName,quotation - com.company.model.Quotation#getSupplier,)(supplierDescription,getSupplierDescription,)(requestSummary,summary,)(requestDescription,request - com.company.model.Request#getDescription,)(requestCreationDate,requestCreationDate,)(requestId,request - com.company.model.Request#getCaseId,)]." returnType="java.util.List">
+                            <content>Table of expression containing the following expressions: [(supplierName,quotation - com.company.model.Quotation#getSupplier,)(supplierDescription,getSupplierDescription,)(requestSummary,summary,)(requestDescription,request - com.company.model.Request#getDescription,)(requestCreationDate,requestCreationDate,)(requestId,request - com.company.model.Request#getCaseId,)].</content>
+                            <expression expressionType="TYPE_LIST" id="7245541445517528420" name="Table of expression containing the following expressions: [(supplierName,quotation - com.company.model.Quotation#getSupplier,)(supplierDescription,getSupplierDescription,)(requestSummary,summary,)(requestDescription,request - com.company.model.Request#getDescription,)(requestCreationDate,requestCreationDate,)(requestId,request - com.company.model.Request#getCaseId,)]._0" returnType="java.util.List">
+                                <content>Table of expression containing the following expressions: [(supplierName,quotation - com.company.model.Quotation#getSupplier,)(supplierDescription,getSupplierDescription,)(requestSummary,summary,)(requestDescription,request - com.company.model.Request#getDescription,)(requestCreationDate,requestCreationDate,)(requestId,request - com.company.model.Request#getCaseId,)]._0</content>
+                                <expression expressionType="TYPE_CONSTANT" id="3712732643154181049" interpreter="" name="supplierName" returnType="java.lang.String">
+                                    <content>supplierName</content>
+                                </expression>
+                                <expression expressionType="TYPE_READ_ONLY_SCRIPT" id="8406985383452717272" interpreter="GROOVY" name="quotation - com.company.model.Quotation#getSupplier" returnType="java.lang.String">
+                                    <content>import com.company.model.Supplier;
+
+
+                                        Supplier sup = quotation.getSupplier();
+
+                                        return sup.getName();
+                                    </content>
+                                    <expression expressionType="TYPE_BUSINESS_DATA" id="304574012088041176" name="quotation" returnType="com.company.model.Quotation">
+                                        <content>quotation</content>
+                                    </expression>
+                                </expression>
+                            </expression>
+                            <expression expressionType="TYPE_LIST" id="798744505187519377" name="Table of expression containing the following expressions: [(supplierName,quotation - com.company.model.Quotation#getSupplier,)(supplierDescription,getSupplierDescription,)(requestSummary,summary,)(requestDescription,request - com.company.model.Request#getDescription,)(requestCreationDate,requestCreationDate,)(requestId,request - com.company.model.Request#getCaseId,)]._1" returnType="java.util.List">
+                                <content>Table of expression containing the following expressions: [(supplierName,quotation - com.company.model.Quotation#getSupplier,)(supplierDescription,getSupplierDescription,)(requestSummary,summary,)(requestDescription,request - com.company.model.Request#getDescription,)(requestCreationDate,requestCreationDate,)(requestId,request - com.company.model.Request#getCaseId,)]._1</content>
+                                <expression expressionType="TYPE_CONSTANT" id="6208151706876397949" interpreter="" name="supplierDescription" returnType="java.lang.String">
+                                    <content>supplierDescription</content>
+                                </expression>
+                                <expression expressionType="TYPE_READ_ONLY_SCRIPT" id="4903964720691366672" interpreter="GROOVY" name="getSupplierDescription" returnType="java.lang.String">
+                                    <content>import com.company.model.Supplier;
+
+
+                                        Supplier sup = quotation.getSupplier();
+
+                                        return sup.getDescription();
+                                    </content>
+                                    <expression expressionType="TYPE_BUSINESS_DATA" id="1446213842861079754" name="quotation" returnType="com.company.model.Quotation">
+                                        <content>quotation</content>
+                                    </expression>
+                                </expression>
+                            </expression>
+                            <expression expressionType="TYPE_LIST" id="3409994950684556795" name="Table of expression containing the following expressions: [(supplierName,quotation - com.company.model.Quotation#getSupplier,)(supplierDescription,getSupplierDescription,)(requestSummary,summary,)(requestDescription,request - com.company.model.Request#getDescription,)(requestCreationDate,requestCreationDate,)(requestId,request - com.company.model.Request#getCaseId,)]._2" returnType="java.util.List">
+                                <content>Table of expression containing the following expressions: [(supplierName,quotation - com.company.model.Quotation#getSupplier,)(supplierDescription,getSupplierDescription,)(requestSummary,summary,)(requestDescription,request - com.company.model.Request#getDescription,)(requestCreationDate,requestCreationDate,)(requestId,request - com.company.model.Request#getCaseId,)]._2</content>
+                                <expression expressionType="TYPE_CONSTANT" id="7085611055101095993" interpreter="" name="requestSummary" returnType="java.lang.String">
+                                    <content>requestSummary</content>
+                                </expression>
+                                <expression expressionType="TYPE_READ_ONLY_SCRIPT" id="6112067971910186151" interpreter="GROOVY" name="summary" returnType="java.lang.String">
+                                    <content>request.getSummary();</content>
+                                    <expression expressionType="TYPE_BUSINESS_DATA" id="8757026620474150606" name="request" returnType="com.company.model.Request">
+                                        <content>request</content>
+                                    </expression>
+                                </expression>
+                            </expression>
+                            <expression expressionType="TYPE_LIST" id="3581063678545251186" name="Table of expression containing the following expressions: [(supplierName,quotation - com.company.model.Quotation#getSupplier,)(supplierDescription,getSupplierDescription,)(requestSummary,summary,)(requestDescription,request - com.company.model.Request#getDescription,)(requestCreationDate,requestCreationDate,)(requestId,request - com.company.model.Request#getCaseId,)]._3" returnType="java.util.List">
+                                <content>Table of expression containing the following expressions: [(supplierName,quotation - com.company.model.Quotation#getSupplier,)(supplierDescription,getSupplierDescription,)(requestSummary,summary,)(requestDescription,request - com.company.model.Request#getDescription,)(requestCreationDate,requestCreationDate,)(requestId,request - com.company.model.Request#getCaseId,)]._3</content>
+                                <expression expressionType="TYPE_CONSTANT" id="4813926079621515061" interpreter="" name="requestDescription" returnType="java.lang.String">
+                                    <content>requestDescription</content>
+                                </expression>
+                                <expression expressionType="TYPE_JAVA_METHOD_CALL" id="6933473684955510322" interpreter="" name="request - com.company.model.Request#getDescription" returnType="java.lang.String">
+                                    <content>getDescription</content>
+                                    <expression expressionType="TYPE_BUSINESS_DATA" id="5583028904444015278" name="request" returnType="com.company.model.Request">
+                                        <content>request</content>
+                                    </expression>
+                                </expression>
+                            </expression>
+                            <expression expressionType="TYPE_LIST" id="8737892435733005131" name="Table of expression containing the following expressions: [(supplierName,quotation - com.company.model.Quotation#getSupplier,)(supplierDescription,getSupplierDescription,)(requestSummary,summary,)(requestDescription,request - com.company.model.Request#getDescription,)(requestCreationDate,requestCreationDate,)(requestId,request - com.company.model.Request#getCaseId,)]._4" returnType="java.util.List">
+                                <content>Table of expression containing the following expressions: [(supplierName,quotation - com.company.model.Quotation#getSupplier,)(supplierDescription,getSupplierDescription,)(requestSummary,summary,)(requestDescription,request - com.company.model.Request#getDescription,)(requestCreationDate,requestCreationDate,)(requestId,request - com.company.model.Request#getCaseId,)]._4</content>
+                                <expression expressionType="TYPE_CONSTANT" id="6353363457021361430" interpreter="" name="requestCreationDate" returnType="java.lang.String">
+                                    <content>requestCreationDate</content>
+                                </expression>
+                                <expression expressionType="TYPE_READ_ONLY_SCRIPT" id="3873203942444741109" interpreter="GROOVY" name="requestCreationDate" returnType="java.lang.String">
+                                    <content>import java.text.SimpleDateFormat;
+
+
+                                        SimpleDateFormat formatter = new SimpleDateFormat("dd MMM, yyyy");
+
+                                        return formatter.format(request.getCreationDate());
+
+
+                                    </content>
+                                    <expression expressionType="TYPE_BUSINESS_DATA" id="148996500400720608" name="request" returnType="com.company.model.Request">
+                                        <content>request</content>
+                                    </expression>
+                                </expression>
+                            </expression>
+                            <expression expressionType="TYPE_LIST" id="312474338991259609" name="Table of expression containing the following expressions: [(supplierName,quotation - com.company.model.Quotation#getSupplier,)(supplierDescription,getSupplierDescription,)(requestSummary,summary,)(requestDescription,request - com.company.model.Request#getDescription,)(requestCreationDate,requestCreationDate,)(requestId,request - com.company.model.Request#getCaseId,)]._5" returnType="java.util.List">
+                                <content>Table of expression containing the following expressions: [(supplierName,quotation - com.company.model.Quotation#getSupplier,)(supplierDescription,getSupplierDescription,)(requestSummary,summary,)(requestDescription,request - com.company.model.Request#getDescription,)(requestCreationDate,requestCreationDate,)(requestId,request - com.company.model.Request#getCaseId,)]._5</content>
+                                <expression expressionType="TYPE_CONSTANT" id="2931958855531449662" interpreter="" name="requestId" returnType="java.lang.String">
+                                    <content>requestId</content>
+                                </expression>
+                                <expression expressionType="TYPE_JAVA_METHOD_CALL" id="944323515631617952" interpreter="" name="request - com.company.model.Request#getCaseId" returnType="java.lang.Long">
+                                    <content>getCaseId</content>
+                                    <expression expressionType="TYPE_BUSINESS_DATA" id="5155536742562678105" name="request" returnType="com.company.model.Request">
+                                        <content>request</content>
+                                    </expression>
+                                </expression>
+                            </expression>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs>
+                    <operation operatorType="ASSIGNMENT">
+                        <leftOperand name="quotationRequest" type="DOCUMENT" />
+                        <rightOperand expressionType="TYPE_READ_ONLY_SCRIPT" id="7437639757044531819" interpreter="GROOVY" name="reportDocValue" returnType="org.bonitasoft.engine.bpm.document.DocumentValue">
+                            <content>import org.bonitasoft.engine.bpm.document.DocumentValue;
+
+
+                                return new DocumentValue(reportDocValue.getContent(), reportDocValue.getMimeType(), "Purchase Order - 1");
+                            </content>
+                            <expression expressionType="TYPE_INPUT" id="7616717243439661123" name="reportDocValue" returnType="org.bonitasoft.engine.bpm.document.DocumentValue">
+                                <content>reportDocValue</content>
+                            </expression>
+                        </rightOperand>
+                    </operation>
+                </outputs>
+            </connector>
+            <connector activationEvent="ON_ENTER" connectorId="email" failAction="FAIL" name="sendEmail" version="1.0.0">
+                <inputs>
+                    <input name="smtpPort">
+                        <expression expressionType="TYPE_CONSTANT" id="1992057017861950061" interpreter="" name="465" returnType="java.lang.Integer">
+                            <content>465</content>
+                        </expression>
+                    </input>
+                    <input name="to">
+                        <expression expressionType="TYPE_CONSTANT" id="1504955473428235059" interpreter="" name="presales.webdemo@bonitasoft.com" returnType="java.lang.String">
+                            <content>presales.webdemo@bonitasoft.com</content>
+                        </expression>
+                    </input>
+                    <input name="headers">
+                        <expression expressionType="TYPE_LIST" id="1063512901548880531" name="Table of expression containing the following expressions: []." returnType="java.util.List">
+                            <content>Table of expression containing the following expressions: [].</content>
+                        </expression>
+                    </input>
+                    <input name="smtpHost">
+                        <expression expressionType="TYPE_CONSTANT" id="3678389290727915537" interpreter="" name="smtp.gmail.com" returnType="java.lang.String">
+                            <content>smtp.gmail.com</content>
+                        </expression>
+                    </input>
+                    <input name="subject">
+                        <expression expressionType="TYPE_CONSTANT" id="6403143349848589924" interpreter="" name="Request for a new quotation" returnType="java.lang.String">
+                            <content>Request for a new quotation</content>
+                        </expression>
+                    </input>
+                    <input name="charset">
+                        <expression expressionType="TYPE_CONSTANT" id="3614799798558637666" interpreter="" name="UTF-8" returnType="java.lang.String">
+                            <content>UTF-8</content>
+                        </expression>
+                    </input>
+                    <input name="from">
+                        <expression expressionType="TYPE_CONSTANT" id="4731822719838929809" interpreter="" name="procurement.process@bonitasoft.com" returnType="java.lang.String">
+                            <content>procurement.process@bonitasoft.com</content>
+                        </expression>
+                    </input>
+                    <input name="password">
+                        <expression expressionType="TYPE_CONSTANT" id="5232837285546016317" interpreter="" name="aehlo2014" returnType="java.lang.String">
+                            <content>aehlo2014</content>
+                        </expression>
+                    </input>
+                    <input name="message">
+                        <expression expressionType="TYPE_READ_ONLY_SCRIPT" id="8874257471096993370" interpreter="GROOVY" name="body" returnType="java.lang.String">
+                            <content>import com.company.model.Supplier;
+
+
+                                Supplier sup = quotation.getSupplier();
+
+                                return String.format("Dear %s, &lt;br/&gt;&lt;br/&gt; We are pleased to place this new quotation request. Find attached the quotation request with all the details. &lt;br/&gt;&lt;br/&gt;" +
+
+                                "TERMS &amp; CONDITIONS &lt;br/&gt; 1. The quotation should be sent back within 14 days of receipt of the quotation request &lt;br/&gt;" +
+
+                                "2. Condition : We reserve the right to reject the quote if it doesn't meet the expected criteria&lt;br/&gt;" +
+
+                                " &lt;br/&gt;&lt;br/&gt; Best Regards, &lt;br/&gt; Bonitasoft, &lt;br/&gt; 10 Rue Ampere, &lt;br/&gt;Grenoble - France",
+
+                                sup.getName());
+                            </content>
+                            <expression expressionType="TYPE_BUSINESS_DATA" id="2896152404384891997" name="quotation" returnType="com.company.model.Quotation">
+                                <content>quotation</content>
+                            </expression>
+                        </expression>
+                    </input>
+                    <input name="sslSupport">
+                        <expression expressionType="TYPE_CONSTANT" id="4618914711787358638" interpreter="" name="true" returnType="java.lang.Boolean">
+                            <content>true</content>
+                        </expression>
+                    </input>
+                    <input name="starttlsSupport">
+                        <expression expressionType="TYPE_CONSTANT" id="9052087904714471385" interpreter="" name="false" returnType="java.lang.Boolean">
+                            <content>false</content>
+                        </expression>
+                    </input>
+                    <input name="userName">
+                        <expression expressionType="TYPE_CONSTANT" id="5712858591833968382" interpreter="" name="presales.webdemo@bonitasoft.com" returnType="java.lang.String">
+                            <content>presales.webdemo@bonitasoft.com</content>
+                        </expression>
+                    </input>
+                    <input name="html">
+                        <expression expressionType="TYPE_CONSTANT" id="8625255898779334044" interpreter="" name="true" returnType="java.lang.Boolean">
+                            <content>true</content>
+                        </expression>
+                    </input>
+                    <input name="attachments">
+                        <expression expressionType="TYPE_LIST" id="2994684790617489816" name="List of expression containing the following expressions: (quotationRequest,)." returnType="java.util.List">
+                            <content>List of expression containing the following expressions: (quotationRequest,).</content>
+                            <expression expressionType="TYPE_CONSTANT" id="2989009873356504615" name="quotationRequest" returnType="java.lang.String">
+                                <content>quotationRequest</content>
+                            </expression>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs />
+            </connector>
+            <dataDefinitions />
+            <businessDataDefinitions>
+                <businessDataDefinition className="com.company.model.Quotation" multiple="false" name="quotation" />
+            </businessDataDefinitions>
+            <operations>
+                <operation operator="setHasSupplierAccepted:java.lang.Boolean" operatorType="JAVA_METHOD">
+                    <leftOperand name="quotation" type="BUSINESS_DATA" />
+                    <rightOperand expressionType="TYPE_CONTRACT_INPUT" id="4556185728360990960" interpreter="" name="hasSupplierAccepted" returnType="java.lang.Boolean">
+                        <content>hasSupplierAccepted</content>
+                    </rightOperand>
+                </operation>
+                <operation operator="setProposedPrice:java.lang.Double" operatorType="JAVA_METHOD">
+                    <leftOperand name="quotation" type="BUSINESS_DATA" />
+                    <rightOperand expressionType="TYPE_CONTRACT_INPUT" id="766451172525716040" interpreter="" name="price" returnType="java.lang.Double">
+                        <content>price</content>
+                    </rightOperand>
+                </operation>
+                <operation operator="setComments:java.lang.String" operatorType="JAVA_METHOD">
+                    <leftOperand name="quotation" type="BUSINESS_DATA" />
+                    <rightOperand expressionType="TYPE_CONTRACT_INPUT" id="217675568565827611" interpreter="" name="comments" returnType="java.lang.String">
+                        <content>comments</content>
+                    </rightOperand>
+                </operation>
+                <operation operator="setStatus:java.lang.String" operatorType="JAVA_METHOD">
+                    <leftOperand name="quotation" type="BUSINESS_DATA" />
+                    <rightOperand expressionType="TYPE_CONSTANT" id="8975823266744220321" interpreter="" name="Completed" returnType="java.lang.String">
+                        <content>Completed</content>
+                    </rightOperand>
+                </operation>
+            </operations>
+            <multiInstanceLoopCharacteristics dataInputItemRef="quotation" isSequential="false" loopDataInputRef="quotations" />
+            <boundaryEvents />
+            <userFilter name="processInitatorForSupplierLane" userFilterId="initiator" version="1.0.0">
+                <inputs>
+                    <input name="autoAssign">
+                        <expression expressionType="TYPE_CONSTANT" id="8744023913562026475" interpreter="" name="true" returnType="java.lang.Boolean">
+                            <content>true</content>
+                        </expression>
+                    </input>
+                </inputs>
+            </userFilter>
+            <contract>
+                <inputDefinitions>
+                    <inputDefinition multiple="false" name="hasSupplierAccepted" type="BOOLEAN">
+                        <description>Whether supplier has accepted to provide a quotation</description>
+                        <inputDefinitions />
+                        <inputDefinitions />
+                    </inputDefinition>
+                    <inputDefinition multiple="false" name="price" type="DECIMAL">
+                        <description>The quotation total price</description>
+                        <inputDefinitions />
+                        <inputDefinitions />
+                    </inputDefinition>
+                    <inputDefinition multiple="false" name="comments" type="TEXT">
+                        <description>Supplier's comments</description>
+                        <inputDefinitions />
+                        <inputDefinitions />
+                    </inputDefinition>
+                </inputDefinitions>
+            </contract>
+            <context>
+                <contextEntry key="quotations_ref">
+                    <expression expressionType="TYPE_BUSINESS_DATA_REFERENCE" id="935705296910201433" name="quotations" returnType="org.bonitasoft.engine.business.data.BusinessDataReference">
+                        <content>quotations</content>
+                    </expression>
+                </contextEntry>
+                <contextEntry key="request_ref">
+                    <expression expressionType="TYPE_BUSINESS_DATA_REFERENCE" id="294060482638008002" name="request" returnType="org.bonitasoft.engine.business.data.BusinessDataReference">
+                        <content>request</content>
+                    </expression>
+                </contextEntry>
+                <contextEntry key="quotationRequestTemplate_ref">
+                    <expression expressionType="TYPE_DOCUMENT" id="3075765885620404262" name="quotationRequestTemplate" returnType="org.bonitasoft.engine.bpm.document.Document">
+                        <content>quotationRequestTemplate</content>
+                    </expression>
+                </contextEntry>
+                <contextEntry key="quotationRequest_ref">
+                    <expression expressionType="TYPE_DOCUMENT" id="2379452489631579854" name="quotationRequest" returnType="org.bonitasoft.engine.bpm.document.Document">
+                        <content>quotationRequest</content>
+                    </expression>
+                </contextEntry>
+                <contextEntry key="quotation_ref">
+                    <expression expressionType="TYPE_BUSINESS_DATA_REFERENCE" id="166339045844861440" name="quotation" returnType="org.bonitasoft.engine.business.data.BusinessDataReference">
+                        <content>quotation</content>
+                    </expression>
+                </contextEntry>
+            </context>
+        </userTask>
+        <automaticTask id="8755546273456091623" name="Update request after supplier selected">
+            <incomingTransition>8171534706978605342</incomingTransition>
+            <outgoingTransition>8204341616882435939</outgoingTransition>
+            <dataDefinitions />
+            <operations>
+                <operation operator="setStatus:java.lang.String" operatorType="JAVA_METHOD">
+                    <leftOperand name="request" type="BUSINESS_DATA" />
+                    <rightOperand expressionType="TYPE_CONSTANT" id="4894532668890462914" interpreter="" name="Completed" returnType="java.lang.String">
+                        <content>Completed</content>
+                    </rightOperand>
+                </operation>
+            </operations>
+            <boundaryEvents />
+        </automaticTask>
+        <userTask actorName="Employee actor" expectedDuration="3600000" id="8461861035719407544" name="Review quotations &amp; select supplier" priority="NORMAL">
+            <incomingTransition>7904196158016895819</incomingTransition>
+            <outgoingTransition>3069854623864146600</outgoingTransition>
+            <dataDefinitions />
+            <operations>
+                <operation operator="setSelectedSupplier:com.company.model.Supplier" operatorType="JAVA_METHOD">
+                    <leftOperand name="request" type="BUSINESS_DATA" />
+                    <rightOperand expressionType="TYPE_READ_ONLY_SCRIPT" id="7634717615296328043" interpreter="GROOVY" name="getSelectedSupplier" returnType="com.company.model.Supplier">
+                        <content>if (selectedSupplierId == null)
+
+                            return null;
+
+                            return supplierDAO.findById(selectedSupplierId);
+                        </content>
+                        <expression expressionType="TYPE_CONTRACT_INPUT" id="8408396587674126683" name="selectedSupplierId" returnType="java.lang.Integer">
+                            <content>selectedSupplierId</content>
+                        </expression>
+                        <expression expressionType="TYPE_BUSINESS_OBJECT_DAO" id="243846216212788803" interpreter="" name="supplierDAO" returnType="com.company.model.SupplierDAO">
+                            <content>supplierDAO</content>
+                        </expression>
+                    </rightOperand>
+                </operation>
+                <operation operator="setCompletionDate:java.util.Date" operatorType="JAVA_METHOD">
+                    <leftOperand name="request" type="BUSINESS_DATA" />
+                    <rightOperand expressionType="TYPE_READ_ONLY_SCRIPT" id="5586852339942997639" interpreter="GROOVY" name="getCurrentDate" returnType="java.util.Date">
+                        <content>return new Date();</content>
+                    </rightOperand>
+                </operation>
+            </operations>
+            <boundaryEvents />
+            <userFilter name="processInitiatorForRequestorLane" userFilterId="initiator" version="1.0.0">
+                <inputs>
+                    <input name="autoAssign">
+                        <expression expressionType="TYPE_CONSTANT" id="2101980887306882885" interpreter="" name="true" returnType="java.lang.Boolean">
+                            <content>true</content>
+                        </expression>
+                    </input>
+                </inputs>
+            </userFilter>
+            <contract>
+                <inputDefinitions>
+                    <inputDefinition multiple="false" name="selectedSupplierId" type="INTEGER">
+                        <description>Id of the supplier selected for procurement</description>
+                        <inputDefinitions />
+                        <inputDefinitions />
+                    </inputDefinition>
+                </inputDefinitions>
+            </contract>
+            <context>
+                <contextEntry key="quotations_ref">
+                    <expression expressionType="TYPE_BUSINESS_DATA_REFERENCE" id="2173964460310481246" name="quotations" returnType="org.bonitasoft.engine.business.data.BusinessDataReference">
+                        <content>quotations</content>
+                    </expression>
+                </contextEntry>
+                <contextEntry key="request_ref">
+                    <expression expressionType="TYPE_BUSINESS_DATA_REFERENCE" id="7723118941258365877" name="request" returnType="org.bonitasoft.engine.business.data.BusinessDataReference">
+                        <content>request</content>
+                    </expression>
+                </contextEntry>
+                <contextEntry key="quotationRequestTemplate_ref">
+                    <expression expressionType="TYPE_DOCUMENT" id="2621963927439326581" name="quotationRequestTemplate" returnType="org.bonitasoft.engine.bpm.document.Document">
+                        <content>quotationRequestTemplate</content>
+                    </expression>
+                </contextEntry>
+                <contextEntry key="quotationRequest_ref">
+                    <expression expressionType="TYPE_DOCUMENT" id="2377521557877833833" name="quotationRequest" returnType="org.bonitasoft.engine.bpm.document.Document">
+                        <content>quotationRequest</content>
+                    </expression>
+                </contextEntry>
+            </context>
+        </userTask>
+    </flowElements>
+    <actors>
+        <actor name="Employee actor">
+            <description>This is an example of actor that is mapped to any ACME users</description>
+        </actor>
+    </actors>
+    <parameters />
+    <actorInitiator>Employee actor</actorInitiator>
+    <contract>
+        <inputDefinitions>
+            <inputDefinition multiple="false" name="summary" type="TEXT">
+                <description>Request summary</description>
+                <inputDefinitions />
+                <inputDefinitions />
+            </inputDefinition>
+            <inputDefinition multiple="false" name="description" type="TEXT">
+                <description>Request description</description>
+                <inputDefinitions />
+                <inputDefinitions />
+            </inputDefinition>
+            <inputDefinition multiple="true" name="supplierIds" type="INTEGER">
+                <description>List of suitable suppliers</description>
+                <inputDefinitions />
+                <inputDefinitions />
+            </inputDefinition>
+        </inputDefinitions>
+    </contract>
+    <context>
+        <contextEntry key="quotations_ref">
+            <expression expressionType="TYPE_BUSINESS_DATA_REFERENCE" id="6264334288048702934" name="quotations" returnType="org.bonitasoft.engine.business.data.BusinessDataReference">
+                <content>quotations</content>
+            </expression>
+        </contextEntry>
+        <contextEntry key="request_ref">
+            <expression expressionType="TYPE_BUSINESS_DATA_REFERENCE" id="405194655726191311" name="request" returnType="org.bonitasoft.engine.business.data.BusinessDataReference">
+                <content>request</content>
+            </expression>
+        </contextEntry>
+        <contextEntry key="quotationRequestTemplate_ref">
+            <expression expressionType="TYPE_DOCUMENT" id="7997342797178750631" name="quotationRequestTemplate" returnType="org.bonitasoft.engine.bpm.document.Document">
+                <content>quotationRequestTemplate</content>
+            </expression>
+        </contextEntry>
+        <contextEntry key="quotationRequest_ref">
+            <expression expressionType="TYPE_DOCUMENT" id="4384295063573675773" name="quotationRequest" returnType="org.bonitasoft.engine.bpm.document.Document">
+                <content>quotationRequest</content>
+            </expression>
+        </contextEntry>
+    </context>
+</def:processDefinition>
