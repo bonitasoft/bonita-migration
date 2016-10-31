@@ -622,6 +622,16 @@ END""")
         }
     }
 
+    String getBlobContentAsString(Object blobValue) {
+        def bytesContent
+        if (DBVendor.ORACLE == dbVendor) {
+            bytesContent = blobValue.binaryStream.bytes
+        } else {
+            bytesContent = blobValue
+        }
+        new String(bytesContent)
+    }
+
     def addSequenceOnAllTenants(int sequenceKey) {
         getAllTenants().each {
             tenant -> sql.execute("INSERT INTO sequence (tenantid, id, nextid) VALUES(${tenant.id}, $sequenceKey, 1)")

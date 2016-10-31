@@ -18,11 +18,14 @@ package org.bonitasoft.migration.core
  */
 abstract class MigrationStep {
 
-    enum DBVendor { ORACLE, POSTGRES, MYSQL, SQLSERVER}
+    enum DBVendor {
+        ORACLE, POSTGRES, MYSQL, SQLSERVER
+    }
 
     abstract execute(MigrationContext context)
 
     abstract String getDescription()
 
+    String getWarning() { null }
 
 }

@@ -59,10 +59,10 @@ class DefaultPortalThemeIT extends Specification {
 
         then:
         def rowDefaultPortalTheme = migrationContext.sql.firstRow("SELECT tenantid, id, isdefault, content, csscontent, type, lastupdatedate FROM theme WHERE id = 2")
-        assertThat(dbUnitHelper.getOracleBlobAsString(rowDefaultPortalTheme.csscontent)).as("should retrieve css file").startsWith("/* Eric Meyer's Reset CSS v2.0 - http://cssreset.com */")
+        assertThat(migrationContext.databaseHelper.getBlobContentAsString(rowDefaultPortalTheme.csscontent)).as("should retrieve css file").startsWith("/* Eric Meyer's Reset CSS v2.0 - http://cssreset.com */")
 
         def rowCustomTheme = migrationContext.sql.firstRow("SELECT tenantid, id, isdefault, content, csscontent, type, lastupdatedate FROM theme WHERE id = 3")
-        assertThat(dbUnitHelper.getOracleBlobAsString(rowCustomTheme.csscontent)).as("should not modify custom css theme ").isEqualTo("csscontent")
+        assertThat(migrationContext.databaseHelper.getBlobContentAsString(rowCustomTheme.csscontent)).as("should not modify custom css theme ").isEqualTo("csscontent")
 
         def rowMobile = migrationContext.sql.firstRow("SELECT tenantid, id, isdefault, content, csscontent, type, lastupdatedate FROM theme WHERE id = 4")
         assertThat(rowMobile.csscontent).as("should not update default mobile theme").isNull()
