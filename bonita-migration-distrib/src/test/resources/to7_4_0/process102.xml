@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<def:processDefinition xmlns:def="http://www.bonitasoft.org/ns/process/client/7.2" name="Case Submission via web" version="4.3">
+    <description />
+    <displayDescription />
+    <stringIndexes>
+        <stringIndex index="1" />
+        <stringIndex index="2" />
+        <stringIndex index="3" />
+        <stringIndex index="4" />
+        <stringIndex index="5" />
+    </stringIndexes>
+    <flowElements>
+        <transitions>
+            <transition id="5165427601049433589" name="5203113924024505436_-&gt;_5204728664417967114" source="5203113924024505436" target="5204728664417967114" />
+            <transition id="8885283666634126581" name="8597929991167827623_-&gt;_5203113924024505436" source="8597929991167827623" target="5203113924024505436" />
+            <transition id="6051480500399553502" name="7880638852913070198_-&gt;_8597929991167827623" source="7880638852913070198" target="8597929991167827623" />
+        </transitions>
+        <connectors />
+        <businessDataDefinitions>
+            <businessDataDefinition className="com.company.model.SupportCase" multiple="false" name="supportCase">
+                <description />
+                <defaultValue expressionType="TYPE_READ_ONLY_SCRIPT" id="8130834364606036709" interpreter="GROOVY" name="initData" returnType="com.company.model.SupportCase">
+                    <content>import com.company.model.SupportCase;
+
+
+                        SupportCase supportCase = new SupportCase();
+
+
+                        supportCase.setCreatedDate(new Date());
+
+                        supportCase.setDescription(description);
+
+                        supportCase.setTitle(title);
+
+                        supportCase.setProcessId(0L);
+
+                        supportCase.setStatus(status);
+
+                        supportCase.setSource(source);
+
+                        supportCase.setCategory(category);
+
+                        supportCase.setCity(city);
+
+                        supportCase.setSeverity(severity);
+
+                        supportCase.setLatitude(Double.parseDouble(latitude));
+
+                        supportCase.setLongitude(Double.parseDouble(longitude));
+
+
+                        return supportCase;
+                    </content>
+                    <expression expressionType="TYPE_CONTRACT_INPUT" id="3177524183610798768" name="title" returnType="java.lang.String">
+                        <content>title</content>
+                    </expression>
+                    <expression expressionType="TYPE_CONTRACT_INPUT" id="1848388763575927006" name="category" returnType="java.lang.String">
+                        <content>category</content>
+                    </expression>
+                    <expression expressionType="TYPE_CONTRACT_INPUT" id="3912968330242603550" name="source" returnType="java.lang.String">
+                        <content>source</content>
+                    </expression>
+                    <expression expressionType="TYPE_CONTRACT_INPUT" id="8232932050165515035" name="status" returnType="java.lang.String">
+                        <content>status</content>
+                    </expression>
+                    <expression expressionType="TYPE_CONTRACT_INPUT" id="2005885889393572579" name="description" returnType="java.lang.String">
+                        <content>description</content>
+                    </expression>
+                    <expression expressionType="TYPE_CONTRACT_INPUT" id="2858341894528611347" name="severity" returnType="java.lang.String">
+                        <content>severity</content>
+                    </expression>
+                    <expression expressionType="TYPE_CONTRACT_INPUT" id="5456464526364031299" name="longitude" returnType="java.lang.String">
+                        <content>longitude</content>
+                    </expression>
+                    <expression expressionType="TYPE_CONTRACT_INPUT" id="2181733848728552598" name="latitude" returnType="java.lang.String">
+                        <content>latitude</content>
+                    </expression>
+                    <expression expressionType="TYPE_CONTRACT_INPUT" id="4577854825658367139" name="city" returnType="java.lang.String">
+                        <content>city</content>
+                    </expression>
+                </defaultValue>
+            </businessDataDefinition>
+            <businessDataDefinition className="com.company.model.Reporter" multiple="false" name="reporter">
+                <description />
+                <defaultValue expressionType="TYPE_READ_ONLY_SCRIPT" id="562397611961110180" interpreter="GROOVY" name="init" returnType="com.company.model.Reporter">
+                    <content>import com.company.model.Reporter
+
+
+                        Reporter r = new Reporter();
+
+                        r.setEmail(email);
+
+                        r.setFirstName(firstName);
+
+                        r.setLastName(lastName);
+
+                        return r
+                    </content>
+                    <expression expressionType="TYPE_CONTRACT_INPUT" id="7575774419326354354" name="lastName" returnType="java.lang.String">
+                        <content>lastName</content>
+                    </expression>
+                    <expression expressionType="TYPE_CONTRACT_INPUT" id="8960355500795214848" name="email" returnType="java.lang.String">
+                        <content>email</content>
+                    </expression>
+                    <expression expressionType="TYPE_CONTRACT_INPUT" id="4001400632933041483" name="firstName" returnType="java.lang.String">
+                        <content>firstName</content>
+                    </expression>
+                </defaultValue>
+            </businessDataDefinition>
+        </businessDataDefinitions>
+        <dataDefinitions />
+        <documentDefinitions />
+        <documentListDefinitions />
+        <endEvent id="5204728664417967114" name="End : Case complete">
+            <incomingTransition>5165427601049433589</incomingTransition>
+            <terminateEventTrigger />
+        </endEvent>
+        <startEvent id="7880638852913070198" interrupting="true" name="Customer">
+            <outgoingTransition>6051480500399553502</outgoingTransition>
+        </startEvent>
+        <automaticTask id="8597929991167827623" name="Update process data1">
+            <incomingTransition>6051480500399553502</incomingTransition>
+            <outgoingTransition>8885283666634126581</outgoingTransition>
+            <dataDefinitions />
+            <operations>
+                <operation operator="setProcessId:java.lang.Long" operatorType="JAVA_METHOD">
+                    <leftOperand name="supportCase" type="BUSINESS_DATA" />
+                    <rightOperand expressionType="TYPE_READ_ONLY_SCRIPT" id="3023922890589752698" interpreter="GROOVY" name="idcase" returnType="java.lang.Long">
+                        <content>processInstanceId</content>
+                        <expression expressionType="TYPE_ENGINE_CONSTANT" id="8582701135171204914" interpreter="" name="processInstanceId" returnType="java.lang.Long">
+                            <content>processInstanceId</content>
+                        </expression>
+                    </rightOperand>
+                </operation>
+                <operation operator="setReporterId:java.lang.Long" operatorType="JAVA_METHOD">
+                    <leftOperand name="supportCase" type="BUSINESS_DATA" />
+                    <rightOperand expressionType="TYPE_JAVA_METHOD_CALL" id="4497029335551161202" interpreter="" name="reporter - com.company.model.Reporter#getPersistenceId" returnType="java.lang.Long">
+                        <content>getPersistenceId</content>
+                        <expression expressionType="TYPE_BUSINESS_DATA" id="663660142921335205" name="reporter" returnType="com.company.model.Reporter">
+                            <content>reporter</content>
+                        </expression>
+                    </rightOperand>
+                </operation>
+            </operations>
+            <boundaryEvents />
+        </automaticTask>
+        <callActivity callableElementType="PROCESS" id="5203113924024505436" name="Manage the new support case">
+            <incomingTransition>8885283666634126581</incomingTransition>
+            <outgoingTransition>5165427601049433589</outgoingTransition>
+            <dataDefinitions>
+                <dataDefinition className="java.lang.Long" name="caseId" transient="false" />
+                <dataDefinition className="java.lang.Long" name="reporterId" transient="false" />
+                <dataDefinition className="java.lang.Boolean" name="hasAttachment" transient="false">
+                    <defaultValue expressionType="TYPE_CONSTANT" id="3109388002128905085" interpreter="" name="true" returnType="java.lang.Boolean">
+                        <content>true</content>
+                    </defaultValue>
+                </dataDefinition>
+            </dataDefinitions>
+            <operations>
+                <operation operator="setReporterId:java.lang.Long" operatorType="JAVA_METHOD">
+                    <leftOperand name="supportCase" type="BUSINESS_DATA" />
+                    <rightOperand expressionType="TYPE_JAVA_METHOD_CALL" id="8478342676480542811" interpreter="" name="reporter - com.company.model.Reporter#getPersistenceId" returnType="java.lang.Long">
+                        <content>getPersistenceId</content>
+                        <expression expressionType="TYPE_BUSINESS_DATA" id="7057759415341698868" name="reporter" returnType="com.company.model.Reporter">
+                            <content>reporter</content>
+                        </expression>
+                    </rightOperand>
+                </operation>
+            </operations>
+            <boundaryEvents />
+            <callableElement expressionType="TYPE_CONSTANT" id="2346327379552156320" interpreter="" name="Case Management 1" returnType="java.lang.String">
+                <content>Case Management 1</content>
+            </callableElement>
+            <callableElementVersion expressionType="TYPE_CONSTANT" id="4169827691202102564" interpreter="" name="4.2" returnType="java.lang.String">
+                <content>4.2</content>
+            </callableElementVersion>
+            <dataInputOperation operatorType="ASSIGNMENT">
+                <leftOperand name="hasAttachment" type="DATA" />
+                <rightOperand expressionType="TYPE_VARIABLE" id="5918687523914072373" interpreter="" name="hasAttachment" returnType="java.lang.Boolean">
+                    <content>hasAttachment</content>
+                </rightOperand>
+            </dataInputOperation>
+            <dataInputOperation operatorType="ASSIGNMENT">
+                <leftOperand name="b_reporter" type="BUSINESS_DATA" />
+                <rightOperand expressionType="TYPE_BUSINESS_DATA" id="5284051151988243099" interpreter="" name="reporter" returnType="com.company.model.Reporter">
+                    <content>reporter</content>
+                </rightOperand>
+            </dataInputOperation>
+            <dataInputOperation operatorType="ASSIGNMENT">
+                <leftOperand name="b_supportCase" type="BUSINESS_DATA" />
+                <rightOperand expressionType="TYPE_BUSINESS_DATA" id="6398531279705128808" interpreter="" name="supportCase" returnType="com.company.model.SupportCase">
+                    <content>supportCase</content>
+                </rightOperand>
+            </dataInputOperation>
+            <contractInput />
+        </callActivity>
+    </flowElements>
+    <actors>
+        <actor name="Case Reporter">
+            <description />
+        </actor>
+    </actors>
+    <parameters />
+    <actorInitiator>Case Reporter</actorInitiator>
+    <contract>
+        <inputDefinitions>
+            <inputDefinition multiple="false" name="firstName" type="TEXT">
+                <description>Name</description>
+                <inputDefinitions />
+                <inputDefinitions />
+            </inputDefinition>
+            <inputDefinition multiple="false" name="lastName" type="TEXT">
+                <description>Surname</description>
+                <inputDefinitions />
+                <inputDefinitions />
+            </inputDefinition>
+            <inputDefinition multiple="false" name="email" type="TEXT">
+                <description>Email</description>
+                <inputDefinitions />
+                <inputDefinitions />
+            </inputDefinition>
+            <inputDefinition multiple="false" name="city" type="TEXT">
+                <description>City, Country</description>
+                <inputDefinitions />
+                <inputDefinitions />
+            </inputDefinition>
+            <inputDefinition multiple="false" name="category" type="TEXT">
+                <description>Select a Category</description>
+                <inputDefinitions />
+                <inputDefinitions />
+            </inputDefinition>
+            <inputDefinition multiple="false" name="severity" type="TEXT">
+                <description>Priority</description>
+                <inputDefinitions />
+                <inputDefinitions />
+            </inputDefinition>
+            <inputDefinition multiple="false" name="title" type="TEXT">
+                <description>Title of the ticket</description>
+                <inputDefinitions />
+                <inputDefinitions />
+            </inputDefinition>
+            <inputDefinition multiple="false" name="description" type="TEXT">
+                <description>Set a description of the incidence</description>
+                <inputDefinitions />
+                <inputDefinitions />
+            </inputDefinition>
+            <inputDefinition multiple="false" name="source" type="TEXT">
+                <description>Web</description>
+                <inputDefinitions />
+                <inputDefinitions />
+            </inputDefinition>
+            <inputDefinition multiple="false" name="latitude" type="TEXT">
+                <description>lat</description>
+                <inputDefinitions />
+                <inputDefinitions />
+            </inputDefinition>
+            <inputDefinition multiple="false" name="longitude" type="TEXT">
+                <description>lng</description>
+                <inputDefinitions />
+                <inputDefinitions />
+            </inputDefinition>
+            <inputDefinition multiple="false" name="status" type="TEXT">
+                <description>status</description>
+                <inputDefinitions />
+                <inputDefinitions />
+            </inputDefinition>
+        </inputDefinitions>
+    </contract>
+    <context>
+        <contextEntry key="supportCase_ref">
+            <expression expressionType="TYPE_BUSINESS_DATA_REFERENCE" id="4094860453340138581" name="supportCase" returnType="org.bonitasoft.engine.business.data.BusinessDataReference">
+                <content>supportCase</content>
+            </expression>
+        </contextEntry>
+        <contextEntry key="reporter_ref">
+            <expression expressionType="TYPE_BUSINESS_DATA_REFERENCE" id="7209908880276107826" name="reporter" returnType="org.bonitasoft.engine.business.data.BusinessDataReference">
+                <content>reporter</content>
+            </expression>
+        </contextEntry>
+    </context>
+</def:processDefinition>

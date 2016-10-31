@@ -1,0 +1,1400 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<def:processDefinition xmlns:def="http://www.bonitasoft.org/ns/process/client/7.2" name="NewVacationRequest" version="2.1">
+    <description />
+    <displayDescription />
+    <stringIndexes>
+        <stringIndex index="1" />
+        <stringIndex index="2" />
+        <stringIndex index="3" />
+        <stringIndex index="4" />
+        <stringIndex index="5" />
+    </stringIndexes>
+    <flowElements>
+        <transitions>
+            <transition id="2238448081623300761" name="5614847412292857553_-&gt;_7051825892662573157" source="5614847412292857553" target="7051825892662573157" />
+            <transition id="7876230601377103480" name="4954902961512234419_-&gt;_7720413631988827591" source="4954902961512234419" target="7720413631988827591" />
+            <transition id="4963814995639644174" name="5241063753788560788_-&gt;_7265987411777207736" source="5241063753788560788" target="7265987411777207736" />
+            <transition id="4116882429411505437" name="6946411751601693338_-&gt;_4899609064431810268" source="6946411751601693338" target="4899609064431810268" />
+            <transition id="8795532505965312317" name="6485787227364589538_-&gt;_8028631350284173981" source="6485787227364589538" target="8028631350284173981" />
+            <transition id="5409680900204246787" name="5724470520252710975_-&gt;_7062523067906419296" source="5724470520252710975" target="7062523067906419296" />
+            <transition id="8592823066053004374" name="5660101436813594041_-&gt;_6946411751601693338" source="5660101436813594041" target="6946411751601693338" />
+            <transition id="7002250020515396626" name="7062523067906419296_-&gt;_6727731274374813147" source="7062523067906419296" target="6727731274374813147" />
+            <transition id="6442575354405799138" name="8891053379245345024_-&gt;_4954902961512234419" source="8891053379245345024" target="4954902961512234419" />
+            <transition id="4944507517900271812" name="6727731274374813147_-&gt;_8198784775334810139" source="6727731274374813147" target="8198784775334810139" />
+            <transition id="1286434873327832893" name="7720413631988827591_-&gt;_7983529466889267660" source="7720413631988827591" target="7983529466889267660">
+                <condition expressionType="TYPE_READ_ONLY_SCRIPT" id="4111965970775034982" interpreter="GROOVY" name="isApproved" returnType="java.lang.Boolean">
+                    <content>return vacationRequest.getStatus().equals("approved");</content>
+                    <expression expressionType="TYPE_BUSINESS_DATA" id="6694364378145272210" name="vacationRequest" returnType="com.company.model.VacationRequest">
+                        <content>vacationRequest</content>
+                    </expression>
+                </condition>
+            </transition>
+            <transition id="2396781773325092329" name="6727731274374813147_-&gt;_6060887963113243872" source="6727731274374813147" target="6060887963113243872" />
+            <transition id="539164739016700219" name="6617074854589649274_-&gt;_4954902961512234419" source="6617074854589649274" target="4954902961512234419" />
+            <transition id="976713344182172936" name="6060887963113243872_-&gt;_8984958046875980421" source="6060887963113243872" target="8984958046875980421" />
+            <transition id="8961950357490217272" name="8028631350284173981_-&gt;_5946032811091965063" source="8028631350284173981" target="5946032811091965063" />
+            <transition id="1506242373869324472" name="7613882285524763291_-&gt;_6882225257960664673" source="7613882285524763291" target="6882225257960664673" />
+            <transition id="4822788482994780916" name="4807140863779513598_-&gt;_8891053379245345024" source="4807140863779513598" target="8891053379245345024" />
+            <transition id="8691540029908535404" name="7983529466889267660_-&gt;_5660101436813594041" source="7983529466889267660" target="5660101436813594041" />
+            <transition id="5509853083359529223" name="8984958046875980421_-&gt;_6946411751601693338" source="8984958046875980421" target="6946411751601693338" />
+            <transition id="6946931373461647703" name="7213464726970074911_-&gt;_5614847412292857553" source="7213464726970074911" target="5614847412292857553" />
+            <transition id="7100518208395297797" name="7720413631988827591_-&gt;_5724470520252710975" source="7720413631988827591" target="5724470520252710975" />
+            <transition id="8791164387348663229" name="6882225257960664673_-&gt;_5241063753788560788" source="6882225257960664673" target="5241063753788560788" />
+            <transition id="7800641133553630532" name="7265987411777207736_-&gt;_6617074854589649274" source="7265987411777207736" target="6617074854589649274" />
+            <transition id="7308738578559447582" name="8198784775334810139_-&gt;_8984958046875980421" source="8198784775334810139" target="8984958046875980421" />
+        </transitions>
+        <connectors />
+        <businessDataDefinitions>
+            <businessDataDefinition className="com.company.model.VacationRequest" multiple="false" name="vacationRequest">
+                <description />
+                <defaultValue expressionType="TYPE_READ_ONLY_SCRIPT" id="2980014282223301269" interpreter="GROOVY" name="createVacationRequest" returnType="com.company.model.VacationRequest">
+                    <content>import com.company.model.VacationRequest;
+
+
+                        import java.text.DateFormat;
+
+                        import java.text.SimpleDateFormat;
+
+
+                        import javax.xml.bind.DatatypeConverter;
+
+
+                        import org.bonitasoft.engine.api.ProcessAPI;
+
+
+                        import org.slf4j.Logger;
+
+                        import org.slf4j.LoggerFactory;
+
+
+                        // Create a logger to trace code execution
+
+                        Logger logger = LoggerFactory.getLogger("org.bonitasoft.tahiti.groovyscripts");
+
+
+                        // Create a new empty vacation request
+
+                        logger.debug("Creating new vacation request");
+
+                        VacationRequest newVacationRequest = new VacationRequest();
+
+
+                        // Get the id of the user who create the process instance using Bonita Engine API
+
+                        ProcessAPI processAPI = apiAccessor.getProcessAPI();
+
+                        long userId = processAPI.getProcessInstance(processInstanceId).getStartedBy();
+
+
+                        // Set the requester user id on the request
+
+                        logger.debug("Id of the user who initiate the process instance: {}", userId);
+
+                        newVacationRequest.setRequesterBonitaBPMId(userId);
+
+
+                        // Update start and end date on the request
+
+                        newVacationRequest.setStartDate(startDate);
+
+                        newVacationRequest.setReturnDate(returnDate);
+
+
+                        // Update number of days
+
+                        newVacationRequest.setNumberOfDays(numberOfDays);
+
+
+                        // Set the status to pending
+
+                        newVacationRequest.setStatus("pending");
+
+
+                        //Set user's email
+
+                        newVacationRequest.setRequesterEmail(requesterEmail);
+
+
+                        // Return the new object initialized
+
+                        return newVacationRequest;
+                    </content>
+                    <expression expressionType="TYPE_CONTRACT_INPUT" id="1587514986560402609" name="startDate" returnType="java.util.Date">
+                        <content>startDate</content>
+                    </expression>
+                    <expression expressionType="TYPE_ENGINE_CONSTANT" id="4492683517452240860" interpreter="" name="processInstanceId" returnType="java.lang.Long">
+                        <content>processInstanceId</content>
+                    </expression>
+                    <expression expressionType="TYPE_ENGINE_CONSTANT" id="2870961998651570724" interpreter="" name="apiAccessor" returnType="com.bonitasoft.engine.api.APIAccessor">
+                        <content>apiAccessor</content>
+                    </expression>
+                    <expression expressionType="TYPE_CONTRACT_INPUT" id="1653315055325983956" name="requesterEmail" returnType="java.lang.String">
+                        <content>requesterEmail</content>
+                    </expression>
+                    <expression expressionType="TYPE_CONTRACT_INPUT" id="8545646159800454276" name="returnDate" returnType="java.util.Date">
+                        <content>returnDate</content>
+                    </expression>
+                    <expression expressionType="TYPE_CONTRACT_INPUT" id="3537794219776586914" name="numberOfDays" returnType="java.lang.Integer">
+                        <content>numberOfDays</content>
+                    </expression>
+                </defaultValue>
+            </businessDataDefinition>
+            <businessDataDefinition className="com.company.model.VacationAvailable" multiple="false" name="vacationAvailable">
+                <description />
+                <defaultValue expressionType="TYPE_QUERY_BUSINESS_DATA" id="6023520815372780705" name="VacationAvailable.findByBonitaBPMId" returnType="com.company.model.VacationAvailable">
+                    <content>VacationAvailable.findByBonitaBPMId</content>
+                    <expression expressionType="TYPE_READ_ONLY_SCRIPT" id="2114395136275270770" interpreter="GROOVY" name="bonitaBPMId" returnType="java.lang.Long">
+                        <content>import org.bonitasoft.engine.api.ProcessAPI;
+
+                            // Get a reference to ProcessAPI in order to retrieve process information
+                            ProcessAPI processAPI = apiAccessor.getProcessAPI();
+
+                            // Get the process instance information and return the Bonita BPM user id of the process initiator
+                            return processAPI.getProcessInstance(processInstanceId).getStartedBy();
+                        </content>
+                        <expression expressionType="TYPE_ENGINE_CONSTANT" id="5508015492890840207" interpreter="" name="processInstanceId" returnType="java.lang.Long">
+                            <content>processInstanceId</content>
+                        </expression>
+                        <expression expressionType="TYPE_ENGINE_CONSTANT" id="5440647353575915222" interpreter="" name="apiAccessor" returnType="org.bonitasoft.engine.api.APIAccessor">
+                            <content>apiAccessor</content>
+                        </expression>
+                    </expression>
+                </defaultValue>
+            </businessDataDefinition>
+        </businessDataDefinitions>
+        <dataDefinitions />
+        <documentDefinitions />
+        <documentListDefinitions />
+        <endEvent id="7051825892662573157" name="End vacation request cancelled">
+            <incomingTransition>2238448081623300761</incomingTransition>
+            <terminateEventTrigger />
+        </endEvent>
+        <endEvent id="5946032811091965063" name="End reminder">
+            <incomingTransition>8961950357490217272</incomingTransition>
+        </endEvent>
+        <endEvent id="4899609064431810268" name="End new request">
+            <incomingTransition>4116882429411505437</incomingTransition>
+            <terminateEventTrigger />
+        </endEvent>
+        <startEvent id="7613882285524763291" interrupting="true" name="Submit request">
+            <outgoingTransition>1506242373869324472</outgoingTransition>
+        </startEvent>
+        <gateway gatewayType="EXCLUSIVE" id="4954902961512234419" name="Merge from escalation">
+            <incomingTransition>539164739016700219</incomingTransition>
+            <incomingTransition>6442575354405799138</incomingTransition>
+            <outgoingTransition>7876230601377103480</outgoingTransition>
+        </gateway>
+        <gateway gatewayType="EXCLUSIVE" id="6946411751601693338" name="request approved? merged">
+            <incomingTransition>8592823066053004374</incomingTransition>
+            <incomingTransition>5509853083359529223</incomingTransition>
+            <outgoingTransition>4116882429411505437</outgoingTransition>
+        </gateway>
+        <gateway gatewayType="PARALLEL" id="8984958046875980421" name="parallelNotificationsMerged">
+            <incomingTransition>976713344182172936</incomingTransition>
+            <incomingTransition>7308738578559447582</incomingTransition>
+            <outgoingTransition>5509853083359529223</outgoingTransition>
+        </gateway>
+        <gateway gatewayType="PARALLEL" id="6727731274374813147" name="parallelNotifications">
+            <incomingTransition>7002250020515396626</incomingTransition>
+            <outgoingTransition>2396781773325092329</outgoingTransition>
+            <outgoingTransition>4944507517900271812</outgoingTransition>
+        </gateway>
+        <gateway gatewayType="EXCLUSIVE" id="7720413631988827591" name="request approved?">
+            <incomingTransition>7876230601377103480</incomingTransition>
+            <outgoingTransition>1286434873327832893</outgoingTransition>
+            <defaultTransition>7100518208395297797</defaultTransition>
+        </gateway>
+        <automaticTask id="8198784775334810139" name="Notify HR vacation refused">
+            <incomingTransition>4944507517900271812</incomingTransition>
+            <outgoingTransition>7308738578559447582</outgoingTransition>
+            <connector activationEvent="ON_FINISH" connectorId="email" failAction="FAIL" name="mailerNotifyHR" version="1.0.0">
+                <inputs>
+                    <input name="smtpPort">
+                        <expression expressionType="TYPE_PARAMETER" id="8798377592496606066" interpreter="" name="emailServerPort" returnType="java.lang.Integer">
+                            <content>emailServerPort</content>
+                        </expression>
+                    </input>
+                    <input name="to">
+                        <expression expressionType="TYPE_CONSTANT" id="9004442341874747795" interpreter="" name="presales.webdemo@bonitasoft.com" returnType="java.lang.String">
+                            <content>presales.webdemo@bonitasoft.com</content>
+                        </expression>
+                    </input>
+                    <input name="headers">
+                        <expression expressionType="TYPE_LIST" id="6575343471096581312" name="Table of expression containing the following expressions: []." returnType="java.util.List">
+                            <content>Table of expression containing the following expressions: [].</content>
+                        </expression>
+                    </input>
+                    <input name="smtpHost">
+                        <expression expressionType="TYPE_PARAMETER" id="5059572950550098726" interpreter="" name="emailServerAddress" returnType="java.lang.String">
+                            <content>emailServerAddress</content>
+                        </expression>
+                    </input>
+                    <input name="subject">
+                        <expression expressionType="TYPE_CONSTANT" id="5552912904625830735" interpreter="" name="HR vacation request rejected notification" returnType="java.lang.String">
+                            <content>HR vacation request rejected notification</content>
+                        </expression>
+                    </input>
+                    <input name="charset">
+                        <expression expressionType="TYPE_CONSTANT" id="5629332599549939647" interpreter="" name="UTF-8" returnType="java.lang.String">
+                            <content>UTF-8</content>
+                        </expression>
+                    </input>
+                    <input name="from">
+                        <expression expressionType="TYPE_PARAMETER" id="4745485435425701837" interpreter="" name="emailNotificationSender" returnType="java.lang.String">
+                            <content>emailNotificationSender</content>
+                        </expression>
+                    </input>
+                    <input name="password">
+                        <expression expressionType="TYPE_PARAMETER" id="7350593024882948468" interpreter="" name="emailServerPassword" returnType="java.lang.String">
+                            <content>emailServerPassword</content>
+                        </expression>
+                    </input>
+                    <input name="sslSupport">
+                        <expression expressionType="TYPE_PARAMETER" id="4797316383604033406" interpreter="" name="emailServerUseSSL" returnType="java.lang.Boolean">
+                            <content>emailServerUseSSL</content>
+                        </expression>
+                    </input>
+                    <input name="starttlsSupport">
+                        <expression expressionType="TYPE_CONSTANT" id="5542342347099386111" interpreter="" name="false" returnType="java.lang.Boolean">
+                            <content>false</content>
+                        </expression>
+                    </input>
+                    <input name="userName">
+                        <expression expressionType="TYPE_PARAMETER" id="2672636105490124758" interpreter="" name="emailServerUsername" returnType="java.lang.String">
+                            <content>emailServerUsername</content>
+                        </expression>
+                    </input>
+                    <input name="html">
+                        <expression expressionType="TYPE_CONSTANT" id="4990613615690926082" interpreter="" name="true" returnType="java.lang.Boolean">
+                            <content>true</content>
+                        </expression>
+                    </input>
+                    <input name="attachments">
+                        <expression expressionType="TYPE_LIST" id="1542849803669293929" name="List of expression containing the following expressions: ()." returnType="java.util.List">
+                            <content>List of expression containing the following expressions: ().</content>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs />
+            </connector>
+            <dataDefinitions />
+            <operations />
+            <boundaryEvents />
+        </automaticTask>
+        <automaticTask id="7062523067906419296" name="Remove from calendar">
+            <incomingTransition>5409680900204246787</incomingTransition>
+            <outgoingTransition>7002250020515396626</outgoingTransition>
+            <connector activationEvent="ON_ENTER" connectorId="google-calendar-v3-delete-event" failAction="IGNORE" name="remove event from calendar rejected" version="1.0.0">
+                <inputs>
+                    <input name="id">
+                        <expression expressionType="TYPE_JAVA_METHOD_CALL" id="1566622735160527357" interpreter="" name="vacationRequest - com.company.model.VacationRequest#getGoogleCalendarEventId" returnType="java.lang.String">
+                            <content>getGoogleCalendarEventId</content>
+                            <expression expressionType="TYPE_BUSINESS_DATA" id="2824954743149933156" name="vacationRequest" returnType="com.company.model.VacationRequest">
+                                <content>vacationRequest</content>
+                            </expression>
+                        </expression>
+                    </input>
+                    <input name="calendarId">
+                        <expression expressionType="TYPE_PARAMETER" id="4511266226405159861" interpreter="" name="googleCalendarCalendarId" returnType="java.lang.String">
+                            <content>googleCalendarCalendarId</content>
+                        </expression>
+                    </input>
+                    <input name="serviceAccountP12File">
+                        <expression expressionType="TYPE_PARAMETER" id="3102348944931665971" interpreter="" name="googleCalendarServiceAccountP12File" returnType="java.lang.String">
+                            <content>googleCalendarServiceAccountP12File</content>
+                        </expression>
+                    </input>
+                    <input name="sendNotifications">
+                        <expression expressionType="TYPE_CONSTANT" id="2846258401474688886" interpreter="" name="false" returnType="java.lang.Boolean">
+                            <content>false</content>
+                        </expression>
+                    </input>
+                    <input name="prettyPrint">
+                        <expression expressionType="TYPE_CONSTANT" id="1217040767235568976" interpreter="" name="false" returnType="java.lang.Boolean">
+                            <content>false</content>
+                        </expression>
+                    </input>
+                    <input name="applicationName">
+                        <expression expressionType="TYPE_PARAMETER" id="7960000454041751313" interpreter="" name="googleCalendarApplicationName" returnType="java.lang.String">
+                            <content>googleCalendarApplicationName</content>
+                        </expression>
+                    </input>
+                    <input name="serviceAccountUser">
+                        <expression expressionType="TYPE_PARAMETER" id="4031843130807042369" interpreter="" name="googleCalendarServiceAccountUser" returnType="java.lang.String">
+                            <content>googleCalendarServiceAccountUser</content>
+                        </expression>
+                    </input>
+                    <input name="serviceAccountId">
+                        <expression expressionType="TYPE_PARAMETER" id="259484585961408142" interpreter="" name="googleCalendarServiceAccountId" returnType="java.lang.String">
+                            <content>googleCalendarServiceAccountId</content>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs />
+            </connector>
+            <dataDefinitions />
+            <operations />
+            <boundaryEvents />
+        </automaticTask>
+        <automaticTask id="5724470520252710975" name="Credit vacation available">
+            <incomingTransition>7100518208395297797</incomingTransition>
+            <outgoingTransition>5409680900204246787</outgoingTransition>
+            <dataDefinitions />
+            <operations>
+                <operation operator="setDaysAvailableCounter:java.lang.Integer" operatorType="JAVA_METHOD">
+                    <leftOperand name="vacationAvailable" type="BUSINESS_DATA" />
+                    <rightOperand expressionType="TYPE_READ_ONLY_SCRIPT" id="6628709770963209865" interpreter="GROOVY" name="reset vacation available" returnType="java.lang.Integer">
+                        <content>vacationAvailable.getDaysAvailableCounter() + vacationRequest.getNumberOfDays()</content>
+                        <expression expressionType="TYPE_BUSINESS_DATA" id="6321176008969896390" name="vacationRequest" returnType="com.company.model.VacationRequest">
+                            <content>vacationRequest</content>
+                        </expression>
+                        <expression expressionType="TYPE_BUSINESS_DATA" id="4552531330165522921" name="vacationAvailable" returnType="com.company.model.VacationAvailable">
+                            <content>vacationAvailable</content>
+                        </expression>
+                    </rightOperand>
+                </operation>
+            </operations>
+            <boundaryEvents />
+        </automaticTask>
+        <userTask actorName="Managers group actor" expectedDuration="3600000" id="8891053379245345024" name="Review request escalation" priority="NORMAL">
+            <incomingTransition>4822788482994780916</incomingTransition>
+            <outgoingTransition>6442575354405799138</outgoingTransition>
+            <dataDefinitions />
+            <operations />
+            <boundaryEvents />
+            <userFilter name="Manager" userFilterId="initiator-manager" version="1.0.0">
+                <inputs>
+                    <input name="autoAssign">
+                        <expression expressionType="TYPE_CONSTANT" id="6319543695957209797" interpreter="" name="true" returnType="java.lang.Boolean">
+                            <content>true</content>
+                        </expression>
+                    </input>
+                </inputs>
+            </userFilter>
+            <contract />
+            <context>
+                <contextEntry key="vacationRequest_ref">
+                    <expression expressionType="TYPE_BUSINESS_DATA_REFERENCE" id="5562187824068051043" name="vacationRequest" returnType="org.bonitasoft.engine.business.data.BusinessDataReference">
+                        <content>vacationRequest</content>
+                    </expression>
+                </contextEntry>
+                <contextEntry key="vacationAvailable_ref">
+                    <expression expressionType="TYPE_BUSINESS_DATA_REFERENCE" id="434411902194268967" name="vacationAvailable" returnType="org.bonitasoft.engine.business.data.BusinessDataReference">
+                        <content>vacationAvailable</content>
+                    </expression>
+                </contextEntry>
+            </context>
+        </userTask>
+        <automaticTask id="5614847412292857553" name="Processing cancel request">
+            <incomingTransition>6946931373461647703</incomingTransition>
+            <outgoingTransition>2238448081623300761</outgoingTransition>
+            <connector activationEvent="ON_ENTER" connectorId="google-calendar-v3-delete-event" failAction="IGNORE" name="remove event from calendar cancelled" version="1.0.0">
+                <inputs>
+                    <input name="id">
+                        <expression expressionType="TYPE_JAVA_METHOD_CALL" id="6582753536703840015" interpreter="" name="vacationRequest - com.company.model.VacationRequest#getGoogleCalendarEventId" returnType="java.lang.String">
+                            <content>getGoogleCalendarEventId</content>
+                            <expression expressionType="TYPE_BUSINESS_DATA" id="2463593947207349991" name="vacationRequest" returnType="com.company.model.VacationRequest">
+                                <content>vacationRequest</content>
+                            </expression>
+                        </expression>
+                    </input>
+                    <input name="calendarId">
+                        <expression expressionType="TYPE_PARAMETER" id="2636588518791690689" interpreter="" name="googleCalendarCalendarId" returnType="java.lang.String">
+                            <content>googleCalendarCalendarId</content>
+                        </expression>
+                    </input>
+                    <input name="serviceAccountP12File">
+                        <expression expressionType="TYPE_PARAMETER" id="2068579070665865279" interpreter="" name="googleCalendarServiceAccountP12File" returnType="java.lang.String">
+                            <content>googleCalendarServiceAccountP12File</content>
+                        </expression>
+                    </input>
+                    <input name="sendNotifications">
+                        <expression expressionType="TYPE_CONSTANT" id="3509058757423120342" interpreter="" name="false" returnType="java.lang.Boolean">
+                            <content>false</content>
+                        </expression>
+                    </input>
+                    <input name="prettyPrint">
+                        <expression expressionType="TYPE_CONSTANT" id="5667261570005906687" interpreter="" name="false" returnType="java.lang.Boolean">
+                            <content>false</content>
+                        </expression>
+                    </input>
+                    <input name="applicationName">
+                        <expression expressionType="TYPE_PARAMETER" id="1575656064327008054" interpreter="" name="googleCalendarApplicationName" returnType="java.lang.String">
+                            <content>googleCalendarApplicationName</content>
+                        </expression>
+                    </input>
+                    <input name="serviceAccountUser">
+                        <expression expressionType="TYPE_PARAMETER" id="5467761532492990814" interpreter="" name="googleCalendarServiceAccountUser" returnType="java.lang.String">
+                            <content>googleCalendarServiceAccountUser</content>
+                        </expression>
+                    </input>
+                    <input name="serviceAccountId">
+                        <expression expressionType="TYPE_PARAMETER" id="626011101612913306" interpreter="" name="googleCalendarServiceAccountId" returnType="java.lang.String">
+                            <content>googleCalendarServiceAccountId</content>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs />
+            </connector>
+            <dataDefinitions />
+            <operations>
+                <operation operator="setStatus:java.lang.String" operatorType="JAVA_METHOD">
+                    <leftOperand name="vacationRequest" type="BUSINESS_DATA" />
+                    <rightOperand expressionType="TYPE_CONSTANT" id="2637437368561414670" interpreter="" name="cancelled" returnType="java.lang.String">
+                        <content>cancelled</content>
+                    </rightOperand>
+                </operation>
+                <operation operator="setDaysAvailableCounter:java.lang.Integer" operatorType="JAVA_METHOD">
+                    <leftOperand name="vacationAvailable" type="BUSINESS_DATA" />
+                    <rightOperand expressionType="TYPE_READ_ONLY_SCRIPT" id="3784022254482011856" interpreter="GROOVY" name="reset vacation available" returnType="java.lang.Integer">
+                        <content>vacationAvailable.getDaysAvailableCounter() + vacationRequest.getNumberOfDays()</content>
+                        <expression expressionType="TYPE_BUSINESS_DATA" id="4932487273121268197" name="vacationAvailable" returnType="com.company.model.VacationAvailable">
+                            <content>vacationAvailable</content>
+                        </expression>
+                        <expression expressionType="TYPE_BUSINESS_DATA" id="2982637692103838997" name="vacationRequest" returnType="com.company.model.VacationRequest">
+                            <content>vacationRequest</content>
+                        </expression>
+                    </rightOperand>
+                </operation>
+            </operations>
+            <boundaryEvents />
+        </automaticTask>
+        <automaticTask id="8028631350284173981" name="Send reminder">
+            <incomingTransition>8795532505965312317</incomingTransition>
+            <outgoingTransition>8961950357490217272</outgoingTransition>
+            <connector activationEvent="ON_ENTER" connectorId="email" failAction="FAIL" name="sendReminderToManagerRequestPending" version="1.0.0">
+                <inputs>
+                    <input name="smtpPort">
+                        <expression expressionType="TYPE_PARAMETER" id="2811965095995460956" interpreter="" name="emailServerPort" returnType="java.lang.Integer">
+                            <content>emailServerPort</content>
+                        </expression>
+                    </input>
+                    <input name="to">
+                        <expression expressionType="TYPE_READ_ONLY_SCRIPT" id="8161213416613757661" interpreter="GROOVY" name="searchReviewerEmailAddress" returnType="java.lang.String">
+                            <content>//import org.bonitasoft.engine.identity.ContactData;
+
+                                //import org.bonitasoft.engine.identity.User;
+
+
+                                //User requestorUserInfo = BonitaUsers.getUser(apiAccessor, vacationRequest.getBonitaEmployeeId());
+
+                                //ContactData managerProfessionalContactInfo = BonitaUsers.getUserProfessionalContactInfo(apiAccessor,requestorUserInfo.getManagerUserId());
+
+
+                                //return managerProfessionalContactInfo.getEmail();
+
+
+                                vacationRequest.getRequesterEmail();
+                            </content>
+                            <expression expressionType="TYPE_BUSINESS_DATA" id="414422072462035903" name="vacationRequest" returnType="com.company.model.VacationRequest">
+                                <content>vacationRequest</content>
+                            </expression>
+                        </expression>
+                    </input>
+                    <input name="headers">
+                        <expression expressionType="TYPE_LIST" id="2937336043458378611" name="Table of expression containing the following expressions: []." returnType="java.util.List">
+                            <content>Table of expression containing the following expressions: [].</content>
+                        </expression>
+                    </input>
+                    <input name="smtpHost">
+                        <expression expressionType="TYPE_PARAMETER" id="324358968121246501" interpreter="" name="emailServerAddress" returnType="java.lang.String">
+                            <content>emailServerAddress</content>
+                        </expression>
+                    </input>
+                    <input name="subject">
+                        <expression expressionType="TYPE_CONSTANT" id="1483636231494518763" interpreter="" name="You have a vacation request to review waiting for more then 3 days" returnType="java.lang.String">
+                            <content>You have a vacation request to review waiting for more then 3 days</content>
+                        </expression>
+                    </input>
+                    <input name="charset">
+                        <expression expressionType="TYPE_CONSTANT" id="7326100367762410100" interpreter="" name="UTF-8" returnType="java.lang.String">
+                            <content>UTF-8</content>
+                        </expression>
+                    </input>
+                    <input name="from">
+                        <expression expressionType="TYPE_PARAMETER" id="1124559441464179977" interpreter="" name="emailNotificationSender" returnType="java.lang.String">
+                            <content>emailNotificationSender</content>
+                        </expression>
+                    </input>
+                    <input name="password">
+                        <expression expressionType="TYPE_PARAMETER" id="5059548969654992037" interpreter="" name="emailServerPassword" returnType="java.lang.String">
+                            <content>emailServerPassword</content>
+                        </expression>
+                    </input>
+                    <input name="message">
+                        <expression expressionType="TYPE_PATTERN" id="7923682902912057129" interpreter="" name="&lt;pattern-expression&gt;" returnType="java.lang.String">
+                            <content>Please connect to Bonita BPM Portal now</content>
+                        </expression>
+                    </input>
+                    <input name="sslSupport">
+                        <expression expressionType="TYPE_PARAMETER" id="1685000148669645494" interpreter="" name="emailServerUseSSL" returnType="java.lang.Boolean">
+                            <content>emailServerUseSSL</content>
+                        </expression>
+                    </input>
+                    <input name="starttlsSupport">
+                        <expression expressionType="TYPE_CONSTANT" id="2247354551607934905" interpreter="" name="false" returnType="java.lang.Boolean">
+                            <content>false</content>
+                        </expression>
+                    </input>
+                    <input name="userName">
+                        <expression expressionType="TYPE_PARAMETER" id="7059636738541926427" interpreter="" name="emailServerUsername" returnType="java.lang.String">
+                            <content>emailServerUsername</content>
+                        </expression>
+                    </input>
+                    <input name="html">
+                        <expression expressionType="TYPE_CONSTANT" id="3696724008326314883" interpreter="" name="true" returnType="java.lang.Boolean">
+                            <content>true</content>
+                        </expression>
+                    </input>
+                    <input name="attachments">
+                        <expression expressionType="TYPE_LIST" id="2556283120575757208" name="List of expression containing the following expressions: ()." returnType="java.util.List">
+                            <content>List of expression containing the following expressions: ().</content>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs />
+            </connector>
+            <dataDefinitions />
+            <operations />
+            <boundaryEvents />
+        </automaticTask>
+        <automaticTask id="7265987411777207736" name="Inform manager request pending">
+            <incomingTransition>4963814995639644174</incomingTransition>
+            <outgoingTransition>7800641133553630532</outgoingTransition>
+            <connector activationEvent="ON_ENTER" connectorId="email" failAction="FAIL" name="sendNotificationToManagerRequestPending" version="1.0.0">
+                <inputs>
+                    <input name="smtpPort">
+                        <expression expressionType="TYPE_PARAMETER" id="2408440039147913364" interpreter="" name="emailServerPort" returnType="java.lang.Integer">
+                            <content>emailServerPort</content>
+                        </expression>
+                    </input>
+                    <input name="to">
+                        <expression expressionType="TYPE_JAVA_METHOD_CALL" id="5875204639210847325" interpreter="" name="vacationRequest - com.company.model.VacationRequest#getRequesterEmail" returnType="java.lang.String">
+                            <content>getRequesterEmail</content>
+                            <expression expressionType="TYPE_BUSINESS_DATA" id="9130788801295435762" name="vacationRequest" returnType="com.company.model.VacationRequest">
+                                <content>vacationRequest</content>
+                            </expression>
+                        </expression>
+                    </input>
+                    <input name="headers">
+                        <expression expressionType="TYPE_LIST" id="9205329337315537837" name="Table of expression containing the following expressions: []." returnType="java.util.List">
+                            <content>Table of expression containing the following expressions: [].</content>
+                        </expression>
+                    </input>
+                    <input name="smtpHost">
+                        <expression expressionType="TYPE_PARAMETER" id="8375474312824600684" interpreter="" name="emailServerAddress" returnType="java.lang.String">
+                            <content>emailServerAddress</content>
+                        </expression>
+                    </input>
+                    <input name="subject">
+                        <expression expressionType="TYPE_CONSTANT" id="6222401418637655737" interpreter="" name="You have a vacation request to review" returnType="java.lang.String">
+                            <content>You have a vacation request to review</content>
+                        </expression>
+                    </input>
+                    <input name="charset">
+                        <expression expressionType="TYPE_CONSTANT" id="1207645752198579004" interpreter="" name="UTF-8" returnType="java.lang.String">
+                            <content>UTF-8</content>
+                        </expression>
+                    </input>
+                    <input name="from">
+                        <expression expressionType="TYPE_PARAMETER" id="818974336650858278" interpreter="" name="emailNotificationSender" returnType="java.lang.String">
+                            <content>emailNotificationSender</content>
+                        </expression>
+                    </input>
+                    <input name="password">
+                        <expression expressionType="TYPE_PARAMETER" id="7546184508085287468" interpreter="" name="emailServerPassword" returnType="java.lang.String">
+                            <content>emailServerPassword</content>
+                        </expression>
+                    </input>
+                    <input name="message">
+                        <expression expressionType="TYPE_PATTERN" id="3109936154189214798" interpreter="" name="&lt;pattern-expression&gt;" returnType="java.lang.String">
+                            <content>Please connect to Bonita BPM Portal</content>
+                        </expression>
+                    </input>
+                    <input name="sslSupport">
+                        <expression expressionType="TYPE_PARAMETER" id="1493362170549127949" interpreter="" name="emailServerUseSSL" returnType="java.lang.Boolean">
+                            <content>emailServerUseSSL</content>
+                        </expression>
+                    </input>
+                    <input name="starttlsSupport">
+                        <expression expressionType="TYPE_CONSTANT" id="546951349182249919" interpreter="" name="false" returnType="java.lang.Boolean">
+                            <content>false</content>
+                        </expression>
+                    </input>
+                    <input name="userName">
+                        <expression expressionType="TYPE_PARAMETER" id="8407459865291606618" interpreter="" name="emailServerUsername" returnType="java.lang.String">
+                            <content>emailServerUsername</content>
+                        </expression>
+                    </input>
+                    <input name="html">
+                        <expression expressionType="TYPE_CONSTANT" id="6730250925340736595" interpreter="" name="true" returnType="java.lang.Boolean">
+                            <content>true</content>
+                        </expression>
+                    </input>
+                    <input name="attachments">
+                        <expression expressionType="TYPE_LIST" id="6037536395245208049" name="List of expression containing the following expressions: ()." returnType="java.util.List">
+                            <content>List of expression containing the following expressions: ().</content>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs />
+            </connector>
+            <dataDefinitions />
+            <operations />
+            <boundaryEvents />
+        </automaticTask>
+        <userTask actorName="Managers group actor" expectedDuration="3600000" id="6617074854589649274" name="Review request" priority="NORMAL">
+            <displayName expressionType="TYPE_READ_ONLY_SCRIPT" id="3970341138962560413" interpreter="GROOVY" name="TaskName" returnType="java.lang.String">
+                <content>return "Review request for "+ vacationAvailable.getFirstname() + " " + vacationAvailable.getLastname();</content>
+                <expression expressionType="TYPE_BUSINESS_DATA" id="7788030183978320430" name="vacationAvailable" returnType="com.company.model.VacationAvailable">
+                    <content>vacationAvailable</content>
+                </expression>
+            </displayName>
+            <incomingTransition>7800641133553630532</incomingTransition>
+            <outgoingTransition>539164739016700219</outgoingTransition>
+            <dataDefinitions />
+            <operations>
+                <operation operator="setStatus:java.lang.String" operatorType="JAVA_METHOD">
+                    <leftOperand name="vacationRequest" type="BUSINESS_DATA" />
+                    <rightOperand expressionType="TYPE_CONTRACT_INPUT" id="1909675919953213780" interpreter="" name="status" returnType="java.lang.String">
+                        <content>status</content>
+                    </rightOperand>
+                </operation>
+                <operation operator="setComments:java.lang.String" operatorType="JAVA_METHOD">
+                    <leftOperand name="vacationRequest" type="BUSINESS_DATA" />
+                    <rightOperand expressionType="TYPE_CONTRACT_INPUT" id="5825231504887297801" interpreter="" name="comments" returnType="java.lang.String">
+                        <content>comments</content>
+                    </rightOperand>
+                </operation>
+                <operation operator="setReviewerBonitaBPMId:java.lang.Long" operatorType="JAVA_METHOD">
+                    <leftOperand name="vacationRequest" type="BUSINESS_DATA" />
+                    <rightOperand expressionType="TYPE_READ_ONLY_SCRIPT" id="7463256113313302122" interpreter="GROOVY" name="getPerformerId" returnType="java.lang.Long">
+                        <content>return taskAssigneeId;</content>
+                        <expression expressionType="TYPE_ENGINE_CONSTANT" id="321930970122075963" interpreter="" name="taskAssigneeId" returnType="java.lang.Long">
+                            <content>taskAssigneeId</content>
+                        </expression>
+                    </rightOperand>
+                </operation>
+            </operations>
+            <boundaryEvents>
+                <boundaryEvent id="6485787227364589538" interrupting="false" name="Wait for 3 days">
+                    <outgoingTransition>8795532505965312317</outgoingTransition>
+                    <timerEventTrigger type="DURATION">
+                        <expression expressionType="TYPE_READ_ONLY_SCRIPT" id="4391578146687961085" interpreter="GROOVY" name="3 Days 00:00:00" returnType="java.lang.Long">
+                            <content>259200000L</content>
+                        </expression>
+                    </timerEventTrigger>
+                </boundaryEvent>
+                <boundaryEvent id="7213464726970074911" interrupting="true" name="Cancel request">
+                    <outgoingTransition>6946931373461647703</outgoingTransition>
+                    <catchMessageEventTrigger name="cancelMsg">
+                        <correlation>
+                            <key expressionType="TYPE_CONSTANT" id="3518771873871934230" interpreter="" name="persistanceId" returnType="java.lang.String">
+                                <content>persistanceId</content>
+                            </key>
+                            <value expressionType="TYPE_JAVA_METHOD_CALL" id="1019247089340495666" interpreter="" name="vacationRequest - com.company.model.VacationRequest#getPersistenceId" returnType="java.lang.Long">
+                                <content>getPersistenceId</content>
+                                <expression expressionType="TYPE_BUSINESS_DATA" id="4841156448179109097" name="vacationRequest" returnType="com.company.model.VacationRequest">
+                                    <content>vacationRequest</content>
+                                </expression>
+                            </value>
+                        </correlation>
+                    </catchMessageEventTrigger>
+                </boundaryEvent>
+                <boundaryEvent id="4807140863779513598" interrupting="true" name="Wait for 10 days">
+                    <outgoingTransition>4822788482994780916</outgoingTransition>
+                    <timerEventTrigger type="DURATION">
+                        <expression expressionType="TYPE_READ_ONLY_SCRIPT" id="4037833091622483942" interpreter="GROOVY" name="10 Days 00:00:00" returnType="java.lang.Long">
+                            <content>864000000L</content>
+                        </expression>
+                    </timerEventTrigger>
+                </boundaryEvent>
+            </boundaryEvents>
+            <userFilter name="Requester direct manager" userFilterId="initiator-manager" version="1.0.0">
+                <inputs>
+                    <input name="autoAssign">
+                        <expression expressionType="TYPE_CONSTANT" id="6139763756607883695" interpreter="" name="true" returnType="java.lang.Boolean">
+                            <content>true</content>
+                        </expression>
+                    </input>
+                </inputs>
+            </userFilter>
+            <contract>
+                <inputDefinitions>
+                    <inputDefinition multiple="false" name="status" type="TEXT">
+                        <inputDefinitions />
+                        <inputDefinitions />
+                    </inputDefinition>
+                    <inputDefinition multiple="false" name="comments" type="TEXT">
+                        <description />
+                        <inputDefinitions />
+                        <inputDefinitions />
+                    </inputDefinition>
+                </inputDefinitions>
+                <constraintDefinitions>
+                    <constraintDefinition name="mandatoryDescriptionIfRefused">
+                        <conditionalExpression>if(status == "rejected") {
+                            if("".equals(comments)) {
+                            return false;
+                            }
+                            }
+                            return true;
+                        </conditionalExpression>
+                        <explanation>Description is mandatory</explanation>
+                        <inputDefinitionNames>
+                            <inputDefinitionName>status</inputDefinitionName>
+                            <inputDefinitionName>comments</inputDefinitionName>
+                        </inputDefinitionNames>
+                    </constraintDefinition>
+                </constraintDefinitions>
+            </contract>
+            <context>
+                <contextEntry key="vacationRequest_ref">
+                    <expression expressionType="TYPE_BUSINESS_DATA_REFERENCE" id="1143110750652090184" name="vacationRequest" returnType="org.bonitasoft.engine.business.data.BusinessDataReference">
+                        <content>vacationRequest</content>
+                    </expression>
+                </contextEntry>
+                <contextEntry key="vacationAvailable_ref">
+                    <expression expressionType="TYPE_BUSINESS_DATA_REFERENCE" id="5213229604903367696" name="vacationAvailable" returnType="org.bonitasoft.engine.business.data.BusinessDataReference">
+                        <content>vacationAvailable</content>
+                    </expression>
+                </contextEntry>
+            </context>
+        </userTask>
+        <automaticTask id="7983529466889267660" name="Update Google calendar">
+            <incomingTransition>1286434873327832893</incomingTransition>
+            <outgoingTransition>8691540029908535404</outgoingTransition>
+            <connector activationEvent="ON_ENTER" connectorId="google-calendar-v3-update-event" failAction="IGNORE" name="Update event name" version="1.0.0">
+                <inputs>
+                    <input name="summary">
+                        <expression expressionType="TYPE_READ_ONLY_SCRIPT" id="5384787814278609468" interpreter="GROOVY" name="new status: approved" returnType="java.lang.String">
+                            <content>import org.bonitasoft.engine.api.IdentityAPI;
+                                import org.bonitasoft.engine.identity.User;
+
+                                // Get a reference to IdentityAPI in order to access user first and last name based on the user id store in the VacationRequest business data
+
+                                IdentityAPI identityAPI = apiAccessor.getIdentityAPI();
+
+                                // Retrieve user information using the API and user id stored in business data
+                                User user = identityAPI.getUser(vacationRequest.getRequesterBonitaBPMId());
+
+                                // Aggregate user first and last name and return the result
+                                return "Vacation for " + user.getFirstName() + " " + user.getLastName() + " - "+vacationRequest.getStatus();
+                            </content>
+                            <expression expressionType="TYPE_ENGINE_CONSTANT" id="8872781807126334025" interpreter="" name="apiAccessor" returnType="com.bonitasoft.engine.api.APIAccessor">
+                                <content>apiAccessor</content>
+                            </expression>
+                            <expression expressionType="TYPE_BUSINESS_DATA" id="4746559268999446157" name="vacationRequest" returnType="com.company.model.VacationRequest">
+                                <content>vacationRequest</content>
+                            </expression>
+                        </expression>
+                    </input>
+                    <input name="reminderUseDefault">
+                        <expression expressionType="TYPE_CONSTANT" id="3703382728890953736" interpreter="" name="false" returnType="java.lang.Boolean">
+                            <content>false</content>
+                        </expression>
+                    </input>
+                    <input name="serviceAccountP12File">
+                        <expression expressionType="TYPE_PARAMETER" id="2481552513881453387" interpreter="" name="googleCalendarServiceAccountP12File" returnType="java.lang.String">
+                            <content>googleCalendarServiceAccountP12File</content>
+                        </expression>
+                    </input>
+                    <input name="calendarId">
+                        <expression expressionType="TYPE_PARAMETER" id="6211453113165854960" interpreter="" name="googleCalendarCalendarId" returnType="java.lang.String">
+                            <content>googleCalendarCalendarId</content>
+                        </expression>
+                    </input>
+                    <input name="sendNotifications">
+                        <expression expressionType="TYPE_CONSTANT" id="4157168146270276824" interpreter="" name="false" returnType="java.lang.Boolean">
+                            <content>false</content>
+                        </expression>
+                    </input>
+                    <input name="allDay">
+                        <expression expressionType="TYPE_CONSTANT" id="7672508112942513515" interpreter="" name="false" returnType="java.lang.Boolean">
+                            <content>false</content>
+                        </expression>
+                    </input>
+                    <input name="gadgetPreferences">
+                        <expression expressionType="TYPE_LIST" id="2078976858153241768" name="Table of expression containing the following expressions: []." returnType="java.util.List">
+                            <content>Table of expression containing the following expressions: [].</content>
+                        </expression>
+                    </input>
+                    <input name="applicationName">
+                        <expression expressionType="TYPE_PARAMETER" id="1178489760000328826" interpreter="" name="googleCalendarApplicationName" returnType="java.lang.String">
+                            <content>googleCalendarApplicationName</content>
+                        </expression>
+                    </input>
+                    <input name="prettyPrint">
+                        <expression expressionType="TYPE_CONSTANT" id="3288255271425821783" interpreter="" name="false" returnType="java.lang.Boolean">
+                            <content>false</content>
+                        </expression>
+                    </input>
+                    <input name="anyoneCanAddSelf">
+                        <expression expressionType="TYPE_CONSTANT" id="6871366458854424733" interpreter="" name="false" returnType="java.lang.Boolean">
+                            <content>false</content>
+                        </expression>
+                    </input>
+                    <input name="id">
+                        <expression expressionType="TYPE_JAVA_METHOD_CALL" id="5635103033149797122" interpreter="" name="vacationRequest - com.company.model.VacationRequest#getGoogleCalendarEventId" returnType="java.lang.String">
+                            <content>getGoogleCalendarEventId</content>
+                            <expression expressionType="TYPE_BUSINESS_DATA" id="6560485878795159547" name="vacationRequest" returnType="com.company.model.VacationRequest">
+                                <content>vacationRequest</content>
+                            </expression>
+                        </expression>
+                    </input>
+                    <input name="recurrence">
+                        <expression expressionType="TYPE_LIST" id="114792602890190097" name="List of expression containing the following expressions: ()." returnType="java.util.List">
+                            <content>List of expression containing the following expressions: ().</content>
+                        </expression>
+                    </input>
+                    <input name="attendeesEmails">
+                        <expression expressionType="TYPE_LIST" id="5933817421394656550" name="List of expression containing the following expressions: ()." returnType="java.util.List">
+                            <content>List of expression containing the following expressions: ().</content>
+                        </expression>
+                    </input>
+                    <input name="guestsCanSeeOtherGuests">
+                        <expression expressionType="TYPE_CONSTANT" id="1250556898268397206" interpreter="" name="false" returnType="java.lang.Boolean">
+                            <content>false</content>
+                        </expression>
+                    </input>
+                    <input name="guestsCanInviteOthers">
+                        <expression expressionType="TYPE_CONSTANT" id="6669726187165338077" interpreter="" name="false" returnType="java.lang.Boolean">
+                            <content>false</content>
+                        </expression>
+                    </input>
+                    <input name="serviceAccountUser">
+                        <expression expressionType="TYPE_PARAMETER" id="7566501192623735595" interpreter="" name="googleCalendarServiceAccountUser" returnType="java.lang.String">
+                            <content>googleCalendarServiceAccountUser</content>
+                        </expression>
+                    </input>
+                    <input name="reminderOverrides">
+                        <expression expressionType="TYPE_LIST" id="2989367550190504661" name="List of expression containing the following expressions: ()." returnType="java.util.List">
+                            <content>List of expression containing the following expressions: ().</content>
+                        </expression>
+                    </input>
+                    <input name="serviceAccountId">
+                        <expression expressionType="TYPE_PARAMETER" id="7088592694464630373" interpreter="" name="googleCalendarServiceAccountId" returnType="java.lang.String">
+                            <content>googleCalendarServiceAccountId</content>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs />
+            </connector>
+            <dataDefinitions />
+            <operations />
+            <boundaryEvents />
+        </automaticTask>
+        <automaticTask id="5241063753788560788" name="Update calendar: pending">
+            <incomingTransition>8791164387348663229</incomingTransition>
+            <outgoingTransition>4963814995639644174</outgoingTransition>
+            <connector activationEvent="ON_ENTER" connectorId="google-calendar-v3-create-event" failAction="IGNORE" name="register vacation in Google calendar" version="1.0.0">
+                <inputs>
+                    <input name="summary">
+                        <expression expressionType="TYPE_READ_ONLY_SCRIPT" id="5490217750185426428" interpreter="GROOVY" name="Requester first name and last name + pending status" returnType="java.lang.String">
+                            <content>import org.bonitasoft.engine.api.IdentityAPI;
+                                import org.bonitasoft.engine.identity.User;
+
+                                // Get a reference to IdentityAPI in order to access user first and last name based on the user id store in the VacationRequest business data
+
+                                IdentityAPI identityAPI = apiAccessor.getIdentityAPI();
+
+                                // Retrieve user information using the API and user id stored in business data
+                                User user = identityAPI.getUser(vacationRequest.getRequesterBonitaBPMId());
+
+                                // Aggregate user first and last name and return the result
+                                return "Vacation for " + user.getFirstName() + " " + user.getLastName() + " - "+vacationRequest.getStatus();
+                            </content>
+                            <expression expressionType="TYPE_ENGINE_CONSTANT" id="5871152145969072242" interpreter="" name="apiAccessor" returnType="com.bonitasoft.engine.api.APIAccessor">
+                                <content>apiAccessor</content>
+                            </expression>
+                            <expression expressionType="TYPE_BUSINESS_DATA" id="3409911761140432507" name="vacationRequest" returnType="com.company.model.VacationRequest">
+                                <content>vacationRequest</content>
+                            </expression>
+                        </expression>
+                    </input>
+                    <input name="reminderUseDefault">
+                        <expression expressionType="TYPE_CONSTANT" id="4514784704052088816" interpreter="" name="false" returnType="java.lang.Boolean">
+                            <content>false</content>
+                        </expression>
+                    </input>
+                    <input name="startDate">
+                        <expression expressionType="TYPE_READ_ONLY_SCRIPT" id="7075344435455217137" interpreter="GROOVY" name="format start date" returnType="java.lang.String">
+                            <content>//import java.text.SimpleDateFormat;
+
+                                // Create a date formatter that will format the date stored in business data to the format expected by Google Calendar API
+                                //SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.UK);
+
+                                //return formatter.format(vacationRequest.getStartDate());
+
+                                vacationRequest.getStartDate().format("yyyy-MM-dd");
+                            </content>
+                            <expression expressionType="TYPE_BUSINESS_DATA" id="9013661486096036556" name="vacationRequest" returnType="com.company.model.VacationRequest">
+                                <content>vacationRequest</content>
+                            </expression>
+                        </expression>
+                    </input>
+                    <input name="serviceAccountP12File">
+                        <expression expressionType="TYPE_PARAMETER" id="7185411144552894131" interpreter="" name="googleCalendarServiceAccountP12File" returnType="java.lang.String">
+                            <content>googleCalendarServiceAccountP12File</content>
+                        </expression>
+                    </input>
+                    <input name="calendarId">
+                        <expression expressionType="TYPE_PARAMETER" id="4873157567257594723" interpreter="" name="googleCalendarCalendarId" returnType="java.lang.String">
+                            <content>googleCalendarCalendarId</content>
+                        </expression>
+                    </input>
+                    <input name="sendNotifications">
+                        <expression expressionType="TYPE_CONSTANT" id="1863960719037056617" interpreter="" name="false" returnType="java.lang.Boolean">
+                            <content>false</content>
+                        </expression>
+                    </input>
+                    <input name="allDay">
+                        <expression expressionType="TYPE_CONSTANT" id="291355003708030951" interpreter="" name="true" returnType="java.lang.Boolean">
+                            <content>true</content>
+                        </expression>
+                    </input>
+                    <input name="gadgetPreferences">
+                        <expression expressionType="TYPE_LIST" id="8997299146142626322" name="Table of expression containing the following expressions: []." returnType="java.util.List">
+                            <content>Table of expression containing the following expressions: [].</content>
+                        </expression>
+                    </input>
+                    <input name="applicationName">
+                        <expression expressionType="TYPE_PARAMETER" id="7281099678707661607" interpreter="" name="googleCalendarApplicationName" returnType="java.lang.String">
+                            <content>googleCalendarApplicationName</content>
+                        </expression>
+                    </input>
+                    <input name="prettyPrint">
+                        <expression expressionType="TYPE_CONSTANT" id="8292747432521283274" interpreter="" name="false" returnType="java.lang.Boolean">
+                            <content>false</content>
+                        </expression>
+                    </input>
+                    <input name="endDate">
+                        <expression expressionType="TYPE_READ_ONLY_SCRIPT" id="1025202322658866565" interpreter="GROOVY" name="return date - 1 day formatted" returnType="java.lang.String">
+                            <content>//import java.text.SimpleDateFormat;
+
+                                // Create a date formatter that will format the date stored in business data to the format expected by Google Calendar API
+                                //SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.UK);
+
+                                // Create a date one day before return date
+                                //Calendar cal = Calendar.getInstance();
+                                //cal.setTime(vacationRequest.getReturnDate());
+
+                                //cal.add(Calendar.DATE, 1);
+                                //Date oneDayBeforereturnDate = cal.getTime();
+
+                                // Returns the formatted date
+                                //return formatter.format(oneDayBeforereturnDate);
+
+                                Calendar cal = Calendar.getInstance();
+                                cal.setTime(vacationRequest.getReturnDate());
+                                cal.add(Calendar.DATE, 1);
+
+                                String logdate= cal.getTime().format("yyyy-MM-dd");
+
+                                return logdate;
+                            </content>
+                            <expression expressionType="TYPE_BUSINESS_DATA" id="4263001457876943610" name="vacationRequest" returnType="com.company.model.VacationRequest">
+                                <content>vacationRequest</content>
+                            </expression>
+                        </expression>
+                    </input>
+                    <input name="endTimeZone">
+                        <expression expressionType="TYPE_CONSTANT" id="175298037021101938" interpreter="" name="UTC" returnType="java.lang.String">
+                            <content>UTC</content>
+                        </expression>
+                    </input>
+                    <input name="startTimeZone">
+                        <expression expressionType="TYPE_CONSTANT" id="1674517793118731917" interpreter="" name="UTC" returnType="java.lang.String">
+                            <content>UTC</content>
+                        </expression>
+                    </input>
+                    <input name="endTime">
+                        <expression expressionType="TYPE_READ_ONLY_SCRIPT" id="7682069088190811948" interpreter="GROOVY" name="timeend" returnType="java.lang.String">
+                            <content>Calendar cal = Calendar.getInstance();
+
+                                cal.setTime(vacationRequest.getReturnDate());
+
+                                cal.add(Calendar.DATE, 1);
+
+                                return cal.getTime().format("hh:mm:ss");
+                            </content>
+                            <expression expressionType="TYPE_BUSINESS_DATA" id="1909007878653589616" name="vacationRequest" returnType="com.company.model.VacationRequest">
+                                <content>vacationRequest</content>
+                            </expression>
+                        </expression>
+                    </input>
+                    <input name="anyoneCanAddSelf">
+                        <expression expressionType="TYPE_CONSTANT" id="4127649367497225585" interpreter="" name="false" returnType="java.lang.Boolean">
+                            <content>false</content>
+                        </expression>
+                    </input>
+                    <input name="startTime">
+                        <expression expressionType="TYPE_READ_ONLY_SCRIPT" id="6343977725130487952" interpreter="GROOVY" name="timeStart" returnType="java.lang.String">
+                            <content>vacationRequest.getStartDate().format("hh:mm:ss");</content>
+                            <expression expressionType="TYPE_BUSINESS_DATA" id="5305999014258888616" name="vacationRequest" returnType="com.company.model.VacationRequest">
+                                <content>vacationRequest</content>
+                            </expression>
+                        </expression>
+                    </input>
+                    <input name="recurrence">
+                        <expression expressionType="TYPE_LIST" id="212869848250234903" name="List of expression containing the following expressions: ()." returnType="java.util.List">
+                            <content>List of expression containing the following expressions: ().</content>
+                        </expression>
+                    </input>
+                    <input name="attendeesEmails">
+                        <expression expressionType="TYPE_LIST" id="1419666606118620643" name="List of expression containing the following expressions: (return requester email address,)." returnType="java.util.List">
+                            <content>List of expression containing the following expressions: (return requester email address,).</content>
+                            <expression expressionType="TYPE_READ_ONLY_SCRIPT" id="5173139719044313799" interpreter="GROOVY" name="return requester email address" returnType="java.lang.String">
+                                <content>import org.bonitasoft.engine.identity.ContactData;
+
+                                    Long userId = vacationRequest.getRequesterBonitaBPMId();
+
+                                    ContactData professionalContactInfo = BonitaUsers.getUserProfessionalContactInfo(apiAccessor, userId);
+
+                                    return professionalContactInfo.getEmail();
+                                </content>
+                                <expression expressionType="TYPE_ENGINE_CONSTANT" id="1588128458775740532" interpreter="" name="apiAccessor" returnType="org.bonitasoft.engine.api.APIAccessor">
+                                    <content>apiAccessor</content>
+                                </expression>
+                                <expression expressionType="TYPE_BUSINESS_DATA" id="7213550226857243148" name="vacationRequest" returnType="com.company.model.VacationRequest">
+                                    <content>vacationRequest</content>
+                                </expression>
+                            </expression>
+                        </expression>
+                    </input>
+                    <input name="guestsCanSeeOtherGuests">
+                        <expression expressionType="TYPE_CONSTANT" id="1193429279498878728" interpreter="" name="false" returnType="java.lang.Boolean">
+                            <content>false</content>
+                        </expression>
+                    </input>
+                    <input name="guestsCanInviteOthers">
+                        <expression expressionType="TYPE_CONSTANT" id="1637555933407394003" interpreter="" name="false" returnType="java.lang.Boolean">
+                            <content>false</content>
+                        </expression>
+                    </input>
+                    <input name="serviceAccountUser">
+                        <expression expressionType="TYPE_PARAMETER" id="6211123798766733900" interpreter="" name="googleCalendarServiceAccountUser" returnType="java.lang.String">
+                            <content>googleCalendarServiceAccountUser</content>
+                        </expression>
+                    </input>
+                    <input name="reminderOverrides">
+                        <expression expressionType="TYPE_LIST" id="7576330225896212902" name="List of expression containing the following expressions: ()." returnType="java.util.List">
+                            <content>List of expression containing the following expressions: ().</content>
+                        </expression>
+                    </input>
+                    <input name="serviceAccountId">
+                        <expression expressionType="TYPE_PARAMETER" id="4233944083287292390" interpreter="" name="googleCalendarServiceAccountId" returnType="java.lang.String">
+                            <content>googleCalendarServiceAccountId</content>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs>
+                    <operation operator="setGoogleCalendarEventId:java.lang.String" operatorType="JAVA_METHOD">
+                        <leftOperand name="vacationRequest" type="BUSINESS_DATA" />
+                        <rightOperand expressionType="TYPE_INPUT" id="4878531366144134527" interpreter="" name="id" returnType="java.lang.String">
+                            <content>id</content>
+                        </rightOperand>
+                    </operation>
+                </outputs>
+            </connector>
+            <dataDefinitions />
+            <operations />
+            <boundaryEvents />
+        </automaticTask>
+        <automaticTask id="6882225257960664673" name="Decrease vacation available">
+            <incomingTransition>1506242373869324472</incomingTransition>
+            <outgoingTransition>8791164387348663229</outgoingTransition>
+            <dataDefinitions />
+            <operations>
+                <operation operator="setDaysAvailableCounter:java.lang.Integer" operatorType="JAVA_METHOD">
+                    <leftOperand name="vacationAvailable" type="BUSINESS_DATA" />
+                    <rightOperand expressionType="TYPE_READ_ONLY_SCRIPT" id="7069927636174485924" interpreter="GROOVY" name="decrease vacation request available" returnType="java.lang.Integer">
+                        <content>vacationAvailable.getDaysAvailableCounter() - vacationRequest.getNumberOfDays()</content>
+                        <expression expressionType="TYPE_BUSINESS_DATA" id="3605819526662960102" name="vacationRequest" returnType="com.company.model.VacationRequest">
+                            <content>vacationRequest</content>
+                        </expression>
+                        <expression expressionType="TYPE_BUSINESS_DATA" id="1761875116312212546" name="vacationAvailable" returnType="com.company.model.VacationAvailable">
+                            <content>vacationAvailable</content>
+                        </expression>
+                    </rightOperand>
+                </operation>
+            </operations>
+            <boundaryEvents />
+        </automaticTask>
+        <automaticTask id="6060887963113243872" name="Notify requestor vacation refused">
+            <incomingTransition>2396781773325092329</incomingTransition>
+            <outgoingTransition>976713344182172936</outgoingTransition>
+            <connector activationEvent="ON_FINISH" connectorId="email" failAction="FAIL" name="mailerRequestorVacationRefused" version="1.0.0">
+                <inputs>
+                    <input name="smtpPort">
+                        <expression expressionType="TYPE_PARAMETER" id="4221415197427612545" interpreter="" name="emailServerPort" returnType="java.lang.Integer">
+                            <content>emailServerPort</content>
+                        </expression>
+                    </input>
+                    <input name="to">
+                        <expression expressionType="TYPE_READ_ONLY_SCRIPT" id="4237340864064959858" interpreter="GROOVY" name="getUserEmailAddress" returnType="java.lang.String">
+                            <content>return BonitaUsers.getProcessInstanceInitiatorProfessionalContactInfo(apiAccessor,processInstanceId).getEmail();</content>
+                            <expression expressionType="TYPE_ENGINE_CONSTANT" id="1836490527163330964" interpreter="" name="processInstanceId" returnType="java.lang.Long">
+                                <content>processInstanceId</content>
+                            </expression>
+                            <expression expressionType="TYPE_ENGINE_CONSTANT" id="5114977791749895601" interpreter="" name="apiAccessor" returnType="org.bonitasoft.engine.api.APIAccessor">
+                                <content>apiAccessor</content>
+                            </expression>
+                        </expression>
+                    </input>
+                    <input name="headers">
+                        <expression expressionType="TYPE_LIST" id="6691450052149595274" name="Table of expression containing the following expressions: []." returnType="java.util.List">
+                            <content>Table of expression containing the following expressions: [].</content>
+                        </expression>
+                    </input>
+                    <input name="smtpHost">
+                        <expression expressionType="TYPE_PARAMETER" id="5971933875901674967" interpreter="" name="emailServerAddress" returnType="java.lang.String">
+                            <content>emailServerAddress</content>
+                        </expression>
+                    </input>
+                    <input name="subject">
+                        <expression expressionType="TYPE_CONSTANT" id="5424243413696204220" interpreter="" name="Your vacation request has been refused" returnType="java.lang.String">
+                            <content>Your vacation request has been refused</content>
+                        </expression>
+                    </input>
+                    <input name="charset">
+                        <expression expressionType="TYPE_CONSTANT" id="8562270229381495563" interpreter="" name="UTF-8" returnType="java.lang.String">
+                            <content>UTF-8</content>
+                        </expression>
+                    </input>
+                    <input name="from">
+                        <expression expressionType="TYPE_PARAMETER" id="6588057815143173776" interpreter="" name="emailNotificationSender" returnType="java.lang.String">
+                            <content>emailNotificationSender</content>
+                        </expression>
+                    </input>
+                    <input name="password">
+                        <expression expressionType="TYPE_PARAMETER" id="6409770895230483078" interpreter="" name="emailServerPassword" returnType="java.lang.String">
+                            <content>emailServerPassword</content>
+                        </expression>
+                    </input>
+                    <input name="message">
+                        <expression expressionType="TYPE_PATTERN" id="3935864113472751136" interpreter="" name="&lt;pattern-expression&gt;" returnType="java.lang.String">
+                            <content>Sorry</content>
+                        </expression>
+                    </input>
+                    <input name="sslSupport">
+                        <expression expressionType="TYPE_PARAMETER" id="9185009520320625679" interpreter="" name="emailServerUseSSL" returnType="java.lang.Boolean">
+                            <content>emailServerUseSSL</content>
+                        </expression>
+                    </input>
+                    <input name="starttlsSupport">
+                        <expression expressionType="TYPE_CONSTANT" id="2582191597409712290" interpreter="" name="false" returnType="java.lang.Boolean">
+                            <content>false</content>
+                        </expression>
+                    </input>
+                    <input name="userName">
+                        <expression expressionType="TYPE_PARAMETER" id="4170272072231636075" interpreter="" name="emailServerUsername" returnType="java.lang.String">
+                            <content>emailServerUsername</content>
+                        </expression>
+                    </input>
+                    <input name="html">
+                        <expression expressionType="TYPE_CONSTANT" id="7580756887241931093" interpreter="" name="true" returnType="java.lang.Boolean">
+                            <content>true</content>
+                        </expression>
+                    </input>
+                    <input name="attachments">
+                        <expression expressionType="TYPE_LIST" id="2274532927218207181" name="List of expression containing the following expressions: ()." returnType="java.util.List">
+                            <content>List of expression containing the following expressions: ().</content>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs />
+            </connector>
+            <dataDefinitions />
+            <operations />
+            <boundaryEvents />
+        </automaticTask>
+        <automaticTask id="5660101436813594041" name="Notify requestor vacation approved">
+            <incomingTransition>8691540029908535404</incomingTransition>
+            <outgoingTransition>8592823066053004374</outgoingTransition>
+            <connector activationEvent="ON_ENTER" connectorId="email" failAction="FAIL" name="sendNotificationToEmployeeRequestApproved" version="1.0.0">
+                <inputs>
+                    <input name="smtpPort">
+                        <expression expressionType="TYPE_PARAMETER" id="4021673629313383744" interpreter="" name="emailServerPort" returnType="java.lang.Integer">
+                            <content>emailServerPort</content>
+                        </expression>
+                    </input>
+                    <input name="to">
+                        <expression expressionType="TYPE_READ_ONLY_SCRIPT" id="3893282413547536383" interpreter="GROOVY" name="findRequestorEmailAddress" returnType="java.lang.String">
+                            <content>return BonitaUsers.getProcessInstanceInitiatorProfessionalContactInfo(apiAccessor,processInstanceId).getEmail();
+
+
+                                //import org.bonitasoft.engine.identity.ContactData;
+
+                                //import org.bonitasoft.engine.identity.User;
+
+
+                                //User requestorUserInfo = BonitaUsers.getUser(apiAccessor, vacationRequest.getRequesterBonitaBPMId());
+
+                                //ContactData managerProfessionalContactInfo = BonitaUsers.getUserProfessionalContactInfo(apiAccessor, requestorUserInfo.getManagerUserId());
+
+
+                                //return managerProfessionalContactInfo.getEmail();
+                            </content>
+                            <expression expressionType="TYPE_ENGINE_CONSTANT" id="2759751755899948475" interpreter="" name="processInstanceId" returnType="java.lang.Long">
+                                <content>processInstanceId</content>
+                            </expression>
+                            <expression expressionType="TYPE_ENGINE_CONSTANT" id="2269687755708318299" interpreter="" name="apiAccessor" returnType="com.bonitasoft.engine.api.APIAccessor">
+                                <content>apiAccessor</content>
+                            </expression>
+                        </expression>
+                    </input>
+                    <input name="headers">
+                        <expression expressionType="TYPE_LIST" id="5387748088263587672" name="Table of expression containing the following expressions: []." returnType="java.util.List">
+                            <content>Table of expression containing the following expressions: [].</content>
+                        </expression>
+                    </input>
+                    <input name="smtpHost">
+                        <expression expressionType="TYPE_PARAMETER" id="5950810366773118809" interpreter="" name="emailServerAddress" returnType="java.lang.String">
+                            <content>emailServerAddress</content>
+                        </expression>
+                    </input>
+                    <input name="subject">
+                        <expression expressionType="TYPE_CONSTANT" id="7542057838280749899" interpreter="" name="Your vacation request has been approved" returnType="java.lang.String">
+                            <content>Your vacation request has been approved</content>
+                        </expression>
+                    </input>
+                    <input name="charset">
+                        <expression expressionType="TYPE_CONSTANT" id="4124406749889119032" interpreter="" name="UTF-8" returnType="java.lang.String">
+                            <content>UTF-8</content>
+                        </expression>
+                    </input>
+                    <input name="from">
+                        <expression expressionType="TYPE_PARAMETER" id="6286001737975024137" interpreter="" name="emailNotificationSender" returnType="java.lang.String">
+                            <content>emailNotificationSender</content>
+                        </expression>
+                    </input>
+                    <input name="password">
+                        <expression expressionType="TYPE_PARAMETER" id="4960557200351280828" interpreter="" name="emailServerPassword" returnType="java.lang.String">
+                            <content>emailServerPassword</content>
+                        </expression>
+                    </input>
+                    <input name="message">
+                        <expression expressionType="TYPE_READ_ONLY_SCRIPT" id="7230671483782676132" interpreter="GROOVY" name="message" returnType="java.lang.String">
+                            <content>return vacationRequest.getComments();</content>
+                            <expression expressionType="TYPE_BUSINESS_DATA" id="473434994541022509" name="vacationRequest" returnType="com.company.model.VacationRequest">
+                                <content>vacationRequest</content>
+                            </expression>
+                        </expression>
+                    </input>
+                    <input name="sslSupport">
+                        <expression expressionType="TYPE_PARAMETER" id="2850097232925604007" interpreter="" name="emailServerUseSSL" returnType="java.lang.Boolean">
+                            <content>emailServerUseSSL</content>
+                        </expression>
+                    </input>
+                    <input name="starttlsSupport">
+                        <expression expressionType="TYPE_CONSTANT" id="3100080895505710143" interpreter="" name="false" returnType="java.lang.Boolean">
+                            <content>false</content>
+                        </expression>
+                    </input>
+                    <input name="userName">
+                        <expression expressionType="TYPE_PARAMETER" id="8298801352439582108" interpreter="" name="emailServerUsername" returnType="java.lang.String">
+                            <content>emailServerUsername</content>
+                        </expression>
+                    </input>
+                    <input name="html">
+                        <expression expressionType="TYPE_CONSTANT" id="2275644143797384584" interpreter="" name="true" returnType="java.lang.Boolean">
+                            <content>true</content>
+                        </expression>
+                    </input>
+                    <input name="attachments">
+                        <expression expressionType="TYPE_LIST" id="2342034316988366563" name="List of expression containing the following expressions: ()." returnType="java.util.List">
+                            <content>List of expression containing the following expressions: ().</content>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs />
+            </connector>
+            <dataDefinitions />
+            <operations />
+            <boundaryEvents />
+        </automaticTask>
+    </flowElements>
+    <actors>
+        <actor name="Employee actor">
+            <description>This is an example of actor that is mapped to any ACME users</description>
+        </actor>
+        <actor name="Managers group actor">
+            <description />
+        </actor>
+        <actor name="HH.RR.">
+            <description>Human Resources Department</description>
+        </actor>
+    </actors>
+    <parameters>
+        <parameter name="emailHRAddress" type="java.lang.String">
+            <description />
+        </parameter>
+        <parameter name="emailServerPassword" type="java.lang.String">
+            <description />
+        </parameter>
+        <parameter name="googleCalendarServiceAccountP12File" type="java.lang.String">
+            <description />
+        </parameter>
+        <parameter name="googleCalendarCalendarId" type="java.lang.String">
+            <description />
+        </parameter>
+        <parameter name="emailServerUsername" type="java.lang.String">
+            <description />
+        </parameter>
+        <parameter name="googleCalendarServiceAccountId" type="java.lang.String">
+            <description />
+        </parameter>
+        <parameter name="emailNotificationSender" type="java.lang.String">
+            <description />
+        </parameter>
+        <parameter name="emailServerAddress" type="java.lang.String">
+            <description />
+        </parameter>
+        <parameter name="googleCalendarApplicationName" type="java.lang.String">
+            <description />
+        </parameter>
+        <parameter name="googleCalendarServiceAccountUser" type="java.lang.String">
+            <description />
+        </parameter>
+        <parameter name="emailServerUseSSL" type="java.lang.Boolean">
+            <description />
+        </parameter>
+        <parameter name="emailServerPort" type="java.lang.Integer">
+            <description />
+        </parameter>
+    </parameters>
+    <actorInitiator>Employee actor</actorInitiator>
+    <contract>
+        <inputDefinitions>
+            <inputDefinition multiple="false" name="startDate" type="DATE">
+                <inputDefinitions />
+                <inputDefinitions />
+            </inputDefinition>
+            <inputDefinition multiple="false" name="returnDate" type="DATE">
+                <inputDefinitions />
+                <inputDefinitions />
+            </inputDefinition>
+            <inputDefinition multiple="false" name="numberOfDays" type="INTEGER">
+                <inputDefinitions />
+                <inputDefinitions />
+            </inputDefinition>
+            <inputDefinition multiple="false" name="requesterEmail" type="TEXT">
+                <inputDefinitions />
+                <inputDefinitions />
+            </inputDefinition>
+        </inputDefinitions>
+    </contract>
+    <context>
+        <contextEntry key="vacationRequest_ref">
+            <expression expressionType="TYPE_BUSINESS_DATA_REFERENCE" id="1234266451387136612" name="vacationRequest" returnType="org.bonitasoft.engine.business.data.BusinessDataReference">
+                <content>vacationRequest</content>
+            </expression>
+        </contextEntry>
+        <contextEntry key="vacationAvailable_ref">
+            <expression expressionType="TYPE_BUSINESS_DATA_REFERENCE" id="1807869003802495111" name="vacationAvailable" returnType="org.bonitasoft.engine.business.data.BusinessDataReference">
+                <content>vacationAvailable</content>
+            </expression>
+        </contextEntry>
+    </context>
+</def:processDefinition>
