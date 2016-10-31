@@ -17,7 +17,15 @@
             <outgoingTransition>6635186239573405354</outgoingTransition>
             <description>autoTaskDesc</description>
             <dataDefinitions />
-            <BusinessDataDefinitions />
+            <BusinessDataDefinitions>
+                <BusinessDataDefinition id="8933069563166549713" name="myDataValue" multiple="false" className="java.lang.String">
+                    <defaultValue id="8933069563166549713" name="myDataValue" expressionType="TYPE_CONSTANT" returnType="java.lang.String">
+                        <content>myDataValue</content>
+                    </defaultValue>
+                    <description>hello</description>
+                </BusinessDataDefinition>
+            </BusinessDataDefinitions>
+
             <operations />
             <boundaryEvents />
         </automaticTask>
@@ -106,8 +114,12 @@
         <businessDataDefinitions>
             <businessDataDefinition id="5561270193286606980" name="myBizData" className="java.lang.Integer" multiple="false">
                 <defaultValue id="6999576769763716891" name="12" expressionType="TYPE_CONSTANT" returnType="java.lang.Integer">
-                    <content>12</content>
+                    <content>'&lt;tag&gt;'+isOk+'&lt;/tag&gt;'</content>
+                    <expression id="8638724559799263372" name="isOk" expressionType="TYPE_CONTRACT_INPUT" returnType="java.util.List">
+                        <content>isOk</content>
+                    </expression>
                 </defaultValue>
+                <description>desc</description>
             </businessDataDefinition>
         </businessDataDefinitions>
         <documentDefinitions />
@@ -115,7 +127,13 @@
         <connectors />
         <elementFinder />
     </flowElements>
-
+    <stringIndexes>
+        <stringIndex index="1" />
+        <stringIndex index="2" />
+        <stringIndex index="3" />
+        <stringIndex index="4" />
+        <stringIndex index="5" />
+    </stringIndexes>
     <contract>
         <inputDefinitions>
             <inputDefinition type="BOOLEAN" name="isOk" multiple="true">

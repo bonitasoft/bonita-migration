@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<def:processDefinition xmlns:def="http://www.bonitasoft.org/ns/process/client/7.2" name="InitiateVacationAvailable" version="2.1">
+    <description />
+    <displayDescription />
+    <stringIndexes>
+        <stringIndex index="1" />
+        <stringIndex index="2" />
+        <stringIndex index="3" />
+        <stringIndex index="4" />
+        <stringIndex index="5" />
+    </stringIndexes>
+    <flowElements>
+        <transitions>
+            <transition id="2438677516884291805" name="8350445001439205915_-&gt;_6004225544718270034" source="8350445001439205915" target="6004225544718270034" />
+        </transitions>
+        <connectors />
+        <businessDataDefinitions>
+            <businessDataDefinition className="com.company.model.VacationAvailable" multiple="true" name="vacationAvailableForAllEmployee">
+                <description>Default value create one entry in database per employee (if entry does not already exist) and initialize it with 25 days.</description>
+                <defaultValue expressionType="TYPE_READ_ONLY_SCRIPT" id="2362750166661380565" interpreter="GROOVY" name="Create VacationAvailable" returnType="java.util.List">
+                    <content>import org.bonitasoft.engine.api.IdentityAPI;
+                        import org.bonitasoft.engine.identity.User;
+                        import org.bonitasoft.engine.identity.UserCriterion;
+                        import org.slf4j.Logger;
+                        import org.slf4j.LoggerFactory;
+
+                        import com.company.model.VacationAvailable;
+
+                        // Logger
+                        Logger logger = LoggerFactory.getLogger("org.bonitasoft.tahiti.groovy.CreateVacationAvailable");
+
+                        // Offset and increment to use when using paginated API
+                        int offset = 0;
+                        int increment = 10;
+
+                        // The list of Bonita BPM user id that already have an entry in VacationAvailable table
+                        List&lt;Long&gt; alreadyKnownEmployeeId = new ArrayList&lt;Long&gt;();
+
+                        // The list of already created VacationAvailaible
+                        List&lt;VacationAvailable&gt; currentlyExistingVacationAvailable;
+
+                        // The newly created VacationAvailable
+                        List&lt;VacationAvailable&gt; newVacationAvailable = new ArrayList&lt;VacationAvailable&gt;();
+
+                        logger.debug("Starting to iterate over existing VacationAvailable");
+
+                        while ((currentlyExistingVacationAvailable = vacationAvailableDAO.find(offset, increment)).size() &gt; 0) {
+                        for (VacationAvailable va : currentlyExistingVacationAvailable) {
+                        alreadyKnownEmployeeId.add(va.getBonitaBPMId());
+                        }
+
+                        offset += increment;
+                        }
+
+                        logger.debug("Employee with already vacation avalaible: {}", alreadyKnownEmployeeId);
+
+                        IdentityAPI identityAPI = apiAccessor.getIdentityAPI();
+
+                        List&lt;User&gt; users;
+
+                        logger.debug("Starting to get users from Engine DB");
+
+                        offset = 0;
+
+                        while (((users = identityAPI.getUsers(offset, increment, UserCriterion.USER_NAME_ASC)).size()) &gt; 0) {
+                        logger.debug("Batch of bonita users: {}", users);
+                        for(User user : users) {
+                        logger.debug("Testing user with id: {}", user.getId());
+                        if(alreadyKnownEmployeeId.contains(user.getId()) == false) {
+                        logger.debug("New user id: {}", user.getId());
+                        VacationAvailable va = new VacationAvailable();
+                        va.setBonitaBPMId(user.getId());
+
+                        logger.debug("user fname: {}", user.getFirstName());
+                        logger.debug("user lname: {}", user.getLastName());
+                        //here i can set the BonitaBPMFirstName and BonitaBPMLastname
+                        if(user.getFirstName() &amp;&amp; user.getLastName()){
+                        va.setFirstname(user.getFirstName());
+                        va.setLastname(user.getLastName());
+                        }
+                        va.setManagerUserId(user.getManagerUserId());
+
+                        //this value should be a parameter
+                        va.setDaysAvailableCounter(25);
+                        newVacationAvailable.add(va);
+                        }
+                        }
+
+                        offset += increment;
+                        }
+
+                        logger.debug("New vacation availaible: {}", newVacationAvailable);
+
+                        return newVacationAvailable;
+                    </content>
+                    <expression expressionType="TYPE_BUSINESS_OBJECT_DAO" id="1734555030248898664" interpreter="" name="vacationAvailableDAO" returnType="com.company.model.VacationAvailableDAO">
+                        <content>vacationAvailableDAO</content>
+                    </expression>
+                    <expression expressionType="TYPE_ENGINE_CONSTANT" id="3279055919343289860" interpreter="" name="apiAccessor" returnType="com.bonitasoft.engine.api.APIAccessor">
+                        <content>apiAccessor</content>
+                    </expression>
+                </defaultValue>
+            </businessDataDefinition>
+        </businessDataDefinitions>
+        <dataDefinitions />
+        <documentDefinitions />
+        <documentListDefinitions />
+        <endEvent id="6004225544718270034" name="End">
+            <incomingTransition>2438677516884291805</incomingTransition>
+            <terminateEventTrigger />
+        </endEvent>
+        <startEvent id="8350445001439205915" interrupting="true" name="Start">
+            <outgoingTransition>2438677516884291805</outgoingTransition>
+        </startEvent>
+    </flowElements>
+    <actors>
+        <actor name="Employee actor">
+            <description>This is an example of actor that is mapped to any ACME users</description>
+        </actor>
+    </actors>
+    <parameters />
+    <actorInitiator>Employee actor</actorInitiator>
+    <contract />
+    <context>
+        <contextEntry key="vacationAvailableForAllEmployee_ref">
+            <expression expressionType="TYPE_BUSINESS_DATA_REFERENCE" id="6303844185683573034" name="vacationAvailableForAllEmployee" returnType="org.bonitasoft.engine.business.data.BusinessDataReference">
+                <content>vacationAvailableForAllEmployee</content>
+            </expression>
+        </contextEntry>
+    </context>
+</def:processDefinition>

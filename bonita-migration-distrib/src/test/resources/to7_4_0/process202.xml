@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<def:processDefinition xmlns:def="http://www.bonitasoft.org/ns/process/client/7.2" name="CancelVacationRequest" version="2.2">
+    <description />
+    <displayDescription />
+    <stringIndexes>
+        <stringIndex index="1" />
+        <stringIndex index="2" />
+        <stringIndex index="3" />
+        <stringIndex index="4" />
+        <stringIndex index="5" />
+    </stringIndexes>
+    <flowElements>
+        <transitions>
+            <transition id="766380464815321834" name="4692766717328229031_-&gt;_4708357825763551386" source="4692766717328229031" target="4708357825763551386" />
+            <transition id="8218490943854953498" name="5769005552874368700_-&gt;_8957172673948182646" source="5769005552874368700" target="8957172673948182646">
+                <condition expressionType="TYPE_VARIABLE" id="4090134536233173062" interpreter="" name="cancellationApproved" returnType="java.lang.Boolean">
+                    <content>cancellationApproved</content>
+                </condition>
+            </transition>
+            <transition id="116561061550837284" name="9096138230937645639_-&gt;_4708357825763551386" source="9096138230937645639" target="4708357825763551386" />
+            <transition id="8437429868593462843" name="8063469201073507188_-&gt;_4708357825763551386" source="8063469201073507188" target="4708357825763551386" />
+            <transition id="4767237620964999175" name="6517372600841132760_-&gt;_5769005552874368700" source="6517372600841132760" target="5769005552874368700" />
+            <transition id="6383992074558419031" name="4708357825763551386_-&gt;_8240644974553125184" source="4708357825763551386" target="8240644974553125184" />
+            <transition id="2532172476571955323" name="5769005552874368700_-&gt;_9096138230937645639" source="5769005552874368700" target="9096138230937645639" />
+            <transition id="5132756463141275059" name="4692766717328229031_-&gt;_6427152954570331684" source="4692766717328229031" target="6427152954570331684">
+                <condition expressionType="TYPE_READ_ONLY_SCRIPT" id="5290950923873138115" interpreter="GROOVY" name="isRequestPending" returnType="java.lang.Boolean">
+                    <content>return vacationRequestToCancel2.getStatus().equals("pending");</content>
+                    <expression expressionType="TYPE_BUSINESS_DATA" id="5627374243607363994" name="vacationRequestToCancel2" returnType="com.company.model.VacationRequest">
+                        <content>vacationRequestToCancel2</content>
+                    </expression>
+                </condition>
+            </transition>
+            <transition id="2917880994853994280" name="6582485987873250678_-&gt;_6517372600841132760" source="6582485987873250678" target="6517372600841132760" />
+            <transition id="3708646042953561462" name="4692766717328229031_-&gt;_6582485987873250678" source="4692766717328229031" target="6582485987873250678">
+                <condition expressionType="TYPE_READ_ONLY_SCRIPT" id="4118957233188130092" interpreter="GROOVY" name="isApproved" returnType="java.lang.Boolean">
+                    <content>return vacationRequestToCancel2.getStatus().equals("approved");</content>
+                    <expression expressionType="TYPE_BUSINESS_DATA" id="8477962127824470312" name="vacationRequestToCancel2" returnType="com.company.model.VacationRequest">
+                        <content>vacationRequestToCancel2</content>
+                    </expression>
+                </condition>
+            </transition>
+            <transition id="8678030128645649139" name="8957172673948182646_-&gt;_4708357825763551386" source="8957172673948182646" target="4708357825763551386" />
+            <transition id="7333258871975031825" name="7011226514906801371_-&gt;_4692766717328229031" source="7011226514906801371" target="4692766717328229031" />
+            <transition id="7207917730849505923" name="6427152954570331684_-&gt;_8063469201073507188" source="6427152954570331684" target="8063469201073507188" />
+        </transitions>
+        <connectors />
+        <businessDataDefinitions>
+            <businessDataDefinition className="com.company.model.VacationRequest" multiple="false" name="vacationRequestToCancel2">
+                <description />
+                <defaultValue expressionType="TYPE_QUERY_BUSINESS_DATA" id="5028118817969884226" name="VacationRequest.findByPersitenceId" returnType="com.company.model.VacationRequest">
+                    <content>VacationRequest.findByPersitenceId</content>
+                    <expression expressionType="TYPE_READ_ONLY_SCRIPT" id="8844257617712493199" interpreter="GROOVY" name="persistenceId" returnType="java.lang.Long">
+                        <content>return Long.valueOf(vacationRequestIdContract);</content>
+                        <expression expressionType="TYPE_CONTRACT_INPUT" id="858227216426878858" name="vacationRequestIdContract" returnType="java.lang.String">
+                            <content>vacationRequestIdContract</content>
+                        </expression>
+                    </expression>
+                </defaultValue>
+            </businessDataDefinition>
+            <businessDataDefinition className="com.company.model.VacationAvailable" multiple="false" name="vacationAvailable">
+                <description />
+                <defaultValue expressionType="TYPE_QUERY_BUSINESS_DATA" id="1508961380110547723" name="VacationAvailable.findByBonitaBPMId" returnType="com.company.model.VacationAvailable">
+                    <content>VacationAvailable.findByBonitaBPMId</content>
+                    <expression expressionType="TYPE_JAVA_METHOD_CALL" id="7233474906319963337" interpreter="" name="bonitaBPMId" returnType="java.lang.Long">
+                        <content>getRequesterBonitaBPMId</content>
+                        <expression expressionType="TYPE_BUSINESS_DATA" id="1566269209395379281" name="vacationRequestToCancel2" returnType="com.company.model.VacationRequest">
+                            <content>vacationRequestToCancel2</content>
+                        </expression>
+                    </expression>
+                </defaultValue>
+            </businessDataDefinition>
+        </businessDataDefinitions>
+        <dataDefinitions>
+            <dataDefinition className="java.lang.Boolean" name="cancellationApproved" transient="false" />
+            <dataDefinition className="java.lang.Long" name="leaveRequestId" transient="false">
+                <defaultValue expressionType="TYPE_READ_ONLY_SCRIPT" id="3011618607035430769" interpreter="GROOVY" name="convertStringToLong" returnType="java.lang.Long">
+                    <content>return Long.valueOf(vacationRequestIdContract);</content>
+                    <expression expressionType="TYPE_CONTRACT_INPUT" id="5215569974274117328" name="vacationRequestIdContract" returnType="java.lang.String">
+                        <content>vacationRequestIdContract</content>
+                    </expression>
+                </defaultValue>
+            </dataDefinition>
+        </dataDefinitions>
+        <documentDefinitions />
+        <documentListDefinitions />
+        <endEvent id="8240644974553125184" name="End">
+            <incomingTransition>6383992074558419031</incomingTransition>
+        </endEvent>
+        <intermediateThrowEvent id="8063469201073507188" name="Send message to cancel request">
+            <incomingTransition>7207917730849505923</incomingTransition>
+            <outgoingTransition>8437429868593462843</outgoingTransition>
+            <throwMessageEventTrigger name="cancelMsg">
+                <targetProcess expressionType="TYPE_CONSTANT" id="1443348257881671658" interpreter="" name="NewVacationRequest" returnType="java.lang.String">
+                    <content>NewVacationRequest</content>
+                </targetProcess>
+                <targetFlowNode expressionType="TYPE_CONSTANT" id="7501763808789704890" interpreter="" name="Cancel request" returnType="java.lang.String">
+                    <content>Cancel request</content>
+                </targetFlowNode>
+                <correlation>
+                    <key expressionType="TYPE_CONSTANT" id="1954191669343269814" interpreter="" name="persistanceId" returnType="java.lang.String">
+                        <content>persistanceId</content>
+                    </key>
+                    <value expressionType="TYPE_JAVA_METHOD_CALL" id="2316426978590309614" interpreter="" name="vacationRequestToCancel2 - com.company.model.VacationRequest#getPersistenceId" returnType="java.lang.Long">
+                        <content>getPersistenceId</content>
+                        <expression expressionType="TYPE_BUSINESS_DATA" id="3587858458767375505" name="vacationRequestToCancel2" returnType="com.company.model.VacationRequest">
+                            <content>vacationRequestToCancel2</content>
+                        </expression>
+                    </value>
+                </correlation>
+            </throwMessageEventTrigger>
+        </intermediateThrowEvent>
+        <startEvent id="7011226514906801371" interrupting="true" name="Start">
+            <outgoingTransition>7333258871975031825</outgoingTransition>
+        </startEvent>
+        <gateway gatewayType="EXCLUSIVE" id="5769005552874368700" name="Cancellation approved?">
+            <incomingTransition>4767237620964999175</incomingTransition>
+            <outgoingTransition>8218490943854953498</outgoingTransition>
+            <defaultTransition>2532172476571955323</defaultTransition>
+        </gateway>
+        <gateway gatewayType="EXCLUSIVE" id="4708357825763551386" name="Merge status of request">
+            <incomingTransition>8437429868593462843</incomingTransition>
+            <incomingTransition>766380464815321834</incomingTransition>
+            <incomingTransition>116561061550837284</incomingTransition>
+            <incomingTransition>8678030128645649139</incomingTransition>
+            <outgoingTransition>6383992074558419031</outgoingTransition>
+        </gateway>
+        <gateway gatewayType="EXCLUSIVE" id="4692766717328229031" name="Status of request">
+            <incomingTransition>7333258871975031825</incomingTransition>
+            <outgoingTransition>3708646042953561462</outgoingTransition>
+            <outgoingTransition>5132756463141275059</outgoingTransition>
+            <defaultTransition>766380464815321834</defaultTransition>
+        </gateway>
+        <automaticTask id="8957172673948182646" name="Update vacation request status">
+            <incomingTransition>8218490943854953498</incomingTransition>
+            <outgoingTransition>8678030128645649139</outgoingTransition>
+            <connector activationEvent="ON_ENTER" connectorId="google-calendar-v3-delete-event" failAction="IGNORE" name="DeleteVacationOnCalendar" version="1.0.0">
+                <inputs>
+                    <input name="id">
+                        <expression expressionType="TYPE_JAVA_METHOD_CALL" id="6662883995867463435" interpreter="" name="vacationRequestToCancel2 - com.company.model.VacationRequest#getGoogleCalendarEventId" returnType="java.lang.String">
+                            <content>getGoogleCalendarEventId</content>
+                            <expression expressionType="TYPE_BUSINESS_DATA" id="6850484978705349925" name="vacationRequestToCancel2" returnType="com.company.model.VacationRequest">
+                                <content>vacationRequestToCancel2</content>
+                            </expression>
+                        </expression>
+                    </input>
+                    <input name="calendarId">
+                        <expression expressionType="TYPE_PARAMETER" id="106644501820323338" interpreter="" name="googleCalendarCalendarId" returnType="java.lang.String">
+                            <content>googleCalendarCalendarId</content>
+                        </expression>
+                    </input>
+                    <input name="serviceAccountP12File">
+                        <expression expressionType="TYPE_PARAMETER" id="404911393368944809" interpreter="" name="googleCalendarServiceAccountP12File" returnType="java.lang.String">
+                            <content>googleCalendarServiceAccountP12File</content>
+                        </expression>
+                    </input>
+                    <input name="sendNotifications">
+                        <expression expressionType="TYPE_CONSTANT" id="4435564797875603939" interpreter="" name="false" returnType="java.lang.Boolean">
+                            <content>false</content>
+                        </expression>
+                    </input>
+                    <input name="prettyPrint">
+                        <expression expressionType="TYPE_CONSTANT" id="3227127041785902357" interpreter="" name="false" returnType="java.lang.Boolean">
+                            <content>false</content>
+                        </expression>
+                    </input>
+                    <input name="applicationName">
+                        <expression expressionType="TYPE_PARAMETER" id="255891008518929964" interpreter="" name="googleCalendarApplicationName" returnType="java.lang.String">
+                            <content>googleCalendarApplicationName</content>
+                        </expression>
+                    </input>
+                    <input name="serviceAccountUser">
+                        <expression expressionType="TYPE_PARAMETER" id="8089078689888158667" interpreter="" name="googleCalendarServiceAccountUser" returnType="java.lang.String">
+                            <content>googleCalendarServiceAccountUser</content>
+                        </expression>
+                    </input>
+                    <input name="serviceAccountId">
+                        <expression expressionType="TYPE_PARAMETER" id="5254969275516862637" interpreter="" name="googleCalendarServiceAccountId" returnType="java.lang.String">
+                            <content>googleCalendarServiceAccountId</content>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs />
+            </connector>
+            <dataDefinitions />
+            <operations>
+                <operation operator="setStatus:java.lang.String" operatorType="JAVA_METHOD">
+                    <leftOperand name="vacationRequestToCancel2" type="BUSINESS_DATA" />
+                    <rightOperand expressionType="TYPE_CONSTANT" id="2604116082433019161" interpreter="" name="cancelled" returnType="java.lang.String">
+                        <content>cancelled</content>
+                    </rightOperand>
+                </operation>
+                <operation operator="setDaysAvailableCounter:java.lang.Integer" operatorType="JAVA_METHOD">
+                    <leftOperand name="vacationAvailable" type="BUSINESS_DATA" />
+                    <rightOperand expressionType="TYPE_READ_ONLY_SCRIPT" id="5469536182693937686" interpreter="GROOVY" name="resetCounter" returnType="java.lang.Integer">
+                        <content>return vacationAvailable.getDaysAvailableCounter() + vacationRequestToCancel2.getNumberOfDays()</content>
+                        <expression expressionType="TYPE_BUSINESS_DATA" id="6957827888940891876" name="vacationAvailable" returnType="com.company.model.VacationAvailable">
+                            <content>vacationAvailable</content>
+                        </expression>
+                        <expression expressionType="TYPE_BUSINESS_DATA" id="4693261014241886023" name="vacationRequestToCancel2" returnType="com.company.model.VacationRequest">
+                            <content>vacationRequestToCancel2</content>
+                        </expression>
+                    </rightOperand>
+                </operation>
+            </operations>
+            <boundaryEvents />
+        </automaticTask>
+        <userTask actorName="HHRR" expectedDuration="3600000" id="6517372600841132760" name="Review cancellation" priority="NORMAL">
+            <incomingTransition>2917880994853994280</incomingTransition>
+            <outgoingTransition>4767237620964999175</outgoingTransition>
+            <dataDefinitions />
+            <operations>
+                <operation operatorType="ASSIGNMENT">
+                    <leftOperand name="cancellationApproved" type="DATA" />
+                    <rightOperand expressionType="TYPE_CONTRACT_INPUT" id="6896050815644287696" interpreter="" name="cancellationApprovedContract" returnType="java.lang.Boolean">
+                        <content>cancellationApprovedContract</content>
+                    </rightOperand>
+                </operation>
+            </operations>
+            <boundaryEvents />
+            <userFilter name="getUserInLane" userFilterId="single-user" version="1.0.0">
+                <inputs>
+                    <input name="userId">
+                        <expression expressionType="TYPE_READ_ONLY_SCRIPT" id="7903310375025068734" interpreter="GROOVY" name="getUserInTheLane" returnType="java.lang.Long">
+                            <content>apiAccessor.getIdentityAPI().getUserByUserName("helen.kelly").getId();</content>
+                            <expression expressionType="TYPE_ENGINE_CONSTANT" id="6213833766199971129" interpreter="" name="apiAccessor" returnType="com.bonitasoft.engine.api.APIAccessor">
+                                <content>apiAccessor</content>
+                            </expression>
+                        </expression>
+                    </input>
+                </inputs>
+            </userFilter>
+            <contract>
+                <inputDefinitions>
+                    <inputDefinition multiple="false" name="cancellationApprovedContract" type="BOOLEAN">
+                        <inputDefinitions />
+                        <inputDefinitions />
+                    </inputDefinition>
+                </inputDefinitions>
+            </contract>
+            <context>
+                <contextEntry key="vacationRequestToCancel2_ref">
+                    <expression expressionType="TYPE_BUSINESS_DATA_REFERENCE" id="1448347245834030085" name="vacationRequestToCancel2" returnType="org.bonitasoft.engine.business.data.BusinessDataReference">
+                        <content>vacationRequestToCancel2</content>
+                    </expression>
+                </contextEntry>
+                <contextEntry key="vacationAvailable_ref">
+                    <expression expressionType="TYPE_BUSINESS_DATA_REFERENCE" id="542207549601760367" name="vacationAvailable" returnType="org.bonitasoft.engine.business.data.BusinessDataReference">
+                        <content>vacationAvailable</content>
+                    </expression>
+                </contextEntry>
+            </context>
+        </userTask>
+        <automaticTask id="9096138230937645639" name="Reset status to &quot;Approved&quot;">
+            <incomingTransition>2532172476571955323</incomingTransition>
+            <outgoingTransition>116561061550837284</outgoingTransition>
+            <dataDefinitions />
+            <operations>
+                <operation operator="setStatus:java.lang.String" operatorType="JAVA_METHOD">
+                    <leftOperand name="vacationRequestToCancel2" type="BUSINESS_DATA" />
+                    <rightOperand expressionType="TYPE_CONSTANT" id="5037643445213180398" interpreter="" name="approved" returnType="java.lang.String">
+                        <content>approved</content>
+                    </rightOperand>
+                </operation>
+            </operations>
+            <boundaryEvents />
+        </automaticTask>
+        <automaticTask id="6427152954570331684" name="Set status to &quot;Cancel&quot;">
+            <incomingTransition>5132756463141275059</incomingTransition>
+            <outgoingTransition>7207917730849505923</outgoingTransition>
+            <dataDefinitions />
+            <operations>
+                <operation operator="setStatus:java.lang.String" operatorType="JAVA_METHOD">
+                    <leftOperand name="vacationRequestToCancel2" type="BUSINESS_DATA" />
+                    <rightOperand expressionType="TYPE_CONSTANT" id="9216925225921919486" interpreter="" name="Cancellation in progress..." returnType="java.lang.String">
+                        <content>Cancellation in progress...</content>
+                    </rightOperand>
+                </operation>
+            </operations>
+            <boundaryEvents />
+        </automaticTask>
+        <automaticTask id="6582485987873250678" name="Set status to &quot;Cancel request&quot;">
+            <incomingTransition>3708646042953561462</incomingTransition>
+            <outgoingTransition>2917880994853994280</outgoingTransition>
+            <dataDefinitions />
+            <operations>
+                <operation operator="setStatus:java.lang.String" operatorType="JAVA_METHOD">
+                    <leftOperand name="vacationRequestToCancel2" type="BUSINESS_DATA" />
+                    <rightOperand expressionType="TYPE_CONSTANT" id="8139974382039709316" interpreter="" name="Cancel pending..." returnType="java.lang.String">
+                        <content>Cancel pending...</content>
+                    </rightOperand>
+                </operation>
+            </operations>
+            <boundaryEvents />
+        </automaticTask>
+    </flowElements>
+    <actors>
+        <actor name="HHRR">
+            <description>Only HHRR can cancel vacation requests</description>
+        </actor>
+        <actor name="Todos">
+            <description />
+        </actor>
+    </actors>
+    <parameters>
+        <parameter name="googleCalendarServiceAccountP12File" type="java.lang.String">
+            <description />
+        </parameter>
+        <parameter name="googleCalendarCalendarId" type="java.lang.String">
+            <description />
+        </parameter>
+        <parameter name="googleCalendarServiceAccountId" type="java.lang.String">
+            <description />
+        </parameter>
+        <parameter name="googleCalendarApplicationName" type="java.lang.String">
+            <description />
+        </parameter>
+        <parameter name="googleCalendarServiceAccountUser" type="java.lang.String">
+            <description />
+        </parameter>
+    </parameters>
+    <actorInitiator>Todos</actorInitiator>
+    <contract>
+        <inputDefinitions>
+            <inputDefinition multiple="false" name="vacationRequestIdContract" type="TEXT">
+                <inputDefinitions />
+                <inputDefinitions />
+            </inputDefinition>
+        </inputDefinitions>
+    </contract>
+    <context>
+        <contextEntry key="vacationRequestToCancel2_ref">
+            <expression expressionType="TYPE_BUSINESS_DATA_REFERENCE" id="7988925155372744121" name="vacationRequestToCancel2" returnType="org.bonitasoft.engine.business.data.BusinessDataReference">
+                <content>vacationRequestToCancel2</content>
+            </expression>
+        </contextEntry>
+        <contextEntry key="vacationAvailable_ref">
+            <expression expressionType="TYPE_BUSINESS_DATA_REFERENCE" id="5390022615896704426" name="vacationAvailable" returnType="org.bonitasoft.engine.business.data.BusinessDataReference">
+                <content>vacationAvailable</content>
+            </expression>
+        </contextEntry>
+    </context>
+</def:processDefinition>

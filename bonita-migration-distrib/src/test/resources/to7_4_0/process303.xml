@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<def:processDefinition xmlns:def="http://www.bonitasoft.org/ns/process/client/7.2" name="Create supplier" version="1.0">
+    <description>Creates a supplier</description>
+    <displayDescription>Creates a supplier</displayDescription>
+    <stringIndexes>
+        <stringIndex index="1" />
+        <stringIndex index="2" />
+        <stringIndex index="3" />
+        <stringIndex index="4" />
+        <stringIndex index="5" />
+    </stringIndexes>
+    <flowElements>
+        <transitions>
+            <transition id="5556779511991192579" name="6371024162158875601_-&gt;_7140918030202469840" source="6371024162158875601" target="7140918030202469840" />
+        </transitions>
+        <connectors />
+        <businessDataDefinitions>
+            <businessDataDefinition className="com.company.model.Supplier" multiple="false" name="supplier">
+                <description />
+                <defaultValue expressionType="TYPE_READ_ONLY_SCRIPT" id="6301399089510236412" interpreter="GROOVY" name="createSupplier" returnType="com.company.model.Supplier">
+                    <content>import com.company.model.Supplier;
+
+
+                        Supplier newSupplier = new Supplier();
+
+                        newSupplier.setName(name);
+
+                        newSupplier.setDescription(description);
+
+                        return newSupplier;
+                    </content>
+                    <expression expressionType="TYPE_CONTRACT_INPUT" id="6261781553791715279" name="description" returnType="java.lang.String">
+                        <content>description</content>
+                    </expression>
+                    <expression expressionType="TYPE_CONTRACT_INPUT" id="5723753738777573747" name="name" returnType="java.lang.String">
+                        <content>name</content>
+                    </expression>
+                </defaultValue>
+            </businessDataDefinition>
+        </businessDataDefinitions>
+        <dataDefinitions />
+        <documentDefinitions />
+        <documentListDefinitions />
+        <endEvent id="7140918030202469840" name="End">
+            <incomingTransition>5556779511991192579</incomingTransition>
+        </endEvent>
+        <startEvent id="6371024162158875601" interrupting="true" name="Fill supplier data">
+            <outgoingTransition>5556779511991192579</outgoingTransition>
+        </startEvent>
+    </flowElements>
+    <actors>
+        <actor name="Employee actor">
+            <description>This is an example of actor that is mapped to any ACME users</description>
+        </actor>
+    </actors>
+    <parameters />
+    <actorInitiator>Employee actor</actorInitiator>
+    <contract>
+        <inputDefinitions>
+            <inputDefinition multiple="false" name="name" type="TEXT">
+                <inputDefinitions />
+                <inputDefinitions />
+            </inputDefinition>
+            <inputDefinition multiple="false" name="description" type="TEXT">
+                <inputDefinitions />
+                <inputDefinitions />
+            </inputDefinition>
+        </inputDefinitions>
+    </contract>
+    <context>
+        <contextEntry key="supplier_ref">
+            <expression expressionType="TYPE_BUSINESS_DATA_REFERENCE" id="7583545965045695894" name="supplier" returnType="org.bonitasoft.engine.business.data.BusinessDataReference">
+                <content>supplier</content>
+            </expression>
+        </contextEntry>
+    </context>
+</def:processDefinition>

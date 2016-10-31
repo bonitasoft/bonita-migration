@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<def:processDefinition id="0" name="MyProcess to be migrated" version="to_7.4" xmlns:def="http://www.bonitasoft.org/ns/process/client/7.2">
+    <description>2-lines
+        description
+    </description>
+    <displayDescription>2-lines
+        display description
+    </displayDescription>
+    <parameters />
+    <actors>
+        <actor name="myActor" initiator="false" />
+        <actor name="myActorInitiator" initiator="true" />
+    </actors>
+    <actorInitiator>myActorInitiator</actorInitiator>
+    <flowElements id="6566539500310893520">
+        <automaticTask id="8012804039926817884" name="auto1">
+            <incomingTransition>5768478408724242740</incomingTransition>
+            <outgoingTransition>4661412022087865161</outgoingTransition>
+            <description>autoTaskDesc</description>
+            <dataDefinitions />
+            <BusinessDataDefinitions />
+            <operations />
+            <boundaryEvents />
+        </automaticTask>
+        <userTask id="8657841403146552857" name="user1" actorName="myActor" expectedDuration="3600000">
+            <incomingTransition>4661412022087865161</incomingTransition>
+            <outgoingTransition>5835371765967791700</outgoingTransition>
+            <dataDefinitions />
+            <BusinessDataDefinitions />
+            <operations />
+            <boundaryEvents />
+            <contract>
+                <inputDefinitions>
+                    <inputDefinition type="BOOLEAN" name="myTaskContractInput" multiple="false">
+                        <inputDefinitions />
+                        <description>Serves description non-reg purposes</description>
+                    </inputDefinition>
+                </inputDefinitions>
+                <constraints />
+            </contract>
+            <context />
+        </userTask>
+        <automaticTask id="6449934195896385151" name="taskWithNoDescription">
+            <connector id="8011002691759131076" name="theConnector" connectorId="connectorId" activationEvent="ON_ENTER" version="version" failAction="FAIL">
+                <inputs>
+                    <input name="input1">
+                        <expression id="7507695846223380679" name="input1Value" expressionType="TYPE_CONSTANT" returnType="java.lang.String">
+                            <content>input1Value</content>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs>
+                    <operation operatorType="ASSIGNMENT">
+                        <leftOperand name="myData" type="DATA" />
+                        <rightOperand id="5599037135349211181" name="outputValue" expressionType="TYPE_INPUT" returnType="java.lang.String">
+                            <content>outputValue</content>
+                        </rightOperand>
+                    </operation>
+                </outputs>
+            </connector>
+            <dataDefinitions />
+            <BusinessDataDefinitions />
+            <operations>
+                <operation operatorType="ASSIGNMENT">
+                    <leftOperand name="myData" type="DATA" />
+                    <rightOperand id="6435524645806265459" name="theNewValue" expressionType="TYPE_CONSTANT" returnType="java.lang.String">
+                        <content>theNewValue</content>
+                    </rightOperand>
+                </operation>
+            </operations>
+            <boundaryEvents />
+        </automaticTask>
+        <callActivity id="5247776716147699340" name="call" callableElementType="PROCESS">
+            <incomingTransition>8899493014168843149</incomingTransition>
+            <outgoingTransition>6693496218447738350</outgoingTransition>
+            <dataDefinitions />
+            <BusinessDataDefinitions />
+            <operations />
+            <boundaryEvents />
+            <callableElement id="8554414527085908474" name="unknown" expressionType="TYPE_CONSTANT" returnType="java.lang.String">
+                <content>unknown</content>
+            </callableElement>
+            <callableElementVersion id="8554414527085908474" name="unknown" expressionType="TYPE_CONSTANT" returnType="java.lang.String">
+                <content>unknown</content>
+            </callableElementVersion>
+            <contractInput>
+                <input name="theInput">
+                    <expression id="5950320652224000211" name="theValue" expressionType="TYPE_CONSTANT" returnType="java.lang.String">
+                        <content>theValue</content>
+                    </expression>
+                </input>
+            </contractInput>
+        </callActivity>
+        <automaticTask id="6416895493251599232" name="auto2">
+            <incomingTransition>7360446346460945148</incomingTransition>
+            <outgoingTransition>8863195446900642005</outgoingTransition>
+            <dataDefinitions />
+            <BusinessDataDefinitions />
+            <operations />
+            <boundaryEvents />
+        </automaticTask>
+        <automaticTask id="7194531043538346757" name="auto3">
+            <incomingTransition>5598760748112317558</incomingTransition>
+            <outgoingTransition>5067332876285850705</outgoingTransition>
+            <dataDefinitions />
+            <BusinessDataDefinitions />
+            <operations />
+            <boundaryEvents />
+        </automaticTask>
+        <userTask id="7989394150699750503" name="user2" actorName="myActor">
+            <description>without expectedDuration</description>
+            <dataDefinitions />
+            <BusinessDataDefinitions />
+            <operations />
+            <boundaryEvents />
+            <context />
+        </userTask>
+        <manualTask id="6917768603383904068" name="manual1" actorName="myActor" expectedDuration="3600000">
+            <description>with expectedDuration</description>
+            <dataDefinitions />
+            <BusinessDataDefinitions />
+            <operations />
+            <boundaryEvents />
+        </manualTask>
+        <manualTask id="6393181890197210535" name="manual2" actorName="myActor">
+            <description>with expectedDuration</description>
+            <dataDefinitions />
+            <BusinessDataDefinitions />
+            <operations />
+            <boundaryEvents />
+        </manualTask>
+        <automaticTask id="8015536714812046223" name="auto4">
+            <dataDefinitions />
+            <BusinessDataDefinitions />
+            <operations />
+            <multiInstanceLoopCharacteristics isSequential="false">
+                <loopCardinality id="5928752874738961919" name="12" expressionType="TYPE_CONSTANT" returnType="java.lang.Integer">
+                    <content>12</content>
+                </loopCardinality>
+            </multiInstanceLoopCharacteristics>
+            <boundaryEvents />
+        </automaticTask>
+        <transitions>
+            <transition id="5835371765967791700" name="8657841403146552857_-&gt;_8378682569339602758" source="8657841403146552857" target="8378682569339602758" />
+            <transition id="7360446346460945148" name="8378682569339602758_-&gt;_6416895493251599232" source="8378682569339602758" target="6416895493251599232">
+                <condition id="7179185645358723355" name="false" expressionType="TYPE_CONSTANT" returnType="java.lang.Boolean">
+                    <content>false</content>
+                </condition>
+            </transition>
+            <transition id="8899493014168843149" name="8378682569339602758_-&gt;_5247776716147699340" source="8378682569339602758" target="5247776716147699340">
+                <condition id="7179185645358723355" name="false" expressionType="TYPE_CONSTANT" returnType="java.lang.Boolean">
+                    <content>false</content>
+                </condition>
+            </transition>
+            <transition id="6693496218447738350" name="5247776716147699340_-&gt;_6730685656958090990" source="5247776716147699340" target="6730685656958090990" />
+            <transition id="5067332876285850705" name="7194531043538346757_-&gt;_6730685656958090990" source="7194531043538346757" target="6730685656958090990" />
+            <transition id="5768478408724242740" name="8776912586457776613_-&gt;_8012804039926817884" source="8776912586457776613" target="8012804039926817884" />
+            <transition id="8863195446900642005" name="6416895493251599232_-&gt;_6730685656958090990" source="6416895493251599232" target="6730685656958090990" />
+            <transition id="5598760748112317558" name="8378682569339602758_-&gt;_7194531043538346757" source="8378682569339602758" target="7194531043538346757" />
+            <transition id="4661412022087865161" name="8012804039926817884_-&gt;_8657841403146552857" source="8012804039926817884" target="8657841403146552857" />
+        </transitions>
+        <gateway id="8378682569339602758" name="gate1" gatewayType="INCLUSIVE">
+            <incomingTransition>5835371765967791700</incomingTransition>
+            <outgoingTransition>8899493014168843149</outgoingTransition>
+            <outgoingTransition>7360446346460945148</outgoingTransition>
+            <defaultTransition>5598760748112317558</defaultTransition>
+        </gateway>
+        <startEvent id="8776912586457776613" name="start" interrupting="true">
+            <outgoingTransition>5768478408724242740</outgoingTransition>
+        </startEvent>
+        <endEvent id="6730685656958090990" name="end">
+            <incomingTransition>6693496218447738350</incomingTransition>
+            <incomingTransition>8863195446900642005</incomingTransition>
+            <incomingTransition>5067332876285850705</incomingTransition>
+            <terminateEventTrigger />
+        </endEvent>
+        <dataDefinitions>
+            <dataDefinition id="8950160492852459581" name="myData" transient="false" className="java.lang.String">
+                <description>my data description</description>
+                <defaultValue id="6718238959939008393" name="myDataValue" expressionType="TYPE_CONSTANT" returnType="java.lang.String">
+                    <content>myDataValue</content>
+                </defaultValue>
+            </dataDefinition>
+            <xmlDataDefinition id="6342677269214351883" name="xmlData" transient="false" className="java.lang.String">
+                <description>xml data depends on myData</description>
+                <defaultValue id="5704609836507639762" name="theScript" expressionType="TYPE_READ_ONLY_SCRIPT" returnType="java.lang.String" interpreter="GROOVY">
+                    <content>'&lt;tag&gt;'+isOk+'&lt;/tag&gt;'</content>
+                    <expression id="9054423594952211708" name="isOk" expressionType="TYPE_CONTRACT_INPUT" returnType="java.util.List">
+                        <content>isOk</content>
+                    </expression>
+                </defaultValue>
+            </xmlDataDefinition>
+        </dataDefinitions>
+        <businessDataDefinitions>
+            <businessDataDefinition id="6347697895102727893" name="myBizData" className="com.company.model.TestEntity" multiple="false">
+                <defaultValue id="4830637540382801773" name="createBusinessData" expressionType="TYPE_READ_ONLY_SCRIPT" returnType="com.company.model.TestEntity" interpreter="GROOVY">
+                    <content>
+                        def testEntity = new com.company.model.TestEntity()
+                        testEntity.name = 'toto'
+                        return testEntity
+                    </content>
+                </defaultValue>
+            </businessDataDefinition>
+        </businessDataDefinitions>
+        <documentDefinitions />
+        <documentListDefinitions />
+        <connectors />
+        <elementFinder />
+    </flowElements>
+    <stringIndexes>
+        <stringIndex index="1" />
+        <stringIndex index="2" />
+        <stringIndex index="3" />
+        <stringIndex index="4" />
+        <stringIndex index="5" />
+    </stringIndexes>
+    <contract>
+        <inputDefinitions>
+            <inputDefinition type="BOOLEAN" name="isOk" multiple="true">
+                <inputDefinitions />
+                <description>the is ok contract input</description>
+            </inputDefinition>
+            <inputDefinition name="request" multiple="false">
+                <inputDefinitions>
+                    <inputDefinition type="TEXT" name="name" multiple="false">
+                        <inputDefinitions />
+                        <description>name of the request</description>
+                    </inputDefinition>
+                    <inputDefinition type="INTEGER" name="value" multiple="false">
+                        <inputDefinitions />
+                        <description>request amount</description>
+                    </inputDefinition>
+                </inputDefinitions>
+                <description>a request</description>
+            </inputDefinition>
+        </inputDefinitions>
+        <constraints />
+    </contract>
+    <context />
+</def:processDefinition>
