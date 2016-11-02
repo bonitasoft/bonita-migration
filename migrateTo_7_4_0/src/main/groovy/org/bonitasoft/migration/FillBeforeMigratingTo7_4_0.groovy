@@ -13,6 +13,7 @@
  **/
 package org.bonitasoft.migration
 
+import org.bonitasoft.engine.api.APIClient
 import org.bonitasoft.engine.api.TenantAPIAccessor
 import org.bonitasoft.engine.bdm.BusinessObjectModelConverter
 import org.bonitasoft.engine.bdm.model.BusinessObject
@@ -28,6 +29,7 @@ import org.bonitasoft.engine.bpm.contract.Type
 import org.bonitasoft.engine.bpm.flownode.ActivityInstanceCriterion
 import org.bonitasoft.engine.bpm.flownode.GatewayType
 import org.bonitasoft.engine.bpm.flownode.HumanTaskInstance
+import org.bonitasoft.engine.bpm.flownode.TimerType
 import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder
 import org.bonitasoft.engine.expression.ExpressionBuilder
 import org.bonitasoft.engine.operation.OperationBuilder
@@ -180,6 +182,18 @@ return testEntity
             Thread.sleep(200)
         }
         loginAPI.logout(session)
+    }
+
+
+    @FillAction
+    public void "create process with a start timer to check quartz still works after migration"() {
+        def client = new APIClient()
+        client.login("install", "install")
+        def builder = new ProcessDefinitionBuilder().createNewInstance("processStartedOneTime", "1.0")
+        builder.addStartEvent("startWithTimer").addTimerEventTriggerDefinition(TimerType.DATE, new ExpressionBuilder().createGroovyScriptExpression("current plus 10 sec", "new java.util.Date(System.currentTimeMillis() + 10000)", "java.util.Date"))
+        def businessArchive = new BusinessArchiveBuilder().createNewBusinessArchive().setProcessDefinition(builder.done()).done()
+        def processDefinition = client.processAPI.deploy(businessArchive)
+        client.processAPI.enableProcess(processDefinition.getId())
     }
 
 }

@@ -14,9 +14,17 @@
 
 package org.bonitasoft.migration
 
+import groovy.sql.Sql
 import org.bonitasoft.engine.api.APIClient
+import org.bonitasoft.engine.bpm.bar.BusinessArchiveBuilder
 import org.bonitasoft.engine.bpm.contract.Type
 import org.bonitasoft.engine.bpm.flownode.*
+import org.bonitasoft.engine.bpm.process.ArchivedProcessInstance
+import org.bonitasoft.engine.bpm.process.ArchivedProcessInstancesSearchDescriptor
+import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder
+import org.bonitasoft.engine.expression.ExpressionBuilder
+import org.bonitasoft.engine.search.SearchOptionsBuilder
+import org.bonitasoft.engine.search.SearchResult
 import org.bonitasoft.engine.test.junit.BonitaEngineRule
 import org.bonitasoft.migration.filler.FillerUtils
 import org.junit.Rule
@@ -147,5 +155,67 @@ class CheckMigratedTo7_4_0 extends Specification {
 
     }
 
+    def "should not have the bpm event handling job anymore"() {
+        given:
+        def dburl = System.getProperty("db.url")
+        def dbDriverClassName = System.getProperty("db.driverClass")
+        def dbUser = System.getProperty("db.user")
+        def dbPassword = System.getProperty("db.password")
+        def sql = Sql.newInstance(dburl, dbUser, dbPassword, dbDriverClassName)
+        expect:
+        sql.firstRow("select count(*) from QRTZ_CRON_TRIGGERS where TRIGGER_NAME in (select t.TRIGGER_NAME from QRTZ_TRIGGERS t where t.JOB_NAME = 'BPMEventHandling')")[0] == 0
+        sql.firstRow("select count(*) from QRTZ_FIRED_TRIGGERS where TRIGGER_NAME in (select t.TRIGGER_NAME from QRTZ_TRIGGERS t where t.JOB_NAME = 'BPMEventHandling')")[0] == 0
+        sql.firstRow("select count(*) from QRTZ_TRIGGERS t where t.JOB_NAME = 'BPMEventHandling'")[0] == 0
+        sql.firstRow("select count(*) from QRTZ_JOB_DETAILS t where t.JOB_NAME = 'BPMEventHandling'")[0] == 0
+    }
+
+    def "timers should still work"() {
+        given:
+        def client = new APIClient()
+        client.login("install", "install")
+        def id = client.processAPI.getProcessDefinitionId("processStartedOneTime", "1.0")
+        when:
+        def timeout = System.currentTimeMillis() + 3000
+        def SearchResult<ArchivedProcessInstance> instances
+        while ((instances = client.processAPI.searchArchivedProcessInstances(new SearchOptionsBuilder(0, 1).filter(ArchivedProcessInstancesSearchDescriptor.PROCESS_DEFINITION_ID, id).done())).count == 0 && System.currentTimeMillis() < timeout) {
+            Thread.sleep(200)
+        }
+        then:
+        instances.count > 0
+    }
+
+    def "messages should still match"() {
+        given:
+        def client = new APIClient()
+        client.login("install", "install")
+        def businessArchiveBuilder = new BusinessArchiveBuilder().createNewBusinessArchive().setProcessDefinition(
+                new ProcessDefinitionBuilder()
+                        .createNewInstance("sendMessage", "1.0")
+                        .addEndEvent("sendTheMessage")
+                        .addMessageEventTrigger("theMessage", new ExpressionBuilder().createConstantStringExpression("receiveTheMessage"), new ExpressionBuilder().createConstantStringExpression("startWithTheMessage"))
+                        .getProcess())
+        def sendProcessDefinition = client.processAPI.deploy(businessArchiveBuilder.done())
+        client.processAPI.enableProcess(sendProcessDefinition.id)
+        businessArchiveBuilder = new BusinessArchiveBuilder().createNewBusinessArchive().setProcessDefinition(
+                new ProcessDefinitionBuilder()
+                        .createNewInstance("receiveTheMessage", "1.0")
+                        .addStartEvent("startWithTheMessage")
+                        .addMessageEventTrigger("theMessage")
+                        .addAutomaticTask("taskTriggeredByStartEvent")
+                        .addTransition("startWithTheMessage", "taskTriggeredByStartEvent")
+                        .getProcess())
+        def receiveProcessDefinition = client.processAPI.deploy(businessArchiveBuilder.done())
+        client.processAPI.enableProcess(receiveProcessDefinition.id)
+        when:
+        client.processAPI.startProcess(sendProcessDefinition.id)
+        client.processAPI.startProcess(sendProcessDefinition.id)
+        def timeout = System.currentTimeMillis() + 10000
+        def SearchResult<ArchivedFlowNodeInstance> instances
+        while ((instances = client.processAPI.searchArchivedFlowNodeInstances(new SearchOptionsBuilder(0, 1).filter(ArchivedFlowNodeInstanceSearchDescriptor.NAME, "taskTriggeredByStartEvent").done())).count == 0 && System.currentTimeMillis() < timeout) {
+            Thread.sleep(200)
+        }
+        then:
+        instances.count > 0
+    }
 
 }
