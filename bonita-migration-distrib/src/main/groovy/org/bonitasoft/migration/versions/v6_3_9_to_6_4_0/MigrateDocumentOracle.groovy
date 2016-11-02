@@ -74,7 +74,7 @@ class MigrateDocumentOracle extends MigrateDocument {
 
     def updateSequenceValue() {
         sql.execute("""
-                    UPDATE sequence SET nextid = seq_document.currval +1
+                    UPDATE sequence SET nextid = seq_document.nextval
                     WHERE tenantid = $tenantId
                     AND id = 10090 """)
 

@@ -71,14 +71,22 @@ class MigrateDocumentMysql extends MigrateDocument {
 
 
         def nextValue = sql.firstRow("SELECT MAX(doc_id) +1  AS nextValue from temp_doc").nextValue
-        sql.execute("ALTER TABLE temp_arch_doc AUTO_INCREMENT = ? ", nextValue)
 
-        sql.execute("""
+        if (hasValuesToUpdate(nextValue)) {
+            sql.execute("ALTER TABLE temp_arch_doc AUTO_INCREMENT = ? ", nextValue)
+
+            sql.execute("""
                         INSERT INTO temp_arch_doc (tenant_id, arch_doc_mapping_id)
                         SELECT  d.tenantid, d.id
                         FROM    arch_document_mapping d
                         WHERE   d.tenantid = ? AND d.documentHasContent = ? """, tenantId, falseValue)
+        }
 
+
+    }
+
+    private boolean hasValuesToUpdate(nextValue) {
+        nextValue != null
     }
 
     def updateArchDocumentMapping() {
@@ -93,10 +101,12 @@ class MigrateDocumentMysql extends MigrateDocument {
     def updateSequenceValue() {
 
         def nextValue = sql.firstRow("SELECT MAX(doc_id) +1  AS nextValue from temp_arch_doc").nextValue
-        sql.execute("""
+        if (hasValuesToUpdate(nextValue)) {
+            sql.execute("""
                     UPDATE sequence SET nextid = ?
                     WHERE tenantid = ?
                     AND id = 10090 """, nextValue, tenantId)
+        }
 
 
     }

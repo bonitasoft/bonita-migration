@@ -42,6 +42,7 @@ class ChangeDocumentsStructureIT extends GroovyTestCase {
 
         tester.dataSet = dataSet {
             tenant id: 1
+            tenant id: 2
 
             //sequences
             sequence tenantid: 1, id: 10090, nextid: 304
