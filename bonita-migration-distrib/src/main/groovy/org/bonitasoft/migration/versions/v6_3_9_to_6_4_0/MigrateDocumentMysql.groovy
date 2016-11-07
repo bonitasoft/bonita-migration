@@ -74,13 +74,13 @@ class MigrateDocumentMysql extends MigrateDocument {
 
         if (hasValuesToUpdate(nextValue)) {
             sql.execute("ALTER TABLE temp_arch_doc AUTO_INCREMENT = ? ", nextValue)
+        }
 
-            sql.execute("""
+        sql.execute("""
                         INSERT INTO temp_arch_doc (tenant_id, arch_doc_mapping_id)
                         SELECT  d.tenantid, d.id
                         FROM    arch_document_mapping d
                         WHERE   d.tenantid = ? AND d.documentHasContent = ? """, tenantId, falseValue)
-        }
 
 
     }
@@ -121,7 +121,7 @@ class MigrateDocumentMysql extends MigrateDocument {
                         a.sourceobjectid,
                         (   SELECT count(*) +1
                             FROM arch_document_mapping b
-                            WHERE a.tenantid = a.tenantid
+                            WHERE a.tenantid = b.tenantid
                                 AND a.sourceobjectid = b.sourceobjectid
                                 AND a.documentCreationDate >= b.documentCreationDate
                                 AND a.id > b.id

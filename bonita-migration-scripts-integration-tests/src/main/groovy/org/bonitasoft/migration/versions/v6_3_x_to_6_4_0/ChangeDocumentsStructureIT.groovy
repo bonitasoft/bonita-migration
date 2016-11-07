@@ -43,16 +43,19 @@ class ChangeDocumentsStructureIT extends GroovyTestCase {
         tester.dataSet = dataSet {
             tenant id: 1
             tenant id: 2
+            tenant id: 3
 
             //sequences
             sequence tenantid: 1, id: 10090, nextid: 304
             sequence tenantid: 2, id: 10090, nextid: 235
+            sequence tenantid: 3, id: 10090, nextid: 147
 
-            document_content tenantid: 1, id: 99, documentId: '-4561234568646477', content: "the old content1".getBytes()
+            document_content tenantid: 1, id: 97, documentId: '-4561234568646477', content: "the old content1".getBytes()
             document_content tenantid: 1, id: 100, documentId: '-4561234568646452', content: "the content1".getBytes()
             document_content tenantid: 1, id: 101, documentId: '-4561485668646452', content: "the content2".getBytes()
             document_content tenantid: 1, id: 102, documentId: '4561237768646452', content: "the content3".getBytes()
             document_content tenantid: 1, id: 201, documentId: '6861234568646455', content: "the content4".getBytes()
+            document_content tenantid: 3, id: 96, documentId: '-123456789', content: "tenant3 content".getBytes()
 
             document_mapping tenantid: 1, id: 300, processinstanceid: 800, documentName: "mydoc1", documentAuthor: 900, documentCreationDate: 4567890003, documentHasContent: trueValue(), documentContentFileName: "file1.txt", documentContentMimeType: "plain/text", contentStorageId: '-4561234568646452', documentURL: "[NULL]"
             document_mapping tenantid: 1, id: 301, processinstanceid: 800, documentName: "mydoc2", documentAuthor: 900, documentCreationDate: 4567892316, documentHasContent: trueValue(), documentContentFileName: "file2.txt", documentContentMimeType: "application/octet-stream", contentStorageId: '-4561485668646452', documentURL: "[NULL]"
@@ -78,6 +81,7 @@ class ChangeDocumentsStructureIT extends GroovyTestCase {
             arch_document_mapping tenantid: 1, id: 1315, sourceobjectid: 300, processinstanceid: 800, documentName: "oldmydoc1", documentAuthor: 901, documentCreationDate: 4567890016, documentHasContent: falseValue(), documentContentFileName: "oldfile2.txt", documentContentMimeType: "plain/text", contentStorageId: '[NULL]', documentURL: "http//myurl.com/myfile214.txt", archivedate: 4567892115
             arch_document_mapping tenantid: 1, id: 1316, sourceobjectid: 300, processinstanceid: 800, documentName: "oldmydoc1", documentAuthor: 901, documentCreationDate: 4567890017, documentHasContent: falseValue(), documentContentFileName: "oldfile2.txt", documentContentMimeType: "plain/text", contentStorageId: '[NULL]', documentURL: "http//myurl.com/myfile215.txt", archivedate: 4567892116
             arch_document_mapping tenantid: 1, id: 1317, sourceobjectid: 299, processinstanceid: 804, documentName: "archedDoc", documentAuthor: 901, documentCreationDate: 4567892325, documentHasContent: falseValue(), documentContentFileName: "archedDoc.txt", documentContentMimeType: "plain/text", contentStorageId: '[NULL]', documentURL: "http//myurl.com/myfile.txt", archivedate: 4567892315
+            arch_document_mapping tenantid: 3, id: 1318, sourceobjectid: 300, processinstanceid: 800, documentName: "tenant3", documentAuthor: 901, documentCreationDate: 9567892317, documentHasContent: trueValue(), documentContentFileName: "tenant3.txt", documentContentMimeType: "plain/text", contentStorageId: '-123456789', documentURL: "documentDownload?", archivedate: 9567892317
         }
 
         tester.onSetup();
@@ -124,13 +128,13 @@ class ChangeDocumentsStructureIT extends GroovyTestCase {
             }
         }
 
-        //TODO document content without mapping?
         CustomAssertion.assertEquals dataSet {
 
             sequence tenantid: 1, id: 10090, nextid: 321
             sequence tenantid: 2, id: 10090, nextid: 235
+            sequence tenantid: 3, id: 10090, nextid: 147
 
-            document tenantid: 1, id: 99, author: 901, creationdate: 4567890001, hascontent: trueValue(), filename: "oldfile1.txt", mimetype: "plain/text", content: "the old content1".getBytes(), url: "[NULL]"
+            document tenantid: 1, id: 97, author: 901, creationdate: 4567890001, hascontent: trueValue(), filename: "oldfile1.txt", mimetype: "plain/text", content: "the old content1".getBytes(), url: "[NULL]"
             document tenantid: 1, id: 100, author: 900, creationdate: 4567890003, hascontent: trueValue(), filename: "file1.txt", mimetype: "plain/text", content: "the content1".getBytes(), url: "[NULL]"
             document tenantid: 1, id: 101, author: 900, creationdate: 4567892316, hascontent: trueValue(), filename: "file2.txt", mimetype: "application/octet-stream", content: "the content2".getBytes(), url: "[NULL]"
             document tenantid: 1, id: 102, author: 901, creationdate: 4567892317, hascontent: trueValue(), filename: "file3.txt", mimetype: "plain/text", content: "the content3".getBytes(), url: "[NULL]"
@@ -153,14 +157,17 @@ class ChangeDocumentsStructureIT extends GroovyTestCase {
             document tenantid: 1, id: 319, author: 901, creationdate: 4567890017, hascontent: falseValue(), filename: "oldfile2.txt", mimetype: "plain/text", content: "[NULL]", url: 'http//myurl.com/myfile215.txt'
             document tenantid: 1, id: 320, author: 901, creationdate: 4567892325, hascontent: falseValue(), filename: "archedDoc.txt", mimetype: "plain/text", content: "[NULL]", url: 'http//myurl.com/myfile.txt'
 
+            document tenantid: 3, id: 96, author: 901, creationdate: 9567892317, hascontent: trueValue(), filename: "tenant3.txt", mimetype: "plain/text", content: "tenant3 content".getBytes(), url: "[NULL]"
+
+
             document_mapping tenantid: 1, id: 300, processinstanceid: 800, documentid: 100, name: "mydoc1", description: "[NULL]", version: "18", index_: -1
             document_mapping tenantid: 1, id: 301, processinstanceid: 800, documentid: 101, name: "mydoc2", description: "[NULL]", version: "1", index_: -1
             document_mapping tenantid: 1, id: 302, processinstanceid: 801, documentid: 102, name: "mydoc3", description: "[NULL]", version: "1", index_: -1
             document_mapping tenantid: 1, id: 303, processinstanceid: 802, documentid: 201, name: "mydoc4", description: "[NULL]", version: "1", index_: -1
             document_mapping tenantid: 1, id: 304, processinstanceid: 803, documentid: 304, name: "mydoc5", description: "[NULL]", version: "1", index_: -1
 
-            arch_document_mapping tenantid: 1, id: 1300, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892314, documentid: 99, description: "[NULL]", version: "1", index_: -1
-            arch_document_mapping tenantid: 1, id: 1301, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892101, documentid: 99, description: "[NULL]", version: "2", index_: -1
+            arch_document_mapping tenantid: 1, id: 1300, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892314, documentid: 97, description: "[NULL]", version: "1", index_: -1
+            arch_document_mapping tenantid: 1, id: 1301, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892101, documentid: 97, description: "[NULL]", version: "2", index_: -1
             arch_document_mapping tenantid: 1, id: 1302, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892102, documentid: 305, description: "[NULL]", version: "3", index_: -1
             arch_document_mapping tenantid: 1, id: 1303, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892103, documentid: 306, description: "[NULL]", version: "4", index_: -1
             arch_document_mapping tenantid: 1, id: 1304, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892104, documentid: 307, description: "[NULL]", version: "5", index_: -1
@@ -177,6 +184,8 @@ class ChangeDocumentsStructureIT extends GroovyTestCase {
             arch_document_mapping tenantid: 1, id: 1315, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892115, documentid: 318, description: "[NULL]", version: "16", index_: -1
             arch_document_mapping tenantid: 1, id: 1316, sourceobjectid: 300, processinstanceid: 800, name: "oldmydoc1", archivedate: 4567892116, documentid: 319, description: "[NULL]", version: "17", index_: -1
             arch_document_mapping tenantid: 1, id: 1317, sourceobjectid: 299, processinstanceid: 804, name: "archedDoc", archivedate: 4567892315, documentid: 320, description: "[NULL]", version: "1", index_: -1
+
+            arch_document_mapping tenantid: 3, id: 1318, sourceobjectid: 300, processinstanceid: 800, name: "tenant3", archivedate: 9567892317, documentid: 96, description: "[NULL]", version: "1", index_: -1
 
         }, updatedDocuments
     }
