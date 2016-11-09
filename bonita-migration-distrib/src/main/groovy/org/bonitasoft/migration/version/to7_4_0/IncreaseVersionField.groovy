@@ -11,24 +11,27 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
+
 package org.bonitasoft.migration.version.to7_4_0
 
+import org.bonitasoft.migration.core.MigrationContext
 import org.bonitasoft.migration.core.MigrationStep
-import org.bonitasoft.migration.core.VersionMigration
 
 /**
+ * @author Laurent Leseigneur
  */
-class MigrateTo7_4_0 extends VersionMigration {
+class IncreaseVersionField extends MigrationStep {
+
 
     @Override
-    def List<MigrationStep> getMigrationSteps() {
-        //keep one line per step to avoid false-positive merge conflict
-        return [
-                new MigrateProcessDefinitionXmlWithXSD(),
-                new RemoveEventHandlingJob(),
-                new WarnAboutCSRF(),
-                new IncreaseVersionField()
-
-        ]
+    def execute(MigrationContext context) {
+        context.databaseHelper.executeScript("versionFieldSize", "size")
     }
+
+
+    @Override
+    String getDescription() {
+        return "Increase size of version field for tables: document_mapping, arch_document_mapping, connector_instance and arch_connector_instance "
+    }
+
 }
