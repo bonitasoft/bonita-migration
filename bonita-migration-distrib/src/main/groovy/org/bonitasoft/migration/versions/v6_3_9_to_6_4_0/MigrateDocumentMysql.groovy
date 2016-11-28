@@ -71,7 +71,10 @@ class MigrateDocumentMysql extends MigrateDocument {
 
 
         def nextValue = sql.firstRow("SELECT MAX(doc_id) +1  AS nextValue from temp_doc").nextValue
-        sql.execute("ALTER TABLE temp_arch_doc AUTO_INCREMENT = ? ", nextValue)
+
+        if (hasValuesToUpdate(nextValue)) {
+            sql.execute("ALTER TABLE temp_arch_doc AUTO_INCREMENT = ? ", nextValue)
+        }
 
         sql.execute("""
                         INSERT INTO temp_arch_doc (tenant_id, arch_doc_mapping_id)
@@ -79,6 +82,11 @@ class MigrateDocumentMysql extends MigrateDocument {
                         FROM    arch_document_mapping d
                         WHERE   d.tenantid = ? AND d.documentHasContent = ? """, tenantId, falseValue)
 
+
+    }
+
+    private boolean hasValuesToUpdate(nextValue) {
+        nextValue != null
     }
 
     def updateArchDocumentMapping() {
@@ -93,10 +101,12 @@ class MigrateDocumentMysql extends MigrateDocument {
     def updateSequenceValue() {
 
         def nextValue = sql.firstRow("SELECT MAX(doc_id) +1  AS nextValue from temp_arch_doc").nextValue
-        sql.execute("""
+        if (hasValuesToUpdate(nextValue)) {
+            sql.execute("""
                     UPDATE sequence SET nextid = ?
                     WHERE tenantid = ?
                     AND id = 10090 """, nextValue, tenantId)
+        }
 
 
     }
@@ -111,7 +121,7 @@ class MigrateDocumentMysql extends MigrateDocument {
                         a.sourceobjectid,
                         (   SELECT count(*) +1
                             FROM arch_document_mapping b
-                            WHERE a.tenantid = a.tenantid
+                            WHERE a.tenantid = b.tenantid
                                 AND a.sourceobjectid = b.sourceobjectid
                                 AND a.documentCreationDate >= b.documentCreationDate
                                 AND a.id > b.id

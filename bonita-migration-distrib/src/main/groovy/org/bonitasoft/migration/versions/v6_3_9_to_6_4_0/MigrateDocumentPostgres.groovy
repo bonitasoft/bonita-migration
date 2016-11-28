@@ -70,7 +70,7 @@ class MigrateDocumentPostgres extends MigrateDocument {
 
     def updateSequenceValue() {
         sql.execute("""
-                    UPDATE sequence SET nextid = (currval('seq_document') +1)
+                    UPDATE sequence SET nextid = (nextval('seq_document'))
                     WHERE tenantid = ?
                     AND id = 10090 """, tenantId)
 

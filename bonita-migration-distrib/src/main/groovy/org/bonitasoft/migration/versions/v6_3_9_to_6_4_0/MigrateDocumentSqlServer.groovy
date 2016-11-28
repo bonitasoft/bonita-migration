@@ -57,6 +57,9 @@ class MigrateDocumentSqlServer extends MigrateDocument {
 
     def createTempArchDocTable() {
         def nextValue = sql.firstRow("SELECT MAX(doc_id) +1  AS nextValue from temp_doc").nextValue
+        if (nextValue == null) {
+            nextValue = 1
+        }
         sql.execute("""
                         CREATE TABLE temp_arch_doc (
                             tenant_id NUMERIC(19, 0) NOT NULL,
@@ -85,11 +88,18 @@ class MigrateDocumentSqlServer extends MigrateDocument {
 
     def updateSequenceValue() {
         def nextValue = sql.firstRow("SELECT MAX(doc_id) +1  AS nextValue from temp_arch_doc").nextValue
-        sql.execute("""
+        if (hasValuesToUpdate(nextValue)) {
+            sql.execute("""
                     UPDATE sequence SET nextid = ?
                     WHERE tenantid = ?
                     AND id = 10090 """, nextValue, tenantId)
+        }
 
+
+    }
+
+    private boolean hasValuesToUpdate(nextValue) {
+        nextValue != null
     }
 
     def createTempArchVersionTable() {
