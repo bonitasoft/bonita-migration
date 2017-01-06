@@ -154,27 +154,41 @@
     <xsl:template match="actor">
         <xsl:param name="initiator" />
 
-        <xsl:element name="actor">
-            <!--
-            actor initiator is now identified by and xs:ID
-            boolean field true if actor is actorInitiator
-            -->
+        <xsl:variable name="currentName" select="@name"/>
+
+        <!--
+        actor initiator is now identified by and xs:ID
+        boolean field true if actor is actorInitiator
+        -->
             <xsl:choose>
-                <xsl:when test="./@name=../../actorInitiator">
-                    <xsl:attribute name="initiator">true</xsl:attribute>
-                    <xsl:attribute name="id">
-                        <xsl:value-of select="$initiator" />
-                    </xsl:attribute>
+                <xsl:when test="count(preceding-sibling::actor[@name=$currentName]) &gt; 0">
+                    <!--
+                    BS-16079: exclude duplicate actor nodes with same name attribute since process definition
+                    may contains duplicates introduce by studio migration bug in 6.3
+
+                    already added actor node are skipped
+                    -->
                 </xsl:when>
                 <xsl:otherwise>
-                    <xsl:attribute name="initiator">false</xsl:attribute>
-                    <xsl:attribute name="id">
-                        <xsl:value-of select="translate(generate-id(),'N','_')" />
-                    </xsl:attribute>
+                    <xsl:element name="actor">
+                        <xsl:choose>
+                            <xsl:when test="./@name=../../actorInitiator">
+                                <xsl:attribute name="initiator">true</xsl:attribute>
+                                <xsl:attribute name="id">
+                                    <xsl:value-of select="$initiator"/>
+                                </xsl:attribute>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:attribute name="initiator">false</xsl:attribute>
+                                <xsl:attribute name="id">
+                                    <xsl:value-of select="translate(generate-id(),'N','_')"/>
+                                </xsl:attribute>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                        <xsl:apply-templates select="@name"/>
+                    </xsl:element>
                 </xsl:otherwise>
             </xsl:choose>
-            <xsl:apply-templates select="@name" />
-        </xsl:element>
     </xsl:template>
 
     <!-- actor initiator is now a refId to actor @id -->

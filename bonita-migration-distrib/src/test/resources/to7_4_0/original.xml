@@ -9,6 +9,14 @@
     <parameters />
     <actors>
         <actor name="myActor" initiator="false" />
+        <actor name="myActorInitiator" initiator="true"/>
+        <actor name="myActorInitiator" initiator="true"/>
+        <actor name="myOtherActor" initiator="false"/>
+
+        <actor name="myThirdActor" initiator="false"/>
+        <actor name="myThirdActor" initiator="false"/>
+        <actor name="myThirdActor" initiator="false"/>
+        <actor name="myThirdActor" initiator="false"/>
         <actor name="myActorInitiator" initiator="true" />
     </actors>
     <actorInitiator>myActorInitiator</actorInitiator>
