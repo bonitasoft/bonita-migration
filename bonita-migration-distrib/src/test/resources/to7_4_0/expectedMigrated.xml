@@ -10,6 +10,9 @@
     <actors>
         <actor initiator="false" id="N65549" name="myActor" />
         <actor initiator="true" id="N65537" name="myActorInitiator" />
+        <actor name="myOtherActor" initiator="false" id="N123"/>
+        <actor name="myThirdActor" initiator="false" id="N456"/>
+
     </actors>
     <actorInitiator>N65537</actorInitiator>
     <flowElements id="_6094469777999024355">

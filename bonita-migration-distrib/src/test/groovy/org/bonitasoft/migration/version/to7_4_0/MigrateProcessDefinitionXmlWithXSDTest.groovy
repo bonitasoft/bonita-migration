@@ -31,6 +31,12 @@ class MigrateProcessDefinitionXmlWithXSDTest extends Specification {
         def xml = migrationStep.migrateProcessDefinitionXML(new File(this.class.getResource("/to7_4_0/$xmlFile").file).text)
 
         then:
+        println """
+*****************************
+migrated process: $xmlFile
+*****************************
+$xml
+"""
         migrationStep.validateXML xml
 
         where:
@@ -79,8 +85,22 @@ $migratedProcessDefinition
         allDifferences.each {
             diff ->
                 //ignore @id attribute values generated at migration time
-                (diff.getProperties().get("controlNodeDetail") as org.custommonkey.xmlunit.NodeDetail).xpathLocation.endsWith("@id")
-                (diff.getProperties().get("testNodeDetail") as org.custommonkey.xmlunit.NodeDetail).xpathLocation.endsWith("@id")
+                def description = diff.getProperties().get("description")
+                switch (description) {
+                    case "attribute value":
+                        assert (diff.getProperties().get("controlNodeDetail") as org.custommonkey.xmlunit.NodeDetail).node.name == "id"
+                        assert (diff.getProperties().get("testNodeDetail") as org.custommonkey.xmlunit.NodeDetail).node.name == "id"
+                        break
+                    case "text value":
+                        //attribute id is here a text value
+                        assert (diff.getProperties().get("controlNodeDetail") as org.custommonkey.xmlunit.NodeDetail).node.parentNode.name == "actorInitiator"
+                        assert (diff.getProperties().get("testNodeDetail") as org.custommonkey.xmlunit.NodeDetail).node.parentNode.name == "actorInitiator"
+                        break
+                    default:
+                        assert diff == null
+
+                }
+
         }
     }
 
