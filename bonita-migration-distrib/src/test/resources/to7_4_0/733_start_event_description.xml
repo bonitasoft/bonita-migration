@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<def:processDefinition id="0" name="testMigrationPool2" version="733" xmlns:def="http://www.bonitasoft.org/ns/process/client/7.2">
+    <description></description>
+    <displayDescription></displayDescription>
+    <parameters/>
+    <actors>
+        <actor name="Actor1" initiator="false">
+            <description>ssdsdsdsdsdsdsdsdsdsd</description>
+        </actor>
+        <actor name="Actor2" initiator="true">
+            <description></description>
+        </actor>
+        <actor name="Actor3" initiator="false">
+            <description>d</description>
+        </actor>
+    </actors>
+    <actorInitiator>Actor2</actorInitiator>
+    <flowElements id="5002454442043104617">
+        <transitions>
+            <transition id="5779348480486492030" name="8950023780083057729_-&gt;_7181103748789694810" source="8950023780083057729" target="7181103748789694810"/>
+            <transition id="5141769919570596263" name="7735160597731306046_-&gt;_5825141601017215517" source="7735160597731306046" target="5825141601017215517"/>
+            <transition id="5366912392232496050" name="4645648422286472400_-&gt;_9139368567617360759" source="4645648422286472400" target="9139368567617360759"/>
+            <transition id="8897501754418900808" name="5825141601017215517_-&gt;_4645648422286472400" source="5825141601017215517" target="4645648422286472400"/>
+            <transition id="7402917617012201932" name="7181103748789694810_-&gt;_7735160597731306046" source="7181103748789694810" target="7735160597731306046"/>
+        </transitions>
+        <startEvent id="8950023780083057729" name="Message10" interrupting="true">
+            <outgoingTransition>5779348480486492030</outgoingTransition>
+            <description>descr</description>
+            <catchMessageEventTrigger name="qsddfsfqs"/>
+        </startEvent>
+        <intermediateCatchEvent id="5825141601017215517" name="Message8" interrupting="true">
+            <incomingTransition>5141769919570596263</incomingTransition>
+            <outgoingTransition>8897501754418900808</outgoingTransition>
+            <catchMessageEventTrigger name="areezra"/>
+        </intermediateCatchEvent>
+        <intermediateThrowEvent id="7181103748789694810" name="Message4">
+            <incomingTransition>5779348480486492030</incomingTransition>
+            <outgoingTransition>7402917617012201932</outgoingTransition>
+            <description>descr</description>
+            <throwMessageEventTrigger name="msg01">
+                <correlation>
+                    <value id="9086090341160619082" name="corel val" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                        <content>corel val</content>
+                    </value>
+                    <key id="6573016837766056113" name="corel key" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                        <content>corel key</content>
+                    </key>
+                </correlation>
+                <correlation>
+                    <value id="7685509624869616666" name="qsdf" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                        <content>qsdf</content>
+                    </value>
+                    <key id="5725354258299490732" name="qqqqqsdf" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                        <content>qqqqqsdf</content>
+                    </key>
+                </correlation>
+                <correlation>
+                    <value id="7052597465680117489" name="qsdf" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                        <content>qsdf</content>
+                    </value>
+                    <key id="7782283062891283649" name="aaaqsdf" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                        <content>aaaqsdf</content>
+                    </key>
+                </correlation>
+                <correlation>
+                    <value id="7198777009861746686" name="qsdfqsdf" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                        <content>qsdfqsdf</content>
+                    </value>
+                    <key id="6192873183860151672" name="bbbbqsd" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                        <content>bbbbqsd</content>
+                    </key>
+                </correlation>
+                <correlation>
+                    <value id="5094591773915645168" name="qsdf" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                        <content>qsdf</content>
+                    </value>
+                    <key id="6729606670121151532" name="ccccqsdqs" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                        <content>ccccqsdqs</content>
+                    </key>
+                </correlation>
+                <targetProcess id="7477778003044913376" name="testMigrationPool1" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                    <content>testMigrationPool1</content>
+                </targetProcess>
+                <targetFlowNode id="4717771013231451613" name="Step3" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                    <content>Step3</content>
+                </targetFlowNode>
+                <dataDefinition id="5132423127542699357" name="itemname" transient="false" className="java.lang.String">
+                    <defaultValue id="8571279380639866192" name="item value" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                        <content>item value</content>
+                    </defaultValue>
+                </dataDefinition>
+                <dataDefinition id="7046206439212504548" name="qsdf" transient="false" className="java.lang.String">
+                    <defaultValue id="7968665780808773974" name="aaa" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                        <content>aaa</content>
+                    </defaultValue>
+                </dataDefinition>
+                <dataDefinition id="7913881851260310634" name="fdq" transient="false" className="java.lang.String">
+                    <defaultValue id="8747414533774473003" name="aaa" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                        <content>aaa</content>
+                    </defaultValue>
+                </dataDefinition>
+                <dataDefinition id="4659609972805378807" name="aer" transient="false" className="java.lang.String">
+                    <defaultValue id="8681445224292939811" name="aaa" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                        <content>aaa</content>
+                    </defaultValue>
+                </dataDefinition>
+                <dataDefinition id="7146215013456456886" name="azerazer" transient="false" className="java.lang.String">
+                    <defaultValue id="7065859980895080677" name="aaaa" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                        <content>aaaa</content>
+                    </defaultValue>
+                </dataDefinition>
+                <dataDefinition id="5632905291863893747" name="eareazra" transient="false" className="java.lang.String">
+                    <defaultValue id="9123599778823742463" name="aaaa" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                        <content>aaaa</content>
+                    </defaultValue>
+                </dataDefinition>
+            </throwMessageEventTrigger>
+        </intermediateThrowEvent>
+        <intermediateThrowEvent id="7735160597731306046" name="Message7">
+            <incomingTransition>7402917617012201932</incomingTransition>
+            <outgoingTransition>5141769919570596263</outgoingTransition>
+            <description>descr</description>
+            <throwMessageEventTrigger name="dsdsd">
+                <targetProcess id="8292694289396505688" name="testMigrationPool1" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                    <content>testMigrationPool1</content>
+                </targetProcess>
+                <targetFlowNode id="5495934149981481775" name="Message6" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                    <content>Message6</content>
+                </targetFlowNode>
+            </throwMessageEventTrigger>
+        </intermediateThrowEvent>
+        <intermediateThrowEvent id="4645648422286472400" name="Message9">
+            <incomingTransition>8897501754418900808</incomingTransition>
+            <outgoingTransition>5366912392232496050</outgoingTransition>
+            <description>descr</description>
+            <throwMessageEventTrigger name="qdsfqsdf">
+                <targetProcess id="5478974375430607117" name="testMigrationPool1" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                    <content>testMigrationPool1</content>
+                </targetProcess>
+                <targetFlowNode id="8390462811451010095" name="Message1" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                    <content>Message1</content>
+                </targetFlowNode>
+            </throwMessageEventTrigger>
+        </intermediateThrowEvent>
+        <endEvent id="9139368567617360759" name="End3">
+            <incomingTransition>5366912392232496050</incomingTransition>
+            <description>kgh</description>
+            <throwMessageEventTrigger name="bm1">
+                <correlation>
+                    <value id="4669655122472715302" name="qsdfsdf" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                        <content>qsdfsdf</content>
+                    </value>
+                    <key id="5200251184061302707" name="qsdfqsdf" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                        <content>qsdfqsdf</content>
+                    </key>
+                </correlation>
+                <targetProcess id="5858999675826056874" name="testMigrationPool1" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                    <content>testMigrationPool1</content>
+                </targetProcess>
+                <targetFlowNode id="7563478212906790181" name="Boundary Message1" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                    <content>Boundary Message1</content>
+                </targetFlowNode>
+                <dataDefinition id="8816030507689883196" name="DSFSDF" transient="false" className="java.lang.String">
+                    <defaultValue id="8991110951516803062" name="SDFSDF" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                        <content>SDFSDF</content>
+                    </defaultValue>
+                </dataDefinition>
+            </throwMessageEventTrigger>
+        </endEvent>
+        <dataDefinitions>
+            <textDataDefinition longText="true" id="8092379263575940134" name="contentitemvar" transient="false" className="java.lang.String"/>
+        </dataDefinitions>
+        <businessDataDefinitions/>
+        <documentDefinitions/>
+        <documentListDefinitions/>
+        <connectors/>
+        <elementFinder/>
+    </flowElements>
+    <stringIndexes>
+        <stringIndex index="1"/>
+        <stringIndex index="2"/>
+        <stringIndex index="3"/>
+        <stringIndex index="4"/>
+        <stringIndex index="5"/>
+    </stringIndexes>
+    <contract>
+        <inputDefinitions/>
+        <constraints/>
+    </contract>
+    <context/>
+</def:processDefinition>

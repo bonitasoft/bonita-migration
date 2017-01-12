@@ -61,6 +61,15 @@ class CheckMigratedTo7_4_0 extends Specification {
         assert definition.description == "2-lines\ndescription"
         assert definition.displayDescription == "2-lines\ndisplay description"
 
+        def startEvent = definition.flowElementContainer.startEvents.get(0)
+        assert startEvent.description == "start event description"
+        assert startEvent.displayDescription.content == "start event display description"
+        assert startEvent.displayDescriptionAfterCompletion.content == "start event after completion display description"
+
+        def endEvent = definition.flowElementContainer.endEvents.get(0)
+        assert endEvent.description == "end event description"
+        assert endEvent.displayDescription.content == "end event display description"
+        assert endEvent.displayDescriptionAfterCompletion.content == "end event after completion display description"
 
         def dataDefinition = definition.getFlowElementContainer().getDataDefinitions().get(0)
         assert dataDefinition.name == "myData"

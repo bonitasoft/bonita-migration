@@ -42,9 +42,11 @@
         <documentDefinitions />
         <documentListDefinitions />
         <endEvent id="5589007162755504855" name="End">
+            <description>end event description</description>
             <incomingTransition>8243742923560994769</incomingTransition>
         </endEvent>
         <startEvent id="4854499547390053363" interrupting="true" name="Fill supplier data">
+            <description>start event description</description>
             <outgoingTransition>8243742923560994769</outgoingTransition>
         </startEvent>
     </flowElements>
