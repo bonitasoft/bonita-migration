@@ -8,7 +8,12 @@
     </displayDescription>
     <parameters />
     <actors>
-        <actor name="myActor" initiator="false" />
+        <actor name="myActor" initiator="false" >
+            <description>actor description</description>
+        </actor>
+        <actor name="myActorInitiator" initiator="true" >
+            <description>actor initiator description</description>
+        </actor>
         <actor name="myActorInitiator" initiator="true"/>
         <actor name="myActorInitiator" initiator="true"/>
         <actor name="myOtherActor" initiator="false"/>

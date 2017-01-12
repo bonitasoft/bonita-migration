@@ -112,7 +112,14 @@ class FillBeforeMigratingTo7_4_0 {
 
         builder.addGateway("gate1", GatewayType.INCLUSIVE)
         builder.addStartEvent("start")
-        builder.addEndEvent("end").addTerminateEventTrigger()
+                .addDescription("start event description")
+                .addDisplayDescription(new ExpressionBuilder().createConstantStringExpression("start event display description"))
+                .addDisplayDescriptionAfterCompletion(new ExpressionBuilder().createConstantStringExpression("start event after completion display description"))
+
+        builder.addEndEvent("end")
+                .addDescription("end event description")
+                .addDisplayDescription(new ExpressionBuilder().createConstantStringExpression("end event display description"))
+                .addDisplayDescriptionAfterCompletion(new ExpressionBuilder().createConstantStringExpression("end event after completion display description"))
 
         builder.addTransition("start", "auto1")
         builder.addTransition("auto1", "user1")

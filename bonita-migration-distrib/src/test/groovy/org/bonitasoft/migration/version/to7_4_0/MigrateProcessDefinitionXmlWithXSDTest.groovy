@@ -26,18 +26,27 @@ class MigrateProcessDefinitionXmlWithXSDTest extends Specification {
     def "should migration of #xmlFile generate valid XML against 7.4 ProcessDefinition.xsd"(String xmlFile) {
         setup:
         migrationStep.logger = logger
+        def xmlBeforeMigration = new File(this.class.getResource("/to7_4_0/$xmlFile").file).text
 
         when:
-        def xml = migrationStep.migrateProcessDefinitionXML(new File(this.class.getResource("/to7_4_0/$xmlFile").file).text)
+        def xmlAfterMigration = migrationStep.migrateProcessDefinitionXML(xmlBeforeMigration)
 
         then:
         println """
-*****************************
-migrated process: $xmlFile
-*****************************
-$xml
+******
+ process before migration: 
+******
+$xmlBeforeMigration
+================================================
+
+******
+ process after migration: 
+******
+$xmlAfterMigration  
+================================================
 """
-        migrationStep.validateXML xml
+
+        migrationStep.validateXML xmlAfterMigration
 
         where:
         xmlFile << ["original.xml",
@@ -54,13 +63,16 @@ $xml
                     "process301.xml",
                     "process303.xml",
                     "process304.xml",
-                    "to_740.xml"
+                    "to_740.xml",
+                    "626_740_process_def.xml",
+                    "733_start_event_description.xml"
         ]
 
 
     }
 
-    def "should migrate to expected content"() {
+    @Unroll
+    def "should migrate #givenXml to expected content"(def givenXml,def expectedXml) {
 
         setup:
         def migratedStringWriter = new StringWriter()
@@ -68,10 +80,10 @@ $xml
         def transformer = factory.newTransformer(new StreamSource(this.getClass().getResourceAsStream("/version/to_7_4_0/ProcessDefinition.xsl")))
 
         when:
-        transformer.transform(new StreamSource(this.getClass().getResourceAsStream("/to7_4_0/original.xml")), new StreamResult(migratedStringWriter))
+        transformer.transform(new StreamSource(this.getClass().getResourceAsStream("/to7_4_0/$givenXml")), new StreamResult(migratedStringWriter))
 
         then:
-        def expectedXml = new File(this.class.getResource("/to7_4_0/expectedMigrated.xml").file).text
+        def expectedXmlText = new File(this.class.getResource("/to7_4_0/$expectedXml").file).text
         XMLUnit.setIgnoreWhitespace(true)
         def migratedProcessDefinition = migratedStringWriter.toString()
         println """
@@ -80,7 +92,7 @@ migrated process definition :
 *****************************
 $migratedProcessDefinition
 """
-        final List<Diff> allDifferences = new DetailedDiff(XMLUnit.compareXML(migratedProcessDefinition, expectedXml))
+        final List<Diff> allDifferences = new DetailedDiff(XMLUnit.compareXML(migratedProcessDefinition, expectedXmlText))
                 .getAllDifferences()
         allDifferences.each {
             diff ->
@@ -97,11 +109,17 @@ $migratedProcessDefinition
                         assert (diff.getProperties().get("testNodeDetail") as org.custommonkey.xmlunit.NodeDetail).node.parentNode.name == "actorInitiator"
                         break
                     default:
+                        println "ERROR: $diff not expected!"
                         assert diff == null
 
                 }
 
         }
+
+        where:
+        givenXml             | expectedXml
+        "original.xml"       | "expectedMigrated.xml"
+
     }
 
 }
