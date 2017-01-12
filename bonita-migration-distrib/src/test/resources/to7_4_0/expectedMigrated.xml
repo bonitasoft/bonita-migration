@@ -8,8 +8,12 @@
     </displayDescription>
     <parameters />
     <actors>
-        <actor initiator="false" id="N65549" name="myActor" />
-        <actor initiator="true" id="N65537" name="myActorInitiator" />
+        <actor initiator="false" id="N65549" name="myActor">
+            <description>actor description</description>
+        </actor>
+        <actor initiator="true" id="N65537" name="myActorInitiator">
+            <description>actor initiator description</description>
+        </actor>
         <actor name="myOtherActor" initiator="false" id="N123"/>
         <actor name="myThirdActor" initiator="false" id="N456"/>
 

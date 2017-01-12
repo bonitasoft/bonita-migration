@@ -18,10 +18,10 @@
             <xsl:variable name="initiatorId" select="translate(generate-id(),'N','_')" />
 
             <xsl:apply-templates select="actors">
-                <xsl:with-param name="initiator" select="$initiatorId" />
+                <xsl:with-param name="initiatorId" select="$initiatorId"/>
             </xsl:apply-templates>
             <xsl:apply-templates select="actorInitiator">
-                <xsl:with-param name="initiator" select="$initiatorId" />
+                <xsl:with-param name="initiatorId" select="$initiatorId"/>
             </xsl:apply-templates>
 
             <xsl:apply-templates select="flowElements" />
@@ -61,6 +61,46 @@
             <xsl:apply-templates select="connectors" />
             <xsl:apply-templates select="elementFinder" />
 
+        </xsl:element>
+    </xsl:template>
+
+    <xsl:template match="receiveTask">
+        <xsl:element name="{name()}">
+            <xsl:apply-templates select="@*"/>
+
+            <xsl:apply-templates select="incomingTransition"/>
+            <xsl:apply-templates select="outgoingTransition"/>
+            <xsl:apply-templates select="connector"/>
+            <xsl:apply-templates select="description"/>
+            <xsl:apply-templates select="displayDescription"/>
+            <xsl:apply-templates select="displayName"/>
+            <xsl:apply-templates select="displayDescriptionAfterCompletion"/>
+            <xsl:apply-templates select="defaultTransition"/>
+            <xsl:apply-templates select="dataDefinitions"/>
+            <xsl:apply-templates select="businessDataDefinitions"/>
+            <xsl:apply-templates select="operations"/>
+            <xsl:apply-templates select="boundaryEvents"/>
+            <xsl:apply-templates select="catchMessageEventTrigger"/>
+        </xsl:element>
+    </xsl:template>
+
+    <xsl:template match="sendTask">
+        <xsl:element name="{name()}">
+            <xsl:apply-templates select="@*"/>
+
+            <xsl:apply-templates select="incomingTransition"/>
+            <xsl:apply-templates select="outgoingTransition"/>
+            <xsl:apply-templates select="connector"/>
+            <xsl:apply-templates select="description"/>
+            <xsl:apply-templates select="displayDescription"/>
+            <xsl:apply-templates select="displayName"/>
+            <xsl:apply-templates select="displayDescriptionAfterCompletion"/>
+            <xsl:apply-templates select="defaultTransition"/>
+            <xsl:apply-templates select="dataDefinitions"/>
+            <xsl:apply-templates select="businessDataDefinitions"/>
+            <xsl:apply-templates select="operations"/>
+            <xsl:apply-templates select="boundaryEvents"/>
+            <xsl:apply-templates select="throwMessageEventTrigger"/>
         </xsl:element>
     </xsl:template>
 
@@ -141,18 +181,49 @@
         </xsl:element>
     </xsl:template>
 
+    <xsl:template match="catchMessageEventTrigger">
+        <xsl:element name="{name()}">
+
+            <xsl:apply-templates select="@*" />
+            <xsl:apply-templates select="correlation" />
+            <xsl:apply-templates select="operation" />
+
+        </xsl:element>
+    </xsl:template>
+
+    <xsl:template match="endEvent">
+        <xsl:element name="{name()}">
+
+            <xsl:apply-templates select="@*"/>
+
+            <xsl:apply-templates select="incomingTransition"/>
+            <xsl:apply-templates select="outgoingTransition"/>
+            <xsl:apply-templates select="connector"/>
+            <xsl:apply-templates select="description"/>
+            <xsl:apply-templates select="displayDescription"/>
+            <xsl:apply-templates select="displayName"/>
+            <xsl:apply-templates select="displayDescriptionAfterCompletion"/>
+            <xsl:apply-templates select="defaultTransition"/>
+            <xsl:apply-templates select="throwMessageEventTrigger"/>
+            <xsl:apply-templates select="throwSignalEventTrigger"/>
+            <xsl:apply-templates select="throwErrorEventTrigger"/>
+            <xsl:apply-templates select="terminateEventTrigger"/>
+
+        </xsl:element>
+    </xsl:template>
+
     <xsl:template match="actors">
-        <xsl:param name="initiator" />
+        <xsl:param name="initiatorId"/>
 
         <xsl:element name="actors">
             <xsl:apply-templates select="actor">
-                <xsl:with-param name="initiator" select="$initiator" />
+                <xsl:with-param name="initiatorId" select="$initiatorId"/>
             </xsl:apply-templates>
         </xsl:element>
     </xsl:template>
 
     <xsl:template match="actor">
-        <xsl:param name="initiator" />
+        <xsl:param name="initiatorId"/>
 
         <xsl:variable name="currentName" select="@name"/>
 
@@ -175,7 +246,7 @@
                             <xsl:when test="./@name=../../actorInitiator">
                                 <xsl:attribute name="initiator">true</xsl:attribute>
                                 <xsl:attribute name="id">
-                                    <xsl:value-of select="$initiator"/>
+                                    <xsl:value-of select="$initiatorId"/>
                                 </xsl:attribute>
                             </xsl:when>
                             <xsl:otherwise>
@@ -186,6 +257,7 @@
                             </xsl:otherwise>
                         </xsl:choose>
                         <xsl:apply-templates select="@name"/>
+                        <xsl:apply-templates select="description" />
                     </xsl:element>
                 </xsl:otherwise>
             </xsl:choose>
@@ -193,14 +265,14 @@
 
     <!-- actor initiator is now a refId to actor @id -->
     <xsl:template match="actorInitiator">
-        <xsl:param name="initiator" />
+        <xsl:param name="initiatorId"/>
 
         <xsl:variable name="vActor" select="text()" />
-        <xsl:element name="actorInitiator">
-            <xsl:if test="../actors/actor[@name=$vActor]">
-                <xsl:value-of select="$initiator" />
-            </xsl:if>
-        </xsl:element>
+        <xsl:if test="../actors/actor[@name=$vActor]">
+            <xsl:element name="actorInitiator">
+                <xsl:value-of select="$initiatorId"/>
+            </xsl:element>
+        </xsl:if>
     </xsl:template>
 
     <xsl:template match="documentDefinition">
@@ -257,6 +329,64 @@
             <xsl:apply-templates select="expression" />
         </xsl:element>
     </xsl:template>
+
+
+    <xsl:template match="standardLoopCharacteristics">
+        <xsl:element name="{name()}">
+            <xsl:apply-templates select="@*" />
+
+            <xsl:apply-templates select="loopCondition" />
+            <xsl:apply-templates select="loopMax" />
+        </xsl:element>
+    </xsl:template>
+
+    <xsl:template match="multiInstanceLoopCharacteristics">
+        <xsl:element name="{name()}">
+            <xsl:apply-templates select="@*" />
+
+            <xsl:apply-templates select="loopCardinality" />
+            <xsl:apply-templates select="completionCondition" />
+        </xsl:element>
+    </xsl:template>
+
+    <xsl:template match="connectorDefinition">
+        <xsl:element name="{name()}">
+            <xsl:apply-templates select="@*" />
+
+            <xsl:apply-templates select="inputs" />
+            <xsl:apply-templates select="outputs" />
+        </xsl:element>
+    </xsl:template>
+
+    <xsl:template match="operation">
+        <xsl:element name="{name()}">
+            <xsl:apply-templates select="@*" />
+
+            <xsl:apply-templates select="leftOperand" />
+            <xsl:apply-templates select="rightOperand" />
+        </xsl:element>
+    </xsl:template>
+
+    <xsl:template match="boundaryEvent">
+        <xsl:element name="{name()}">
+            <xsl:apply-templates select="@*" />
+
+            <xsl:apply-templates select="incomingTransition" />
+            <xsl:apply-templates select="outgoingTransition" />
+            <xsl:apply-templates select="connector" />
+            <xsl:apply-templates select="description" />
+            <xsl:apply-templates select="displayDescription" />
+            <xsl:apply-templates select="displayName" />
+            <xsl:apply-templates select="displayDescriptionAfterCompletion" />
+            <xsl:apply-templates select="defaultTransition" />
+            <xsl:apply-templates select="timerEventTrigger" />
+            <xsl:apply-templates select="catchMessageEventTrigger" />
+            <xsl:apply-templates select="catchSignalEventTrigger" />
+            <xsl:apply-templates select="catchErrorEventTrigger" />
+        </xsl:element>
+
+    </xsl:template>
+
 
 
     <!-- end of complex type reorder -->
