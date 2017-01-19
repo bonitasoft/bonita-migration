@@ -154,7 +154,7 @@ class CheckMigratedTo7_2_0 {
 
     @Test
     public void verifyParametersAreMigratedInDb() {
-        def session = TenantAPIAccessor.getLoginAPI().login("userOfProcessWithParam", "bpm");
+        def session = TenantAPIAccessor.getLoginAPI().login("userOfProcessWithParam", "bpm")
         def processAPI = TenantAPIAccessor.getProcessAPI(session)
         def processDefinitionId = processAPI.getProcessDefinitionId("processWithParameters", "1.1.0")
 
@@ -164,13 +164,21 @@ class CheckMigratedTo7_2_0 {
         while ((instances = processAPI.getPendingHumanTaskInstances(session.getUserId(), 0, 10, ActivityInstanceCriterion.NAME_ASC)).size() < 2 && System.currentTimeMillis() < timeout) {
             Thread.sleep(200)
         }
-        assertThat(instances).extracting("name", "displayName").containsExactly(tuple("step1", "theParam1Value"), tuple("step2", "123456789"))
+        assertThat(instances).extracting("name", "displayName").containsExactly(tuple("step1", "Римский император Константин I Великий по досто"), tuple("step2", "123456789"))
 
-        ParameterInstance parameterInstance = processAPI.getParameterInstance(processDefinitionId, "myParam3")
-        assert ((String) parameterInstance.getValue()).length() == 1150
+        ParameterInstance parameter3 = processAPI.getParameterInstance(processDefinitionId, "myParam3")
+        assert ((String) parameter3.getValue()).length() == 1150
         def theParam3Value = new byte[1150];
         Arrays.fill(theParam3Value, (byte) 65);
-        assert parameterInstance.getValue() == new String(theParam3Value)
+        assert parameter3.getValue() == new String(theParam3Value)
+
+        ParameterInstance parameter4 = processAPI.getParameterInstance(processDefinitionId, "myParam4")
+        assert ((String) parameter4.getValue()) == "ทดสอบนะจ๊ะ"
+
+        ParameterInstance parameter5= processAPI.getParameterInstance(processDefinitionId,   "واهر الملحوظ")
+        assert ((String) parameter5.getValue()) == "abc"
+
+
 
         TenantAPIAccessor.getLoginAPI().logout(session)
     }

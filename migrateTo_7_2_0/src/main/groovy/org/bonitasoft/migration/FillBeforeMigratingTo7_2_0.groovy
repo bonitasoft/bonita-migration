@@ -299,9 +299,12 @@ class FillBeforeMigratingTo7_2_0 {
         processDefinitionBuilder.addActor("theUser")
         processDefinitionBuilder.addUserTask("step1", "theUser").addDisplayName(new ExpressionBuilder().createParameterExpression("myParam1", "myParam1", String.class.getName()))
         processDefinitionBuilder.addUserTask("step2", "theUser").addDisplayName(new ExpressionBuilder().createGroovyScriptExpression("theScript", "''+myParam2", String.class.getName(), new ExpressionBuilder().createParameterExpression("myParam2", "myParam2", Integer.class.getName())))
+        processDefinitionBuilder.addParameter("واهر الملحوظ", String.class.getName())
         processDefinitionBuilder.addParameter("myParam1", String.class.getName())
         processDefinitionBuilder.addParameter("myParam2", Integer.class.getName())
         processDefinitionBuilder.addParameter("myParam3", String.class.getName())
+        processDefinitionBuilder.addParameter("myParam4", String.class.getName())
+
 
 
 
@@ -321,7 +324,7 @@ class FillBeforeMigratingTo7_2_0 {
 
         def theParam3Value = new byte[1150];
         Arrays.fill(theParam3Value, (byte) 65);
-        builder.setParameters(["myParam1": "theParam1Value", "myParam2": "123456789", "myParam3": new String(theParam3Value)])
+        builder.setParameters(["واهر الملحوظ": "abc","myParam1": "Римский император Константин I Великий по досто", "myParam2": "123456789", "myParam3": new String(theParam3Value), "myParam4":"ทดสอบนะจ๊ะ"])
 
         def processDefinition = processAPI.deploy(builder.done())
         processAPI.enableProcess(processDefinition.getId())
