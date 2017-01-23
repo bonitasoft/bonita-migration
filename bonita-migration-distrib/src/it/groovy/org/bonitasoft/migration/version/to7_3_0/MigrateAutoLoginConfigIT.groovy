@@ -87,14 +87,14 @@ class MigrateAutoLoginConfigIT extends Specification {
         def migratedWithoutAutoLogin = getAutologinRow(TENANT_ID_WITHOUT_AUTO_LOGIN)
 
         def bytesWithAutoLogin
-        def bytesWitoutAutoLogin
+        def bytesWithoutAutoLogin
 
         if (MigrationStep.DBVendor.ORACLE.equals(migrationContext.dbVendor)) {
             bytesWithAutoLogin = (migratedWithAutoLogin['resource_content']).binaryStream.bytes
-            bytesWitoutAutoLogin = (migratedWithoutAutoLogin['resource_content']).binaryStream.bytes
+            bytesWithoutAutoLogin = (migratedWithoutAutoLogin['resource_content']).binaryStream.bytes
         } else {
             bytesWithAutoLogin = migratedWithAutoLogin['resource_content']
-            bytesWitoutAutoLogin = migratedWithoutAutoLogin['resource_content']
+            bytesWithoutAutoLogin = migratedWithoutAutoLogin['resource_content']
         }
 
         JsonOutput.prettyPrint(new String(bytesWithAutoLogin)) == JsonOutput.prettyPrint("""
@@ -112,7 +112,7 @@ class MigrateAutoLoginConfigIT extends Specification {
                     "password": "secret"
                 }
             ]""")
-        JsonOutput.prettyPrint(new String(bytesWitoutAutoLogin)) == JsonOutput.prettyPrint("[]")
+        JsonOutput.prettyPrint(new String(bytesWithoutAutoLogin)) == JsonOutput.prettyPrint("[]")
     }
 
     private String[] dropTables() {
