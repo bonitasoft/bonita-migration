@@ -1,6 +1,6 @@
-/**
+/*
  * Copyright (C) 2017 Bonitasoft S.A.
- * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
+ * Bonitasoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
  * version 2.1 of the License.
@@ -10,21 +10,31 @@
  * You should have received a copy of the GNU Lesser General Public License along with this
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
- **/
+ */
 package org.bonitasoft.migration.version.to7_5_0
 
-import org.bonitasoft.migration.core.MigrationStep
-import org.bonitasoft.migration.core.VersionMigration
+import spock.lang.Specification
+import spock.lang.Unroll
 
 /**
+ * @author Emmanuel Duchastenier
  */
-class MigrateTo7_5_0 extends VersionMigration {
+class MigrateTo7_5_0Test extends Specification {
 
-    @Override
-    def List<MigrationStep> getMigrationSteps() {
-        //keep one line per step to avoid false-positive merge conflict
-        return [
-                new SplitRestSecurityConfig()
-        ]
+    @Unroll
+    "should migration to 7.5.0 include #stepName step"(stepName) {
+        given:
+        def migrateTo750 = new MigrateTo7_5_0()
+
+        expect:
+        def steps = migrateTo750.migrationSteps
+        steps.collect {
+            it.class.getSimpleName()
+        }.contains(stepName)
+
+        where:
+        stepName << ["SplitRestSecurityConfig"]
+
+
     }
 }
