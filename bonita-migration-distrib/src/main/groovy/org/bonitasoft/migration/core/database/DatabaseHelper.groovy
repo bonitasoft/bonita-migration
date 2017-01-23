@@ -662,7 +662,7 @@ END""")
 
     def updateConfigurationFileContent(String fileName, long tenantId, String type, byte[] content) {
         logger.debug(String.format("update configuration file | tenant id: %3d | type: %-25s | file name: %s", tenantId, type, fileName))
-        sql.execute("UPDATE configuration set resource_content = ${content} WHERE tenant_id = ${tenantId} and content_type = ${type} and resource_name= ${fileName}");
+        sql.execute("UPDATE configuration SET resource_content = ${content} WHERE tenant_id = ${tenantId} AND content_type = ${type} AND resource_name= ${fileName}");
     }
 
 
