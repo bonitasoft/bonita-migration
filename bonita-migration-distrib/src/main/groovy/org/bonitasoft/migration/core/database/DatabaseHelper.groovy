@@ -664,4 +664,29 @@ END""")
         sql.execute("UPDATE configuration set resource_content = ${content} WHERE tenant_id = ${tenantId} and content_type = ${type} and resource_name= ${fileName}");
     }
 
+
+    def appendToAllConfigurationFilesWithName(String filename, String toAppend) {
+        def count = sql.firstRow("""
+                SELECT count(*)
+                FROM configuration
+                WHERE resource_name=${filename}
+                """)
+        if (count == 0) {
+            throw IllegalArgumentException('Configuration file ' + filename + ' does not exist in database.')
+        }
+        sql.eachRow("""
+                SELECT tenant_id, content_type, resource_content
+                FROM configuration
+                WHERE resource_name=${filename}
+                """) {
+            def tenantId = it.tenant_id as long
+            def contentType = it.content_type as String
+            String content = getBlobContentAsString(it.resource_content)
+
+            content += "\n${toAppend}"
+            updateConfigurationFileContent(filename, tenantId, contentType, content.bytes)
+        }
+    }
+
+
 }
