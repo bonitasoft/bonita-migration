@@ -14,27 +14,25 @@
 package org.bonitasoft.migration.version.to7_4_2
 
 import spock.lang.Specification
+import spock.lang.Unroll
+
 /**
- * @author Laurent Leseigneur
+ * @author Emmanuel Duchastenier
  */
 class MigrateTo7_4_2Test extends Specification {
 
-    // uncomment example test below when adding new migrations steps
+    @Unroll
+    def "should migration to 7.4.2 include step '#stepName'"(def stepName) {
+        given:
+        def migrateTo7_4_2 = new MigrateTo7_4_2()
 
+        expect:
+        migrateTo7_4_2.migrationSteps.collect {
+            it.class.getSimpleName()
+        }.contains(stepName)
 
-    // @Unroll
-    // def "should migration to x.y.z include #stepName step"(def stepName) {
-    //     given:
-    //     def migrateTo = new MigrateTo7_4_2()
+        where:
+        stepName << ["AddManagerInvolvedConfiguration"]
 
-    //     expect:
-    //     def steps = migrateTo.migrationSteps
-    //     steps.collect {
-    //         it.class.getSimpleName()
-    //     }.contains(stepName) == true
-
-    //     where:
-    //     stepName << ["IncreaseVersionField"]
-
-    // }
+    }
 }

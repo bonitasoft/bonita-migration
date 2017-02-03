@@ -165,6 +165,10 @@ class DBUnitHelper {
         value && value.nextid > 0
     }
 
+    def getBlobContentAsString(Object blobValue) {
+        context.databaseHelper.getBlobContentAsString(blobValue)
+    }
+
     def JdbcDatabaseTester createTester() {
         new JdbcDatabaseTester(context.dbDriverClassName, context.dburl, context.dbUser, context.dbPassword) {
             public IDatabaseConnection getConnection() {
