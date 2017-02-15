@@ -24,6 +24,7 @@ abstract class VersionMigration {
 
     abstract List<MigrationStep> getMigrationSteps()
 
+    String[] getPreMigrationWarnings() { [] }
 
     def migrateBonitaHome(boolean isSp) {
         def dir = File.createTempDir()
@@ -42,18 +43,18 @@ abstract class VersionMigration {
     }
 
     private GString getBonitaHomePath(boolean isSp) {
-        if (isSp){
-            return  "/homes/bonita-home-sp-${version}.zip"
-        }else {
-            return  "/homes/bonita-home-${version}-full.zip"
+        if (isSp) {
+            return "/homes/bonita-home-sp-${version}.zip"
+        } else {
+            return "/homes/bonita-home-${version}-full.zip"
         }
     }
 
     private GString getBonitaHomeSnapshotPath(boolean isSp) {
-        if (isSp){
-            return  "/homes/bonita-home-sp-${version}-SNAPSHOT.zip"
-        }else {
-            return  "/homes/bonita-home-${version}-SNAPSHOT-full.zip"
+        if (isSp) {
+            return "/homes/bonita-home-sp-${version}-SNAPSHOT.zip"
+        } else {
+            return "/homes/bonita-home-${version}-SNAPSHOT-full.zip"
         }
     }
 
@@ -110,7 +111,7 @@ abstract class VersionMigration {
                 println "Executing update for each tenant : " + tenants
                 tenantsClientDir.eachDir { tenant ->
                     println "For tenant : " + tenant.name
-                    PrintStream stdout = IOUtil.executeWrappedWithTabs {
+                    PrintStream stdout = DisplayUtil.executeWrappedWithTabs {
                         currentDir = "/conf"
                         MigrationUtil.migrateDirectory(newWebClientBonitaHome.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir, true)
 
