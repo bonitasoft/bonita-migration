@@ -30,7 +30,6 @@ import java.sql.ResultSet
  */
 public class MigrationUtil {
 
-
     public final static String AUTO_ACCEPT = "auto.accept"
 
     public final static String REQUEST_SEPARATOR = "@@"
@@ -80,7 +79,7 @@ public class MigrationUtil {
     public
     static executeMigration(GroovyScriptEngine gse, File file, String scriptName, Binding binding, Date startMigrationDate) {
         def startDate = new Date();
-        IOUtil.executeWrappedWithTabs {
+        DisplayUtil.executeWrappedWithTabs {
             gse.run(new File(file, scriptName).getPath(), binding)
         }
         MigrationUtil.printSuccessMigration(startDate, startMigrationDate);
