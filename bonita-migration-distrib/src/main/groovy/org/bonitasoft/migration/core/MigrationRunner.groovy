@@ -26,8 +26,12 @@ class MigrationRunner {
     List<VersionMigration> versionMigrations
     MigrationContext context
     Logger logger
+    DisplayUtil displayUtil
 
     def run(boolean isSp) {
+
+        checkPreRequisites()
+
         Date migrationStartDate = new Date()
         String lastVersion
         def warnings = [:]
@@ -38,13 +42,14 @@ class MigrationRunner {
             if (Version.valueOf(it.getVersion()) < Version.valueOf("7.3.0")) {
                 it.migrateBonitaHome(isSp)
             }
+
             it.getMigrationSteps().each { step ->
                 logger.info "---------------"
                 logger.info "| Execute migration step: " + step.description
                 Date stepStartDate = new Date()
                 step.execute(context)
                 def stepWarningMessage = step.warning
-                if (stepWarningMessage != null) {
+                if (stepWarningMessage) {
                     warnings.put("migration to version:${it.version} - step:${step.description}", stepWarningMessage)
                 }
                 MigrationUtil.printSuccessMigration(stepStartDate, migrationStartDate)
@@ -54,11 +59,29 @@ class MigrationRunner {
             lastVersion = it.getVersion()
         }
         logSuccessfullyCompleted(migrationStartDate, lastVersion)
-        if (!warnings.isEmpty()) {
+        if (warnings) {
             println "[WARNING] However, some warnings require your attention:"
-            warnings.each {
-                IOUtil.printInRectangleWithTitle(it.key, it.value.split("\n"))
+            warnings.each { line ->
+                displayUtil.printInRectangleWithTitle(line.key, line.value.split("\n"))
             }
+        }
+    }
+
+    private void checkPreRequisites() {
+        Map<String, String[]> beforeMigrationWarnings = [:]
+        versionMigrations.each {
+            // Warn before running ANY migration step if there are pre-migration warnings:
+            String[] preVersionWarnings = it.getPreMigrationWarnings()
+            if (preVersionWarnings) {
+                beforeMigrationWarnings.put("Migration to version ${it.getVersion()}", preVersionWarnings)
+            }
+        }
+        if (beforeMigrationWarnings) {
+            println "[WARNING] Some migration steps have important pre-requisites:"
+            beforeMigrationWarnings.each { warning ->
+                displayUtil.printInRectangleWithTitle(warning.key, warning.value)
+            }
+            MigrationUtil.askIfWeContinue()
         }
     }
 
@@ -77,7 +100,7 @@ class MigrationRunner {
         logger.info("Updating platform version in the database ...")
         sql.executeUpdate("UPDATE platform SET previousVersion = version");
         sql.executeUpdate("UPDATE platform SET version = $version")
-        logger.info("Platform version in database changed to $version")
+        logger.info("Platform version in database is now $version")
     }
 
 }

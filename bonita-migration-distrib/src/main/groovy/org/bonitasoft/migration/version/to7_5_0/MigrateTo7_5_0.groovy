@@ -17,14 +17,25 @@ import org.bonitasoft.migration.core.MigrationStep
 import org.bonitasoft.migration.core.VersionMigration
 
 /**
+ * @author Emmanuel Duchastenier
  */
 class MigrateTo7_5_0 extends VersionMigration {
 
+    String version = "7.5.0"
+
+    public static final String WARN_MESSAGE_JAVA_8 = """Warning: Bonita BPM versions 7.5.0 and later only run on Java 1.8 environments.
+If your JRE or JDK is older than 1.8, you need to update your target environment before starting your migrated Bonita BPM platform."""
+
     @Override
-    def List<MigrationStep> getMigrationSteps() {
+    List<MigrationStep> getMigrationSteps() {
         //keep one line per step to avoid false-positive merge conflict
         return [
                 new SplitRestSecurityConfig()
         ]
+    }
+
+    @Override
+    String[] getPreMigrationWarnings() {
+        [WARN_MESSAGE_JAVA_8]
     }
 }

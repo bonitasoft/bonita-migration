@@ -23,37 +23,19 @@ import java.util.zip.ZipInputStream
  * @author Celine Souchet
  *
  */
-public class IOUtil {
+class IOUtil {
 
     private final static int DEFAULT_BUFFER_SIZE = 1024 * 4;
-
-    public final static String LINE_SEPARATOR = System.getProperty("line.separator");
 
     public static read = System.in.newReader().&readLine
 
     public final static String AUTO_ACCEPT = "auto.accept"
 
-    public static boolean isAutoAccept() {
+    static boolean isAutoAccept() {
         return System.getProperty(AUTO_ACCEPT) == "true"
     }
-    /**
-     *
-     *  Wrap the system out with ' | ' when executing the closure
-     */
-    public static void executeWrappedWithTabs(Closure closure) {
-        def stdout = System.out;
-        System.setOut(new PrintStream(stdout) {
-            @Override
-            public void println(String x) {
-                stdout.print(" | ")
-                stdout.println(x)
-            }
-        })
-        closure.call()
-        System.setOut(stdout);
-    }
 
-    public static void deleteDirectory(File dir) {
+    static void deleteDirectory(File dir) {
         if (dir == null) {
             throw new IllegalArgumentException("Can't execute migrateDirectory method with arguments : dir = " + dir);
         }
@@ -65,7 +47,7 @@ public class IOUtil {
         }
     }
 
-    public static void copyDirectory(File srcDir, File destDir) throws IOException {
+    static void copyDirectory(File srcDir, File destDir) throws IOException {
         if (!destDir.exists()) {
             if (!destDir.mkdirs()) {
                 throw new IOException("Destination '" + destDir + "' directory cannot be created");
@@ -90,7 +72,7 @@ public class IOUtil {
         }
     }
 
-    public static void copyFile(File srcFile, File destFile) throws IOException {
+    static void copyFile(File srcFile, File destFile) throws IOException {
         if (destFile.exists() && !(destFile.delete())) {
             throw new IllegalStateException("Migration failed. Unable to delete : " + destFile)
         }
@@ -130,7 +112,7 @@ public class IOUtil {
         destFile.setLastModified(srcFile.lastModified());
     }
 
-    public static Object deserialize(byte[] bytes, ClassLoader theClassLoader) {
+    static Object deserialize(byte[] bytes, ClassLoader theClassLoader) {
         //had to override the method of objectinputstream to be able to give the object classloader in input
         ObjectInputStream input = new ObjectInputStream(new ByteArrayInputStream(bytes)) {
             protected Class<?> resolveClass(ObjectStreamClass objectStreamClass) throws IOException, ClassNotFoundException {
@@ -144,7 +126,7 @@ public class IOUtil {
         }
     }
 
-    public static byte[] serialize(Object object) {
+    static byte[] serialize(Object object) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream out;
         try {
@@ -157,59 +139,7 @@ public class IOUtil {
         return baos.toByteArray();
     }
 
-    static void printInRectangleWithTitle(String title, String... lines) {
-        def maxSize = getMaxSize(lines)
-        printLine(maxSize)
-        println String.format("|%1\$-${maxSize}s|", title)
-        printLine(maxSize)
-        lines.each {
-            println String.format("|%1\$-${maxSize}s|", it)
-        }
-        printLine(maxSize)
-
-    }
-
-    static void printInRectangle(String... lines) {
-        def maxSize = getMaxSize(lines)
-        printLine(maxSize)
-        lines.each {
-            int spaces = maxSize - it.size()
-            print "|"
-            printSpaces((int) (spaces / 2))
-            print it
-            printSpaces(((int) (spaces / 2)) + spaces % 2)
-            print "|"
-            print LINE_SEPARATOR
-        }
-        printLine(maxSize)
-    }
-
-    private static Object getMaxSize(String... lines) {
-        def maxSize = lines.collect { it.size() }.max() + 2
-        maxSize
-    }
-
-    static printSpaces(int size) {
-        int i = 0;
-        while (i < size) {
-            i++;
-            print ' '
-        }
-    }
-
-    static printLine(int size) {
-        print '+'
-        int i = 0;
-        while (i < size) {
-            i++;
-            print '-'
-        }
-        print '+'
-        print LINE_SEPARATOR
-    }
-
-
-    public static void askIfWeContinue() {
+    static void askIfWeContinue() {
         if (!isAutoAccept()) {
             println "Continue migration? (yes/no): "
             def String input = read();
@@ -220,7 +150,7 @@ public class IOUtil {
         }
     }
 
-    public static void unzip(InputStream inputStream, File outputDirectory) {
+    static void unzip(InputStream inputStream, File outputDirectory) {
 
         byte[] buff = new byte[1024]
         inputStream.withStream { stream ->

@@ -22,7 +22,7 @@ import spock.lang.Unroll
 class MigrateTo7_5_0Test extends Specification {
 
     @Unroll
-    "should migration to 7.5.0 include #stepName step"(stepName) {
+    "should migration to 7.5.0 include step '#stepName'"(stepName) {
         given:
         def migrateTo750 = new MigrateTo7_5_0()
 
@@ -35,6 +35,17 @@ class MigrateTo7_5_0Test extends Specification {
         where:
         stepName << ["SplitRestSecurityConfig"]
 
+    }
 
+    def "should 7.5.0 preStepWarning warn about Java 1.8"() {
+        setup:
+        def migrateTo750 = new MigrateTo7_5_0()
+
+        when:
+        def warnings = migrateTo750.preMigrationWarnings
+
+        then:
+        warnings.size() == 1
+        warnings[0].contains("Java 1.8")
     }
 }

@@ -17,6 +17,7 @@ class MigrationTest extends Specification {
 
     @Rule
     TemporaryFolder temporaryFolder
+
     def infos = []
     def logger = [info: { String message -> infos.add(message) }] as Logger
     def Sql sql = Mock(Sql)
@@ -34,7 +35,7 @@ class MigrationTest extends Specification {
 
     def "migrate with different version in bonita home and database should throw exception"() {
         given:
-        versionInDatabse("7.2.0")
+        versionInDatabase("7.2.0")
         versionInBonitaHome("7.2.1")
         when:
         migration.run(false)
@@ -45,7 +46,7 @@ class MigrationTest extends Specification {
 
     def "migrate with different version in bonita home and database after 7.3.0 should not throw exception"() {
         given:
-        versionInDatabse("7.3.0")
+        versionInDatabase("7.3.0")
         versionInBonitaHome("7.2.1")
         targetVersion("7.3.1")
         when:
@@ -56,7 +57,7 @@ class MigrationTest extends Specification {
 
     def "no bonita home set after 7.3.0 should not throw exception"() {
         given:
-        versionInDatabse("7.3.0")
+        versionInDatabase("7.3.0")
         targetVersion("7.3.1")
         when:
         migration.run(false)
@@ -66,7 +67,7 @@ class MigrationTest extends Specification {
 
     def "no bonita home set before 7.3.0 should throw exception"() {
         given:
-        versionInDatabse("7.2.9")
+        versionInDatabase("7.2.9")
         targetVersion("7.3.1")
         when:
         migration.run(false)
@@ -77,7 +78,7 @@ class MigrationTest extends Specification {
 
     def "migrate with an unhandled source version should throw exception"() {
         given:
-        versionInDatabse("7.0.9")
+        versionInDatabase("7.0.9")
         versionInBonitaHome("7.0.9")
         targetVersion("7.2.0")
         when:
@@ -89,7 +90,7 @@ class MigrationTest extends Specification {
 
     def "migrate with an unhandled target version should throw exception"() {
         given:
-        versionInDatabse("7.3.0")
+        versionInDatabase("7.3.0")
         targetVersion("7.10.10")
         when:
         migration.run(false)
@@ -100,7 +101,7 @@ class MigrationTest extends Specification {
 
     def "migrate with a version before 7.0 should throw exception"() {
         given:
-        versionInDatabse("6.5.0")
+        versionInDatabase("6.5.0")
         versionInBonitaHome("6.5.0")
         targetVersion("7.2.0")
         when:
@@ -112,7 +113,7 @@ class MigrationTest extends Specification {
 
     def "same target and source version should throw exception"() {
         given:
-        versionInDatabse("7.3.1")
+        versionInDatabase("7.3.1")
         targetVersion("7.3.1")
         when:
         migration.run(false)
@@ -124,7 +125,7 @@ class MigrationTest extends Specification {
 
     def "target before source version should throw exception"() {
         given:
-        versionInDatabse("7.3.1")
+        versionInDatabase("7.3.1")
         targetVersion("7.2.9")
         when:
         migration.run(false)
@@ -136,7 +137,7 @@ class MigrationTest extends Specification {
     @Unroll
     def "should migration from #source to #target execute steps #versionMigrations"() {
         given:
-        versionInDatabse(source)
+        versionInDatabase(source)
         versionInBonitaHome(source)
         targetVersion(target)
         when:
@@ -159,7 +160,7 @@ class MigrationTest extends Specification {
         migrationContext.targetVersion >> Version.valueOf(s)
     }
 
-    protected void versionInDatabse(String s) {
+    protected void versionInDatabase(String s) {
         sql.firstRow(_ as String) >> new GroovyRowResult([version: s])
         migrationContext.sourceVersion >> Version.valueOf(s)
     }

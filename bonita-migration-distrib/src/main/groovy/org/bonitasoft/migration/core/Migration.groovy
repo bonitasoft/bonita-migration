@@ -27,6 +27,7 @@ class Migration {
     public static final Version FIRST_VERSION_WITHOUT_BONITA_HOME = Version.valueOf("7.3.0")
     Logger logger = new Logger()
     MigrationContext context
+    DisplayUtil displayUtil = new DisplayUtil()
 
     Migration() {
         this.context = new MigrationContext(logger: logger)
@@ -57,7 +58,7 @@ class Migration {
     }
 
     protected MigrationRunner getRunner(List<VersionMigration> versionMigrations) {
-        new MigrationRunner(versionMigrations: versionMigrations, context: context, logger: logger)
+        new MigrationRunner(versionMigrations: versionMigrations, context: context, logger: logger, displayUtil: displayUtil)
     }
 
     /**
@@ -177,9 +178,9 @@ class Migration {
     }
 
 
-    static def printWarning() {
+    def printWarning() {
         println ''
-        IOUtil.printInRectangle("", "Bonita BPM migration tool", "",
+        displayUtil.printInRectangle("", "Bonita BPM migration tool", "",
                 "This tool will migrate your installation of Bonita BPM.",
                 "Both database and bonita home will be modified.",
                 "Please refer to the documentation for further steps to completely migrate your production environment.",
