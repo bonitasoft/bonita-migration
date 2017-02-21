@@ -71,6 +71,8 @@ allprojects {
 subprojects {
     apply plugin: 'groovy'
 
+    targetCompatibility = 1.7
+
     dependencies {
         compile "org.codehaus.groovy:groovy-all:2.4.4"
         testCompile "junit:junit:4.12"
