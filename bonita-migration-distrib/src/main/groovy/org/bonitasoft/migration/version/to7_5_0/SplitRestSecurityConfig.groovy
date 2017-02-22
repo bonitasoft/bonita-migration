@@ -49,12 +49,12 @@ class SplitRestSecurityConfig extends MigrationStep {
     }
 
     def migratePermissionFile(MigrationContext context, String permissionRawFilename) {
-        def filename = "${permissionRawFilename}.properties"
+        def filename = "${permissionRawFilename}.properties" as String
         context.sql.eachRow("""
                 SELECT tenant_id, content_type, resource_content
                 FROM configuration
-                WHERE resource_name='${filename}'
-                """) {
+                WHERE resource_name = ?
+                """, [filename]) {
             def tenantId = it.tenant_id as long
             def contentType = it.content_type as String
             def content
