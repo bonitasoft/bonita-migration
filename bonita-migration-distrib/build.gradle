@@ -40,3 +40,25 @@ dependencies {
 startScripts {
     classpath = files('$APP_HOME/lib/*')
 }
+
+sourceSets {
+    intTest {
+        groovy {
+            srcDirs = ['src/it/groovy']
+        }
+        resources {
+            srcDirs = ['src/it/resources']
+        }
+        compileClasspath += sourceSets.test.compileClasspath
+    }
+}
+
+task("testJar", type: Jar) {
+    classifier = 'tests'
+    from sourceSets.test.output+sourceSets.intTest.output
+}
+
+artifacts {
+    archives tasks.testJar
+}
+tasks.install.dependsOn tasks.testJar
