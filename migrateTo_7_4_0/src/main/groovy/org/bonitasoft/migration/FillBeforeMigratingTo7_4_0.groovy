@@ -46,6 +46,8 @@ import org.junit.Rule
 class FillBeforeMigratingTo7_4_0 {
 
     public static final long ONE_HOUR = 1000L * 60L * 60L
+    public static final String CONNECTOR_ID = "connectorId"
+    public static final String CONNECTOR_VERSION = "version"
 
     @Rule
     public BonitaEngineRule bonitaEngineRule = BonitaEngineRule.create().keepPlatformOnShutdown()
@@ -98,7 +100,7 @@ class FillBeforeMigratingTo7_4_0 {
         builder.addAutomaticTask("auto1").addDescription("autoTaskDesc")
         builder.addUserTask("user1", "myActor").addExpectedDuration(ONE_HOUR).addContract().addInput("myTaskContractInput", Type.BOOLEAN, "Serves description non-reg purposes")
         def task = builder.addAutomaticTask("taskWithNoDescription")
-        task.addConnector("theConnector", "connectorId", "version", ConnectorEvent.ON_ENTER).addInput("input1", new ExpressionBuilder().createConstantStringExpression("input1Value"))
+        task.addConnector("theConnector", CONNECTOR_ID, CONNECTOR_VERSION, ConnectorEvent.ON_ENTER).addInput("input1", new ExpressionBuilder().createConstantStringExpression("input1Value"))
                 .addOutput(new OperationBuilder().createSetDataOperation("myData", new ExpressionBuilder().createInputExpression("outputValue", String.class.getName())))
         task.addOperation(new OperationBuilder().createSetDataOperation("myData", new ExpressionBuilder().createConstantStringExpression("theNewValue")))
         def unknown = new ExpressionBuilder().createConstantStringExpression("unknown")
@@ -109,6 +111,21 @@ class FillBeforeMigratingTo7_4_0 {
         builder.addUserTask("user2", "myActor").addDescription("without expectedDuration")
         builder.addManualTask("manual1", "myActor").addExpectedDuration(ONE_HOUR).addDescription("with expectedDuration")
         builder.addManualTask("manual2", "myActor").addDescription("with expectedDuration")
+
+        def intermediateCatchEvent = builder.addIntermediateCatchEvent("addIntermediateCatchEvent")
+        intermediateCatchEvent.addDescription("addIntermediateCatchEvent description")
+        intermediateCatchEvent.addDisplayDescription(new ExpressionBuilder().createConstantStringExpression("addIntermediateCatchEvent display description"))
+        intermediateCatchEvent.addConnector("addIntermediateCatchEvent connector", CONNECTOR_ID, CONNECTOR_VERSION, ConnectorEvent.ON_ENTER)
+        intermediateCatchEvent.addSignalEventTrigger("signal")
+        intermediateCatchEvent.addTimerEventTriggerDefinition(TimerType.DURATION, new ExpressionBuilder().createConstantIntegerExpression(15))
+        intermediateCatchEvent.addTransition("auto2","auto3")
+
+        def intermediateThrowEvent = builder.addIntermediateThrowEvent("addIntermediateThrowEvent")
+        intermediateThrowEvent.addDescription("addIntermediateThrowEvent description")
+        intermediateThrowEvent.addDisplayDescription(new ExpressionBuilder().createConstantStringExpression("addIntermediateThrowEvent display description"))
+        intermediateThrowEvent.addConnector("addIntermediateThrowEvent connector", CONNECTOR_ID, CONNECTOR_VERSION, ConnectorEvent.ON_ENTER)
+        intermediateThrowEvent.addSignalEventTrigger("signal")
+        intermediateThrowEvent.addTransition("auto3","auto1")
 
         builder.addGateway("gate1", GatewayType.INCLUSIVE)
         builder.addStartEvent("start")

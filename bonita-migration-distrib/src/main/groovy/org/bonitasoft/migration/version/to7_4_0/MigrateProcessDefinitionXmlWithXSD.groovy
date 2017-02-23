@@ -33,22 +33,56 @@ class MigrateProcessDefinitionXmlWithXSD extends MigrationStep {
 
     public static final String PROCESS_DEFINITION_7_4 = "/version/to_7_4_0/ProcessDefinition.xsd"
     public static final String PROCESS_DEFINITION_XSL = "/version/to_7_4_0/ProcessDefinition.xsl"
+    public static final String GET_ALL_PROCESS_CONTENT = "SELECT * FROM process_content"
 
     Logger logger
+    private List<Exception> errors = new ArrayList<>()
 
     @Override
     def execute(MigrationContext context) {
         this.logger = context.logger
-        context.sql.eachRow("SELECT * FROM process_content") { processContent ->
-            context.logger.debug("Process Definition before migration:\n$processContent.content")
-            def String migratedXML = migrateProcessDefinitionXML(context.databaseHelper.getClobContent(processContent.content))
-            context.logger.debug("Process Definition migrated to 7.4:\n$migratedXML")
-            validateXML(migratedXML)
-            context.sql.executeUpdate("UPDATE process_content SET content = $migratedXML WHERE tenantid=${processContent.tenantid} AND id=${processContent.id}")
+        def rows = context.sql.rows(GET_ALL_PROCESS_CONTENT)
+        rows.each { processContent ->
+            def originalContent = context.databaseHelper.getClobContent(processContent.content)
+            migrateProcessContent(context, originalContent, processContent.tenantid, processContent.id)
         }
+        if (errors) {
+            throw new IllegalStateException("some processes could not be migrated. see error log for more information")
+        }
+
     }
 
-    def boolean validateXML(String xmlContent) {
+    def migrateProcessContent(MigrationContext context, String originalContent, tenantId, processId) {
+        def migratedXML
+        try {
+            context.logger.debug("Process Definition before migration:\n$originalContent")
+            migratedXML = migrateProcessDefinitionXML(originalContent)
+            context.logger.debug("Process Definition migrated to 7.4:\n$migratedXML")
+            if (migratedXmlIsValidAgainstXSD(migratedXML)) {
+                context.sql.executeUpdate("UPDATE process_content SET content = $migratedXML WHERE tenantid=${tenantId} AND id=${processId}")
+            }
+        }
+        catch (Exception e) {
+            registerErrorOnProcessMigration(context, e, originalContent, migratedXML)
+        }
+
+
+    }
+
+    private void registerErrorOnProcessMigration(MigrationContext context, Exception e, String originalContent, migratedXML) {
+        context.logger.error """ 
+            failed to migrate process definition due to ${e.getMessage()}  
+            original content:
+            -----------------
+            ${originalContent}
+            migrated xml :
+            --------------
+            ${migratedXML}"""
+        this.errors.add(e)
+    }
+
+
+    boolean migratedXmlIsValidAgainstXSD(String xmlContent) {
         SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
                 .newSchema(new StreamSource(this.getClass().getResourceAsStream(PROCESS_DEFINITION_7_4)))
                 .newValidator()
@@ -56,7 +90,7 @@ class MigrateProcessDefinitionXmlWithXSD extends MigrationStep {
         true
     }
 
-    String migrateProcessDefinitionXML(def String processDefinitionXMLAsText) {
+    String migrateProcessDefinitionXML(String processDefinitionXMLAsText) {
         applyChangesOnXml(new XmlParser().parseText(processDefinitionXMLAsText))
     }
 
@@ -67,15 +101,15 @@ class MigrateProcessDefinitionXmlWithXSD extends MigrationStep {
         stringWriter.toString()
     }
 
-    public String getContent(Node processDefinitionXml) {
+    String getContent(Node processDefinitionXml) {
         def writer = new StringWriter()
         writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
 
         def printer = new XmlNodePrinter(new PrintWriter(writer)) {
             protected void printSimpleItem(Object value) {
-                if (!preserveWhitespace) printLineBegin();
-                out.print(InvokerHelper.toString(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;'));
-                if (!preserveWhitespace) printLineEnd();
+                if (!preserveWhitespace) printLineBegin()
+                out.print(InvokerHelper.toString(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;'))
+                if (!preserveWhitespace) printLineEnd()
             }
         }
         printer.setPreserveWhitespace(true)
