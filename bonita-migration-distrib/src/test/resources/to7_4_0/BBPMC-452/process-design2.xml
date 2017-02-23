@@ -1,0 +1,721 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<def:processDefinition id="0" name="HDSH-Creation affaire" version="1.0" xmlns:def="http://www.bonitasoft.org/ns/process/client/7.2">
+    <description>ARAVIS-Processus pour la création d'une affaire</description>
+    <displayDescription>ARAVIS-Processus pour la création d'une affaire</displayDescription>
+    <parameters />
+    <actors>
+        <actor name="Initiateur" initiator="true">
+            <description></description>
+        </actor>
+    </actors>
+    <actorInitiator>Initiateur</actorInitiator>
+    <flowElements id="9180704558513977860">
+        <userTask id="7571356593221968288" name="Saisie affaire" actorName="Initiateur" expectedDuration="3600000" priority="NORMAL">
+            <incomingTransition>5857506182817731359</incomingTransition>
+            <outgoingTransition>5980811521425822929</outgoingTransition>
+            <connector id="7426840461195669092" name="OUT-Attachement courrier entrant au processus" connectorId="OutilAttachementDocumentProcessus" activationEvent="ON_ENTER" version="1.0.0" failAction="FAIL">
+                <inputs>
+                    <input name="fichier">
+                        <expression id="6895903621356906632" name="acgDocumentCourrier" expressionType="TYPE_VARIABLE" returnType="java.lang.String" interpreter="">
+                            <content>acgDocumentCourrier</content>
+                        </expression>
+                    </input>
+                    <input name="nomDocumentProcessus">
+                        <expression id="6082499591841586224" name="courrierJoint" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                            <content>courrierJoint</content>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs />
+            </connector>
+            <connector id="8765707191552727361" name="Envoi mail chargé saisie affaire" connectorId="email" activationEvent="ON_ENTER" version="1.0.0" failAction="FAIL">
+                <inputs>
+                    <input name="headers">
+                        <expression id="6275269092517945767" name="Table of expression containing the following expressions: []." expressionType="TYPE_LIST" returnType="java.util.List">
+                            <content>Table of expression containing the following expressions: [].</content>
+                        </expression>
+                    </input>
+                    <input name="charset">
+                        <expression id="6690365634912447792" name="UTF-8" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                            <content>UTF-8</content>
+                        </expression>
+                    </input>
+                    <input name="attachments">
+                        <expression id="8534815839245872710" name="List of expression containing the following expressions: ()." expressionType="TYPE_LIST" returnType="java.util.List">
+                            <content>List of expression containing the following expressions: ().</content>
+                        </expression>
+                    </input>
+                    <input name="sslSupport">
+                        <expression id="5753687364557117819" name="false" expressionType="TYPE_CONSTANT" returnType="java.lang.Boolean" interpreter="">
+                            <content>false</content>
+                        </expression>
+                    </input>
+                    <input name="subject">
+                        <expression id="8208202937407218818" name="sujetMailAffaire" expressionType="TYPE_READ_ONLY_SCRIPT" returnType="java.lang.String" interpreter="GROOVY">
+                            <content>String sujetMail = "Affaire à créer pour le courrier " +courrierReference;
+
+                                if (!("31/12/9999").equals(dateLimiteReponse)) sujetMail += " - Date limite réponse : " +dateLimiteReponse;
+
+                                return sujetMail;
+                            </content>
+                            <expression id="6639344038020317957" name="courrierReference" expressionType="TYPE_VARIABLE" returnType="java.lang.String">
+                                <content>courrierReference</content>
+                            </expression>
+                            <expression id="7318323836264862784" name="dateLimiteReponse" expressionType="TYPE_VARIABLE" returnType="java.lang.String">
+                                <content>dateLimiteReponse</content>
+                            </expression>
+                        </expression>
+                    </input>
+                    <input name="smtpPort">
+                        <expression id="6323469376662770531" name="smtpPort" expressionType="TYPE_VARIABLE" returnType="java.lang.Integer" interpreter="">
+                            <content>smtpPort</content>
+                        </expression>
+                    </input>
+                    <input name="userName">
+                        <expression id="5741531649745452055" name="smtpUtilisateur" expressionType="TYPE_VARIABLE" returnType="java.lang.String" interpreter="">
+                            <content>smtpUtilisateur</content>
+                        </expression>
+                    </input>
+                    <input name="message">
+                        <expression id="5246844641892867065" name="Corps message saisie affaire" expressionType="TYPE_READ_ONLY_SCRIPT" returnType="java.lang.String" interpreter="GROOVY">
+                            <content>String corpsMessage = 'Bonjour,&lt;/br&gt;&lt;/br&gt;&lt;/br&gt;';
+
+                                corpsMessage += 'Une tâche de création d\'une affaire pour ce &lt;a href="file:' +acgDocumentCourrier.replace("\\", "/")+ '"&gt;courrier entrant&lt;/a&gt; vous attend dans Aravis.&lt;/br&gt;&lt;/br&gt;';
+
+                                corpsMessage += 'Veuillez prendre l\'option &lt;b&gt;Processus --&gt; Mes tâches&lt;/b&gt; afin de réaliser cette dernière.&lt;/br&gt;&lt;/br&gt;&lt;/br&gt;';
+
+                                corpsMessage += 'Cordialement.';
+
+                                return corpsMessage;
+                            </content>
+                            <expression id="7711391916326985309" name="acgDocumentCourrier" expressionType="TYPE_VARIABLE" returnType="java.lang.String">
+                                <content>acgDocumentCourrier</content>
+                            </expression>
+                        </expression>
+                    </input>
+                    <input name="password">
+                        <expression id="7877917469338359786" name="smtpMdp" expressionType="TYPE_VARIABLE" returnType="java.lang.String" interpreter="">
+                            <content>smtpMdp</content>
+                        </expression>
+                    </input>
+                    <input name="smtpHost">
+                        <expression id="6371625228417410832" name="smtpHote" expressionType="TYPE_VARIABLE" returnType="java.lang.String" interpreter="">
+                            <content>smtpHote</content>
+                        </expression>
+                    </input>
+                    <input name="from">
+                        <expression id="7317144650186272069" name="emetteurMail" expressionType="TYPE_VARIABLE" returnType="java.lang.String" interpreter="">
+                            <content>emetteurMail</content>
+                        </expression>
+                    </input>
+                    <input name="html">
+                        <expression id="4716161060975545807" name="true" expressionType="TYPE_CONSTANT" returnType="java.lang.Boolean" interpreter="">
+                            <content>true</content>
+                        </expression>
+                    </input>
+                    <input name="to">
+                        <expression id="6479091343478866606" name="candidatsMails" expressionType="TYPE_VARIABLE" returnType="java.lang.String" interpreter="">
+                            <content>candidatsMails</content>
+                        </expression>
+                    </input>
+                    <input name="starttlsSupport">
+                        <expression id="6241810305058581865" name="false" expressionType="TYPE_CONSTANT" returnType="java.lang.Boolean" interpreter="">
+                            <content>false</content>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs />
+            </connector>
+            <connector id="7742245262089775832" name="OUT-Ouverture courrier entrant" connectorId="OutilOuvertureFichier" activationEvent="ON_ENTER" version="1.0.0" failAction="IGNORE">
+                <inputs>
+                    <input name="fichier">
+                        <expression id="8999571839794766712" name="acgDocumentCourrier" expressionType="TYPE_VARIABLE" returnType="java.lang.String" interpreter="">
+                            <content>acgDocumentCourrier</content>
+                        </expression>
+                    </input>
+                    <input name="listeTraitements">
+                        <expression id="8579287230838113726" name="acgListeTraitements" expressionType="TYPE_VARIABLE" returnType="java.lang.String" interpreter="">
+                            <content>acgListeTraitements</content>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs>
+                    <operation operatorType="ASSIGNMENT">
+                        <leftOperand name="acgListeTraitements" type="DATA" />
+                        <rightOperand id="8969507174963895346" name="listeTraitementsCompletee" expressionType="TYPE_INPUT" returnType="java.lang.String" interpreter="">
+                            <content>listeTraitementsCompletee</content>
+                        </rightOperand>
+                    </operation>
+                </outputs>
+            </connector>
+            <connector id="5405568630023595729" name="ECR-Saisie d'une affaire" connectorId="TraitementAjout" activationEvent="ON_ENTER" version="1.0.0" failAction="IGNORE">
+                <inputs>
+                    <input name="mode">
+                        <expression id="7874399137849646835" name="Ajout" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                            <content>Ajout</content>
+                        </expression>
+                    </input>
+                    <input name="parametreEntree3">
+                        <expression id="5934787952118315558" name="numAffaire" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                            <content>numAffaire</content>
+                        </expression>
+                    </input>
+                    <input name="parametreEntree2">
+                        <expression id="7321824382339900027" name="acgActivite" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                            <content>acgActivite</content>
+                        </expression>
+                    </input>
+                    <input name="parametreEntree4">
+                        <expression id="5263622068349866892" name="&quot;COU&quot;" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                            <content>"COU"</content>
+                        </expression>
+                    </input>
+                    <input name="listeTraitements">
+                        <expression id="7151011252459616830" name="acgListeTraitements" expressionType="TYPE_VARIABLE" returnType="java.lang.String" interpreter="">
+                            <content>acgListeTraitements</content>
+                        </expression>
+                    </input>
+                    <input name="parametreEntree1">
+                        <expression id="6532521594318747917" name="acgSociete" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                            <content>acgSociete</content>
+                        </expression>
+                    </input>
+                    <input name="parametreSortie1">
+                        <expression id="6440990098039025481" name="numAffaire" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                            <content>numAffaire</content>
+                        </expression>
+                    </input>
+                    <input name="fonction">
+                        <expression id="6968929770101738326" name="EVG50F" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                            <content>EVG50F</content>
+                        </expression>
+                    </input>
+                    <input name="nom">
+                        <expression id="4925079166095011712" name="SaisieAffaire" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                            <content>SaisieAffaire</content>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs>
+                    <operation operatorType="ASSIGNMENT">
+                        <leftOperand name="acgListeTraitements" type="DATA" />
+                        <rightOperand id="8396008181969259809" name="listeTraitementsCompletee" expressionType="TYPE_INPUT" returnType="java.lang.String" interpreter="">
+                            <content>listeTraitementsCompletee</content>
+                        </rightOperand>
+                    </operation>
+                </outputs>
+            </connector>
+            <connector id="5268464967173347892" name="VAR-Société" connectorId="DonneeAjoutVariable" activationEvent="ON_ENTER" version="1.0.0" failAction="IGNORE">
+                <inputs>
+                    <input name="listeDonnees">
+                        <expression id="6698564000183286763" name="acgListeDonnees" expressionType="TYPE_VARIABLE" returnType="java.lang.String" interpreter="">
+                            <content>acgListeDonnees</content>
+                        </expression>
+                    </input>
+                    <input name="donnee">
+                        <expression id="8233465388358910253" name="acgSociete" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                            <content>acgSociete</content>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs>
+                    <operation operatorType="ASSIGNMENT">
+                        <leftOperand name="acgListeDonnees" type="DATA" />
+                        <rightOperand id="5611257084209286116" name="listeDonneesCompletee" expressionType="TYPE_INPUT" returnType="java.lang.String" interpreter="">
+                            <content>listeDonneesCompletee</content>
+                        </rightOperand>
+                    </operation>
+                </outputs>
+            </connector>
+            <connector id="6979789367913839430" name="VAR-Activité" connectorId="DonneeAjoutVariable" activationEvent="ON_ENTER" version="1.0.0" failAction="IGNORE">
+                <inputs>
+                    <input name="listeDonnees">
+                        <expression id="6026380672003174936" name="acgListeDonnees" expressionType="TYPE_VARIABLE" returnType="java.lang.String" interpreter="">
+                            <content>acgListeDonnees</content>
+                        </expression>
+                    </input>
+                    <input name="donnee">
+                        <expression id="6210059719793286667" name="acgActivite" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                            <content>acgActivite</content>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs>
+                    <operation operatorType="ASSIGNMENT">
+                        <leftOperand name="acgListeDonnees" type="DATA" />
+                        <rightOperand id="8870974407516580325" name="listeDonneesCompletee" expressionType="TYPE_INPUT" returnType="java.lang.String" interpreter="">
+                            <content>listeDonneesCompletee</content>
+                        </rightOperand>
+                    </operation>
+                </outputs>
+            </connector>
+            <connector id="6476996971495013603" name="VAR-Affaire" connectorId="DonneeAjoutVariable" activationEvent="ON_ENTER" version="1.0.0" failAction="IGNORE">
+                <inputs>
+                    <input name="listeDonnees">
+                        <expression id="8834312255792101885" name="acgListeDonnees" expressionType="TYPE_VARIABLE" returnType="java.lang.String" interpreter="">
+                            <content>acgListeDonnees</content>
+                        </expression>
+                    </input>
+                    <input name="donnee">
+                        <expression id="5695982279125800912" name="numAffaire" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                            <content>numAffaire</content>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs>
+                    <operation operatorType="ASSIGNMENT">
+                        <leftOperand name="acgListeDonnees" type="DATA" />
+                        <rightOperand id="6041755912820355377" name="listeDonneesCompletee" expressionType="TYPE_INPUT" returnType="java.lang.String" interpreter="">
+                            <content>listeDonneesCompletee</content>
+                        </rightOperand>
+                    </operation>
+                </outputs>
+            </connector>
+            <connector id="6033118709147389868" name="CAN-Acteur saisie affaire" connectorId="CandidatActeur" activationEvent="ON_FINISH" version="1.0.0" failAction="FAIL">
+                <inputs />
+                <outputs>
+                    <operation operatorType="ASSIGNMENT">
+                        <leftOperand name="acteurAffaireCleHierarchie" type="DATA" />
+                        <rightOperand id="7547202115423073144" name="cleOrganisation" expressionType="TYPE_INPUT" returnType="java.lang.Integer" interpreter="">
+                            <content>cleOrganisation</content>
+                        </rightOperand>
+                    </operation>
+                    <operation operatorType="ASSIGNMENT">
+                        <leftOperand name="acteurAffaireClePersonne" type="DATA" />
+                        <rightOperand id="5850593306765340461" name="clePersonne" expressionType="TYPE_INPUT" returnType="java.lang.Integer" interpreter="">
+                            <content>clePersonne</content>
+                        </rightOperand>
+                    </operation>
+                </outputs>
+            </connector>
+            <connector id="5859348863339874732" name="MET-Mail acteur saisie affaire" connectorId="MetierRechercheCoordonneePersonne" activationEvent="ON_FINISH" version="1.0.0" failAction="FAIL">
+                <inputs>
+                    <input name="typeCoordonnee">
+                        <expression id="8765425426245498020" name="Indifférent" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                            <content>Indifférent</content>
+                        </expression>
+                    </input>
+                    <input name="clePersonne">
+                        <expression id="5292009600197407228" name="acteurAffaireClePersonne" expressionType="TYPE_VARIABLE" returnType="java.lang.Integer" interpreter="">
+                            <content>acteurAffaireClePersonne</content>
+                        </expression>
+                    </input>
+                    <input name="cleOrganisation">
+                        <expression id="5791936312205832791" name="acteurAffaireCleHierarchie" expressionType="TYPE_VARIABLE" returnType="java.lang.Integer" interpreter="">
+                            <content>acteurAffaireCleHierarchie</content>
+                        </expression>
+                    </input>
+                    <input name="societe">
+                        <expression id="6147264166250317270" name="acgSociete" expressionType="TYPE_VARIABLE" returnType="java.lang.Integer" interpreter="">
+                            <content>acgSociete</content>
+                        </expression>
+                    </input>
+                    <input name="cleCoordonnee">
+                        <expression id="5406391628775111538" name="0" expressionType="TYPE_CONSTANT" returnType="java.lang.Integer" interpreter="">
+                            <content>0</content>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs>
+                    <operation operatorType="ASSIGNMENT">
+                        <leftOperand name="acteurAffaireMail" type="DATA" />
+                        <rightOperand id="7235909713366029955" name="adresseElectronique" expressionType="TYPE_INPUT" returnType="java.lang.String" interpreter="">
+                            <content>adresseElectronique</content>
+                        </rightOperand>
+                    </operation>
+                </outputs>
+            </connector>
+            <description>Saisie d'une affaire</description>
+            <dataDefinitions>
+                <textDataDefinition longText="true" id="7800051432378671370" name="acgLibelleTache" transient="false" className="java.lang.String">
+                    <defaultValue id="4665318451271898469" name="libelleTache" expressionType="TYPE_VARIABLE" returnType="java.lang.String" interpreter="">
+                        <content>libelleTache</content>
+                    </defaultValue>
+                </textDataDefinition>
+                <textDataDefinition longText="true" id="5043464303864823362" name="acgListeDonnees" transient="false" className="java.lang.String" />
+                <textDataDefinition longText="true" id="8139906364650870404" name="acgListeCandidats" transient="false" className="java.lang.String">
+                    <defaultValue id="5299474156602420075" name="candidats" expressionType="TYPE_VARIABLE" returnType="java.lang.String" interpreter="">
+                        <content>candidats</content>
+                    </defaultValue>
+                </textDataDefinition>
+                <textDataDefinition longText="true" id="8123267774531342297" name="acgListeTraitements" transient="false" className="java.lang.String" />
+            </dataDefinitions>
+            <BusinessDataDefinitions />
+            <operations />
+            <boundaryEvents />
+            <contract>
+                <inputDefinitions />
+                <constraints />
+            </contract>
+            <context>
+                <contextEntry key="courrierJoint_ref">
+                    <expression id="5486823670626170922" name="courrierJoint" expressionType="TYPE_DOCUMENT" returnType="org.bonitasoft.engine.bpm.document.Document">
+                        <content>courrierJoint</content>
+                    </expression>
+                </contextEntry>
+            </context>
+        </userTask>
+        <automaticTask id="8972524234038155426" name="Courrier entrant en pièce jointe">
+            <incomingTransition>7175747845989168558</incomingTransition>
+            <outgoingTransition>8574880936937041487</outgoingTransition>
+            <connector id="6876920944855092061" name="MET-Attachement courrier entrant à l'affaire comme pièce jointe" connectorId="MetierAttachementPieceJointeAffaire" activationEvent="ON_FINISH" version="1.0.0" failAction="IGNORE">
+                <inputs>
+                    <input name="fichier">
+                        <expression id="4686223516055620704" name="acgDocumentCourrier" expressionType="TYPE_VARIABLE" returnType="java.lang.String" interpreter="">
+                            <content>acgDocumentCourrier</content>
+                        </expression>
+                    </input>
+                    <input name="affaire">
+                        <expression id="6408721887519930942" name="numAffaire" expressionType="TYPE_VARIABLE" returnType="java.lang.Integer" interpreter="">
+                            <content>numAffaire</content>
+                        </expression>
+                    </input>
+                    <input name="repertoirePiecesJointes">
+                        <expression id="5640755120259871898" name="acgRepertoirePiecesJointesAffaire" expressionType="TYPE_VARIABLE" returnType="java.lang.String" interpreter="">
+                            <content>acgRepertoirePiecesJointesAffaire</content>
+                        </expression>
+                    </input>
+                    <input name="societe">
+                        <expression id="8819949152797897892" name="acgSociete" expressionType="TYPE_VARIABLE" returnType="java.lang.Integer" interpreter="">
+                            <content>acgSociete</content>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs>
+                    <operation operatorType="ASSIGNMENT">
+                        <leftOperand name="numErreur" type="DATA" />
+                        <rightOperand id="7699070044240153936" name="numErreur" expressionType="TYPE_INPUT" returnType="java.lang.Integer" interpreter="">
+                            <content>numErreur</content>
+                        </rightOperand>
+                    </operation>
+                </outputs>
+            </connector>
+            <description>Sauvegarde courrier entrant en pièce jointe de l'affaire</description>
+            <dataDefinitions />
+            <BusinessDataDefinitions />
+            <operations />
+            <boundaryEvents />
+        </automaticTask>
+        <callActivity id="6101557745718134281" name="Candidat saisie affaire" callableElementType="PROCESS">
+            <incomingTransition>6686556333832487091</incomingTransition>
+            <incomingTransition>7350949598278691673</incomingTransition>
+            <outgoingTransition>5857506182817731359</outgoingTransition>
+            <dataDefinitions>
+                <textDataDefinition longText="true" id="5917616627047941412" name="role" transient="false" className="java.lang.String">
+                    <defaultValue id="6921598497221954706" name="Intervenant" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                        <content>Intervenant</content>
+                    </defaultValue>
+                </textDataDefinition>
+                <textDataDefinition longText="true" id="6153056330204641696" name="pourActivite" transient="false" className="java.lang.String">
+                    <defaultValue id="6039162091947413216" name="Saisie affaire" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                        <content>Saisie affaire</content>
+                    </defaultValue>
+                </textDataDefinition>
+            </dataDefinitions>
+            <BusinessDataDefinitions />
+            <operations />
+            <boundaryEvents />
+            <callableElement id="4705457808189947600" name="HDSH-Recherche candidats" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                <content>HDSH-Recherche candidats</content>
+            </callableElement>
+            <callableElementVersion id="9070773866853413753" name="1.0" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                <content>1.0</content>
+            </callableElementVersion>
+            <dataInputOperation operatorType="ASSIGNMENT">
+                <leftOperand name="acgSociete" type="DATA" />
+                <rightOperand id="5182685300411363255" name="acgSociete" expressionType="TYPE_VARIABLE" returnType="java.lang.Integer" interpreter="">
+                    <content>acgSociete</content>
+                </rightOperand>
+            </dataInputOperation>
+            <dataInputOperation operatorType="ASSIGNMENT">
+                <leftOperand name="role" type="DATA" />
+                <rightOperand id="8207662759259654810" name="role" expressionType="TYPE_VARIABLE" returnType="java.lang.String" interpreter="">
+                    <content>role</content>
+                </rightOperand>
+            </dataInputOperation>
+            <dataInputOperation operatorType="ASSIGNMENT">
+                <leftOperand name="cleHierarchieOrganisation" type="DATA" />
+                <rightOperand id="7317427636906431242" name="acteurAffaireCleHierarchie" expressionType="TYPE_VARIABLE" returnType="java.lang.Integer" interpreter="">
+                    <content>acteurAffaireCleHierarchie</content>
+                </rightOperand>
+            </dataInputOperation>
+            <dataInputOperation operatorType="ASSIGNMENT">
+                <leftOperand name="clePersonne" type="DATA" />
+                <rightOperand id="6498654502471365935" name="acteurAffaireClePersonne" expressionType="TYPE_VARIABLE" returnType="java.lang.Integer" interpreter="">
+                    <content>acteurAffaireClePersonne</content>
+                </rightOperand>
+            </dataInputOperation>
+            <dataInputOperation operatorType="ASSIGNMENT">
+                <leftOperand name="pourActivite" type="DATA" />
+                <rightOperand id="8102149376577664951" name="pourActivite" expressionType="TYPE_VARIABLE" returnType="java.lang.String" interpreter="">
+                    <content>pourActivite</content>
+                </rightOperand>
+            </dataInputOperation>
+            <contractInput />
+            <dataOutputOperation operatorType="ASSIGNMENT">
+                <leftOperand name="candidats" type="DATA" />
+                <rightOperand id="8652056672215463145" name="candidats" expressionType="TYPE_VARIABLE" returnType="java.lang.String">
+                    <content>candidats</content>
+                </rightOperand>
+            </dataOutputOperation>
+            <dataOutputOperation operatorType="ASSIGNMENT">
+                <leftOperand name="candidatsMails" type="DATA" />
+                <rightOperand id="7461938639339743822" name="candidatsMails" expressionType="TYPE_VARIABLE" returnType="java.lang.String">
+                    <content>candidatsMails</content>
+                </rightOperand>
+            </dataOutputOperation>
+        </callActivity>
+        <transitions>
+            <transition id="7350949598278691673" name="7993898682222169880_-&gt;_6101557745718134281" source="7993898682222169880" target="6101557745718134281" />
+            <transition id="8956808887466752359" name="7569070812643319385_-&gt;_6885899058366846065" source="7569070812643319385" target="6885899058366846065" />
+            <transition id="5980811521425822929" name="7571356593221968288_-&gt;_6314313814306123145" source="7571356593221968288" target="6314313814306123145" />
+            <transition id="5400954238049452946" name="6679618394446299674_-&gt;_7569070812643319385" source="6679618394446299674" target="7569070812643319385" />
+            <transition id="6686556333832487091" name="5554590070936415135_-&gt;_6101557745718134281" source="5554590070936415135" target="6101557745718134281" />
+            <transition id="7175747845989168558" name="6314313814306123145_-&gt;_8972524234038155426" source="6314313814306123145" target="8972524234038155426">
+                <condition id="4614569968007342478" name="numAffaire!=0" expressionType="TYPE_CONDITION" returnType="java.lang.Boolean">
+                    <content>!=</content>
+                    <expression id="5893871217082921953" name="numAffaire" expressionType="TYPE_VARIABLE" returnType="java.lang.Integer">
+                        <content>numAffaire</content>
+                    </expression>
+                    <expression id="6881017546900169297" name="0" expressionType="TYPE_CONSTANT" returnType="java.lang.Long">
+                        <content>0</content>
+                    </expression>
+                </condition>
+            </transition>
+            <transition id="5857506182817731359" name="6101557745718134281_-&gt;_7571356593221968288" source="6101557745718134281" target="7571356593221968288" />
+            <transition id="6587768863787023470" name="6314313814306123145_-&gt;_6679618394446299674" source="6314313814306123145" target="6679618394446299674" />
+            <transition id="8574880936937041487" name="8972524234038155426_-&gt;_6679618394446299674" source="8972524234038155426" target="6679618394446299674" />
+        </transitions>
+        <gateway id="6314313814306123145" name="A-Pièce jointe" gatewayType="EXCLUSIVE">
+            <incomingTransition>5980811521425822929</incomingTransition>
+            <outgoingTransition>7175747845989168558</outgoingTransition>
+            <defaultTransition>6587768863787023470</defaultTransition>
+        </gateway>
+        <gateway id="6679618394446299674" name="A-Fin affaire" gatewayType="EXCLUSIVE">
+            <incomingTransition>6587768863787023470</incomingTransition>
+            <incomingTransition>8574880936937041487</incomingTransition>
+            <outgoingTransition>5400954238049452946</outgoingTransition>
+        </gateway>
+        <startEvent id="5554590070936415135" name="Message création affaire" interrupting="true">
+            <outgoingTransition>6686556333832487091</outgoingTransition>
+            <catchMessageEventTrigger name="msgCreationAffaire">
+                <operation operatorType="ASSIGNMENT">
+                    <leftOperand name="acgSociete" type="DATA" />
+                    <rightOperand id="7120661930608210635" name="msgSociete" expressionType="TYPE_VARIABLE" returnType="java.lang.Integer" interpreter="">
+                        <content>msgSociete</content>
+                    </rightOperand>
+                </operation>
+                <operation operatorType="ASSIGNMENT">
+                    <leftOperand name="acgActivite" type="DATA" />
+                    <rightOperand id="7933206423015028396" name="msgActivite" expressionType="TYPE_VARIABLE" returnType="java.lang.String" interpreter="">
+                        <content>msgActivite</content>
+                    </rightOperand>
+                </operation>
+                <operation operatorType="ASSIGNMENT">
+                    <leftOperand name="libelleTache" type="DATA" />
+                    <rightOperand id="8131480693002964269" name="msgLibelleTache" expressionType="TYPE_VARIABLE" returnType="java.lang.String" interpreter="">
+                        <content>msgLibelleTache</content>
+                    </rightOperand>
+                </operation>
+                <operation operatorType="ASSIGNMENT">
+                    <leftOperand name="acgInstanceProcessusMaitre" type="DATA" />
+                    <rightOperand id="5319799138830771825" name="msgInstProcessus" expressionType="TYPE_VARIABLE" returnType="java.lang.Long" interpreter="">
+                        <content>msgInstProcessus</content>
+                    </rightOperand>
+                </operation>
+                <operation operatorType="ASSIGNMENT">
+                    <leftOperand name="acgDocumentCourrier" type="DATA" />
+                    <rightOperand id="8897689903257281339" name="msgCourrier" expressionType="TYPE_VARIABLE" returnType="java.lang.String" interpreter="">
+                        <content>msgCourrier</content>
+                    </rightOperand>
+                </operation>
+                <operation operatorType="ASSIGNMENT">
+                    <leftOperand name="acgRepertoirePiecesJointesAffaire" type="DATA" />
+                    <rightOperand id="6149535505416211407" name="msgRepertoirePiecesJointesAffaire" expressionType="TYPE_VARIABLE" returnType="java.lang.String" interpreter="">
+                        <content>msgRepertoirePiecesJointesAffaire</content>
+                    </rightOperand>
+                </operation>
+                <operation operatorType="ASSIGNMENT">
+                    <leftOperand name="acgFichierConfiguration" type="DATA" />
+                    <rightOperand id="8315578787803985489" name="msgFichierConfiguration" expressionType="TYPE_VARIABLE" returnType="java.lang.String" interpreter="">
+                        <content>msgFichierConfiguration</content>
+                    </rightOperand>
+                </operation>
+                <operation operatorType="ASSIGNMENT">
+                    <leftOperand name="smtpHote" type="DATA" />
+                    <rightOperand id="8852921527049501015" name="msgSmtpHote" expressionType="TYPE_VARIABLE" returnType="java.lang.String" interpreter="">
+                        <content>msgSmtpHote</content>
+                    </rightOperand>
+                </operation>
+                <operation operatorType="ASSIGNMENT">
+                    <leftOperand name="smtpPort" type="DATA" />
+                    <rightOperand id="5804376081945622385" name="msgSmtpPort" expressionType="TYPE_VARIABLE" returnType="java.lang.Integer" interpreter="">
+                        <content>msgSmtpPort</content>
+                    </rightOperand>
+                </operation>
+                <operation operatorType="ASSIGNMENT">
+                    <leftOperand name="smtpUtilisateur" type="DATA" />
+                    <rightOperand id="5303819833479847459" name="msgSmtpUtilisateur" expressionType="TYPE_VARIABLE" returnType="java.lang.String" interpreter="">
+                        <content>msgSmtpUtilisateur</content>
+                    </rightOperand>
+                </operation>
+                <operation operatorType="ASSIGNMENT">
+                    <leftOperand name="smtpMdp" type="DATA" />
+                    <rightOperand id="4774039377261293456" name="msgSmtpMdp" expressionType="TYPE_VARIABLE" returnType="java.lang.String" interpreter="">
+                        <content>msgSmtpMdp</content>
+                    </rightOperand>
+                </operation>
+                <operation operatorType="ASSIGNMENT">
+                    <leftOperand name="emetteurMail" type="DATA" />
+                    <rightOperand id="7487779023793830256" name="msgActeurNotificationMail" expressionType="TYPE_VARIABLE" returnType="java.lang.String" interpreter="">
+                        <content>msgActeurNotificationMail</content>
+                    </rightOperand>
+                </operation>
+                <operation operatorType="ASSIGNMENT">
+                    <leftOperand name="courrierObjet" type="DATA" />
+                    <rightOperand id="5424827034567628859" name="msgCourrierObjet" expressionType="TYPE_VARIABLE" returnType="java.lang.String" interpreter="">
+                        <content>msgCourrierObjet</content>
+                    </rightOperand>
+                </operation>
+                <operation operatorType="ASSIGNMENT">
+                    <leftOperand name="acteurAffaireCleHierarchie" type="DATA" />
+                    <rightOperand id="8519215153049390212" name="msgChargeAffaireCleHierarchie" expressionType="TYPE_VARIABLE" returnType="java.lang.Integer" interpreter="">
+                        <content>msgChargeAffaireCleHierarchie</content>
+                    </rightOperand>
+                </operation>
+                <operation operatorType="ASSIGNMENT">
+                    <leftOperand name="acteurAffaireClePersonne" type="DATA" />
+                    <rightOperand id="7114280479279759993" name="msgChargeAffaireClePersonne" expressionType="TYPE_VARIABLE" returnType="java.lang.Integer" interpreter="">
+                        <content>msgChargeAffaireClePersonne</content>
+                    </rightOperand>
+                </operation>
+                <operation operatorType="ASSIGNMENT">
+                    <leftOperand name="courrierReference" type="DATA" />
+                    <rightOperand id="5159983865771642157" name="msgCourrierReference" expressionType="TYPE_VARIABLE" returnType="java.lang.String" interpreter="">
+                        <content>msgCourrierReference</content>
+                    </rightOperand>
+                </operation>
+                <operation operatorType="ASSIGNMENT">
+                    <leftOperand name="dateLimiteReponse" type="DATA" />
+                    <rightOperand id="6640669947186273231" name="msgDateLimiteReponse" expressionType="TYPE_VARIABLE" returnType="java.lang.String" interpreter="">
+                        <content>msgDateLimiteReponse</content>
+                    </rightOperand>
+                </operation>
+            </catchMessageEventTrigger>
+        </startEvent>
+        <startEvent id="7993898682222169880" name="Début fictif" interrupting="true">
+            <outgoingTransition>7350949598278691673</outgoingTransition>
+        </startEvent>
+        <intermediateThrowEvent id="7569070812643319385" name="Msg renvoi affaire">
+            <incomingTransition>5400954238049452946</incomingTransition>
+            <outgoingTransition>8956808887466752359</outgoingTransition>
+            <description>Communication au processus "ARAVIS-Traitement courrier" de l'affaire saisie</description>
+            <throwMessageEventTrigger name="msgRenvoiAffaire">
+                <correlation>
+                    <value id="8750637304600319637" name="acgInstanceProcessusMaitre" expressionType="TYPE_VARIABLE" returnType="java.lang.Long" interpreter="">
+                        <content>acgInstanceProcessusMaitre</content>
+                    </value>
+                    <key id="4647021345005743980" name="msgInCourrier" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                        <content>msgInCourrier</content>
+                    </key>
+                </correlation>
+                <targetProcess id="7614883886850351485" name="HDSH-Traitement courrier" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                    <content>HDSH-Traitement courrier</content>
+                </targetProcess>
+                <targetFlowNode id="9202871677247669948" name="Msg retour affaire" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                    <content>Msg retour affaire</content>
+                </targetFlowNode>
+                <dataDefinition id="5209240768787313560" name="msgAffaire" transient="false" className="java.lang.Integer">
+                    <defaultValue id="7119808163478212655" name="numAffaire" expressionType="TYPE_VARIABLE" returnType="java.lang.Integer" interpreter="">
+                        <content>numAffaire</content>
+                    </defaultValue>
+                </dataDefinition>
+                <dataDefinition id="4833845944940329996" name="msgActeurAffaireCleHierarchie" transient="false" className="java.lang.Integer">
+                    <defaultValue id="4878422686681710010" name="acteurAffaireCleHierarchie" expressionType="TYPE_VARIABLE" returnType="java.lang.Integer" interpreter="">
+                        <content>acteurAffaireCleHierarchie</content>
+                    </defaultValue>
+                </dataDefinition>
+                <dataDefinition id="6988926282078451676" name="msgActeurAffaireClePersonne" transient="false" className="java.lang.Integer">
+                    <defaultValue id="4628235735434002191" name="acteurAffaireClePersonne" expressionType="TYPE_VARIABLE" returnType="java.lang.Integer" interpreter="">
+                        <content>acteurAffaireClePersonne</content>
+                    </defaultValue>
+                </dataDefinition>
+                <dataDefinition id="5111177416167238027" name="msgActeurAffaireMail" transient="false" className="java.lang.String">
+                    <defaultValue id="6637969433907386086" name="acteurAffaireMail" expressionType="TYPE_VARIABLE" returnType="java.lang.String" interpreter="">
+                        <content>acteurAffaireMail</content>
+                    </defaultValue>
+                </dataDefinition>
+            </throwMessageEventTrigger>
+        </intermediateThrowEvent>
+        <endEvent id="6885899058366846065" name="Fin">
+            <incomingTransition>8956808887466752359</incomingTransition>
+        </endEvent>
+        <dataDefinitions>
+            <textDataDefinition longText="true" id="6956034961285513987" name="libelleTache" transient="false" className="java.lang.String" />
+            <textDataDefinition longText="true" id="6136984426457109426" name="acgDocumentCourrier" transient="false" className="java.lang.String" />
+            <dataDefinition id="8275210519707186785" name="acgSociete" transient="false" className="java.lang.Integer">
+                <defaultValue id="8388187065143385644" name="0" expressionType="TYPE_CONSTANT" returnType="java.lang.Integer" interpreter="">
+                    <content>0</content>
+                </defaultValue>
+            </dataDefinition>
+            <textDataDefinition longText="true" id="9067118628896169835" name="acgActivite" transient="false" className="java.lang.String" />
+            <dataDefinition id="5465693205699453141" name="numAffaire" transient="false" className="java.lang.Integer">
+                <defaultValue id="8709235910212779936" name="0" expressionType="TYPE_CONSTANT" returnType="java.lang.Integer" interpreter="">
+                    <content>0</content>
+                </defaultValue>
+            </dataDefinition>
+            <dataDefinition id="4874944963078446946" name="numErreur" transient="false" className="java.lang.Integer">
+                <defaultValue id="6060058569292013586" name="0" expressionType="TYPE_CONSTANT" returnType="java.lang.Integer" interpreter="">
+                    <content>0</content>
+                </defaultValue>
+            </dataDefinition>
+            <textDataDefinition longText="true" id="7249446106107251992" name="acgRepertoirePiecesJointesAffaire" transient="false" className="java.lang.String" />
+            <dataDefinition id="4667274205161078526" name="acgInstanceProcessusMaitre" transient="false" className="java.lang.Long">
+                <defaultValue id="7448533547924415439" name="0" expressionType="TYPE_CONSTANT" returnType="java.lang.Long" interpreter="">
+                    <content>0</content>
+                </defaultValue>
+            </dataDefinition>
+            <textDataDefinition longText="true" id="7565444456382740112" name="acgFichierConfiguration" transient="false" className="java.lang.String" />
+            <textDataDefinition longText="true" id="8920800535173303229" name="emetteurMail" transient="false" className="java.lang.String" />
+            <textDataDefinition longText="true" id="8517451911444551828" name="smtpHote" transient="false" className="java.lang.String" />
+            <dataDefinition id="9094312438751050556" name="smtpPort" transient="false" className="java.lang.Integer" />
+            <textDataDefinition longText="true" id="7285215072720215203" name="smtpUtilisateur" transient="false" className="java.lang.String" />
+            <textDataDefinition longText="true" id="6648536258776047022" name="smtpMdp" transient="false" className="java.lang.String" />
+            <textDataDefinition longText="true" id="6592331897582614509" name="courrierObjet" transient="false" className="java.lang.String" />
+            <dataDefinition id="8324920528025511743" name="acteurAffaireCleHierarchie" transient="false" className="java.lang.Integer" />
+            <dataDefinition id="5009588556863758462" name="acteurAffaireClePersonne" transient="false" className="java.lang.Integer" />
+            <textDataDefinition longText="true" id="8773835094847377208" name="candidats" transient="false" className="java.lang.String" />
+            <textDataDefinition longText="true" id="5993438927259543271" name="candidatsMails" transient="false" className="java.lang.String" />
+            <textDataDefinition longText="true" id="6148500012417576948" name="acteurAffaireMail" transient="false" className="java.lang.String" />
+            <textDataDefinition longText="true" id="7796964489872398678" name="courrierReference" transient="false" className="java.lang.String" />
+            <textDataDefinition longText="true" id="8608237723013216122" name="dateLimiteReponse" transient="false" className="java.lang.String" />
+        </dataDefinitions>
+        <businessDataDefinitions />
+        <documentDefinitions>
+            <documentDefinition id="8006465360802775861" name="courrierJoint" mimeType="application/octet-stream">
+                <description></description>
+            </documentDefinition>
+        </documentDefinitions>
+        <documentListDefinitions />
+        <connectors />
+        <elementFinder />
+    </flowElements>
+    <stringIndexes>
+        <stringIndex index="1" />
+        <stringIndex index="2" />
+        <stringIndex index="3" />
+        <stringIndex index="4" />
+        <stringIndex index="5" />
+    </stringIndexes>
+    <contract>
+        <inputDefinitions />
+        <constraints />
+    </contract>
+    <context>
+        <contextEntry key="courrierJoint_ref">
+            <expression id="7024931172698986240" name="courrierJoint" expressionType="TYPE_DOCUMENT" returnType="org.bonitasoft.engine.bpm.document.Document">
+                <content>courrierJoint</content>
+            </expression>
+        </contextEntry>
+    </context>
+</def:processDefinition>

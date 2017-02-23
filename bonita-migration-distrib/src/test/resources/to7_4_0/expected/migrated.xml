@@ -105,6 +105,61 @@
         <transitions>
             <transition id="_6635186239573405354" name="8220222047516848075_-&gt;_6155503270385840845" source="_8220222047516848075" target="_6155503270385840845" />
         </transitions>
+        <intermediateCatchEvent id="__-6609233446546479584" interrupting="true" name="intermediateCatchEvent">
+            <incomingTransition>_6635186239573405354</incomingTransition>
+            <outgoingTransition>_6635186239573405354</outgoingTransition>
+            <connector id="_7663971355058232374" name="theConnector" connectorId="connectorId" activationEvent="ON_ENTER" version="version" failAction="FAIL">
+                <inputs>
+                    <input name="input1">
+                        <expression id="_65817" name="input1Value" expressionType="TYPE_CONSTANT" returnType="java.lang.String">
+                            <content>input1Value</content>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs>
+                    <operation operatorType="ASSIGNMENT">
+                        <leftOperand name="myData" type="DATA" />
+                        <rightOperand id="_65830" name="outputValue" expressionType="TYPE_INPUT" returnType="java.lang.String">
+                            <content>outputValue</content>
+                        </rightOperand>
+                    </operation>
+                </outputs>
+            </connector>
+            <description>description</description>
+            <catchMessageEventTrigger name="catchMessageEventTrigger">
+                <correlation>
+                    <value expressionType="TYPE_VARIABLE" interpreter="" name="value1" returnType="java.lang.String">
+                        <content>var_sub_step_uuid</content>
+                    </value>
+                    <key expressionType="TYPE_CONSTANT" interpreter="" name="key1" returnType="java.lang.String">
+                        <content>var_step_uuidKey</content>
+                    </key>
+                </correlation>
+            </catchMessageEventTrigger>
+        </intermediateCatchEvent>
+        <intermediateThrowEvent id="_909233446546479584" name="intermediateThrowEvent">
+            <incomingTransition>_6635186239573405354</incomingTransition>
+            <outgoingTransition>_6635186239573405354</outgoingTransition>
+            <connector id="_7665971357058232374" name="theConnector" connectorId="connectorId" activationEvent="ON_ENTER" version="version" failAction="FAIL">
+                <inputs>
+                    <input name="input1">
+                        <expression id="_65852" name="input1Value" expressionType="TYPE_CONSTANT" returnType="java.lang.String">
+                            <content>input1Value</content>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs>
+                    <operation operatorType="ASSIGNMENT">
+                        <leftOperand name="myData" type="DATA" />
+                        <rightOperand id="_65865" name="outputValue" expressionType="TYPE_INPUT" returnType="java.lang.String">
+                            <content>outputValue</content>
+                        </rightOperand>
+                    </operation>
+                </outputs>
+            </connector>
+            <description>description</description>
+            <defaultTransition>_909233446546479584</defaultTransition>
+        </intermediateThrowEvent>
         <dataDefinitions>
             <dataDefinition id="_7248244421827640412" name="myData" transient="false" className="java.lang.String">
                 <description>my data description</description>
