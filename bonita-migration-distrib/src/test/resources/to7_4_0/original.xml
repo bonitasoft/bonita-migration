@@ -139,6 +139,72 @@
         <documentListDefinitions />
         <connectors />
         <elementFinder />
+        <intermediateCatchEvent id="6609233446546479584" interrupting="true" name="intermediateCatchEvent">
+            <description>description</description>
+            <incomingTransition>6635186239573405354</incomingTransition>
+            <outgoingTransition>6635186239573405354</outgoingTransition>
+            <catchMessageEventTrigger name="catchMessageEventTrigger">
+                <correlation>
+                    <value expressionType="TYPE_VARIABLE" interpreter="" name="value1" returnType="java.lang.String">
+                        <content>var_sub_step_uuid</content>
+                    </value>
+                    <key expressionType="TYPE_CONSTANT" interpreter="" name="key1" returnType="java.lang.String">
+                        <content>var_step_uuidKey</content>
+                    </key>
+                </correlation>
+            </catchMessageEventTrigger>
+            <connector id="7663971355058232374" name="theConnector" connectorId="connectorId" activationEvent="ON_ENTER" version="version" failAction="FAIL">
+                <inputs>
+                    <input name="input1">
+                        <expression id="5118970177971223300" name="input1Value" expressionType="TYPE_CONSTANT" returnType="java.lang.String">
+                            <content>input1Value</content>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs>
+                    <operation operatorType="ASSIGNMENT">
+                        <leftOperand name="myData" type="DATA" />
+                        <rightOperand id="5972481088581331540" name="outputValue" expressionType="TYPE_INPUT" returnType="java.lang.String">
+                            <content>outputValue</content>
+                        </rightOperand>
+                    </operation>
+                </outputs>
+            </connector>
+        </intermediateCatchEvent>
+        <intermediateThrowEvent id="909233446546479584" name="intermediateThrowEvent">
+            <timerEventTrigger></timerEventTrigger>
+            <defaultTransition>909233446546479584</defaultTransition>
+            <connector id="7665971357058232374" name="theConnector" connectorId="connectorId" activationEvent="ON_ENTER" version="version" failAction="FAIL">
+                <inputs>
+                    <input name="input1">
+                        <expression id="5118970177971223300" name="input1Value" expressionType="TYPE_CONSTANT" returnType="java.lang.String">
+                            <content>input1Value</content>
+                        </expression>
+                    </input>
+                </inputs>
+                <outputs>
+                    <operation operatorType="ASSIGNMENT">
+                        <leftOperand name="myData" type="DATA" />
+                        <rightOperand id="5972481088581331540" name="outputValue" expressionType="TYPE_INPUT" returnType="java.lang.String">
+                            <content>outputValue</content>
+                        </rightOperand>
+                    </operation>
+                </outputs>
+            </connector>
+            <description>description</description>
+            <incomingTransition>6635186239573405354</incomingTransition>
+            <outgoingTransition>6635186239573405354</outgoingTransition>
+            <catchMessageEventTrigger name="intermediateThrowEventTrigger">
+                <correlation>
+                    <value expressionType="TYPE_VARIABLE" interpreter="" name="value1" returnType="java.lang.String">
+                        <content>var_sub_step_uuid</content>
+                    </value>
+                    <key expressionType="TYPE_CONSTANT" interpreter="" name="key1" returnType="java.lang.String">
+                        <content>var_step_uuidKey</content>
+                    </key>
+                </correlation>
+            </catchMessageEventTrigger>
+        </intermediateThrowEvent>
     </flowElements>
     <stringIndexes>
         <stringIndex index="1" />

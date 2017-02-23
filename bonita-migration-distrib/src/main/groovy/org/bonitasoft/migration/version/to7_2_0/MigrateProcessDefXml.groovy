@@ -83,6 +83,7 @@ class MigrateProcessDefXml extends MigrationStep {
         }
     }
 
+
     def void removeBosVersion(Node processDefinitionXml) {
         processDefinitionXml.attributes().remove "bos_version"
     }

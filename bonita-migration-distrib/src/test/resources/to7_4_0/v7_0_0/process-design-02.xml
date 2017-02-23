@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<processDefinition xmlns="http://www.bonitasoft.org/ns/process/client/6.3" bos_version="6.0-SNAPSHOT" description="" displayDescription="" name="DPerm-AttributionMetier" version="1.2.1">
+  <stringIndexes>
+    <stringIndex index="1"/>
+    <stringIndex index="2"/>
+    <stringIndex index="3"/>
+    <stringIndex index="4"/>
+    <stringIndex index="5"/>
+  </stringIndexes>
+  <flowElements>
+    <transitions>
+      <transition id="8810603519116819945" name="Recevoir attribution_-&gt;_Déterminer attribution métier" source="-5410293603742957002" target="-4722436921714763158"/>
+      <transition id="6814477633979332348" name="Début Attribution_-&gt;_Demander Attribution tâche métier" source="-5448025565429928247" target="-5614469302333947059"/>
+      <transition id="6251144476827404859" name="Demander Attribution tâche métier_-&gt;_RecevoirAttributionMetier" source="-5614469302333947059" target="-4677593278096936880"/>
+      <transition id="5595682257307322919" name="Déterminer attribution métier_-&gt;_Fin Attribution" source="-4722436921714763158" target="-4688622120779594426"/>
+      <transition id="8939103042678668997" name="RecevoirAttributionMetier_-&gt;_Recevoir attribution" source="-4677593278096936880" target="-5410293603742957002"/>
+    </transitions>
+    <connectors/>
+    <dataDefinitions>
+      <textDataDefinition className="java.lang.String" longText="true" name="groupeCandidat" transient="false"/>
+      <textDataDefinition className="java.lang.String" longText="true" name="identifiantSupervision" transient="false"/>
+      <textDataDefinition className="java.lang.String" longText="true" name="visaDernierModificateur" transient="false"/>
+      <textDataDefinition className="java.lang.String" longText="true" name="typeTache" transient="false"/>
+      <textDataDefinition className="java.lang.String" longText="true" name="visaDossierReserve" transient="false"/>
+      <dataDefinition className="java.lang.Long" name="utilisateurTraitementMetierId" transient="false"/>
+      <textDataDefinition className="java.lang.String" longText="true" name="typeImpot" transient="false"/>
+      <dataDefinition className="java.lang.Integer" name="numeroOid" transient="false"/>
+      <textDataDefinition className="java.lang.String" longText="true" name="documentSousType" transient="false"/>
+      <textDataDefinition className="java.lang.String" longText="true" name="documentType" transient="false"/>
+      <textDataDefinition className="java.lang.String" longText="true" name="messageCorrelationId" transient="false"/>
+      <dataDefinition className="java.lang.Integer" name="periodeFiscale" transient="false"/>
+      <dataDefinition className="java.lang.Integer" name="numeroTiers" transient="false"/>
+      <textDataDefinition className="java.lang.String" longText="true" name="typeTaxation" transient="false"/>
+      <textDataDefinition className="java.lang.String" longText="true" name="etatTaxation" transient="false"/>
+      <textDataDefinition className="java.lang.String" longText="true" name="codeSegment" transient="false"/>
+      <dataDefinition className="java.lang.Boolean" name="releveFiscalBancaire" transient="false"/>
+      <dataDefinition className="java.lang.Boolean" name="controleIA" transient="false"/>
+      <dataDefinition className="java.lang.Float" name="poidsTache" transient="false"/>
+      <textDataDefinition className="java.lang.String" longText="true" name="lastMessageContent" transient="false"/>
+      <textDataDefinition className="java.lang.String" longText="true" name="regleAttribution" transient="false"/>
+      <textDataDefinition className="java.lang.String" longText="true" name="doublonTypeTaxation" transient="false"/>
+      <dataDefinition className="java.lang.Boolean" name="assujettissement360" transient="false"/>
+      <dataDefinition className="java.lang.Boolean" name="contribuableSourcierMixte" transient="false"/>
+      <dataDefinition className="java.lang.Integer" name="dateDeces" transient="false"/>
+      <textDataDefinition className="java.lang.String" longText="true" name="typeAssujettissement" transient="false"/>
+      <dataDefinition className="java.lang.Long" name="currentTaskId" transient="false"/>
+    </dataDefinitions>
+    <documentDefinitions/>
+    <flowNodes>
+      <automaticTask id="-5410293603742957002" name="Recevoir attribution">
+        <incomingTransition idref="8939103042678668997"/>
+        <outgoingTransition idref="8810603519116819945"/>
+        <connector activationEvent="ON_ENTER" connectorId="reponseAttribution" failAction="FAIL" name="reponseAttributionMetier" version="1.0.0">
+          <inputs>
+            <input name="messageContentUrl">
+              <expression expressionType="TYPE_VARIABLE" interpreter="" name="lastMessageContent" returnType="java.lang.String" id="6942676894926204885">
+                <content>lastMessageContent</content>
+              </expression>
+            </input>
+          </inputs>
+          <outputs>
+            <operation operatorType="ASSIGNMENT">
+              <leftOperand name="poidsTache" type="DATA"/>
+              <rightOperand expressionType="TYPE_INPUT" interpreter="" name="poidsTache" returnType="java.lang.Float" id="7899349490773683829">
+                <content>poidsTache</content>
+              </rightOperand>
+            </operation>
+            <operation operatorType="ASSIGNMENT">
+              <leftOperand name="typeTache" type="DATA"/>
+              <rightOperand expressionType="TYPE_INPUT" interpreter="" name="typeTache" returnType="java.lang.String" id="7751251462678353805">
+                <content>typeTache</content>
+              </rightOperand>
+            </operation>
+            <operation operatorType="ASSIGNMENT">
+              <leftOperand name="groupeCandidat" type="DATA"/>
+              <rightOperand expressionType="TYPE_INPUT" interpreter="" name="codePot" returnType="java.lang.String" id="7364042154637408178">
+                <content>codePot</content>
+              </rightOperand>
+            </operation>
+          </outputs>
+        </connector>
+        <dataDefinitions/>
+        <operations/>
+        <boundaryEvents/>
+      </automaticTask>
+      <automaticTask id="-4722436921714763158" name="Déterminer attribution métier">
+        <incomingTransition idref="8810603519116819945"/>
+        <outgoingTransition idref="5595682257307322919"/>
+        <connector activationEvent="ON_ENTER" connectorId="reglesAttributionMetier" failAction="FAIL" name="determinerAttributionMetier" version="1.1.0">
+          <inputs>
+            <input name="typeTache">
+              <expression expressionType="TYPE_VARIABLE" interpreter="" name="typeTache" returnType="java.lang.String" id="7245441320207423504">
+                <content>typeTache</content>
+              </expression>
+            </input>
+            <input name="visaDernierModificateur">
+              <expression expressionType="TYPE_VARIABLE" interpreter="" name="visaDernierModificateur" returnType="java.lang.String" id="6314712158375055784">
+                <content>visaDernierModificateur</content>
+              </expression>
+            </input>
+            <input name="numeroTiers">
+              <expression expressionType="TYPE_VARIABLE" interpreter="" name="numeroTiers" returnType="java.lang.Integer" id="5350429624780754786">
+                <content>numeroTiers</content>
+              </expression>
+            </input>
+            <input name="visaDossierReserve">
+              <expression expressionType="TYPE_VARIABLE" interpreter="" name="visaDossierReserve" returnType="java.lang.String" id="7896579582512069625">
+                <content>visaDossierReserve</content>
+              </expression>
+            </input>
+            <input name="currentActivityId">
+              <expression expressionType="TYPE_VARIABLE" interpreter="" name="currentTaskId" returnType="java.lang.Long" id="8989937369660881969">
+                <content>currentTaskId</content>
+              </expression>
+            </input>
+            <input name="groupeCandidat">
+              <expression expressionType="TYPE_VARIABLE" interpreter="" name="groupeCandidat" returnType="java.lang.String" id="4927961925007628816">
+                <content>groupeCandidat</content>
+              </expression>
+            </input>
+            <input name="periodeFiscale">
+              <expression expressionType="TYPE_VARIABLE" interpreter="" name="periodeFiscale" returnType="java.lang.Integer" id="7064218622018840930">
+                <content>periodeFiscale</content>
+              </expression>
+            </input>
+          </inputs>
+          <outputs>
+            <operation operatorType="ASSIGNMENT">
+              <leftOperand name="utilisateurTraitementMetierId" type="DATA"/>
+              <rightOperand expressionType="TYPE_INPUT" interpreter="" name="utilisateurMetierId" returnType="java.lang.Long" id="5954443523510660754">
+                <content>utilisateurMetierId</content>
+              </rightOperand>
+            </operation>
+            <operation operatorType="ASSIGNMENT">
+              <leftOperand name="groupeCandidat" type="DATA"/>
+              <rightOperand expressionType="TYPE_INPUT" interpreter="" name="groupeCandidat" returnType="java.lang.String" id="7715813953078615018">
+                <content>groupeCandidat</content>
+              </rightOperand>
+            </operation>
+            <operation operatorType="ASSIGNMENT">
+              <leftOperand name="regleAttribution" type="DATA"/>
+              <rightOperand expressionType="TYPE_INPUT" interpreter="" name="regleAttribution" returnType="java.lang.String" id="7800152935209369262">
+                <content>regleAttribution</content>
+              </rightOperand>
+            </operation>
+          </outputs>
+        </connector>
+        <dataDefinitions/>
+        <operations/>
+        <boundaryEvents/>
+      </automaticTask>
+      <automaticTask id="-5614469302333947059" name="Demander Attribution tâche métier">
+        <incomingTransition idref="6814477633979332348"/>
+        <outgoingTransition idref="6251144476827404859"/>
+        <connector activationEvent="ON_FINISH" connectorId="EsbVdJmsSendRequest" failAction="FAIL" name="demanderAttribution" version="1.0.0">
+          <inputs>
+            <input name="serviceReplyTo">
+              <expression expressionType="TYPE_PARAMETER" interpreter="" name="esbDestinationRetourBonita" returnType="java.lang.String" id="7036454841212414763">
+                <content>esbDestinationRetourBonita</content>
+              </expression>
+            </input>
+            <input name="body">
+              <expression expressionType="TYPE_READ_ONLY_SCRIPT" interpreter="GROOVY" name="bodyDemandeAttribution" returnType="java.lang.Object" id="7113513645569929532">
+                <content>import ch.vd.bpm.dperm.util.DpermValidator;
+
+def writer = new StringWriter()
+def xml = new groovy.xml.MarkupBuilder(writer)
+
+def typesAssuj = [ordinaryResidentType:"VAUDOIS_ORDINAIRE",
+	pureWithholdingType:"SOURCIER_PUR",
+	mixedWithholding137Par1Type:"SOURCIER_MIXTE1",
+	mixedWithholding137Par2Type:"SOURCIER_MIXTE2",
+	indigentType:"INDIGENT",
+	otherCantonType:"HORS_CANTON",
+	foreignCountryType:"HORS_SUISSE",
+	expenditureBasedType:"VAUDOIS_DEPENSE",
+	swissDiplomatType:"DIPLOMATE_SUISSE"]
+
+xml.'elementsAttributionTache'(
+		'xmlns':'http://www.vd.ch/fiscalite/dperm/administration/attribution/3'
+) {
+		'etapeManuelle'("TRAITEMENT_METIER")
+		'typeDocument'(documentType)
+		'sousTypeDocument'(documentSousType)
+		'typeImpot'(typeImpot)
+		if(typeTaxation) 'typeTaxation'(typeTaxation)
+		if(etatTaxation) 'etatTaxation'(etatTaxation)
+		if(codeSegment) 'codeSegment'(codeSegment)
+		if(doublonTypeTaxation) {
+			'doublon' {
+				'typeTaxationPrecedente'(doublonTypeTaxation)
+			}
+		}
+		'assujettissement' {
+			def tpyeAssuj = typesAssuj[typeAssujettissement]
+				'typeAssujettissement' (tpyeAssuj)
+				if(assujettissement360!=null) 'assujettissement360'(assujettissement360)
+				if(contribuableSourcierMixte!=null) 'contribuableSourcierMixte'(contribuableSourcierMixte)
+			}
+		
+		/*
+		if(assujettissement360 || contribuableSourcierMixte) {
+			'assujettissement'{
+				if(assujettissement360!=null) 'assujettissement360'(assujettissement360)
+				if(contribuableSourcierMixte!=null) 'contribuableSourcierMixte'(contribuableSourcierMixte)
+			}
+		}
+*/
+		if(releveFiscalBancaire) 'releveFiscalBancaire'(releveFiscalBancaire)
+		if(controleIA) 'controleIA'(controleIA)
+		if(numeroOid) 	'numeroOid'(numeroOid)
+		
+		'deces'(dateDeces!=null &amp;&amp; dateDeces &gt;0)
+}
+
+def xmlStr = writer.toString()
+DpermValidator.validate(xmlStr)
+return xmlStr</content>
+                <expression expressionType="TYPE_VARIABLE" name="documentType" returnType="java.lang.String" id="8967317228343203282">
+                  <content>documentType</content>
+                </expression>
+                <expression expressionType="TYPE_VARIABLE" name="etatTaxation" returnType="java.lang.String" id="6039599066484578462">
+                  <content>etatTaxation</content>
+                </expression>
+                <expression expressionType="TYPE_VARIABLE" name="codeSegment" returnType="java.lang.String" id="6640955584043308682">
+                  <content>codeSegment</content>
+                </expression>
+                <expression expressionType="TYPE_VARIABLE" name="controleIA" returnType="java.lang.Boolean" id="9031979835095936464">
+                  <content>controleIA</content>
+                </expression>
+                <expression expressionType="TYPE_VARIABLE" name="typeTaxation" returnType="java.lang.String" id="9117776314438477170">
+                  <content>typeTaxation</content>
+                </expression>
+                <expression expressionType="TYPE_VARIABLE" name="numeroOid" returnType="java.lang.Integer" id="8921261392583679468">
+                  <content>numeroOid</content>
+                </expression>
+                <expression expressionType="TYPE_VARIABLE" name="documentSousType" returnType="java.lang.String" id="8759097068988603073">
+                  <content>documentSousType</content>
+                </expression>
+                <expression expressionType="TYPE_VARIABLE" name="contribuableSourcierMixte" returnType="java.lang.Boolean" id="4957343747220148525">
+                  <content>contribuableSourcierMixte</content>
+                </expression>
+                <expression expressionType="TYPE_VARIABLE" name="dateDeces" returnType="java.lang.Integer" id="7052103418245166933">
+                  <content>dateDeces</content>
+                </expression>
+                <expression expressionType="TYPE_VARIABLE" name="doublonTypeTaxation" returnType="java.lang.String" id="5001646674414174289">
+                  <content>doublonTypeTaxation</content>
+                </expression>
+                <expression expressionType="TYPE_VARIABLE" name="typeImpot" returnType="java.lang.String" id="4846179290783480944">
+                  <content>typeImpot</content>
+                </expression>
+                <expression expressionType="TYPE_VARIABLE" name="assujettissement360" returnType="java.lang.Boolean" id="6074307386478758914">
+                  <content>assujettissement360</content>
+                </expression>
+                <expression expressionType="TYPE_VARIABLE" name="typeAssujettissement" returnType="java.lang.String" id="7688934017575490089">
+                  <content>typeAssujettissement</content>
+                </expression>
+                <expression expressionType="TYPE_VARIABLE" name="releveFiscalBancaire" returnType="java.lang.Boolean" id="7152362346990713991">
+                  <content>releveFiscalBancaire</content>
+                </expression>
+              </expression>
+            </input>
+            <input name="application">
+              <expression expressionType="TYPE_PARAMETER" interpreter="" name="esbApplication" returnType="java.lang.String" id="7471176691391313201">
+                <content>esbApplication</content>
+              </expression>
+            </input>
+            <input name="contentAsUrl">
+              <expression expressionType="TYPE_CONSTANT" interpreter="" name="true" returnType="java.lang.Boolean" id="7028112378029974833">
+                <content>true</content>
+              </expression>
+            </input>
+            <input name="domaine">
+              <expression expressionType="TYPE_PARAMETER" interpreter="" name="esbDomaine" returnType="java.lang.String" id="9002074024728242419">
+                <content>esbDomaine</content>
+              </expression>
+            </input>
+            <input name="contexte">
+              <expression expressionType="TYPE_CONSTANT" interpreter="" name="demandeAttributionMetier" returnType="java.lang.String" id="7730707638009899834">
+                <content>demandeAttributionMetier</content>
+              </expression>
+            </input>
+            <input name="messageName">
+              <expression expressionType="TYPE_CONSTANT" interpreter="" name="AttributionMetier" returnType="java.lang.String" id="7938664615597435925">
+                <content>AttributionMetier</content>
+              </expression>
+            </input>
+            <input name="destination">
+              <expression expressionType="TYPE_PARAMETER" interpreter="" name="esbDestinationDemandeAttribution" returnType="java.lang.String" id="8102861544929498200">
+                <content>esbDestinationDemandeAttribution</content>
+              </expression>
+            </input>
+            <input name="businessUser">
+              <expression expressionType="TYPE_CONSTANT" interpreter="" name="bpm" returnType="java.lang.String" id="5667626696265630510">
+                <content>bpm</content>
+              </expression>
+            </input>
+            <input name="connectionFactoryJndiName">
+              <expression expressionType="TYPE_CONSTANT" interpreter="" name="java:comp/env/activemq" returnType="java.lang.String" id="8987788125215326544">
+                <content>java:comp/env/activemq</content>
+              </expression>
+            </input>
+            <input name="bonitaInstance">
+              <expression expressionType="TYPE_PARAMETER" interpreter="" name="esbBonitaInstance" returnType="java.lang.String" id="8219621376913005939">
+                <content>esbBonitaInstance</content>
+              </expression>
+            </input>
+            <input name="businessId">
+              <expression expressionType="TYPE_READ_ONLY_SCRIPT" interpreter="GROOVY" name="ATTR-MET-CTB-PF-" returnType="java.lang.String" id="5649127998178609898">
+                <content>"ATTR-MET-"+numeroTiers+"-"+periodeFiscale+"-"</content>
+                <expression expressionType="TYPE_VARIABLE" name="numeroTiers" returnType="java.lang.Integer" id="7057630540951500430">
+                  <content>numeroTiers</content>
+                </expression>
+                <expression expressionType="TYPE_VARIABLE" name="periodeFiscale" returnType="java.lang.Integer" id="5516233225279489887">
+                  <content>periodeFiscale</content>
+                </expression>
+              </expression>
+            </input>
+            <input name="targetFlowNode">
+              <expression expressionType="TYPE_CONSTANT" interpreter="" name="RecevoirAttributionMetier" returnType="java.lang.String" id="5153848652947948283">
+                <content>RecevoirAttributionMetier</content>
+              </expression>
+            </input>
+          </inputs>
+          <outputs>
+            <operation operatorType="ASSIGNMENT">
+              <leftOperand name="messageCorrelationId" type="DATA"/>
+              <rightOperand expressionType="TYPE_INPUT" interpreter="" name="correlationId" returnType="java.lang.String" id="6261589086447622416">
+                <content>correlationId</content>
+              </rightOperand>
+            </operation>
+          </outputs>
+        </connector>
+        <dataDefinitions/>
+        <operations/>
+        <boundaryEvents/>
+      </automaticTask>
+      <startEvent id="-5448025565429928247" interrupting="true" name="Début Attribution">
+        <outgoingTransition idref="6814477633979332348"/>
+      </startEvent>
+      <intermediateCatchEvent description="attribution" id="-4677593278096936880" interrupting="true" name="RecevoirAttributionMetier">
+        <incomingTransition idref="6251144476827404859"/>
+        <outgoingTransition idref="8939103042678668997"/>
+        <catchMessageEventTrigger name="AttributionMetier">
+          <correlation>
+            <key expressionType="TYPE_CONSTANT" interpreter="" name="correlationId" returnType="java.lang.String" id="7530273933347100663">
+              <content>correlationId</content>
+            </key>
+            <value expressionType="TYPE_VARIABLE" interpreter="" name="messageCorrelationId" returnType="java.lang.String" id="7949553786226310107">
+              <content>messageCorrelationId</content>
+            </value>
+          </correlation>
+          <operation operatorType="ASSIGNMENT">
+            <leftOperand name="lastMessageContent" type="DATA"/>
+            <rightOperand expressionType="TYPE_VARIABLE" interpreter="" name="messageContentUrl" returnType="java.lang.String" id="6879106236806528649">
+              <content>messageContentUrl</content>
+            </rightOperand>
+          </operation>
+        </catchMessageEventTrigger>
+      </intermediateCatchEvent>
+      <endEvent id="-4688622120779594426" name="Fin Attribution">
+        <incomingTransition idref="5595682257307322919"/>
+      </endEvent>
+    </flowNodes>
+  </flowElements>
+  <dependencies>
+    <parameters>
+      <parameter name="esbDomaine" type="java.lang.String">
+        <description/>
+      </parameter>
+      <parameter name="esbApplication" type="java.lang.String">
+        <description/>
+      </parameter>
+      <parameter name="esbDestinationRetourBonita" type="java.lang.String">
+        <description/>
+      </parameter>
+      <parameter name="esbBonitaInstance" type="java.lang.String">
+        <description/>
+      </parameter>
+      <parameter name="esbDestinationDemandeAttribution" type="java.lang.String">
+        <description/>
+      </parameter>
+    </parameters>
+    <actors/>
+  </dependencies>
+</processDefinition>

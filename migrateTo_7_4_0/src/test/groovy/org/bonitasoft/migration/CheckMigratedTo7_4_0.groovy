@@ -114,7 +114,7 @@ class CheckMigratedTo7_4_0 extends Specification {
         assert auto3.getOperations().size() == 1
         assert auto3.getOperations().get(0).getLeftOperand().name == "myData"
 
-        assert definition.getFlowElementContainer().getTransitions().size() == 9
+        assert definition.getFlowElementContainer().getTransitions().size() == 11
         assertThat(definition.getFlowElementContainer().getTransitions()).extracting("source", "target")
                 .contains(tuple(auto1.getId(), userTask1.getId()))
 
@@ -147,6 +147,14 @@ class CheckMigratedTo7_4_0 extends Specification {
 
         assert definition.getFlowElementContainer().getGateway("gate1").getDefaultTransition().target == definition.getFlowElementContainer().getActivity("auto3").id
         assert (definition.getFlowElementContainer().getActivity("call") as CallActivityDefinition).processStartContractInputs.containsKey("theInput")
+
+        def intermediateCatchEvent = definition.flowElementContainer.intermediateCatchEvents.get(0)
+        intermediateCatchEvent.displayDescription.content == "addIntermediateCatchEvent display description"
+        intermediateCatchEvent.description == "addIntermediateCatchEvent description"
+
+        def intermediateThrowEvent = definition.flowElementContainer.intermediateThrowEvents.get(0)
+        intermediateThrowEvent.displayDescription.content == "addIntermediateThrowEvent display description"
+        intermediateThrowEvent.description == "addIntermediateThrowEvent description"
 
         def humanTaskInstances = processAPI.getPendingHumanTaskInstances(client.session.userId, 0, 10, ActivityInstanceCriterion.NAME_ASC)
         def flownodeDefinitionIds = humanTaskInstances.collect() {
