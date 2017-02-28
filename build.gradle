@@ -6,7 +6,7 @@ buildscript {
         maven { url 'http://repositories.rd.lan/maven/releases/' }
     }
     dependencies {
-        classpath 'org.bonitasoft.migration.plugin:bonita-migration-plugins:2.21.0'
+        classpath 'org.bonitasoft.migration.plugin:bonita-migration-plugins:2.22.0-SNAPSHOT'
     }
 }
 
@@ -20,7 +20,7 @@ allprojects {
         mavenCentral()
     }
 
-    version '2.21.0'
+    version '2.22.0-SNAPSHOT'
     group 'org.bonitasoft.migration'
 
     ext.isSP = false

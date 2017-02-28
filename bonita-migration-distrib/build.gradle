@@ -5,7 +5,7 @@ buildscript {
     }
     dependencies {
         classpath group: 'org.bonitasoft.migration.plugin', name: 'bonita-migration-plugins',
-                version: '2.21.0'
+                version: '2.22.0-SNAPSHOT'
     }
 }
 
