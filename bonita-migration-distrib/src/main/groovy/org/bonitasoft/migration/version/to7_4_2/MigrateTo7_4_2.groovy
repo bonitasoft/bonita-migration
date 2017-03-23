@@ -15,6 +15,7 @@ package org.bonitasoft.migration.version.to7_4_2
 
 import org.bonitasoft.migration.core.MigrationStep
 import org.bonitasoft.migration.core.VersionMigration
+import org.bonitasoft.migration.version.to7_4_0.UpdatePermissionMappingProperties
 
 /**
  */
@@ -24,7 +25,8 @@ class MigrateTo7_4_2 extends VersionMigration {
     def List<MigrationStep> getMigrationSteps() {
         //keep one line per step to avoid false-positive merge conflict
         return [
-                new AddManagerInvolvedConfiguration()
+                new AddManagerInvolvedConfiguration(),
+                new UpdatePermissionMappingProperties()
         ]
     }
 }
