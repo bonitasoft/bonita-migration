@@ -20,7 +20,7 @@ import org.bonitasoft.migration.core.MigrationContext
 import org.bonitasoft.migration.core.MigrationStep
 import spock.lang.Shared
 import spock.lang.Specification
-
+import spock.lang.Unroll
 /**
  * @author Laurent Leseigneur
  */
@@ -34,6 +34,8 @@ class MigrateProcessDefXmlIT extends Specification {
 
     @Shared
     DBUnitHelper dbUnitHelper = new DBUnitHelper(migrationContext)
+
+    def xmlSlurper = new XmlSlurper(false, false)
 
     def setup() {
         migrationContext.setVersion("7.2.0")
@@ -51,33 +53,66 @@ class MigrateProcessDefXmlIT extends Specification {
 
     def "should migrate call activity with contract mapping rename nodes"() {
         setup:
-        def xmlSlurper = new XmlSlurper();
-        def design715 = this.class.getClassLoader().getResource("xml/process-design_7.1.5.xml").text;
-        dbUnitHelper.context.sql.execute(
-                """
-            INSERT INTO process_content (tenantid, id, content)
-            VALUES(5, 3, ${design715})
-            """
-        )
+        def design715 = this.class.getClassLoader().getResource("xml/process-design_7.1.5.xml").text
+        insertProcessContent(7, design715)
 
         when:
         new MigrateProcessDefXml().execute(migrationContext)
 
         then:
-        def rows = dbUnitHelper.context.sql.rows("SELECT tenantid, id, content FROM process_content")
-
-        def xmlContent = rows.get(0)["content"]
-        def returnedXml
-        if (MigrationStep.DBVendor.ORACLE.equals(migrationContext.dbVendor)) {
-            returnedXml = xmlSlurper.parseText(((CLOB) xmlContent).asciiStream.text)
-        } else {
-            returnedXml = xmlSlurper.parseText(xmlContent)
-        }
+        def xmlAsString = getMigratedXml()
+        def returnedXml = xmlSlurper.parseText(xmlAsString)
         def returnChildren = returnedXml.'**'.findAll { node ->
             node.parent().name() == 'contractInput' && node.name() == 'input' && node.children().size() > 0
         }
 
         returnChildren.size() == 5
+    }
+
+    @Unroll
+    def "should remove flowNodes xml element in #fileName definition"(def fileName, def fakeId) {
+        setup:
+        insertProcessContent(fakeId, this.class.getClassLoader().getResource("xml/${fileName}").text)
+
+        when:
+        new MigrateProcessDefXml().execute(migrationContext)
+
+
+        then:
+        def xmlAsString = getMigratedXml()
+        def returnedXml = xmlSlurper.parseText(xmlAsString)
+        def returnChildren = returnedXml.'**'.findAll {
+            it instanceof Node && it.name == 'flowNodes'
+        }
+        returnChildren.size() == 0
+
+        where:
+        fileName                   | fakeId
+        "main-process_7.0.2.xml"   | 2
+        "sub-process_7.0.2.xml"    | 3
+        "process-design_7.1.5.xml" | 4
+
+    }
+
+    def insertProcessContent(id, fileContent) {
+        dbUnitHelper.context.sql.execute(
+                """
+            INSERT INTO process_content (tenantid, id, content)
+            VALUES(5, ${id}, ${fileContent})
+            """
+        )
+    }
+
+    String getMigratedXml() {
+        def returnedXml
+        def rows = dbUnitHelper.context.sql.rows("SELECT tenantid, id, content FROM process_content")
+        def xmlContent = rows.get(0)["content"]
+        if (MigrationStep.DBVendor.ORACLE == migrationContext.dbVendor) {
+            returnedXml = ((CLOB) xmlContent).asciiStream.text
+        } else {
+            returnedXml = xmlContent
+        }
+        returnedXml
     }
 
 }
