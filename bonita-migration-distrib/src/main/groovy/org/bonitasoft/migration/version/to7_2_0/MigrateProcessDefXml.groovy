@@ -23,19 +23,20 @@ import org.codehaus.groovy.runtime.InvokerHelper
  * @author Emmanuel Duchastenier
  */
 class MigrateProcessDefXml extends MigrationStep {
+    protected XmlParser xmlParser = new XmlParser(false, false)
 
     @Override
     def execute(MigrationContext context) {
         context.sql.eachRow("SELECT * FROM process_content") { processContent ->
             context.logger.debug("Process Definition before migration:\n$processContent")
-            def String migratedXML = migrateProcessDefinitionXML(context.databaseHelper.getClobContent(processContent.content))
+            String migratedXML = migrateProcessDefinitionXML(context.databaseHelper.getClobContent(processContent.content))
             context.logger.debug("Process Definition migrated to 7.2:\n$migratedXML")
             context.sql.executeUpdate("UPDATE process_content SET content = $migratedXML WHERE tenantid=${processContent.tenantid} AND id=${processContent.id}")
         }
     }
 
     String migrateProcessDefinitionXML(def String processDefinitionXMLAsText) {
-        def processDefinitionXml = new XmlParser().parseText(updateXmlNamespace(processDefinitionXMLAsText))
+        Node processDefinitionXml = xmlParser.parseText(updateXmlNamespace(processDefinitionXMLAsText))
         applyChangesOnXml(processDefinitionXml)
 
         return getContent(processDefinitionXml)
@@ -136,7 +137,7 @@ class MigrateProcessDefXml extends MigrationStep {
     }
 
 
-    def static void changeActorInitiator(Node processDefinitionXml) {
+    def changeActorInitiator(Node processDefinitionXml) {
         Node actorInitiator = processDefinitionXml.breadthFirst().find { Node it -> it.name() == "actorInitiator" } as Node
         if (actorInitiator != null) {
             def name = actorInitiator.@name;
@@ -145,32 +146,45 @@ class MigrateProcessDefXml extends MigrationStep {
         }
     }
 
-    def String updateXmlNamespace(String processDefinitionXMLAsText) {
+    String updateXmlNamespace(String processDefinitionXMLAsText) {
         processDefinitionXMLAsText.replaceAll("http://www.bonitasoft.org/ns/process/client/\\d\\.\\d", "http://www.bonitasoft.org/ns/process/client/7.2")
                 .replaceAll("<processDefinition", "<def:processDefinition")
                 .replaceAll("</processDefinition", "</def:processDefinition")
                 .replaceAll(" xmlns=", " xmlns:def=")
     }
 
-    def static void removeDependencies(Node processDefinitionXml) {
-        removeNode(processDefinitionXml, "dependencies")
+    def removeDependencies(Node processDefinitionXml) {
+        removeAllNodes(processDefinitionXml, "dependencies")
     }
 
-    private static void removeNode(Node processDefinitionXml, nodeName) {
-        Node nodeToRemove = processDefinitionXml.breadthFirst().find { Node it -> it.name() == nodeName } as Node
-        Node parent = nodeToRemove.parent()
-        def nodeToRemoveNodeIndex = parent.children().indexOf(nodeToRemove)
-        nodeToRemove.children().each { Node child ->
-            parent.children().add(nodeToRemoveNodeIndex, child)
+    def removeFlowNodes(Node processDefinitionXml) {
+        removeAllNodes(processDefinitionXml, "flowNodes")
+    }
+
+    def removeAllNodes(Node processDefinitionXml, nodeName) {
+        boolean shouldContinue = true
+        while (shouldContinue) {
+            shouldContinue = removeNode(processDefinitionXml, nodeName)
         }
-        parent.children().remove(nodeToRemove)
     }
 
-    def static void removeFlowNodes(Node processDefinitionXml) {
-        removeNode(processDefinitionXml, "flowNodes")
+    boolean removeNode(Node processDefinitionXml, nodeName) {
+        Node nodeToRemove = processDefinitionXml.depthFirst().find {
+            it instanceof Node && it.name() == nodeName
+        } as Node
+        if (nodeToRemove != null) {
+            Node parent = nodeToRemove.parent()
+            def nodeToRemoveNodeIndex = parent.children().indexOf(nodeToRemove)     
+            nodeToRemove.children().reverse().each { Node child ->
+                parent.children().add(nodeToRemoveNodeIndex, child)
+            }
+            parent.children().remove(nodeToRemove)
+            return true
+        }
+        false
     }
 
-    def static void changeIdRef(Node processDefinitionXml) {
+    def changeIdRef(Node processDefinitionXml) {
         def list = processDefinitionXml.breadthFirst().findAll {
             it instanceof Node && (it.name() == "incomingTransition" || it.name() == "outgoingTransition" || it.name() == "defaultTransition")
         } as Node[]

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<processDefinition xmlns="http://www.bonitasoft.org/ns/process/client/6.3" bos_version="6.0-SNAPSHOT" description=""
+                   displayDescription="" name="Sub" version="1.0">
+    <connectors/>
+    <flowElements>
+        <userTask actorName="Actor1" expectedDuration="3600000" id="4805806078267469994" name="Step2"
+                  priority="NORMAL"/>
+        <subProcess id="9171300082295077885" name="Event subprocess1" triggeredByEvent="true">
+            <dataDefinitions/>
+            <boundaryEvents/>
+            <flowElements>
+                <transitions>
+                    <transition id="5511869042370328741" name="7678657478785026671_-&gt;_7992062562870093827"
+                                source="7678657478785026671" target="7992062562870093827"/>
+                </transitions>
+                <connectors/>
+                <documentListDefinitions/>
+                <automaticTask id="7678657478785026671" name="Step3"/>
+            </flowElements>
+        </subProcess>
+        <startEvent id="5080920980523634921" interrupting="true" name="Start2">
+            <outgoingTransition idref="5655952275292338318"/>
+        </startEvent>
+    </flowElements>
+    <dependencies/>
+    <parameters/>
+</processDefinition>
