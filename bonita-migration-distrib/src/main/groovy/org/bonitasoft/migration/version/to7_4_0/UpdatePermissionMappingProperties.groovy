@@ -33,7 +33,7 @@ class UpdatePermissionMappingProperties extends MigrationStep {
         context.databaseHelper.appendToAllConfigurationFilesIfPropertyIsMissing(configFile, "GET|portal/custom-page/API/formsDocumentImage", "[download_document]")
         context.databaseHelper.appendToAllConfigurationFilesIfPropertyIsMissing(configFile, "GET|portal/formsDocumentImage", "[download_document]")
         context.databaseHelper.appendToAllConfigurationFilesIfPropertyIsMissing(configFile, "GET|portal/custom-page/API/formsDocumentDownload", "[download_document]")
-        context.databaseHelper.appendToAllConfigurationFilesIfPropertyIsMissing(configFile, "GET|portal/custom-page/API/downloadDocumen", "[download_document]")
+        context.databaseHelper.appendToAllConfigurationFilesIfPropertyIsMissing(configFile, "GET|portal/custom-page/API/downloadDocument", "[download_document]")
     }
 
     @Override
