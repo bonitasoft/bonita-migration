@@ -202,7 +202,7 @@ return testEntity
 
         def HumanTaskInstance[] instances
         def timeout = System.currentTimeMillis() + 3000
-        while ((instances = processAPI.getPendingHumanTaskInstances(session.userId, 0, 10, ActivityInstanceCriterion.DEFAULT)).size() < 1 && System.currentTimeMillis() < timeout) {
+        while ((instances = processAPI.getPendingHumanTaskInstances(session.userId, 0, 10, ActivityInstanceCriterion.DEFAULT)).size() < 5 && System.currentTimeMillis() < timeout) {
             Thread.sleep(200)
         }
         loginAPI.logout(session)
