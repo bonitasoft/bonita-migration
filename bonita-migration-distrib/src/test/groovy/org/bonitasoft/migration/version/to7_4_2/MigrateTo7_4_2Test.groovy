@@ -32,7 +32,7 @@ class MigrateTo7_4_2Test extends Specification {
         }.contains(stepName)
 
         where:
-        stepName << ["AddManagerInvolvedConfiguration"]
+        stepName << ["AddManagerInvolvedConfiguration", "FixProcessPermissionRuleScript"]
 
     }
 }

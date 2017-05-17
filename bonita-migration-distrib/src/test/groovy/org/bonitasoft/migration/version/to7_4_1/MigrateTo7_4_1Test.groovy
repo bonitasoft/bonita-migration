@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Bonitasoft S.A.
+ * Copyright (C) 2017 Bonitasoft S.A.
  * Bonitasoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
@@ -11,31 +11,27 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  */
-package org.bonitasoft.migration.version.to7_4_0
+package org.bonitasoft.migration.version.to7_4_1
 
 import spock.lang.Specification
 import spock.lang.Unroll
-
 /**
  * @author Laurent Leseigneur
  */
-class MigrateTo7_4_0Test extends Specification {
+class MigrateTo7_4_1Test extends Specification {
 
     @Unroll
-    def "should migration to 7.4.0 include #stepName step"(def stepName) {
+    def "should migration to 7.4.1 include step '#stepName'"(def stepName) {
         given:
-        def migrateTo740 = new MigrateTo7_4_0()
+        def migrateTo7_4_1 = new MigrateTo7_4_1()
 
         expect:
-        def steps = migrateTo740.migrationSteps
-        steps.collect {
+        migrateTo7_4_1.migrationSteps.collect {
             it.class.getSimpleName()
-        }.contains(stepName) == true
+        }.contains(stepName)
 
         where:
-        stepName << ["MigrateProcessDefinitionXmlWithXSD", "RemoveEventHandlingJob", "WarnAboutCSRF",
-                     "IncreaseVersionField", "FixProcessPermissionRuleScript"]
-
+        stepName << ["FixProcessPermissionRuleScript"]
 
     }
 }

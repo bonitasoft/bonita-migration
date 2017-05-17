@@ -226,4 +226,24 @@ class DBUnitHelper {
         true
     }
 
+    def countConfigFileWithContent(String configFile, String expectedContent) {
+        def scannedFiles = 0
+        context.sql.eachRow("""
+                SELECT tenant_id, content_type, resource_content
+                FROM configuration
+                WHERE resource_name=${configFile}       
+                ORDER BY content_type, tenant_id 
+                """) {
+            scannedFiles++
+            def tenantId = it.tenant_id as long
+            def contentType = it.content_type as String
+            String content = getBlobContentAsString(it.resource_content)
+            context.logger.debug(String.format("check configuration file content | tenant id: %3d | type: %-25s " +
+                    "| file name: %s ",
+                    tenantId, contentType, configFile))
+            assert (content == expectedContent)
+        }
+        scannedFiles
+    }
+
 }
