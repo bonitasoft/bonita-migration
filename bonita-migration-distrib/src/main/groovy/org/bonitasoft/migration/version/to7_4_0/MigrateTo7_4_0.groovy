@@ -15,6 +15,7 @@ package org.bonitasoft.migration.version.to7_4_0
 
 import org.bonitasoft.migration.core.MigrationStep
 import org.bonitasoft.migration.core.VersionMigration
+import org.bonitasoft.migration.version.to7_3_1.FixProcessPermissionRuleScript
 
 /**
  */
@@ -28,7 +29,8 @@ class MigrateTo7_4_0 extends VersionMigration {
                 new RemoveEventHandlingJob(),
                 new WarnAboutCSRF(),
                 new IncreaseVersionField(),
-                new UpdatePermissionMappingProperties()
+                new UpdatePermissionMappingProperties(),
+                new FixProcessPermissionRuleScript()
 
         ]
     }

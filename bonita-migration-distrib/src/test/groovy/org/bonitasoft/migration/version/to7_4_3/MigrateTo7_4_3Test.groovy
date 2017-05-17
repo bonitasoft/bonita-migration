@@ -21,22 +21,21 @@ import spock.lang.Unroll
  */
 class MigrateTo7_4_3Test extends Specification {
 
-    // uncomment example test below when adding new migrations steps
 
 
-    // @Unroll
-    // def "should migration to x.y.z include #stepName step"(def stepName) {
-    //     given:
-    //     def migrateTo = new MigrateTo7_4_3()
+     @Unroll
+     def "should migration to 7.4.3 include #stepName step"(def stepName) {
+         given:
+         def migrateTo = new MigrateTo7_4_3()
 
-    //     expect:
-    //     def steps = migrateTo.migrationSteps
-    //     steps.collect {
-    //         it.class.getSimpleName()
-    //     }.contains(stepName) == true
+         expect:
+         def steps = migrateTo.migrationSteps
+         steps.collect {
+             it.class.getSimpleName()
+         }.contains(stepName) == true
 
-    //     where:
-    //     stepName << ["YOUR_MIGRATION_STEP_NAME"]
+         where:
+         stepName << ["FixProcessPermissionRuleScript"]
 
-    // }
+     }
 }
