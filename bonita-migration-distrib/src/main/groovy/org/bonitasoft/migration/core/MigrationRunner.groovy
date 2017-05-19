@@ -23,10 +23,14 @@ import groovy.time.TimeCategory
  */
 class MigrationRunner {
 
+    public static final String VERSION_OVERRIDDEN = "version.overridden"
+    public static final String VERSION_OVERRIDE_BY = "version.override.by"
     List<VersionMigration> versionMigrations
     MigrationContext context
     Logger logger
     DisplayUtil displayUtil
+    def overriddenVersion
+    def overrideByVersion
 
     def run(boolean isSp) {
 
@@ -68,6 +72,8 @@ class MigrationRunner {
     }
 
     private void checkPreRequisites() {
+        checkOverrideValidity()
+
         Map<String, String[]> beforeMigrationWarnings = [:]
         versionMigrations.each {
             // Warn before running ANY migration step if there are pre-migration warnings:
@@ -85,6 +91,14 @@ class MigrationRunner {
         }
     }
 
+    def checkOverrideValidity() {
+        overriddenVersion = System.getProperty(VERSION_OVERRIDDEN)
+        overrideByVersion = System.getProperty(VERSION_OVERRIDE_BY)
+        if (overriddenVersion && !overrideByVersion || !overriddenVersion && overrideByVersion) {
+            logger.warn("System properties '$VERSION_OVERRIDDEN' and '$VERSION_OVERRIDE_BY' must be set together")
+        }
+    }
+
     private void logSuccessfullyCompleted(Date migrationStartDate, String lastVersion) {
         def end = new Date()
         logger.info("--------------------------------------------------------------------------------------")
@@ -97,10 +111,15 @@ class MigrationRunner {
     }
 
     def changePlatformVersion(Sql sql, String version) {
+        if (overriddenVersion && overrideByVersion && overriddenVersion == version) {
+            logger.info("Overriding version $version by $overrideByVersion")
+            version = overrideByVersion
+        }
         logger.info("Updating platform version in the database ...")
-        sql.executeUpdate("UPDATE platform SET previousVersion = version");
+        sql.executeUpdate("UPDATE platform SET previousVersion = version")
         sql.executeUpdate("UPDATE platform SET version = $version")
         logger.info("Platform version in database is now $version")
     }
+
 
 }
