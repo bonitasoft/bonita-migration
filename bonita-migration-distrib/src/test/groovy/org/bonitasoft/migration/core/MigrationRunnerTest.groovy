@@ -20,6 +20,7 @@ import org.bonitasoft.migration.version.to7_5_0.MigrateTo7_5_0
 import spock.lang.Specification
 import spock.lang.Unroll
 
+
 /**
  * @author Baptiste Mesta
  */
@@ -129,6 +130,58 @@ class MigrationRunnerTest extends Specification {
         then:
         1 * logger.info("Execute migration to version 7.4.9")
         1 * logger.info("Execute migration to version 7.5.0")
+    }
+
+    def "should warn when VERSION_OVERRIDDEN defined and not VERSION_OVERRIDE_BY"() {
+        setup:
+        System.setProperty(MigrationRunner.VERSION_OVERRIDDEN, "crush")
+        System.clearProperty(MigrationRunner.VERSION_OVERRIDE_BY)
+
+        when:
+        migrationRunner.checkOverrideValidity()
+
+        then:
+        1 * logger.warn("System properties '$MigrationRunner.VERSION_OVERRIDDEN' and '$MigrationRunner.VERSION_OVERRIDE_BY' must be set together")
+    }
+
+    def "should warn when VERSION_OVERRIDE_BY defined and not VERSION_OVERRIDDEN"() {
+        setup:
+        System.clearProperty(MigrationRunner.VERSION_OVERRIDDEN)
+        System.setProperty(MigrationRunner.VERSION_OVERRIDE_BY, "candy")
+
+        when:
+        migrationRunner.checkOverrideValidity()
+
+        then:
+        1 * logger.warn("System properties '$MigrationRunner.VERSION_OVERRIDDEN' and '$MigrationRunner.VERSION_OVERRIDE_BY' must be set together")
+    }
+
+    def "should override new version to VERSION_OVERRIDE_BY"() {
+        setup:
+        System.setProperty(MigrationRunner.VERSION_OVERRIDDEN, "7.5.1")
+        System.setProperty(MigrationRunner.VERSION_OVERRIDE_BY, "7.5.1.RC-02")
+        migrationRunner.checkOverrideValidity()
+
+        when:
+        migrationRunner.changePlatformVersion(sql, "7.5.1")
+
+        then:
+        1 * logger.info("Overriding version 7.5.1 by 7.5.1.RC-02")
+        1 * logger.info("Platform version in database is now 7.5.1.RC-02")
+    }
+
+    def "should not override new version if VERSION_OVERRIDE_BY does not match"() {
+        setup:
+        System.setProperty(MigrationRunner.VERSION_OVERRIDDEN, "7.5.9")
+        System.setProperty(MigrationRunner.VERSION_OVERRIDE_BY, "7.5.1.RC-02")
+        migrationRunner.checkOverrideValidity()
+
+        when:
+        migrationRunner.changePlatformVersion(sql, "7.5.3")
+
+        then:
+        0 * logger.info("Overriding version 7.5.1 by 7.5.1.RC-02")
+        1 * logger.info("Platform version in database is now 7.5.3")
     }
 
 }
