@@ -33,7 +33,7 @@
                         int offset = 0;
                         int increment = 10;
 
-                        // The list of Bonita BPM user id that already have an entry in VacationAvailable table
+                        // The list of Bonita user id that already have an entry in VacationAvailable table
                         List&lt;Long&gt; alreadyKnownEmployeeId = new ArrayList&lt;Long&gt;();
 
                         // The list of already created VacationAvailaible
