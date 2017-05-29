@@ -149,7 +149,7 @@
                             // Get a reference to ProcessAPI in order to retrieve process information
                             ProcessAPI processAPI = apiAccessor.getProcessAPI();
 
-                            // Get the process instance information and return the Bonita BPM user id of the process initiator
+                            // Get the process instance information and return the Bonita user id of the process initiator
                             return processAPI.getProcessInstance(processInstanceId).getStartedBy();
                         </content>
                         <expression expressionType="TYPE_ENGINE_CONSTANT" id="5508015492890840207" interpreter="" name="processInstanceId" returnType="java.lang.Long">
@@ -523,7 +523,7 @@
                     </input>
                     <input name="message">
                         <expression expressionType="TYPE_PATTERN" id="7923682902912057129" interpreter="" name="&lt;pattern-expression&gt;" returnType="java.lang.String">
-                            <content>Please connect to Bonita BPM Portal now</content>
+                            <content>Please connect to Bonita Portal now</content>
                         </expression>
                     </input>
                     <input name="sslSupport">
@@ -608,7 +608,7 @@
                     </input>
                     <input name="message">
                         <expression expressionType="TYPE_PATTERN" id="3109936154189214798" interpreter="" name="&lt;pattern-expression&gt;" returnType="java.lang.String">
-                            <content>Please connect to Bonita BPM Portal</content>
+                            <content>Please connect to Bonita Portal</content>
                         </expression>
                     </input>
                     <input name="sslSupport">

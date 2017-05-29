@@ -28,11 +28,11 @@ class WarnAboutCSRF extends MigrationStep {
     public static final String WARN_MESSAGE_CSRF = """CSRF security is currently disabled on this migrated platform whereas it's now enabled by default on new installations.
 As a result your platform may be vulnerable.
 We recommend you enable CSRF security by setting the property 'security.csrf.enabled' to true
-in 'setup/platform_conf/current/security-config.properties' file of Bonita BPM Platform, using the platform setup tool.
+in 'setup/platform_conf/current/security-config.properties' file of Bonita Platform, using the platform setup tool.
 
 Then make sure your resources manage the CSRF token.
 
-For more information, go to Bonita BPM documentation web site and search with keywords "CSRF security" or "setup tool"
+For more information, go to Bonita documentation web site and search with keywords "CSRF security" or "setup tool"
 
 """
     public static final String QUERY_PLATFORM_SECURITY_CONFIG = """

@@ -180,8 +180,8 @@ class Migration {
 
     def printWarning() {
         println ''
-        displayUtil.printInRectangle("", "Bonita BPM migration tool", "",
-                "This tool will migrate your installation of Bonita BPM.",
+        displayUtil.printInRectangle("", "Bonita migration tool", "",
+                "This tool will migrate your installation of Bonita.",
                 "Both database and bonita home will be modified.",
                 "Please refer to the documentation for further steps to completely migrate your production environment.",
                 "",

@@ -103,7 +103,7 @@ class MigrationRunner {
         def end = new Date()
         logger.info("--------------------------------------------------------------------------------------")
         logger.info(" Migration successfully completed, in " + TimeCategory.minus(end, migrationStartDate))
-        logger.info(" The version of your Bonita BPM installation is now: $lastVersion")
+        logger.info(" The version of your Bonita installation is now: $lastVersion")
         if (Version.valueOf(lastVersion) < Version.valueOf("7.3.0")) {
             logger.info(" Now, you must reapply the customizations of your bonita home.")
         }

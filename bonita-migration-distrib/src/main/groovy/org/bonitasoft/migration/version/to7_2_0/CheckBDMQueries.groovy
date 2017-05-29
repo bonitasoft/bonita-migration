@@ -32,7 +32,7 @@ class CheckBDMQueries extends MigrationStep {
     @Override
     def execute(MigrationContext context) {
         context.logger.info "Since 7.2.0, new queries named \"countFor*\" are added in BDM to add content-range metadata."
-        context.logger.info "For more information, search for BDM/queries in Bonita BPM documentation "
+        context.logger.info "For more information, search for BDM/queries in Bonita documentation "
         context.databaseHelper.sql.rows("select t.id,t.name, t.status from tenant t order by t.id").each { row ->
             executeOnTenant(context.logger, context.bonitaHome, row)
         }
