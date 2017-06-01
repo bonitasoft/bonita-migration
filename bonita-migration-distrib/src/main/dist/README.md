@@ -1,39 +1,61 @@
-Bonita migration tool
+Bonita Migration Tool
 =======================
 
-Configuration
---------------
+**Bonita Migration Tool** upgrades a Bonita installation to a more recent version.
 
-First change the configuration of the tool located in **Config.properties**
+# Pre-requisites
+
+Make sure you fill all pre-requisites (like making a backup of your database) by reading the
+[online documentation](http://documentation.bonitasoft.com/?page=migrate-from-an-earlier-version-of-bonita-bpm).
+
+Also note that the jdbc driver file (.jar or .zip) must be placed in the lib/ folder.
 
 
-###Parameters required
->     bonita.home <path to bonita home>
+# Configuration
+
+Configuration can be done by changing file **Config.properties**, or by setting specific command line parameters.
+
+
+## Configuration using file Config.properties
+
+Edit file **Config.properties** and changed the provided default values.
+
+
+## Configuration using command line parameters
+
+export a System variable named `BONITA_MIGRATION_DISTRIB_OPTS` and give it the value `"-Dkey1=value1 -Dkey2=value2"`  
+Eg.  
+`export BONITA_MIGRATION_DISTRIB_OPTS="-Dtarget.version=7.5.0 -Dauto.accept=true -Ddb.vendor=postgres"`
+
+
+## Accepted parameters
+
+### Mandatory parameters
+>     bonita.home <path to the existing bonita-home folder>, required for pre-7.3.0 versions only
 >     db.vendor <the kind of your database>, can be [mysql,postgres,sqlserver,oracle]
 >     db.url <the url of the database>
 >     db.driverclass <the class of the jdbc driver>
 >     db.user <the username to connect to the database>
 >     db.password <the password to connect to the database>
 
-###Optional parameters
->     target.version <the version your installation will be in>
+### Optional parameters
+>     target.version <the version your installation will be in>. If not specified, target version will be prompted interactively.
+>     auto.accept <true|false> will answer yes/no to every questions, without prompting for confirmation. Default = false.
 
-by default the target.version is the last one available
+By default the migration tool will propose you to migrate to the last Bonita version available.
 
-###Additional system properties 
-to be set with -Dkey=value
->     auto.accept <true|false> will answer yes to every questions, default = false
-
-All parameters can be overridden with system properties
 
 ### Database configuration
-* For MySql : use allowMultiQueries=true in db url
+* For MySql : add `allowMultiQueries=true` in db url
 
-Also note that the jdbc driver must be put in the lib folder. Create "lib" folder in root of project.
 
-Run the migration
------------------
-just run the **bonita-migration-distrib** or **bonita-migration-distrib.bat**
+# Run the migration
 
-example:
->     ./bonita-migration-distrib
+Once the configuration done, you can run the migration:  
+just run the **bonita-migration-distrib** or **bonita-migration-distrib.bat** script.
+
+example (Unix):
+>    ./bonita-migration-distrib
+
+example (Windows):
+>    bonita-migration-distrib.bat
