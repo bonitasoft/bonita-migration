@@ -38,7 +38,14 @@ dependencies {
 }
 
 startScripts {
-    classpath = files('$APP_HOME/lib/*')
+    // Fail on windows OS
+    // classpath = files('$APP_HOME/lib/*')
+    // Workaround inspired of https://gist.github.com/jlmelville/2bfe9277e9e2c0ff79b6
+    // and http://stackoverflow.com/questions/25227198/how-to-pass-a-reference-to-distribution-home-directory-using-gradle-application
+    doLast {
+      windowsScript.text = windowsScript.text.replaceFirst('(set CLASSPATH=%APP_HOME%\\\\lib\\\\).*', '$1*')
+      unixScript.text = unixScript.text.replaceFirst('(CLASSPATH=\\$APP_HOME/lib/).*', '$1*')
+    }
 }
 
 sourceSets {
