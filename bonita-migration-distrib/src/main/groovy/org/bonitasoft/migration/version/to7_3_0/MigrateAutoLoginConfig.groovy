@@ -66,7 +66,7 @@ class MigrateAutoLoginConfig extends MigrationStep {
             }
 
             def json = JsonOutput.toJson(tenantAutologins)
-            context.databaseHelper.updateConfigurationFileContent('autologin-v6.json', tenantId, 'TENANT_PORTAL', json.toString().bytes)
+            context.configurationHelper.updateConfigurationFileContent('autologin-v6.json', tenantId, 'TENANT_PORTAL', json.toString().bytes)
         }
         return null
     }
@@ -74,7 +74,7 @@ class MigrateAutoLoginConfig extends MigrationStep {
 
     protected insert(MigrationContext context, String fileName, long tenantId, String type) {
         this.class.getResourceAsStream("/version/to_7_3_0/platform-resources/" + fileName).withStream {
-            context.databaseHelper.insertConfigurationFile(fileName.split('/')[1], tenantId, type, it.bytes)
+            context.configurationHelper.insertConfigurationFile(fileName.split('/')[1], tenantId, type, it.bytes)
         }
     }
 

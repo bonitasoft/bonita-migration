@@ -27,11 +27,11 @@ class FixProcessPermissionRuleScript extends MigrationStep {
     def execute(MigrationContext context) {
         def newScriptContent = getNewContent()
 
-        context.databaseHelper.updateConfigurationFileContent(resourceName, 0L, 'TENANT_TEMPLATE_SECURITY_SCRIPTS',
+        context.configurationHelper.updateConfigurationFileContent(resourceName, 0L, 'TENANT_TEMPLATE_SECURITY_SCRIPTS',
                 newScriptContent)
 
         context.databaseHelper.allTenants.each { tenant ->
-            context.databaseHelper.updateConfigurationFileContent(resourceName, tenant.id as long,
+            context.configurationHelper.updateConfigurationFileContent(resourceName, tenant.id as long,
                     'TENANT_SECURITY_SCRIPTS', newScriptContent)
         }
     }
