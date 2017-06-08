@@ -49,7 +49,7 @@ class MigrateAutoLoginConfigIT extends Specification {
 
         [TENANT_ID_WITHOUT_AUTO_LOGIN, TENANT_ID_WITH_AUTO_LOGIN].each {
             dbUnitHelper.context.sql.execute("INSERT INTO tenant VALUES($it)")
-            migrationContext.databaseHelper.insertConfigurationFile("autologin-v6.json", it, 'TENANT_PORTAL', "[]".bytes)
+            migrationContext.configurationHelper.insertConfigurationFile("autologin-v6.json", it, 'TENANT_PORTAL', "[]".bytes)
         }
 
         def uniqId = 0L
