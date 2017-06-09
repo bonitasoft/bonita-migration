@@ -58,7 +58,8 @@ class UpdatePermissionMappingPropertiesIT extends Specification {
         new UpdatePermissionMappingProperties().execute(migrationContext)
 
         then:
-        dbUnitHelper.hasPropertyInConfigFile(UpdatePermissionMappingProperties.configFile, key, value)
+        def count = dbUnitHelper.countPropertyInConfigFile(UpdatePermissionMappingProperties.configFile, key, value)
+        count == 1
 
         where:
         key                                                | value
@@ -74,7 +75,7 @@ class UpdatePermissionMappingPropertiesIT extends Specification {
     }
 
     @Unroll
-    def "should not modify existing property #key if it is already present in resources-permission-mapping.properties"(key, value) {
+    def "should not modify existing property #key if it is already present in resources-permission-mapping.properties"(key) {
         given:
         def existingValue = "[existingValue]"
         migrationContext.sql.executeInsert("insert into configuration(tenant_id,content_type, resource_name, resource_content) values (?,?,?,?)",
@@ -84,18 +85,18 @@ class UpdatePermissionMappingPropertiesIT extends Specification {
         new UpdatePermissionMappingProperties().execute(migrationContext)
 
         then:
-        dbUnitHelper.hasPropertyInConfigFile(UpdatePermissionMappingProperties.configFile, key, existingValue)
+        def count = dbUnitHelper.countPropertyInConfigFile(UpdatePermissionMappingProperties.configFile, key, existingValue)
+        count == 1
 
         where:
-        key                                                | value
-        "POST|portal/custom-page/API/formFileUpload"       | "[form_file_upload]"
-        "GET|portal/custom-page/API/avatars"               | "[avatars]"
-        "GET|portal/custom-page/API/documentDownload"      | "[download_document]"
-        "GET|API/formsDocumentImage"                       | "[download_document]"
-        "GET|portal/custom-page/API/formsDocumentImage"    | "[download_document]"
-        "GET|portal/formsDocumentImage"                    | "[download_document]"
-        "GET|portal/custom-page/API/formsDocumentDownload" | "[download_document]"
-        "GET|portal/custom-page/API/downloadDocument"      | "[download_document]"
+        key << ["POST|portal/custom-page/API/formFileUpload",
+                "GET|portal/custom-page/API/avatars",
+                "GET|portal/custom-page/API/documentDownload",
+                "GET|API/formsDocumentImage",
+                "GET|portal/custom-page/API/formsDocumentImage",
+                "GET|portal/formsDocumentImage",
+                "GET|portal/custom-page/API/formsDocumentDownload",
+                "GET|portal/custom-page/API/downloadDocument"]
 
     }
 
