@@ -21,22 +21,20 @@ import spock.lang.Unroll
  */
 class MigrateTo7_5_1Test extends Specification {
 
-    // uncomment example test below when adding new migrations steps
+    @Unroll
+    "should migration to 7.5.1 include step '#stepName'"(stepName) {
+        given:
+        def migrateTo751 = new MigrateTo7_5_1()
 
+        expect:
+        def steps = migrateTo751.migrationSteps
+        steps.collect {
+            it.class.getSimpleName()
+        }.contains(stepName)
 
-    // @Unroll
-    // def "should migration to x.y.z include #stepName step"(def stepName) {
-    //     given:
-    //     def migrateTo = new MigrateTo7_5_1()
+        where:
+        stepName << ["UpdateCompoundPermissionMapping"]
 
-    //     expect:
-    //     def steps = migrateTo.migrationSteps
-    //     steps.collect {
-    //         it.class.getSimpleName()
-    //     }.contains(stepName) == true
+    }
 
-    //     where:
-    //     stepName << ["YOUR_MIGRATION_STEP_NAME"]
-
-    // }
 }

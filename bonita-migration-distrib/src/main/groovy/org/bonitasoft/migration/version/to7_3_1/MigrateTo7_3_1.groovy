@@ -25,7 +25,8 @@ class MigrateTo7_3_1 extends VersionMigration {
     def List<MigrationStep> getMigrationSteps() {
         //keep one line per step to avoid false-positive merge conflict
         return [new FixDependenciesName(),
-                new FixProcessPermissionRuleScript()
+                new FixProcessPermissionRuleScript(),
+                new UpdateCompoundPermissionMapping()
         ]
     }
 }

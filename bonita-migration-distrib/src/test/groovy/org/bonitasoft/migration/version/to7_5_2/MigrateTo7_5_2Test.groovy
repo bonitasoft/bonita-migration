@@ -14,27 +14,26 @@
 package org.bonitasoft.migration.version.to7_5_2
 
 import spock.lang.Specification
+import spock.lang.Unroll
+
 /**
  * @author Laurent Leseigneur
  */
 class MigrateTo7_5_2Test extends Specification {
 
-    // uncomment example test below when adding new migrations steps
+    @Unroll
+    "should migration to 7.5.2 include step '#stepName'"(stepName) {
+        given:
+        def migrateTo752 = new MigrateTo7_5_2()
 
+        expect:
+        def steps = migrateTo752.migrationSteps
+        steps.collect {
+            it.class.getSimpleName()
+        }.contains(stepName)
 
-    // @Unroll
-    // def "should migration to x.y.z include #stepName step"(def stepName) {
-    //     given:
-    //     def migrateTo = new MigrateTo7_5_2()
+        where:
+        stepName << ["UpdateCompoundPermissionMapping"]
 
-    //     expect:
-    //     def steps = migrateTo.migrationSteps
-    //     steps.collect {
-    //         it.class.getSimpleName()
-    //     }.contains(stepName) == true
-
-    //     where:
-    //     stepName << ["YOUR_MIGRATION_STEP_NAME"]
-
-    // }
+    }
 }
