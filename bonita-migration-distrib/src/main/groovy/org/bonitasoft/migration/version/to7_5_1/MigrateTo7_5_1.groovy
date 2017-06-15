@@ -15,15 +15,18 @@ package org.bonitasoft.migration.version.to7_5_1
 
 import org.bonitasoft.migration.core.MigrationStep
 import org.bonitasoft.migration.core.VersionMigration
+import org.bonitasoft.migration.version.to7_3_1.UpdateCompoundPermissionMapping
 
 /**
+ * @author Laurent Leseigneur
  */
 class MigrateTo7_5_1 extends VersionMigration {
 
     @Override
-    def List<MigrationStep> getMigrationSteps() {
+    List<MigrationStep> getMigrationSteps() {
         //keep one line per step to avoid false-positive merge conflict
         return [
+                new UpdateCompoundPermissionMapping()
         ]
     }
 }
