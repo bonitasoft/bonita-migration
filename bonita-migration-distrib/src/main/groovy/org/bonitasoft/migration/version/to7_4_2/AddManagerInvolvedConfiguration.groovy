@@ -15,6 +15,7 @@ package org.bonitasoft.migration.version.to7_4_2
 
 import org.bonitasoft.migration.core.MigrationContext
 import org.bonitasoft.migration.core.MigrationStep
+import org.bonitasoft.migration.core.database.ConfigurationHelper
 import org.bonitasoft.migration.core.database.DatabaseHelper
 
 /**
@@ -22,11 +23,13 @@ import org.bonitasoft.migration.core.database.DatabaseHelper
  */
 class AddManagerInvolvedConfiguration extends MigrationStep {
 
-    DatabaseHelper helper
+    DatabaseHelper databaHelper
+    ConfigurationHelper configurationHelper
 
     @Override
     execute(MigrationContext context) {
-        helper = context.databaseHelper
+        databaHelper = context.databaseHelper
+        configurationHelper = context.configurationHelper
         migrateFormConfigPropertiesFile()
         addNewCommentedBeans(context)
         migrateEngineTenantCustomPropertiesFile()
@@ -44,7 +47,7 @@ class AddManagerInvolvedConfiguration extends MigrationStep {
                 """) {
             def tenantId = it.tenant_id as long
             def contentType = it.content_type as String
-            String content = helper.getBlobContentAsString(it["resource_content"])
+            String content = databaHelper.getBlobContentAsString(it["resource_content"])
 
             content = content.replace('</beans>', "$toAppend\n</beans>")
             update(configFile, tenantId, contentType, content.bytes)
@@ -52,18 +55,18 @@ class AddManagerInvolvedConfiguration extends MigrationStep {
     }
 
     def migrateFormConfigPropertiesFile() {
-        helper.appendToAllConfigurationFilesWithName("form-config.properties", "form.authorizations.manager.allowed     false")
+        configurationHelper.appendToAllConfigurationFilesWithName("form-config.properties", "form.authorizations.manager.allowed     false")
     }
 
     def migrateEngineTenantCustomPropertiesFile() {
-        helper.appendToAllConfigurationFilesWithName("bonita-tenant-community-custom.properties", """
+        configurationHelper.appendToAllConfigurationFilesWithName("bonita-tenant-community-custom.properties", """
 # to restore pre-7.3.0 behavior (where manager of user involved in process instance could access Case Overview), use this implementation below instead:
 #bonita.tenant.authorization.rule.mapping=managerInvolvedAuthorizationRuleMappingImpl
 """)
     }
 
     private update(String fileName, long tenantId, String type, byte[] content) {
-        helper.updateConfigurationFileContent(fileName, tenantId, type, content)
+        configurationHelper.updateConfigurationFileContent(fileName, tenantId, type, content)
     }
 
     @Override

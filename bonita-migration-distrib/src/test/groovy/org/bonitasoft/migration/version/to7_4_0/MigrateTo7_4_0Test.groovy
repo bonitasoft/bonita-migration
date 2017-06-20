@@ -34,7 +34,7 @@ class MigrateTo7_4_0Test extends Specification {
 
         where:
         stepName << ["MigrateProcessDefinitionXmlWithXSD", "RemoveEventHandlingJob", "WarnAboutCSRF",
-                     "IncreaseVersionField", "FixProcessPermissionRuleScript"]
+                     "IncreaseVersionField", "FixProcessPermissionRuleScript", "UpdateCompoundPermissionMapping"]
 
 
     }

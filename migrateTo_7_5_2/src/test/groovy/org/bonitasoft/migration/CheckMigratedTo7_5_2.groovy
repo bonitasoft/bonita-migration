@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (C) 2017 Bonitasoft S.A.
  * Bonitasoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
@@ -10,31 +10,36 @@
  * You should have received a copy of the GNU Lesser General Public License along with this
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
- */
-package org.bonitasoft.migration.version.to7_3_1
+ **/
+package org.bonitasoft.migration
 
+import org.bonitasoft.engine.api.APIClient
+import org.bonitasoft.engine.test.junit.BonitaEngineRule
+import org.bonitasoft.migration.filler.FillerUtils
+import org.junit.Rule
 import spock.lang.Specification
-import spock.lang.Unroll
 
 /**
  * @author Laurent Leseigneur
  */
-class MigrateTo7_3_1Test extends Specification {
+class CheckMigratedTo7_5_2 extends Specification {
 
-    @Unroll
-    def "should migration to 7.3.1 include #stepName step"(def stepName) {
+
+    @Rule
+    public BonitaEngineRule bonitaEngineRule = BonitaEngineRule.create().reuseExistingPlatform()
+
+    def setupSpec() {
+        FillerUtils.initializeEngineSystemProperties()
+    }
+
+    def "verify we can login on migrated platform"() {
         given:
-        def migrateTo731 = new MigrateTo7_3_1()
+        def client = new APIClient()
 
-        expect:
-        def steps = migrateTo731.migrationSteps
-        steps.collect {
-            it.class.getSimpleName()
-        }.contains(stepName) == true
+        when:
+        client.login("install", "install")
 
-        where:
-        stepName << ["FixDependenciesName", "FixProcessPermissionRuleScript", "UpdateCompoundPermissionMapping"]
-
-
+        then:
+        client.session != null
     }
 }

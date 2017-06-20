@@ -20,6 +20,8 @@ class SplitRestSecurityConfigIT extends Specification {
     @Shared
     DBUnitHelper dbUnitHelper = new DBUnitHelper(migrationContext)
 
+    def LINE_SEPARATOR = System.getProperty("line.separator")
+
     def setup() {
         dropTestTables()
         migrationContext.setVersion("7.5.0")
@@ -51,7 +53,7 @@ class SplitRestSecurityConfigIT extends Specification {
 
         def customProps = dbUnitHelper.getBlobContentAsString(migrationContext.sql.firstRow("""SELECT resource_content FROM configuration WHERE tenant_id = 1 and content_type = 'TENANT_PORTAL'
                 AND resource_name = 'resources-permissions-mapping-custom.properties'""")["resource_content"])
-        def expectedCustomProps = this.getClass().getResourceAsStream("/version/to_7_5_0/resources-permissions-mapping-custom.properties").text.concat('\nGET|acme/business=[acme_permission]')
+        def expectedCustomProps = this.getClass().getResourceAsStream("/version/to_7_5_0/resources-permissions-mapping-custom.properties").text.concat("\nGET|acme/business=[acme_permission]")
 
         def internalPropFile = dbUnitHelper.getBlobContentAsString(migrationContext.sql.firstRow("""SELECT resource_content FROM configuration WHERE tenant_id = 1 and content_type = 'TENANT_PORTAL'
                 AND resource_name = 'resources-permissions-mapping-internal.properties'""")["resource_content"])
@@ -59,7 +61,8 @@ class SplitRestSecurityConfigIT extends Specification {
         then:
 
         defaultProps == '# Identity resources\nGET|identity/user=[organization_visualization]'
-        customProps == expectedCustomProps
+        //windows-compliant assert
+        customProps.replace(LINE_SEPARATOR,"\n") == expectedCustomProps.replace(LINE_SEPARATOR,"\n")
         internalPropFile == '# for internal use only'
     }
 
@@ -80,7 +83,8 @@ class SplitRestSecurityConfigIT extends Specification {
 
         def customProps = dbUnitHelper.getBlobContentAsString(migrationContext.sql.firstRow("""SELECT resource_content FROM configuration WHERE tenant_id = 1 and content_type = 'TENANT_PORTAL'
                 AND resource_name = 'compound-permissions-mapping-custom.properties'""")["resource_content"])
-        def expectedCustomProps = this.getClass().getResourceAsStream("/version/to_7_5_0/compound-permissions-mapping-custom.properties").text.concat('\nmyCustomCompound=[some_permission, some_other_permission]')
+
+        def expectedCustomProps = this.getClass().getResourceAsStream("/version/to_7_5_0/compound-permissions-mapping-custom.properties").text.concat("\nmyCustomCompound=[some_permission, some_other_permission]")
 
         def internalPropFile = dbUnitHelper.getBlobContentAsString(migrationContext.sql.firstRow("""SELECT resource_content FROM configuration WHERE tenant_id = 1 and content_type = 'TENANT_PORTAL'
                 AND resource_name = 'compound-permissions-mapping-internal.properties'""")["resource_content"])
@@ -88,7 +92,8 @@ class SplitRestSecurityConfigIT extends Specification {
         then:
 
         defaultProps == "# List of permissions used for each pages.\ntenantMaintenance=[tenant_platform_management, tenant_platform_visualization, download_document, avatars]"
-        customProps == expectedCustomProps
+        //windows-compliant assert
+        customProps.replace(LINE_SEPARATOR,"\n") == expectedCustomProps.replace(LINE_SEPARATOR,"\n")
         internalPropFile == '# for internal use only'
     }
 

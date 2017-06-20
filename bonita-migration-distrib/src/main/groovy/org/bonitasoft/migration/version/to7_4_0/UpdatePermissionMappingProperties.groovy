@@ -26,14 +26,14 @@ class UpdatePermissionMappingProperties extends MigrationStep {
 
     @Override
     def execute(MigrationContext context) {
-        context.databaseHelper.appendToAllConfigurationFilesIfPropertyIsMissing(configFile, "POST|portal/custom-page/API/formFileUpload", "[form_file_upload]")
-        context.databaseHelper.appendToAllConfigurationFilesIfPropertyIsMissing(configFile, "GET|portal/custom-page/API/avatars", "[avatars]")
-        context.databaseHelper.appendToAllConfigurationFilesIfPropertyIsMissing(configFile, "GET|portal/custom-page/API/documentDownload", "[download_document]")
-        context.databaseHelper.appendToAllConfigurationFilesIfPropertyIsMissing(configFile, "GET|API/formsDocumentImage", "[download_document]")
-        context.databaseHelper.appendToAllConfigurationFilesIfPropertyIsMissing(configFile, "GET|portal/custom-page/API/formsDocumentImage", "[download_document]")
-        context.databaseHelper.appendToAllConfigurationFilesIfPropertyIsMissing(configFile, "GET|portal/formsDocumentImage", "[download_document]")
-        context.databaseHelper.appendToAllConfigurationFilesIfPropertyIsMissing(configFile, "GET|portal/custom-page/API/formsDocumentDownload", "[download_document]")
-        context.databaseHelper.appendToAllConfigurationFilesIfPropertyIsMissing(configFile, "GET|portal/custom-page/API/downloadDocument", "[download_document]")
+        context.configurationHelper.appendToAllConfigurationFilesIfPropertyIsMissing(configFile, "POST|portal/custom-page/API/formFileUpload", "[form_file_upload]")
+        context.configurationHelper.appendToAllConfigurationFilesIfPropertyIsMissing(configFile, "GET|portal/custom-page/API/avatars", "[avatars]")
+        context.configurationHelper.appendToAllConfigurationFilesIfPropertyIsMissing(configFile, "GET|portal/custom-page/API/documentDownload", "[download_document]")
+        context.configurationHelper.appendToAllConfigurationFilesIfPropertyIsMissing(configFile, "GET|API/formsDocumentImage", "[download_document]")
+        context.configurationHelper.appendToAllConfigurationFilesIfPropertyIsMissing(configFile, "GET|portal/custom-page/API/formsDocumentImage", "[download_document]")
+        context.configurationHelper.appendToAllConfigurationFilesIfPropertyIsMissing(configFile, "GET|portal/formsDocumentImage", "[download_document]")
+        context.configurationHelper.appendToAllConfigurationFilesIfPropertyIsMissing(configFile, "GET|portal/custom-page/API/formsDocumentDownload", "[download_document]")
+        context.configurationHelper.appendToAllConfigurationFilesIfPropertyIsMissing(configFile, "GET|portal/custom-page/API/downloadDocument", "[download_document]")
     }
 
     @Override

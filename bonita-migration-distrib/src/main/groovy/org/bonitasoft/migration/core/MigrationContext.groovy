@@ -16,6 +16,7 @@ package org.bonitasoft.migration.core
 
 import com.github.zafarkhaja.semver.Version
 import groovy.sql.Sql
+import org.bonitasoft.migration.core.database.ConfigurationHelper
 import org.bonitasoft.migration.core.database.DatabaseHelper
 
 /**
@@ -49,6 +50,7 @@ class MigrationContext {
     Version targetVersion
     Logger logger
     DatabaseHelper databaseHelper
+    ConfigurationHelper configurationHelper
 
 
     public MigrationContext() {
@@ -109,6 +111,7 @@ class MigrationContext {
         sql = MigrationUtil.getSqlConnection(dburl, dbUser, dbPassword, dbDriverClassName)
         autoCommitOn(sql.connection)
         databaseHelper = new DatabaseHelper(dbVendor: dbVendor, sql: sql, logger: logger)
+        configurationHelper=new ConfigurationHelper(sql:sql,logger:logger,databaseHelper: databaseHelper)
     }
 
     @groovy.transform.CompileStatic
