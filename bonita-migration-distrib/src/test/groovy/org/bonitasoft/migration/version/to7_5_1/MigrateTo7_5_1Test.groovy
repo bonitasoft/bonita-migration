@@ -33,7 +33,7 @@ class MigrateTo7_5_1Test extends Specification {
         }.contains(stepName)
 
         where:
-        stepName << ["UpdateCompoundPermissionMapping"]
+        stepName << ["UpdateCompoundPermissionMapping", "FixProcessSupervisorPermissionRuleScript"]
 
     }
 
