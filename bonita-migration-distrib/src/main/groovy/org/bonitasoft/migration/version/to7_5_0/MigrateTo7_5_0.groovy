@@ -17,6 +17,7 @@ import org.bonitasoft.migration.core.MigrationStep
 import org.bonitasoft.migration.core.VersionMigration
 import org.bonitasoft.migration.version.to7_3_1.FixProcessPermissionRuleScript
 import org.bonitasoft.migration.version.to7_3_1.UpdateCompoundPermissionMapping
+import org.bonitasoft.migration.version.to7_3_3.FixProcessSupervisorPermissionRuleScript
 
 /**
  * @author Emmanuel Duchastenier
@@ -34,7 +35,8 @@ If your JRE or JDK is older than 1.8, you need to update your target environment
         return [
                 new SplitRestSecurityConfig(),
                 new FixProcessPermissionRuleScript(),
-                new UpdateCompoundPermissionMapping()
+                new UpdateCompoundPermissionMapping(),
+                new FixProcessSupervisorPermissionRuleScript()
         ]
     }
 
