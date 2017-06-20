@@ -201,7 +201,7 @@ class DBUnitHelper {
         }
     }
 
-    def hasPropertyInConfigFile(String configFile, String expectedKey, String expectedValue) {
+    def countPropertyInConfigFile(String configFile, String expectedKey, String expectedValue) {
         def scannedFiles = 0
         context.sql.eachRow("""
                 SELECT tenant_id, content_type, resource_content
@@ -212,18 +212,18 @@ class DBUnitHelper {
             scannedFiles++
             def tenantId = it.tenant_id as long
             def contentType = it.content_type as String
-            def properties = new Properties();
+            def properties = new Properties()
             String content = getBlobContentAsString(it.resource_content)
             context.logger.debug(String.format("check that property file | tenant id: %3d | type: %-25s | file name: %s | contains %s = %s",
                     tenantId, contentType, configFile, expectedKey, expectedValue))
-            StringReader reader=new StringReader(content)
+            StringReader reader = new StringReader(content)
             properties.load(reader)
             assert (properties.containsKey(expectedKey))
             assert (properties.get(expectedKey) == expectedValue)
 
         }
-        assert (scannedFiles > 0)
-        true
+        scannedFiles
+
     }
 
     def countConfigFileWithContent(String configFile, String expectedContent) {

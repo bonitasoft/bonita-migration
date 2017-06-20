@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Bonitasoft S.A.
+ * Copyright (C) 2017 Bonitasoft S.A.
  * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
@@ -11,21 +11,21 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
-
-package org.bonitasoft.migration.version.to7_3_1
+package org.bonitasoft.migration.version.to7_5_2
 
 import org.bonitasoft.migration.core.MigrationStep
 import org.bonitasoft.migration.core.VersionMigration
+import org.bonitasoft.migration.version.to7_3_1.UpdateCompoundPermissionMapping
 
 /**
+ * @author Laurent Leseigneur
  */
-class MigrateTo7_3_1 extends VersionMigration {
+class MigrateTo7_5_2 extends VersionMigration {
 
     @Override
     def List<MigrationStep> getMigrationSteps() {
         //keep one line per step to avoid false-positive merge conflict
-        return [new FixDependenciesName(),
-                new FixProcessPermissionRuleScript(),
+        return [
                 new UpdateCompoundPermissionMapping()
         ]
     }

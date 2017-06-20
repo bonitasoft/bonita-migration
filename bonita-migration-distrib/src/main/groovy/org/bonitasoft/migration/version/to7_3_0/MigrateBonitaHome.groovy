@@ -99,7 +99,7 @@ class MigrateBonitaHome extends MigrationStep {
 
     protected insert(MigrationContext context, String fileName, long tenantId, String type) {
         this.class.getResourceAsStream("/version/to_7_3_0/platform-resources/" + fileName).withStream {
-            context.databaseHelper.insertConfigurationFile(fileName.split('/')[1], tenantId, type, it.bytes)
+            context.configurationHelper.insertConfigurationFile(fileName.split('/')[1], tenantId, type, it.bytes)
         }
     }
 
