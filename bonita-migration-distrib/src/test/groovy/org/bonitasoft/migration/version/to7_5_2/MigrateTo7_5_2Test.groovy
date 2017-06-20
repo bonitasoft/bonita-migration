@@ -1,6 +1,6 @@
-/**
- * Copyright (C) 2015 Bonitasoft S.A.
- * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
+/*
+ * Copyright (C) 2017 Bonitasoft S.A.
+ * Bonitasoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
  * version 2.1 of the License.
@@ -10,23 +10,30 @@
  * You should have received a copy of the GNU Lesser General Public License along with this
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
- **/
+ */
+package org.bonitasoft.migration.version.to7_5_2
 
-package org.bonitasoft.migration.version.to7_3_1
-
-import org.bonitasoft.migration.core.MigrationStep
-import org.bonitasoft.migration.core.VersionMigration
+import spock.lang.Specification
+import spock.lang.Unroll
 
 /**
+ * @author Laurent Leseigneur
  */
-class MigrateTo7_3_1 extends VersionMigration {
+class MigrateTo7_5_2Test extends Specification {
 
-    @Override
-    def List<MigrationStep> getMigrationSteps() {
-        //keep one line per step to avoid false-positive merge conflict
-        return [new FixDependenciesName(),
-                new FixProcessPermissionRuleScript(),
-                new UpdateCompoundPermissionMapping()
-        ]
+    @Unroll
+    "should migration to 7.5.2 include step '#stepName'"(stepName) {
+        given:
+        def migrateTo752 = new MigrateTo7_5_2()
+
+        expect:
+        def steps = migrateTo752.migrationSteps
+        steps.collect {
+            it.class.getSimpleName()
+        }.contains(stepName)
+
+        where:
+        stepName << ["UpdateCompoundPermissionMapping"]
+
     }
 }

@@ -15,6 +15,7 @@ package org.bonitasoft.migration.version.to7_4_1
 
 import spock.lang.Specification
 import spock.lang.Unroll
+
 /**
  * @author Laurent Leseigneur
  */
@@ -31,7 +32,7 @@ class MigrateTo7_4_1Test extends Specification {
         }.contains(stepName)
 
         where:
-        stepName << ["FixProcessPermissionRuleScript"]
+        stepName << ["FixProcessPermissionRuleScript", "UpdateCompoundPermissionMapping"]
 
     }
 }

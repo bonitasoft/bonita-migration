@@ -85,11 +85,11 @@ class SplitRestSecurityConfig extends MigrationStep {
 
 
     protected insert(MigrationContext context, String fileName, long tenantId, String type, byte[] content) {
-        context.databaseHelper.insertConfigurationFile(fileName, tenantId, type, content)
+        context.configurationHelper.insertConfigurationFile(fileName, tenantId, type, content)
     }
 
     protected update(MigrationContext context, String fileName, long tenantId, String type, byte[] content) {
-        context.databaseHelper.updateConfigurationFileContent(fileName, tenantId, type, content)
+        context.configurationHelper.updateConfigurationFileContent(fileName, tenantId, type, content)
     }
 
     @Override
