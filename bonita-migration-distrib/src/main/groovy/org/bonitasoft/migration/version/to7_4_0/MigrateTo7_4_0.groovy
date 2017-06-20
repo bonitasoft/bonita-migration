@@ -17,6 +17,7 @@ import org.bonitasoft.migration.core.MigrationStep
 import org.bonitasoft.migration.core.VersionMigration
 import org.bonitasoft.migration.version.to7_3_1.FixProcessPermissionRuleScript
 import org.bonitasoft.migration.version.to7_3_1.UpdateCompoundPermissionMapping
+import org.bonitasoft.migration.version.to7_3_3.FixProcessSupervisorPermissionRuleScript
 
 /**
  */
@@ -32,7 +33,8 @@ class MigrateTo7_4_0 extends VersionMigration {
                 new IncreaseVersionField(),
                 new UpdatePermissionMappingProperties(),
                 new FixProcessPermissionRuleScript(),
-                new UpdateCompoundPermissionMapping()
+                new UpdateCompoundPermissionMapping(),
+                new FixProcessSupervisorPermissionRuleScript()
         ]
     }
 }
