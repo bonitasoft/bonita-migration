@@ -15,6 +15,7 @@ package org.bonitasoft.migration.version.to7_5_0
 
 import org.bonitasoft.migration.core.MigrationStep
 import org.bonitasoft.migration.core.VersionMigration
+import org.bonitasoft.migration.version.to7_3_1.AddAvatarPermission
 import org.bonitasoft.migration.version.to7_3_1.FixProcessPermissionRuleScript
 import org.bonitasoft.migration.version.to7_3_1.UpdateCompoundPermissionMapping
 import org.bonitasoft.migration.version.to7_3_3.FixProcessSupervisorPermissionRuleScript
@@ -36,7 +37,8 @@ If your JRE or JDK is older than 1.8, you need to update your target environment
                 new SplitRestSecurityConfig(),
                 new FixProcessPermissionRuleScript(),
                 new UpdateCompoundPermissionMapping(),
-                new FixProcessSupervisorPermissionRuleScript()
+                new FixProcessSupervisorPermissionRuleScript(),
+                new AddAvatarPermission()
         ]
     }
 

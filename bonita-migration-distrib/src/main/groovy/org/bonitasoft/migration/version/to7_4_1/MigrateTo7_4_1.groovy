@@ -15,13 +15,12 @@ package org.bonitasoft.migration.version.to7_4_1
 
 import org.bonitasoft.migration.core.MigrationStep
 import org.bonitasoft.migration.core.VersionMigration
+import org.bonitasoft.migration.version.to7_3_1.AddAvatarPermission
 import org.bonitasoft.migration.version.to7_3_1.FixProcessPermissionRuleScript
 import org.bonitasoft.migration.version.to7_3_1.UpdateCompoundPermissionMapping
 import org.bonitasoft.migration.version.to7_3_3.FixProcessSupervisorPermissionRuleScript
 import org.bonitasoft.migration.version.to7_4_0.UpdatePermissionMappingProperties
 
-/**
- */
 class MigrateTo7_4_1 extends VersionMigration {
 
     @Override
@@ -31,7 +30,8 @@ class MigrateTo7_4_1 extends VersionMigration {
                 new UpdatePermissionMappingProperties(),
                 new FixProcessPermissionRuleScript(),
                 new UpdateCompoundPermissionMapping(),
-                new FixProcessSupervisorPermissionRuleScript()
+                new FixProcessSupervisorPermissionRuleScript(),
+                new AddAvatarPermission()
         ]
     }
 }
