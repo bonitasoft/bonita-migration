@@ -286,4 +286,48 @@ class ConfigurationHelperTest extends Specification {
 
     }
 
+    def "should update entry if permission value is missing in property file"() {
+        setup:
+        def captured = []
+        def fileName = "existingFile"
+        def existingContent = """#comment key0=[perm0]
+wrong line
+key1=[perm1]
+key2=[perm1,permToAdd,perm2]
+key3=[perm1,perm2
+unknown_key=[perm1]
+"""
+
+        databaseHelper.getBlobContentAsString(_) >> existingContent
+        def results = [[tenant_id: 0L, content_type: "template_type", resource_content: existingContent.bytes],
+                       [tenant_id: 5L, content_type: "type", resource_content: existingContent.bytes],
+                       [tenant_id: 8L, content_type: "type", resource_content: existingContent.bytes]]
+        sql.rows("""
+                SELECT tenant_id, content_type, resource_content
+                FROM configuration
+                WHERE resource_name=${fileName}       
+                ORDER BY content_type, tenant_id 
+                """) >> results
+
+        when:
+        configurationHelper.updateAllConfigurationFilesIfPermissionValueIsMissing(fileName, ['key1', 'key2', 'key3'], "permToAdd")
+
+        then:
+        3 * sql.execute({ captured.add(it) })
+        def expectedContent = """#comment key0=[perm0]
+wrong line
+key1=[perm1, permToAdd]
+key2=[perm1,permToAdd,perm2]
+key3=[perm1,perm2, permToAdd]
+unknown_key=[perm1]"""
+
+        captured == ["UPDATE configuration SET resource_content = ${expectedContent.bytes} WHERE tenant_id = 0 " +
+                             "AND content_type = template_type AND resource_name = ${fileName}",
+                     "UPDATE configuration SET resource_content = ${expectedContent.bytes} WHERE tenant_id = 5 " +
+                             "AND content_type = type AND resource_name = ${fileName}",
+                     "UPDATE configuration SET resource_content = ${expectedContent.bytes} WHERE tenant_id = 8 " +
+                             "AND content_type = type AND resource_name = ${fileName}"]
+
+    }
+
 }

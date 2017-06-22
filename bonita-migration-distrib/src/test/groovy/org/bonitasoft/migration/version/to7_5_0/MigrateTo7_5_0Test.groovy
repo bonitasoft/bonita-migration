@@ -22,7 +22,7 @@ import spock.lang.Unroll
 class MigrateTo7_5_0Test extends Specification {
 
     @Unroll
-    "should migration to 7.5.0 include step '#stepName'"(stepName) {
+    def "should migration to 7.5.0 include step '#stepName'"(stepName) {
         given:
         def migrateTo750 = new MigrateTo7_5_0()
 
@@ -33,7 +33,7 @@ class MigrateTo7_5_0Test extends Specification {
         }.contains(stepName)
 
         where:
-        stepName << ["SplitRestSecurityConfig", "FixProcessPermissionRuleScript", "UpdateCompoundPermissionMapping", "FixProcessSupervisorPermissionRuleScript"]
+        stepName << ["SplitRestSecurityConfig", "FixProcessPermissionRuleScript", "UpdateCompoundPermissionMapping", "FixProcessSupervisorPermissionRuleScript", "AddAvatarPermission"]
 
     }
 

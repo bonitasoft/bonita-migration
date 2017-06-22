@@ -15,6 +15,7 @@ package org.bonitasoft.migration.version.to7_5_2
 
 import org.bonitasoft.migration.core.MigrationStep
 import org.bonitasoft.migration.core.VersionMigration
+import org.bonitasoft.migration.version.to7_3_1.AddAvatarPermission
 import org.bonitasoft.migration.version.to7_3_1.UpdateCompoundPermissionMapping
 import org.bonitasoft.migration.version.to7_3_3.FixProcessSupervisorPermissionRuleScript
 
@@ -28,7 +29,8 @@ class MigrateTo7_5_2 extends VersionMigration {
         //keep one line per step to avoid false-positive merge conflict
         return [
                 new UpdateCompoundPermissionMapping(),
-                new FixProcessSupervisorPermissionRuleScript()
+                new FixProcessSupervisorPermissionRuleScript(),
+                new AddAvatarPermission()
         ]
     }
 }
