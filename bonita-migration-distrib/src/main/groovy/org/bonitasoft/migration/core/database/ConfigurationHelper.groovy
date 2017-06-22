@@ -15,6 +15,7 @@ package org.bonitasoft.migration.core.database
 
 import groovy.sql.Sql
 import org.bonitasoft.migration.core.Logger
+import org.bonitasoft.migration.core.MigrationContext
 
 /**
  * Created by laurentleseigneur on 01/06/2017.
@@ -114,6 +115,45 @@ class ConfigurationHelper {
             } else {
                 logger.info(String.format("configuration file already up to date | tenant id: %3d | type: %-25s | file name: %s", tenantId, it.content_type, fileName))
             }
+        }
+        if (foundFiles == 0) {
+            throw new IllegalArgumentException("configuration file ${fileName} not found in database.")
+        }
+    }
+
+    def void updateAllConfigurationFilesIfPermissionValueIsMissing(String fileName, List<String> keysToConsider, String permissionValue) {
+        def foundFiles = 0
+        def results = sql.rows("""
+                SELECT tenant_id, content_type, resource_content
+                FROM configuration
+                WHERE resource_name=${fileName}       
+                ORDER BY content_type, tenant_id 
+                """)
+        results.each {
+            foundFiles++
+            def currentProperties = databaseHelper.getBlobContentAsString(it.resource_content).split("\n")
+            def newProperties = new ArrayList<String>();
+            def tenantId = it.tenant_id as long
+            currentProperties.each { String line ->
+                if (!line.startsWith("#") && !line.contains(permissionValue)) {
+                    def keySeparatorIndex = line.indexOf("=")
+                    if (keySeparatorIndex < 0 || !keysToConsider.contains(line.substring(0, keySeparatorIndex))) {
+                        newProperties.add(line)
+                    } else {
+                        // Regular values end with ]
+                        // for instance no_avatar_permission=[organization_visualization, profile_member_visualization]
+                        def lastBracketIndex = line.lastIndexOf("]")
+                        if (lastBracketIndex < 0) {
+                            lastBracketIndex = line.length()
+                        }
+                        newProperties.add(line.substring(0, lastBracketIndex) + ", " + permissionValue + "]")
+                    }
+                } else {
+                    newProperties.add(line)
+                }
+            }
+            updateConfigurationFileContent(fileName, tenantId, it.content_type, newProperties.join("\n").bytes)
+            logger.info(String.format("update configuration file | tenant id: %3d | type: %-25s | file name: %s", tenantId, it.content_type, fileName))
         }
         if (foundFiles == 0) {
             throw new IllegalArgumentException("configuration file ${fileName} not found in database.")
