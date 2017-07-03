@@ -19,6 +19,7 @@ import org.bonitasoft.migration.version.to7_3_1.AddAvatarPermission
 import org.bonitasoft.migration.version.to7_3_1.FixProcessPermissionRuleScript
 import org.bonitasoft.migration.version.to7_3_1.UpdateCompoundPermissionMapping
 import org.bonitasoft.migration.version.to7_3_3.FixProcessSupervisorPermissionRuleScript
+import org.bonitasoft.migration.version.to7_4_0.AddCSRFCookieSecure
 import org.bonitasoft.migration.version.to7_4_0.UpdatePermissionMappingProperties
 
 class MigrateTo7_4_3 extends VersionMigration {
@@ -32,6 +33,7 @@ class MigrateTo7_4_3 extends VersionMigration {
                 new UpdateCompoundPermissionMapping(),
                 new FixProcessSupervisorPermissionRuleScript(),
                 new AddAvatarPermission()
+                , new AddCSRFCookieSecure()
         ]
     }
 }

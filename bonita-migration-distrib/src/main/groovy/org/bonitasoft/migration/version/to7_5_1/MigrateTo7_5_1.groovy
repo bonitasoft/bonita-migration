@@ -18,6 +18,7 @@ import org.bonitasoft.migration.core.VersionMigration
 import org.bonitasoft.migration.version.to7_3_1.AddAvatarPermission
 import org.bonitasoft.migration.version.to7_3_1.UpdateCompoundPermissionMapping
 import org.bonitasoft.migration.version.to7_3_3.FixProcessSupervisorPermissionRuleScript
+import org.bonitasoft.migration.version.to7_4_0.AddCSRFCookieSecure
 
 /**
  * @author Laurent Leseigneur
@@ -31,6 +32,7 @@ class MigrateTo7_5_1 extends VersionMigration {
                 new UpdateCompoundPermissionMapping(),
                 new FixProcessSupervisorPermissionRuleScript(),
                 new AddAvatarPermission()
+                , new AddCSRFCookieSecure()
         ]
     }
 }
