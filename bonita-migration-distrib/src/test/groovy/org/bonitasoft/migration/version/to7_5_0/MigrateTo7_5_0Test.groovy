@@ -33,7 +33,14 @@ class MigrateTo7_5_0Test extends Specification {
         }.contains(stepName)
 
         where:
-        stepName << ["SplitRestSecurityConfig", "FixProcessPermissionRuleScript", "UpdateCompoundPermissionMapping", "FixProcessSupervisorPermissionRuleScript", "AddAvatarPermission"]
+        stepName << [
+                "SplitRestSecurityConfig"
+                , "FixProcessPermissionRuleScript"
+                , "UpdateCompoundPermissionMapping"
+                , "FixProcessSupervisorPermissionRuleScript"
+                , "AddAvatarPermission"
+                , "AddCSRFCookieSecure"
+        ]
 
     }
 

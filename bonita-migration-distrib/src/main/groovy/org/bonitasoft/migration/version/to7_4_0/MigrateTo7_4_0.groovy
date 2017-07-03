@@ -37,6 +37,7 @@ class MigrateTo7_4_0 extends VersionMigration {
                 new UpdateCompoundPermissionMapping(),
                 new FixProcessSupervisorPermissionRuleScript(),
                 new AddAvatarPermission()
+                , new AddCSRFCookieSecure()
         ]
     }
 }

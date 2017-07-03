@@ -92,7 +92,7 @@ class ConfigurationHelper {
         }
     }
 
-    def appendToAllConfigurationFilesIfPropertyIsMissing(String fileName, String propertyKey, String propertyValue) {
+    def appendToAllConfigurationFilesIfPropertyIsMissing(String fileName, String propertyKey, String propertyValue, String keyValueSeparator) {
         def foundFiles = 0
         def results = sql.rows("""
                 SELECT tenant_id, content_type, resource_content
@@ -108,7 +108,7 @@ class ConfigurationHelper {
             def tenantId = it.tenant_id as long
             properties.load(stringReader)
             if (!properties.containsKey(propertyKey)) {
-                def newEntry = "${propertyKey}=${propertyValue}"
+                def newEntry = "${propertyKey}${keyValueSeparator}${propertyValue}"
                 content += "\n$newEntry"
                 updateConfigurationFileContent(fileName, tenantId, it.content_type, content.bytes)
                 logger.info(String.format("update configuration file | tenant id: %3d | type: %-25s | file name: %s | new property: %s", tenantId, it.content_type, fileName, newEntry))
@@ -119,6 +119,10 @@ class ConfigurationHelper {
         if (foundFiles == 0) {
             throw new IllegalArgumentException("configuration file ${fileName} not found in database.")
         }
+    }
+
+    def appendToAllConfigurationFilesIfPropertyIsMissing(String fileName, String propertyKey, String propertyValue) {
+        appendToAllConfigurationFilesIfPropertyIsMissing(fileName, propertyKey, propertyValue, "=")
     }
 
     def void updateAllConfigurationFilesIfPermissionValueIsMissing(String fileName, List<String> keysToConsider, String permissionValue) {
