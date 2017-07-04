@@ -38,7 +38,7 @@ class UpdateCompoundPermissionMappingTest extends Specification {
 
         then:
         1 * configurationHelper.updateKeyInAllPropertyFiles(resourceName, updateCompoundPermissionMapping.key,
-                updateCompoundPermissionMapping.caseListingPmPermissions, _)
+                updateCompoundPermissionMapping.caseListingPmPermissions, null)
 
     }
 }
