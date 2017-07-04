@@ -45,7 +45,7 @@ class AddAvatarPermissionIT extends Specification {
         dbUnitHelper.dropTables(["configuration"] as String[])
     }
 
-    def "should add avatar permission in resources-permissions-mapping.properties" () {
+    def "should add avatar permission in resources-permissions-mapping.properties"() {
         given:
         migrationContext.sql.executeInsert("insert into configuration(tenant_id, content_type, resource_name, resource_content) values (?,?,?,?)",
                 5L, "content-type", AddAvatarPermission.RESOURCE_PERMISSIONS_MAPPING_FILE_NAME, "key=value".bytes)
@@ -88,12 +88,34 @@ class AddAvatarPermissionIT extends Specification {
         count == 1
 
         where:
-        key                                     | initValue                                                     | expectedMigratedValue
-        "custompage_defaultlayout"              | "[organization_visualization, profile_member_visualization]"  | "[organization_visualization, profile_member_visualization, avatars]"
-        "grouplistingadmin"                     | "[profile_visualization, download_document"                   | "[profile_visualization, download_document, avatars]"
-        "custompage_groovyexample"              | "[profile_visualization, profile_management, avatars]"        | "[profile_visualization, profile_management, avatars]"
-        "businessdatamodelimport"               | "[tenant_platform_management, avatars, download_document]"    | "[tenant_platform_management, avatars, download_document]"
-        "unknown_key_from_customer"             | "[profile_visualization, download_document]"                  | "[profile_visualization, download_document]"
+        key                             | initValue                                                    | expectedMigratedValue
+        "custompage_defaultlayout"      | "[organization_visualization, profile_member_visualization]" | "[organization_visualization, profile_member_visualization, avatars]"
+        "grouplistingadmin"             | "[profile_visualization, download_document"                  | "[profile_visualization, download_document, avatars]"
+        "custompage_groovyexample"      | "[profile_visualization, profile_management, avatars]"       | "[profile_visualization, profile_management, avatars]"
+        "businessdatamodelimport"       | "[tenant_platform_management, avatars, download_document]"   | "[tenant_platform_management, avatars, download_document]"
+        "unknown_key_from_customer"     | "[profile_visualization, download_document]"                 | "[profile_visualization, download_document]"
+        "custompage_htmlexample"        | "[1]"                                                        | "[1, avatars]"
+        "pagelisting"                   | "[2]"                                                        | "[2, avatars]"
+        "importexportorganization"      | "[3]"                                                        | "[3, avatars]"
+        "tenantMaintenance"             | "[4]"                                                        | "[4, avatars]"
+        "processlistinguser"            | "[5]"                                                        | "[5, avatars]"
+        "processlistingpm"              | "[6]"                                                        | "[6, avatars]"
+        "tasklistingadmin"              | "[7]"                                                        | "[7, avatars]"
+        "userlistingadmin"              | "[8]"                                                        | "[8, avatars]"
+        "rolelistingadmin"              | "[9]"                                                        | "[9, avatars]"
+        "tasklistinguser"               | "[10]"                                                       | "[10, avatars]"
+        "profilelisting"                | "[11]"                                                       | "[11, avatars]"
+        "caselistingadmin"              | "[12]"                                                       | "[12, avatars]"
+        "thememoredetailsadminext"      | "[13]"                                                       | "[13, avatars]"
+        "processlistingadmin"           | "[14]"                                                       | "[14, avatars]"
+        "tasklistingpm"                 | "[15]"                                                       | "[15, avatars]"
+        "caselistingpm"                 | "[16]"                                                       | "[16, avatars]"
+        "applicationslistingadmin"      | "[17]"                                                       | "[17, avatars]"
+        "caselistinguser"               | "[18]"                                                       | "[18, avatars]"
+        "reportlistingadminext"         | "[19]"                                                       | "[19, avatars]"
+        "custompage_home"               | "[20]"                                                       | "[20, avatars]"
+        "custompage_apiExtensionViewer" | "[21]"                                                       | "[21, avatars]"
+        "custompage_tasklist"           | "[22]"                                                       | "[22, avatars]"
     }
 
     @Unroll
@@ -111,9 +133,9 @@ class AddAvatarPermissionIT extends Specification {
         count == 1
 
         where:
-        key                                   | initValue                                                    | value
-        "tenantMaintenance"                   | "[organization_visualization, profile_member_visualization]" | "[organization_visualization, profile_member_visualization]"
-        "caselistingadmin"                    | "[profile_visualization, download_document"                  | "[profile_visualization, download_document"
+        key                 | initValue                                                    | value
+        "tenantMaintenance" | "[organization_visualization, profile_member_visualization]" | "[organization_visualization, profile_member_visualization]"
+        "caselistingadmin"  | "[profile_visualization, download_document"                  | "[profile_visualization, download_document"
     }
 
 }
