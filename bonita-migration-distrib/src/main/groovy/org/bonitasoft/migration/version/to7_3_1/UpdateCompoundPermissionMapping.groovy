@@ -30,7 +30,7 @@ class UpdateCompoundPermissionMapping extends MigrationStep {
 
     @Override
     def execute(MigrationContext context) {
-        context.configurationHelper.updateKeyInAllPropertyFiles(resourceName, key, caseListingPmPermissions,getDescription())
+        context.configurationHelper.updateKeyInAllPropertyFiles(resourceName, key, caseListingPmPermissions, null)
     }
 
     @Override

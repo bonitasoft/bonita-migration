@@ -178,7 +178,6 @@ class ConfigurationHelperTest extends Specification {
 
     def "should not update up to date property in property file"() {
         setup:
-        def captured = []
         def fileName = "existingFile"
         def existingContent = "#mycomment\nkey=value\nkey2=value2"
         databaseHelper.getBlobContentAsString(_) >> existingContent
@@ -198,8 +197,29 @@ class ConfigurationHelperTest extends Specification {
         then:
         0 * sql.execute(_)
         3 * logger.info("property file is already up to date ")
+    }
 
+    def "updateKeyInAllPropertyFiles should not add comment if comment is null"() {
+        setup:
+        def captured = []
+        def fileName = "existingFile"
+        def existingContent = "#mycomment\nkey2=value2"
+        databaseHelper.getBlobContentAsString(_) >> existingContent
+        def results = [[tenant_id: 0L, content_type: "template_type", resource_content: existingContent.bytes]]
+        sql.rows("""
+                SELECT tenant_id, content_type, resource_content
+                FROM configuration
+                WHERE resource_name=${fileName}       
+                ORDER BY content_type, tenant_id 
+                """) >> results
 
+        when:
+        configurationHelper.updateKeyInAllPropertyFiles(fileName, "key", "value", null)
+
+        then:
+        1 * sql.execute({ captured.add(it) })
+        def expectedContent = "${existingContent}\nkey=value"
+        captured == ["UPDATE configuration SET resource_content = ${expectedContent.bytes} WHERE tenant_id = 0 AND content_type = template_type AND resource_name = ${fileName}"]
     }
 
     def "should throw exception when adding key in non existing file"() {
