@@ -350,4 +350,19 @@ unknown_key=[perm1]"""
 
     }
 
+    def "should create a new entry with comment"() {
+        when:
+        def entry = configurationHelper.newPropertyEntry("key1", "value1", "@", "A comment that ends with parenthesis (xxx)")
+        then:
+        entry == """# A comment that ends with parenthesis (xxx)
+key1@value1"""
+    }
+
+    def "should create a new entry without comment"() {
+        when:
+        def entry = configurationHelper.newPropertyEntry("key2", "value", "=", null)
+        then:
+        entry == "key2=value"
+    }
+
 }

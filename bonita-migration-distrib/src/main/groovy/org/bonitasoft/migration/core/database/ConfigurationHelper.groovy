@@ -13,6 +13,7 @@
  **/
 package org.bonitasoft.migration.core.database
 
+import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import org.bonitasoft.migration.core.Logger
 
@@ -68,7 +69,7 @@ class ConfigurationHelper {
             def stringReader = new StringReader(content)
             def tenantId = it.tenant_id as long
             properties.load(stringReader)
-            def newEntry = comment ? "# ${comment}\n${propertyKey}=${newPropertyValue}" : "${propertyKey}=${newPropertyValue}"
+            def newEntry = newPropertyEntry(propertyKey, newPropertyValue, "=", comment)
             if (!properties.containsKey(propertyKey)) {
                 content += "\n$newEntry"
                 updateConfigurationFileContent(fileName, tenantId, it.content_type, content.bytes)
@@ -91,14 +92,35 @@ class ConfigurationHelper {
         }
     }
 
+    def appendToSpecificConfigurationFileIfPropertyIsMissing(String contentType, String fileName, String propertyKey, String propertyValue, String keyValueSeparator, String comment) {
+        def results = sql.rows("""
+                SELECT tenant_id, content_type, resource_content
+                FROM configuration
+                WHERE resource_name=${fileName}
+                AND content_type=${contentType}      
+                ORDER BY tenant_id 
+                """)
+        def foundFiles = appendToConfigurationFilesWithCommentIfPropertyIsMissing(results, propertyKey, keyValueSeparator, propertyValue, fileName, comment)
+        if (foundFiles == 0) {
+            throw new IllegalArgumentException("configuration file ${fileName} not found in database.")
+        }
+    }
+
     def appendToAllConfigurationFilesIfPropertyIsMissing(String fileName, String propertyKey, String propertyValue, String keyValueSeparator) {
-        def foundFiles = 0
         def results = sql.rows("""
                 SELECT tenant_id, content_type, resource_content
                 FROM configuration
                 WHERE resource_name=${fileName}       
                 ORDER BY content_type, tenant_id 
                 """)
+        def foundFiles = appendToConfigurationFilesWithCommentIfPropertyIsMissing(results, propertyKey, keyValueSeparator, propertyValue, fileName, null)
+        if (foundFiles == 0) {
+            throw new IllegalArgumentException("configuration file ${fileName} not found in database.")
+        }
+    }
+
+    private int appendToConfigurationFilesWithCommentIfPropertyIsMissing(List<GroovyRowResult> results, String propertyKey, String keyValueSeparator, String newPropertyValue, String fileName, String comment) {
+        def foundFiles = 0
         results.each {
             foundFiles++
             String content = databaseHelper.getBlobContentAsString(it.resource_content)
@@ -107,7 +129,7 @@ class ConfigurationHelper {
             def tenantId = it.tenant_id as long
             properties.load(stringReader)
             if (!properties.containsKey(propertyKey)) {
-                def newEntry = "${propertyKey}${keyValueSeparator}${propertyValue}"
+                def newEntry = newPropertyEntry(propertyKey, newPropertyValue, keyValueSeparator, comment)
                 content += "\n$newEntry"
                 updateConfigurationFileContent(fileName, tenantId, it.content_type, content.bytes)
                 logger.info(String.format("update configuration file | tenant id: %3d | type: %-25s | file name: %s | new property: %s", tenantId, it.content_type, fileName, newEntry))
@@ -115,9 +137,11 @@ class ConfigurationHelper {
                 logger.info(String.format("configuration file already up to date | tenant id: %3d | type: %-25s | file name: %s", tenantId, it.content_type, fileName))
             }
         }
-        if (foundFiles == 0) {
-            throw new IllegalArgumentException("configuration file ${fileName} not found in database.")
-        }
+        foundFiles
+    }
+
+    protected static GString newPropertyEntry(String propertyKey, String newPropertyValue, String keyValueSeparator, String comment) {
+        comment ? "# ${comment}\n${propertyKey}${keyValueSeparator}${newPropertyValue}" : "${propertyKey}${keyValueSeparator}${newPropertyValue}"
     }
 
     def appendToAllConfigurationFilesIfPropertyIsMissing(String fileName, String propertyKey, String propertyValue) {

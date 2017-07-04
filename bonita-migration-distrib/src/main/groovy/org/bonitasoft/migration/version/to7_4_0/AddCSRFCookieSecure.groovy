@@ -11,18 +11,20 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
-package org.bonitasoft.migration.version.to7_4_0;
+package org.bonitasoft.migration.version.to7_4_0
 
-import org.bonitasoft.migration.core.MigrationContext;
-import org.bonitasoft.migration.core.MigrationStep;
+import org.bonitasoft.migration.core.MigrationContext
+import org.bonitasoft.migration.core.MigrationStep
 
 public class AddCSRFCookieSecure extends MigrationStep {
 
-    public static String configFile = "security-config.properties"
-
     @Override
     public Object execute(MigrationContext context) {
-        context.configurationHelper.appendToAllConfigurationFilesIfPropertyIsMissing(configFile, "security.csrf.enabled", "false", " ")
+        context.configurationHelper.appendToSpecificConfigurationFileIfPropertyIsMissing("PLATFORM_PORTAL"
+                , "security-config.properties"
+                , "security.csrf.cookie.secure"
+                , "false"
+                , " ", "Add or not the secure flag to the CSRF token cookie (HTTPS only)")
     }
 
     @Override

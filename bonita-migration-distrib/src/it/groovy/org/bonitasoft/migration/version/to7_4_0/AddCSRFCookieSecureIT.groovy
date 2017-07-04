@@ -46,25 +46,28 @@ class AddCSRFCookieSecureIT extends Specification {
     }
 
     @Unroll
-    def "should migrate #propertiesContent to #expectedMigratedContent in security-config.properties"(
-            def propertiesContent, def expectedMigratedContent) {
+    def "should migrate #initialContent to #expectedMigratedContent in security-config.properties only for the PLATFORM_PORTAL content type"(
+            def initialContent, def expectedMigratedContent) {
         setup:
-        byte[] data = (propertiesContent as String).bytes
+        byte[] data = (initialContent as String).bytes
         dbUnitHelper.context.sql.execute("INSERT INTO configuration (tenant_id, content_type, resource_name, resource_content) VALUES(0, 'PLATFORM_PORTAL', 'security-config.properties', ? ) ", [data])
+        dbUnitHelper.context.sql.execute("INSERT INTO configuration (tenant_id, content_type, resource_name, resource_content) VALUES(1, 'TENANT_PORTAL', 'security-config.properties', ? ) ", [data])
         def migrationStep = new AddCSRFCookieSecure()
 
         when:
         migrationStep.execute(migrationContext)
 
         then:
-        def count = dbUnitHelper.countConfigFileWithContent("security-config.properties", expectedMigratedContent)
-        count == 1
+        def countNotMigrated = dbUnitHelper.countConfigFileWithContent("TENANT_PORTAL", "security-config.properties", initialContent)
+        countNotMigrated == 1
+        def countMigrated = dbUnitHelper.countConfigFileWithContent("PLATFORM_PORTAL", "security-config.properties", expectedMigratedContent)
+        countMigrated == 1
 
         where:
-        propertiesContent             | expectedMigratedContent
-        "security.csrf.enabled false" | "security.csrf.enabled false"
-        "security.csrf.enabled true"  | "security.csrf.enabled true"
-        "dummy property true"         | "dummy property true\nsecurity.csrf.enabled false"
+        initialContent                      | expectedMigratedContent
+        "security.csrf.cookie.secure false" | "security.csrf.cookie.secure false"
+        "security.csrf.cookie.secure true"  | "security.csrf.cookie.secure true"
+        "dummy property true"               | "dummy property true\n# Add or not the secure flag to the CSRF token cookie (HTTPS only)\nsecurity.csrf.cookie.secure false"
     }
 
 }
