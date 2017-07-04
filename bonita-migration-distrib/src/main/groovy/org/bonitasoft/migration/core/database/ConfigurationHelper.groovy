@@ -15,7 +15,6 @@ package org.bonitasoft.migration.core.database
 
 import groovy.sql.Sql
 import org.bonitasoft.migration.core.Logger
-import org.bonitasoft.migration.core.MigrationContext
 
 /**
  * Created by laurentleseigneur on 01/06/2017.
@@ -69,7 +68,7 @@ class ConfigurationHelper {
             def stringReader = new StringReader(content)
             def tenantId = it.tenant_id as long
             properties.load(stringReader)
-            def newEntry = "# ${comment}\n${propertyKey}=${newPropertyValue}"
+            def newEntry = comment ? "# ${comment}\n${propertyKey}=${newPropertyValue}" : "${propertyKey}=${newPropertyValue}"
             if (!properties.containsKey(propertyKey)) {
                 content += "\n$newEntry"
                 updateConfigurationFileContent(fileName, tenantId, it.content_type, content.bytes)
@@ -77,8 +76,8 @@ class ConfigurationHelper {
             } else {
                 def oldValue = properties.get(propertyKey)
                 if (oldValue != newPropertyValue) {
-                    def oldEntry="${propertyKey}=${ oldValue}"
-                    def newContent = content.replace(oldEntry,newEntry)
+                    def oldEntry = "${propertyKey}=${oldValue}"
+                    def newContent = content.replace(oldEntry, newEntry)
                     updateConfigurationFileContent(fileName, tenantId, it.content_type, newContent.bytes)
                     logger.info(String.format("update property in configuration file | tenant id: %3d | type: %-25s | file name: %s | new property: %s", tenantId, it.content_type, fileName, "${propertyKey}=${newPropertyValue}"))
                 } else {
@@ -88,7 +87,7 @@ class ConfigurationHelper {
             updatedFiles++
         }
         if (updatedFiles == 0) {
-            throw new IllegalArgumentException("configuration file ${fileName} not found in database." )
+            throw new IllegalArgumentException("configuration file ${fileName} not found in database.")
         }
     }
 
