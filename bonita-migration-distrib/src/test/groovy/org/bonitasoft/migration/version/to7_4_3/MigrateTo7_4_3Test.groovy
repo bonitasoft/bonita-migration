@@ -21,7 +21,6 @@ import spock.lang.Unroll
  */
 class MigrateTo7_4_3Test extends Specification {
 
-
     @Unroll
     def "should migration to 7.4.3 include #stepName step"(def stepName) {
         given:
@@ -34,7 +33,13 @@ class MigrateTo7_4_3Test extends Specification {
         }.contains(stepName) == true
 
         where:
-        stepName << ["FixProcessPermissionRuleScript", "UpdateCompoundPermissionMapping"]
+        stepName << [
+                "FixProcessPermissionRuleScript"
+                , "UpdateCompoundPermissionMapping"
+                , "FixProcessSupervisorPermissionRuleScript"
+                , "AddAvatarPermission"
+                , "AddCSRFCookieSecure"
+        ]
 
     }
 }

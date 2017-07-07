@@ -6,7 +6,7 @@ buildscript {
         maven { url 'http://repositories.rd.lan/maven/releases/' }
     }
     dependencies {
-        classpath 'org.bonitasoft.migration.plugin:bonita-migration-plugins:2.24.0-SNAPSHOT'
+        classpath 'org.bonitasoft.migration.plugin:bonita-migration-plugins:2.25.0-SNAPSHOT'
     }
 }
 
@@ -20,7 +20,7 @@ allprojects {
         mavenCentral()
     }
 
-    version '2.24.0-SNAPSHOT'
+    version '2.25.0-SNAPSHOT'
     group 'org.bonitasoft.migration'
 
     ext.isSP = false
@@ -52,7 +52,7 @@ allprojects {
             '7.5.2'
     ]
     ext.overridedVersions = [
-            '7.5.2': '7.5.2-SNAPSHOT'
+            :
     ]
     configurations {
         deployerJars
@@ -81,7 +81,7 @@ subprojects {
         compile "org.codehaus.groovy:groovy-all:2.4.4"
         testCompile "junit:junit:4.12"
         testRuntime 'com.oracle:ojdbc:6'
-        testRuntime 'com.microsoft.jdbc:sqlserver:4.0.2206.100'
+        testRuntime 'com.microsoft.jdbc:sqlserver:6.0.8112.100_41'
     }
 }
 
@@ -109,7 +109,7 @@ configure(project.subprojects.findAll {
         compile group: 'org.postgresql', name: 'postgresql', version: '9.3-1102-jdbc41'
         compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.26'
         compile group: 'com.oracle', name: 'ojdbc', version: '6'
-        compile group: 'com.microsoft.jdbc', name: 'sqlserver', version: '4.0.2206.100'
+        compile group: 'com.microsoft.jdbc', name: 'sqlserver', version: '6.0.8112.100_41'
         compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.0.11'
         testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
         testCompile group: 'org.assertj', name: 'assertj-core', version: '1.5.0'
