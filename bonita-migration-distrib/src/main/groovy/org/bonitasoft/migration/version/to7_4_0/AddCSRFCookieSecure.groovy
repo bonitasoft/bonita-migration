@@ -11,28 +11,24 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
-package org.bonitasoft.migration.version.to7_5_1
+package org.bonitasoft.migration.version.to7_4_0
 
+import org.bonitasoft.migration.core.MigrationContext
 import org.bonitasoft.migration.core.MigrationStep
-import org.bonitasoft.migration.core.VersionMigration
-import org.bonitasoft.migration.version.to7_3_1.AddAvatarPermission
-import org.bonitasoft.migration.version.to7_3_1.UpdateCompoundPermissionMapping
-import org.bonitasoft.migration.version.to7_3_3.FixProcessSupervisorPermissionRuleScript
-import org.bonitasoft.migration.version.to7_4_0.AddCSRFCookieSecure
 
-/**
- * @author Laurent Leseigneur
- */
-class MigrateTo7_5_1 extends VersionMigration {
+public class AddCSRFCookieSecure extends MigrationStep {
 
     @Override
-    List<MigrationStep> getMigrationSteps() {
-        //keep one line per step to avoid false-positive merge conflict
-        return [
-                new UpdateCompoundPermissionMapping(),
-                new FixProcessSupervisorPermissionRuleScript(),
-                new AddAvatarPermission()
-                , new AddCSRFCookieSecure()
-        ]
+    public Object execute(MigrationContext context) {
+        context.configurationHelper.appendToSpecificConfigurationFileIfPropertyIsMissing("PLATFORM_PORTAL"
+                , "security-config.properties"
+                , "security.csrf.cookie.secure"
+                , "false"
+                , " ", "Add or not the secure flag to the CSRF token cookie (HTTPS only)")
+    }
+
+    @Override
+    public String getDescription() {
+        return "Add CSRF cookie value to false in the security-config.properties file, if missing";
     }
 }

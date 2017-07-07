@@ -11,8 +11,7 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
-
-package org.bonitasoft.migration.version.to7_3_1
+package org.bonitasoft.migration.version.to7_3_3
 
 import org.bonitasoft.migration.core.MigrationContext
 import org.bonitasoft.migration.core.MigrationStep
@@ -20,23 +19,30 @@ import org.bonitasoft.migration.core.MigrationStep
 /**
  * @author Laurent Leseigneur
  */
-class UpdateCompoundPermissionMapping extends MigrationStep {
+class FixProcessSupervisorPermissionRuleScript extends MigrationStep {
 
-    public static String resourceName = "compound-permissions-mapping.properties"
-
-    def key = "caselistingpm"
-    
-    def caseListingPmPermissions = "[case_delete, process_visualization, process_categories, process_comment, document_visualization, process_actor_mapping_visualization, organization_visualization, case_visualization, task_management, flownode_management, connector_visualization, tenant_platform_visualization, flownode_visualization, task_visualization, download_document, form_visualization, bdm_visualization]"
+    public static String resourceName = "ProcessSupervisorPermissionRule.groovy"
 
     @Override
     def execute(MigrationContext context) {
-        context.configurationHelper.updateKeyInAllPropertyFiles(resourceName, key, caseListingPmPermissions, null)
+        def newScriptContent = getNewContent()
+
+        context.configurationHelper.updateConfigurationFileContent(resourceName, 0L, 'TENANT_TEMPLATE_SECURITY_SCRIPTS',
+                newScriptContent)
+
+        context.databaseHelper.allTenants.each { tenant ->
+            context.configurationHelper.updateConfigurationFileContent(resourceName, tenant.id as long,
+                    'TENANT_SECURITY_SCRIPTS', newScriptContent)
+        }
     }
+
+    def getNewContent() {
+        this.getClass().getResourceAsStream("/version/to_7_3_3/${resourceName}.txt").bytes
+    }
+
 
     @Override
     String getDescription() {
-        return "update compound-permissions-mapping.properties if caselistingpm is missing 'case_delete' permission"
+        return "update ProcessSupervisorPermissionRule.groovy security script"
     }
-
-
 }
