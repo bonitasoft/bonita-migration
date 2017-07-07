@@ -5,7 +5,7 @@ buildscript {
     }
     dependencies {
         classpath group: 'org.bonitasoft.migration.plugin', name: 'bonita-migration-plugins',
-                version: '2.24.0-SNAPSHOT'
+                version: '2.25.0-SNAPSHOT'
     }
 }
 
@@ -31,7 +31,7 @@ dependencies {
     testRuntime 'org.objenesis:objenesis:1.2'
     testCompile('org.dbunit:dbunit:2.5.1')
     testCompile group: 'com.oracle', name: 'ojdbc', version: '6'
-    testCompile group: 'com.microsoft.jdbc', name: 'sqlserver', version: '4.0.2206.100'
+    testCompile group: 'com.microsoft.jdbc', name: 'sqlserver', version: '6.0.8112.100_41'
     testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
     testCompile group: 'org.assertj', name: 'assertj-core', version: '1.5.0'
     testCompile group: 'xmlunit', name: 'xmlunit', version: '1.5'

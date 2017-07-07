@@ -33,8 +33,17 @@ class MigrateTo7_4_0Test extends Specification {
         }.contains(stepName) == true
 
         where:
-        stepName << ["MigrateProcessDefinitionXmlWithXSD", "RemoveEventHandlingJob", "WarnAboutCSRF",
-                     "IncreaseVersionField", "FixProcessPermissionRuleScript", "UpdateCompoundPermissionMapping"]
+        stepName << [
+                "MigrateProcessDefinitionXmlWithXSD"
+                , "RemoveEventHandlingJob"
+                , "WarnAboutCSRF"
+                , "IncreaseVersionField"
+                , "FixProcessPermissionRuleScript"
+                , "UpdateCompoundPermissionMapping"
+                , "FixProcessSupervisorPermissionRuleScript"
+                , "AddAvatarPermission"
+                , "AddCSRFCookieSecure"
+        ]
 
 
     }
