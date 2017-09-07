@@ -457,6 +457,10 @@
 
     <xsl:template name="businessDataDefinitionNamedTemplate">
         <xsl:apply-templates select="@*" />
+        <xsl:if test="not(@multiple)">
+            <!-- attribute may be missing when migrating from 6.3 with bdm data definitions -->
+            <xsl:attribute name="multiple">false</xsl:attribute>
+        </xsl:if>
 
         <xsl:apply-templates select="description" />
         <xsl:apply-templates select="defaultValue" />
