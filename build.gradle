@@ -50,10 +50,11 @@ allprojects {
             '7.5.0',
             '7.5.1',
             '7.5.2',
-            '7.5.4'
+            '7.5.4',
+            '7.6.0'
     ]
     ext.overridedVersions = [
-            :
+            '7.6.0': '7.6.0-SNAPSHOT'
     ]
     configurations {
         deployerJars
