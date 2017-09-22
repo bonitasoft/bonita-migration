@@ -73,7 +73,8 @@ class MigrateProcessDefinitionXmlWithXSDTest extends Specification {
                     "BBPMC-452/process-design3.xml",
                     "BBPMC-452/process-design4.xml",
                     "BBPMC-452/process-design5.xml",
-                    "BBPMC-452/process-design6.xml"
+                    "BBPMC-452/process-design6.xml",
+                    "bdm_multiple.xml"
         ]
     }
 
@@ -100,32 +101,32 @@ $migratedProcessDefinition
 """
         final List<Diff> allDifferences = new DetailedDiff(XMLUnit.compareXML(migratedProcessDefinition, expectedXmlText))
                 .getAllDifferences()
-        allDifferences.each {
-            diff ->
-                //ignore @id attribute values generated at migration time
-                def description = diff.getProperties().get("description")
-                switch (description) {
-                    case "attribute value":
-                        assert (diff.getProperties().get("controlNodeDetail") as org.custommonkey.xmlunit.NodeDetail).node.name == "id"
-                        assert (diff.getProperties().get("testNodeDetail") as org.custommonkey.xmlunit.NodeDetail).node.name == "id"
-                        break
-                    case "text value":
-                        //attribute id is here a text value
-                        def textNodeIds = ["actorInitiator"]
-                        def controlNodeName = (diff.getProperties().get("controlNodeDetail") as org.custommonkey.xmlunit.NodeDetail).node.parentNode
-                        def testNodeName = (diff.getProperties().get("testNodeDetail") as org.custommonkey.xmlunit.NodeDetail).node.parentNode
-                        assert controlNodeName.name == testNodeName.name
-                        // this assertion is designed to display test node content when node name is not in expected textNodeIds
-                        assert textNodeIds.contains(testNodeName.name) || controlNodeName.textContent == testNodeName.textContent
+        if (allDifferences.size() > 0) {
+            allDifferences.each {
+                diff ->
+                    //ignore @id attribute values generated at migration time
+                    def description = diff.getProperties().get("description")
+                    switch (description) {
+                        case "attribute value":
+                            assert (diff.getProperties().get("controlNodeDetail") as org.custommonkey.xmlunit.NodeDetail).node.name == "id"
+                            assert (diff.getProperties().get("testNodeDetail") as org.custommonkey.xmlunit.NodeDetail).node.name == "id"
+                            break
+                        case "text value":
+                            //attribute id is here a text value
+                            def textNodeIds = ["actorInitiator"]
+                            def controlNodeName = (diff.getProperties().get("controlNodeDetail") as org.custommonkey.xmlunit.NodeDetail).node.parentNode
+                            def testNodeName = (diff.getProperties().get("testNodeDetail") as org.custommonkey.xmlunit.NodeDetail).node.parentNode
+                            assert controlNodeName.name == testNodeName.name
+                            // this assertion is designed to display test node content when node name is not in expected textNodeIds
+                            assert textNodeIds.contains(testNodeName.name) || controlNodeName.textContent == testNodeName.textContent
+                            break
+                        default:
+                            def testNodeName = (diff.getProperties().get("testNodeDetail") as org.custommonkey.xmlunit.NodeDetail).node
+                            println "ERROR: $diff not expected! ***\n${testNodeName.textContent}\n***"
+                            assert diff == null
+                    }
 
-                        break
-                    default:
-                        def testNodeName = (diff.getProperties().get("testNodeDetail") as org.custommonkey.xmlunit.NodeDetail).node
-                        println "ERROR: $diff not expected! ***\n${testNodeName.textContent}\n***"
-                        assert diff == null
-
-                }
-
+            }
         }
 
         where:
@@ -137,6 +138,7 @@ $migratedProcessDefinition
         "BBPMC-452/process-design4.xml" | "expected/BBPMC-452/process-design4.xml"
         "BBPMC-452/process-design5.xml" | "expected/BBPMC-452/process-design5.xml"
         "BBPMC-452/process-design6.xml" | "expected/BBPMC-452/process-design6.xml"
+        "bdm_multiple.xml"              | "expected/bdm_multiple.xml"
 
     }
 
