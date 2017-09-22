@@ -37,6 +37,12 @@
                     </defaultValue>
                     <description>hello</description>
                 </BusinessDataDefinition>
+                <BusinessDataDefinition id="6933069563166549713" name="myMultipleDataValue" multiple="true" className="java.lang.String">
+                    <defaultValue id="6933069563166549713" name="myDataValue" expressionType="TYPE_CONSTANT" returnType="java.lang.String">
+                        <content>[myDataValue]</content>
+                    </defaultValue>
+                    <description>hello</description>
+                </BusinessDataDefinition>
             </BusinessDataDefinitions>
 
             <operations />
