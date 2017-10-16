@@ -238,8 +238,7 @@ class DBUnitHelper {
             def tenantId = it.tenant_id as long
             def contentType = it.content_type as String
             String content = getBlobContentAsString(it.resource_content)
-            context.logger.debug(String.format("check configuration file content | tenant id: %3d | type: %-25s " +
-                    "| file name: %s ",
+            context.logger.debug(String.format("check configuration file content | tenant id: %3d | type: %-25s | file name: %s ",
                     tenantId, contentType, configFile))
             assert (content == expectedContent)
         }
@@ -255,13 +254,13 @@ class DBUnitHelper {
                 AND content_type=${contentType}    
                 ORDER BY tenant_id 
                 """) {
-            scannedFiles++
             def tenantId = it.tenant_id as long
             String content = getBlobContentAsString(it.resource_content)
-            context.logger.debug(String.format("check configuration file content | tenant id: %3d | type: %-25s " +
-                    "| file name: %s ",
+            context.logger.debug(String.format("check configuration file content | tenant id: %3d | type: %-25s | file name: %s ",
                     tenantId, contentType, configFile))
-            assert (content == expectedContent)
+            if (content == expectedContent) {
+                scannedFiles++
+            }
         }
         scannedFiles
     }

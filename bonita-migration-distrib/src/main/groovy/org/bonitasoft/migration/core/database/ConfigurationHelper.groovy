@@ -28,13 +28,19 @@ class ConfigurationHelper {
 
     def insertConfigurationFile(String fileName, long tenantId, String type, byte[] content) {
         logger.debug(String.format("insert configuration file | tenant id: %3d | type: %-25s | file name: %s", tenantId, type, fileName))
-        sql.executeInsert("INSERT INTO configuration(tenant_id,content_type,resource_name,resource_content) VALUES (${tenantId}, ${type}, ${fileName}, ${content})");
+        sql.executeInsert("INSERT INTO configuration(tenant_id,content_type,resource_name,resource_content) VALUES (${tenantId}, ${type}, ${fileName}, ${content})")
     }
 
 
     def updateConfigurationFileContent(String fileName, long tenantId, String type, byte[] content) {
         logger.debug(String.format("update configuration file | tenant id: %3d | type: %-25s | file name: %s", tenantId, type, fileName))
-        sql.execute("UPDATE configuration SET resource_content = ${content} WHERE tenant_id = ${tenantId} AND content_type = ${type} AND resource_name = ${fileName}");
+        sql.execute("UPDATE configuration SET resource_content = ${content} WHERE tenant_id = ${tenantId} AND content_type = ${type} AND resource_name = ${fileName}")
+    }
+
+
+    def deleteConfigurationFile(String fileName, long tenantId, String type) {
+        logger.debug(String.format("removing configuration file | tenant id: %3d | type: %-25s | file name: %s", tenantId, type, fileName))
+        sql.execute("DELETE FROM configuration WHERE tenant_id = ${tenantId} AND content_type = ${type} AND resource_name = ${fileName}")
     }
 
 
@@ -53,7 +59,6 @@ class ConfigurationHelper {
             updateConfigurationFileContent(filename, tenantId, contentType, content.bytes)
         }
     }
-
 
     def updateKeyInAllPropertyFiles(String fileName, String propertyKey, String newPropertyValue, String comment) {
         def updatedFiles = 0
