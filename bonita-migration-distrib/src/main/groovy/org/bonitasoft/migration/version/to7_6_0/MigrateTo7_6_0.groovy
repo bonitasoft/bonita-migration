@@ -24,6 +24,7 @@ class MigrateTo7_6_0 extends VersionMigration {
     def List<MigrationStep> getMigrationSteps() {
         //keep one line per step to avoid false-positive merge conflict
         return [
+                new RemoveDefaultGroovyScriptsAndUpdateTheirConfiguration()
         ]
     }
 }
