@@ -14,27 +14,26 @@
 package org.bonitasoft.migration.version.to7_6_0
 
 import spock.lang.Specification
+import spock.lang.Unroll
 
 /**
- * @author Laurent Leseigneur
+ * @author Emmanuel Duchastenier
  */
 class MigrateTo7_6_0Test extends Specification {
 
-    // uncomment example test below when adding new migrations steps
+    @Unroll
+    def "should migration to 7.6.0 include step '#stepName'"(def stepName) {
+        given:
+        def migrateTo = new MigrateTo7_6_0()
 
-    // @Unroll
-    // def "should migration to x.y.z include #stepName step"(def stepName) {
-    //     given:
-    //     def migrateTo = new MigrateTo7_6_0()
+        expect:
+        def steps = migrateTo.migrationSteps
+        steps.collect {
+            it.class.getSimpleName()
+        }.contains(stepName)
 
-    //     expect:
-    //     def steps = migrateTo.migrationSteps
-    //     steps.collect {
-    //         it.class.getSimpleName()
-    //     }.contains(stepName) == true
+        where:
+        stepName << ["RemoveDefaultGroovyScriptsAndUpdateTheirConfiguration"]
 
-    //     where:
-    //     stepName << ["YOUR_MIGRATION_STEP_NAME"]
-
-    // }
+    }
 }
