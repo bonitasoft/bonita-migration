@@ -68,6 +68,8 @@ class RemoveDefaultGroovyScriptsAndUpdateTheirConfiguration extends MigrationSte
      * - if default but modified, leave it as is and warn the user with a message on the good practices
      */
     def migrateDynamicPermissionChecksCustom(MigrationContext context) {
+        // use a set to avoid duplicated warning for the same script on the same tenant:
+        Set warns = new HashSet()
         context.sql.eachRow("""
                 SELECT tenant_id, content_type, resource_content
                 FROM configuration
@@ -97,7 +99,7 @@ class RemoveDefaultGroovyScriptsAndUpdateTheirConfiguration extends MigrationSte
                         contentIsUpdated = true
                     } else {
                         if (!isCustomGroovyScript(groovyScriptName)) {
-                            warnings += """Warning, groovy script $groovyScriptName (from tenant $tenantId) is provided by Bonitasoft but has been
+                            warns.add """Warning, groovy script $groovyScriptName (from tenant $tenantId) is provided by Bonitasoft but has been
  modified since installation.${LINE_SEPARATOR}"""
                         }
                         // else, leave the line as is:
@@ -112,6 +114,7 @@ class RemoveDefaultGroovyScriptsAndUpdateTheirConfiguration extends MigrationSte
                 context.configurationHelper.updateConfigurationFileContent("dynamic-permissions-checks-custom.properties", tenantId, contentType, newContent.join("\n").bytes)
             }
         }
+        warns.forEach { warnings += it }
     }
 
     private purgeUnmodifiedScriptsFromDatabase(tenantId, List unmodifiedDefaultRules, MigrationContext context, String contentType) {
