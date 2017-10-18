@@ -167,4 +167,25 @@ class UpdateDynamicPermissionChecksCustomIT extends Specification {
         migrationStep.getWarning().contains('you will not benefit from the potential fixes')
     }
 
+    def "should not warn twice for the same MODIFIED default rule"() {
+        given:
+        migrationContext.sql.executeInsert("insert into configuration(tenant_id, content_type, resource_name, resource_content) values (?,?,?,?)",
+                1L, "TENANT_PORTAL", DYNAMIC_PERMISSIONS_FILE, '''
+GET|bpm/actorMember=[profile|Administrator, check|ActorMemberPermissionRule]
+PUT|bpm/case=[profile|User, check|ActorMemberPermissionRule]
+'''.bytes)
+
+        migrationContext.sql.executeInsert("insert into configuration(tenant_id, content_type, resource_name, resource_content) values (?,?,?,?)",
+                1L, "TENANT_SECURITY_SCRIPTS", 'ActorMemberPermissionRule.groovy', 'Default file name but with modified content'.bytes)
+
+        def searchedWarning = 'groovy script ActorMemberPermissionRule.groovy (from tenant 1)'
+
+        when:
+        migrationStep.execute(migrationContext)
+
+        then:
+        // check that the warning for a given (script + tenant) only occurs once:
+        1 == migrationStep.warnings.count(searchedWarning)
+    }
+
 }
