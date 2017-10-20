@@ -33,7 +33,8 @@ class MigrateTo7_6_0Test extends Specification {
         }.contains(stepName)
 
         where:
-        stepName << ["RemoveDefaultGroovyScriptsAndUpdateTheirConfiguration"]
+        stepName << ["RemoveDefaultGroovyScriptsAndUpdateTheirConfiguration",
+                     "RemovePlatformInitCommunityCustomProperties"]
 
     }
 }
