@@ -3,6 +3,8 @@ package org.bonitasoft.migration.version.to7_6_0
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import java.nio.charset.StandardCharsets
+
 /**
  * @author Emmanuel Duchastenier
  */
@@ -45,5 +47,25 @@ class RemoveDefaultGroovyScriptsAndUpdateTheirConfigurationTest extends Specific
     def "should script file with default content be considered unmodified"() {
         expect:
         migrationStep.isGroovyScriptFileUnchanged("ActorMemberPermissionRule.groovy", this.class.getResource("/to7_6_0/ActorMemberPermissionRule.groovy.txt").bytes)
+    }
+
+    def "should script file with default content be considered unmodified on Mac"() {
+        given:
+        def contentBytes = this.class.getResource("/to7_6_0/ActorMemberPermissionRule.groovy.txt").bytes
+        def modifiedContent = new String(contentBytes, StandardCharsets.UTF_8).replaceAll("\r\n", "\r").replaceAll("\n", "\r")
+
+        expect:
+        migrationStep.isGroovyScriptFileUnchanged("ActorMemberPermissionRule.groovy", modifiedContent.bytes)
+    }
+
+    def "should script file with default content be considered unmodified on Windows"() {
+        given:
+        def contentBytes = this.class.getResource("/to7_6_0/ActorMemberPermissionRule.groovy.txt").bytes
+        def modifiedContent = new String(contentBytes, StandardCharsets.UTF_8)
+                .replaceAll("\r\n", "\n") // avoid doubling end of line in the next step
+                .replaceAll("[\n|\r]", "\r\n")
+
+        expect:
+        migrationStep.isGroovyScriptFileUnchanged("ActorMemberPermissionRule.groovy", modifiedContent.bytes)
     }
 }

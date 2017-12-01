@@ -17,6 +17,7 @@
 package org.bonitasoft.migration
 
 import groovy.xml.StreamingMarkupBuilder
+import org.bonitasoft.migration.core.Logger
 import org.bonitasoft.migration.core.MigrationContext
 import org.bonitasoft.migration.core.MigrationStep
 import org.bonitasoft.migration.core.database.schema.IndexDefinition
@@ -35,11 +36,13 @@ import java.sql.SQLException
 class DBUnitHelper {
 
     private MigrationContext context
+    private Logger logger
 
     DBUnitHelper(MigrationContext context) {
         context.loadProperties();
         context.openSqlConnection()
         this.context = context
+        this.logger = context.logger
     }
 
     static Map trueValueMap = [
@@ -81,12 +84,12 @@ class DBUnitHelper {
     }
 
     def String[] createTables(String folder, String feature) {
-        println "Create tables from sql file in $folder with suffix $feature"
+        logger.info("Create tables from sql file in $folder with suffix $feature")
         executeScript(DBUnitHelper.class.getClassLoader().getResource("sql/v${folder}/${context.dbVendor.name().toLowerCase()}-${feature}.sql"))
     }
 
     def String[] createTables(String folder) {
-        println "Create tables from sql file in $folder"
+        logger.info("Create tables from sql file in $folder")
         executeScript(DBUnitHelper.class.getClassLoader().getResource("sql/v${folder}/${context.dbVendor.name().toLowerCase()}.sql"))
     }
 
@@ -188,15 +191,15 @@ class DBUnitHelper {
             //Failed to execute: DROP TABLE ? because: ERROR: syntax error at or near "$1"
             if (hasTable(it)) {
                 def statement = "DROP TABLE $it".toString()
-                println("DROP TABLE [$it]".toString())
+                logger.info("DROP TABLE [$it]".toString())
                 try {
                     context.sql.execute(statement)
                 } catch (SQLException e) {
-                    System.err.println(String.format("error while executing %s", statement))
+                    logger.error(String.format("error while executing %s", statement))
                     throw e
                 }
             } else {
-                println("table [$it] does not exists")
+                logger.info("table [$it] does not exists")
             }
         }
     }
@@ -263,6 +266,20 @@ class DBUnitHelper {
             }
         }
         scannedFiles
+    }
+
+    String getConfigFileContent(long tenantId, String contentType, String configFile) {
+        String content = getBlobContentAsString(context.sql.firstRow("""
+                    SELECT resource_content
+                    FROM configuration
+                    WHERE tenant_id = ${tenantId}
+                    AND content_type = ${contentType}
+                    AND resource_name = ${configFile}
+                    """)["resource_content"])
+
+        context.logger.debug(String.format("Got configuration file content | tenant id: %3d | type: %-25s | file name: %s ",
+                tenantId, contentType, configFile))
+        content
     }
 
 }
