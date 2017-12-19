@@ -1,129 +1,183 @@
-import org.bonitasoft.migration.plugin.MigrationConstants
+import static pl.allegro.tech.build.axion.release.domain.PredefinedVersionIncrementer.versionIncrementerFor
+
+import com.github.zafarkhaja.semver.Version
 
 buildscript {
     repositories {
-        mavenLocal()
-        maven { url 'http://repositories.rd.lan/maven/releases/' }
-    }
-    dependencies {
-        classpath 'org.bonitasoft.migration.plugin:bonita-migration-plugins:2.26.1-SNAPSHOT'
-    }
-}
-
-allprojects {
-    apply plugin: 'maven'
-
-    repositories {
-        mavenLocal()
-        maven { url 'http://repositories.rd.lan/maven/releases/' }
-        maven { url 'http://repositories.rd.lan/maven/snapshots/' }
         mavenCentral()
     }
+}
+plugins {
+    id 'pl.allegro.tech.build.axion-release' version '1.7.1'
+}
+repositories {
+    mavenLocal()
+    maven { url 'http://repositories.rd.lan/maven/releases/' }
+    maven { url 'http://repositories.rd.lan/maven/snapshots/' }
+    mavenCentral()
+}
 
-    version '2.26.1-SNAPSHOT'
-    group 'org.bonitasoft.migration'
+apply plugin: 'groovy'
+apply plugin: 'application'
+apply plugin: 'migration-dist'
+apply plugin: 'migration'
 
-    ext.isSP = false
-    ext.bonitaVersions = [
-            '7.0.0',
-            '7.0.1',
-            '7.0.2',
-            '7.0.3',
-            '7.1.0',
-            '7.1.2',
-            '7.1.3',
-            '7.1.4',
-            '7.1.5',
-            '7.2.0',
-            '7.2.1',
-            '7.2.2',
-            '7.2.3',
-            '7.2.4',
-            '7.3.0',
-            '7.3.1',
-            '7.3.2',
-            '7.3.3',
-            '7.4.0',
-            '7.4.1',
-            '7.4.2',
-            '7.4.3',
-            '7.5.0',
-            '7.5.1',
-            '7.5.2',
-            '7.5.4',
-            '7.6.0'
-    ]
-    ext.overridedVersions = [
-            :
-    ]
-    configurations {
-        deployerJars
+
+scmVersion {
+    tag { // Resulting tag will by x.y.z
+        prefix = ''
+        versionSeparator = ''
+    }
+    hooks {
+        //change in the readme the version
+        pre 'fileUpdate', [file: 'README.md', pattern: { v, p -> /$v/ }, replacement: { v, p -> "$v" }]
+        pre 'fileUpdate', [file       : 'community/migration.properties', pattern: { v, p ->
+                                /currentVersionModifier=.*/
+                            },
+                           replacement: { String v, p ->
+                               def parsedVersion = Version.valueOf(v)
+                               if (!parsedVersion.preReleaseVersion.isEmpty()) {
+                                   return "currentVersionModifier=" + parsedVersion.preReleaseVersion
+                               } else {
+                                   return "currentVersionModifier=NONE"
+                               }
+                           }]
+        // create a commit for the release
+        pre 'commit', { v, p -> "chore(release): create release $v" }
+    }
+    tag {
+        deserialize = { config, position, String tagName -> normalizeOldTagName(tagName) }
     }
 
-    dependencies {
-        deployerJars "org.apache.maven.wagon:wagon-http:2.2"
-    }
-
-    uploadArchives {
-        repositories.mavenDeployer {
-            configuration = configurations.deployerJars
-
-            repository(url: System.getProperty("altDeploymentRepository") != null ? System.getProperty("altDeploymentRepository").split("::").last() : null)
+    versionIncrementer { context ->
+        def version = context.currentVersion
+        if (project.hasProperty("release.maintenance")) {
+            return versionIncrementerFor("incrementPatch").call(context)
         }
+        if (project.hasProperty("release.minor")) {
+            return versionIncrementerFor("incrementMinor").call(context)
+        }
+        if (project.hasProperty("release.major")) {
+            return versionIncrementerFor("incrementMajor").call(context)
+        }
+        if (project.hasProperty("release.rc")) {
+            return nextPreRelease(version, "rc")
+        }
+        if (project.hasProperty("release.alpha")) {
+            return nextPreRelease(version, "alpha")
+        }
+        if (project.hasProperty("release.beta")) {
+            return nextPreRelease(version, "beta")
+        }
+        if (version.preReleaseVersion.startsWith("rc")
+                || version.preReleaseVersion.startsWith("alpha")
+                || version.preReleaseVersion.startsWith("beta")) {
+            return Version.valueOf("$version.majorVersion.$version.minorVersion.$version.patchVersion")
+        }
+        return versionIncrementerFor("incrementPatch").call(context)
     }
+}
+
+private static Version nextPreRelease(Version currentVersion, String suffix) {
+    if (currentVersion.preReleaseVersion.startsWith(suffix)) {
+        def currentPreReleaseNumber = Integer.valueOf(currentVersion.preReleaseVersion.substring(suffix.size()+1))
+        def nextNumber = String.format("%02d", currentPreReleaseNumber + 1)
+        return Version.valueOf("$currentVersion.majorVersion.$currentVersion.minorVersion.$currentVersion.patchVersion-$suffix-$nextNumber")
+    }
+    return Version.valueOf("$currentVersion.majorVersion.$currentVersion.minorVersion.$currentVersion.patchVersion-$suffix-01")
+}
+
+
+private static String normalizeOldTagName(String tagName) {
+    int dotCounter = 0
+    char[] finalTag = new char[tagName.length()]
+    for (int i = 0; i < tagName.length(); i++) {
+        char c = tagName.chars[i]
+        if (c == '.'.chars[0]) {
+            dotCounter++
+            if (dotCounter == 3) {
+                c = '-'
+            }
+        }
+        finalTag[i] = c
+    }
+    return new String(finalTag)
+}
+
+project.version = scmVersion.version
+
+project.rootProject.allprojects {
+    version = scmVersion.version
+}
+
+group 'org.bonitasoft.migration'
+configurations {
+    deployerJars
+}
+
+artifacts { archives distZip }
+
+database {
+    dbvendor = System.getProperty("db.vendor", "postgres")
+    dburl = System.getProperty("db.url", "jdbc:postgresql://localhost:5432/migration");
+    dbuser = System.getProperty("db.user", "bonita")
+    dbpassword = System.getProperty("db.password", "bpm")
+    dbdriverClass = System.getProperty("db.driverClass", "org.postgresql.Driver")
+    dbRootUser = System.getProperty("db.root.user", "postgres")
+    dbRootPassword = System.getProperty("db.root.password", "postgres")
+    classpath = project.configurations.drivers
+}
+
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+dependencies {
+    deployerJars "org.apache.maven.wagon:wagon-http:2.2"
+    compile "org.codehaus.groovy:groovy-all:2.4.4"
+    compile "com.github.zafarkhaja:java-semver:0.9.0"
+    testRuntime "cglib:cglib-nodep:2.2"
+    testRuntime 'org.objenesis:objenesis:1.2'
+    testRuntime 'com.oracle:ojdbc:6'
+    testRuntime 'com.microsoft.jdbc:sqlserver:6.0.8112.100_41'
+    testCompile('org.dbunit:dbunit:2.5.1')
+    testCompile group: 'com.oracle', name: 'ojdbc', version: '6'
+    testCompile group: 'com.microsoft.jdbc', name: 'sqlserver', version: '6.0.8112.100_41'
+    testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
+    testCompile group: 'org.assertj', name: 'assertj-core', version: '1.5.0'
+    testCompile group: 'xmlunit', name: 'xmlunit', version: '1.5'
+    fillerCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.0.11'
+    fillerCompile group: 'junit', name: 'junit', version: '4.11'
+    fillerCompile "org.codehaus.groovy:groovy-all:2.4.11"
+    fillerCompile 'org.awaitility:awaitility:3.0.0'
+    enginetestCompile 'org.awaitility:awaitility:3.0.0'
+    enginetestCompile group: 'junit', name: 'junit', version: '4.11'
+    enginetestCompile("org.spockframework:spock-core:1.0-groovy-2.4"){
+        exclude module: "groovy-all"
+    }
+    enginetestCompile "org.codehaus.groovy:groovy-all:2.4.11"
+    enginetestCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.0.11'
 
 }
-subprojects {
-    apply plugin: 'groovy'
 
-    sourceCompatibility = 1.7
-    targetCompatibility = 1.7
-
-    dependencies {
-        compile "org.codehaus.groovy:groovy-all:2.4.4"
-        testCompile "junit:junit:4.12"
-        testRuntime 'com.oracle:ojdbc:6'
-        testRuntime 'com.microsoft.jdbc:sqlserver:6.0.8112.100_41'
+startScripts {
+    // Fail on windows OS
+    // classpath = files('$APP_HOME/lib/*')
+    // Workaround inspired of https://gist.github.com/jlmelville/2bfe9277e9e2c0ff79b6
+    // and http://stackoverflow.com/questions/25227198/how-to-pass-a-reference-to-distribution-home-directory-using-gradle-application
+    doLast {
+      windowsScript.text = windowsScript.text.replaceFirst('(set CLASSPATH=%APP_HOME%\\\\lib\\\\).*', '$1*')
+      unixScript.text = unixScript.text.replaceFirst('(CLASSPATH=\\$APP_HOME/lib/).*', '$1*')
     }
 }
 
-configure(project.subprojects.findAll {
-    it.name.startsWith(MigrationConstants.MIGRATION_PREFIX)
-}) {
-    apply plugin: 'groovy'
-    apply plugin: 'java'
-    apply plugin: 'clean-db'
-    apply plugin: 'test-migration'
+sourceSets {
+    intTest {
+        compileClasspath += sourceSets.test.compileClasspath
+    }
+}
 
-    database {
-        dbvendor = System.getProperty("db.vendor", "postgres")
-        dburl = System.getProperty("db.url", "jdbc:postgresql://localhost:5432/migration");
-        dbuser = System.getProperty("db.user", "bonita")
-        dbpassword = System.getProperty("db.password", "bpm")
-        dbdriverClass = System.getProperty("db.driverClass", "org.postgresql.Driver")
-        dbRootUser = System.getProperty("db.root.user", "postgres")
-        dbRootPassword = System.getProperty("db.root.password", "postgres")
-        classpath = project.configurations.drivers
-    }
-    dependencies {
-        compile project(':bonita-migration-common')
-        compile project(':bonita-migration-distrib')
-        compile group: 'org.postgresql', name: 'postgresql', version: '9.3-1102-jdbc41'
-        compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.26'
-        compile group: 'com.oracle', name: 'ojdbc', version: '6'
-        compile group: 'com.microsoft.jdbc', name: 'sqlserver', version: '6.0.8112.100_41'
-        compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.0.11'
-        testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
-        testCompile group: 'org.assertj', name: 'assertj-core', version: '1.5.0'
-    }
-
-    task("testJar", type: Jar) {
-        classifier = 'tests'
-        from sourceSets.test.output
-    }
-
-    artifacts {
-        archives tasks.testJar
-    }
-    tasks.install.dependsOn tasks.testJar
+task("testJar", type: Jar) {
+    classifier = 'tests'
+    from sourceSets.test.output+sourceSets.intTest.output
 }
