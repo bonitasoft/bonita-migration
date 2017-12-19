@@ -1,0 +1,99 @@
+package org.bonitasoft.migration.plugin
+
+import static groovy.io.FileType.DIRECTORIES
+import static groovy.io.FileType.FILES
+import static org.bonitasoft.migration.plugin.VersionUtils.dotted
+import static org.bonitasoft.migration.plugin.VersionUtils.semver
+
+import com.github.zafarkhaja.semver.Version
+import org.gradle.api.Project
+import org.gradle.api.tasks.JavaExec
+/**
+ * @author Baptiste Mesta.
+ */
+class PrepareTestTask extends JavaExec {
+
+    String targetVersion
+    boolean isSP
+    private String previousVersion
+
+    @Override
+    void exec() {
+        def testValues = [
+                "db.vendor"     : String.valueOf(project.database.dbvendor),
+                "db.url"        : String.valueOf(project.database.dburl),
+                "db.user"       : String.valueOf(project.database.dbuser),
+                "db.password"   : String.valueOf(project.database.dbpassword),
+                "db.driverClass": String.valueOf(project.database.dbdriverClass),
+                "auto.accept"   : "true"
+        ]
+        if (semver(previousVersion) < semver("7.3.0")) {
+            def bonitaHomeFolder = String.valueOf(project.buildDir.absolutePath + File.separator +
+                    "bonita-home-" + dotted(targetVersion))
+            def blankBonitaHomeInPreviousVersion = new File(bonitaHomeFolder + File.separator + "bonita-home")
+            def bonitaHomeToMigrate = new File(bonitaHomeFolder + File.separator + "bonita-home-to-migrate")
+            delete(bonitaHomeToMigrate)
+            copyDir(blankBonitaHomeInPreviousVersion, bonitaHomeToMigrate)
+            testValues.put("bonita.home", bonitaHomeToMigrate)
+            //add the Initializer for version < 7.3
+        }
+        args getFillersToRun()
+        setSystemProperties testValues
+        setDescription "Setup the engine in order to run migration tests on it."
+        setMain "org.bonitasoft.migration.filler.FillerRunner"
+        setDebug System.getProperty("filler.debug") != null
+
+
+        super.exec()
+    }
+
+    def delete(File file) {
+        if (file.isFile()) {
+            file.delete()
+        } else if (file.isDirectory()) {
+            file.eachFile { File child -> delete(child) }
+            file.delete()
+        }
+    }
+
+    private static void copyDir(File dirFrom, File dirTo) {
+        dirTo.mkdir()
+        dirFrom.eachFile(FILES) { File source -> new File(dirTo, source.getName()).bytes = source.bytes }
+        dirFrom.eachFile(DIRECTORIES) { File source -> copyDir(source, new File(dirTo, source.getName())) }
+    }
+
+    def getFillersToRun() {
+        def fillers = []
+        if (isSP) {
+            if (semver(targetVersion) < Version.valueOf("7.2.1")) {
+                fillers.add("${'com'}.bonitasoft.migration.InitializerBefore7_2_1SP")
+            } else if (semver(targetVersion) <= Version.valueOf("7.3.3")) {
+                fillers.add("${'com'}.bonitasoft.migration.InitializerBefore7_3_3SP")
+            } else {
+                fillers.add("com.bonitasoft.migration.InitializerAfter7_3_3SP")
+            }
+        } else {
+            if (semver(targetVersion) < Version.valueOf("7.2.1")) {
+                fillers.add("${'org'}.bonitasoft.migration.InitializerBefore7_2_1")
+            } else if (!isSP && semver(targetVersion) <= Version.valueOf("7.3.0")) {
+                fillers.add("org.bonitasoft.migration.InitializerBefore7_3_0")
+            } else {
+                fillers.add("org.bonitasoft.migration.InitializerAfter7_3_0")
+            }
+        }
+        fillers.add("${isSP ? 'com' : 'org'}.bonitasoft.migration.FillBeforeMigratingTo${isSP ? 'SP' : ''}" +
+                targetVersion)
+        fillers
+    }
+
+    def configureBonita(Project project, String previousVersion, String targetVersion, boolean isSP) {
+        this.previousVersion = previousVersion
+        this.isSP = isSP
+        this.targetVersion = targetVersion
+        classpath(project.getConfigurations().getByName(previousVersion),
+                project.sourceSets.filler.runtimeClasspath,
+                project.getConfigurations().getByName("drivers")
+        )
+    }
+}
+
