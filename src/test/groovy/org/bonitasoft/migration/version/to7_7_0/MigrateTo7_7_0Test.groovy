@@ -1,6 +1,6 @@
-/**
+/*
  * Copyright (C) 2017 Bonitasoft S.A.
- * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
+ * Bonitasoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
  * version 2.1 of the License.
@@ -10,21 +10,29 @@
  * You should have received a copy of the GNU Lesser General Public License along with this
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
- **/
+ */
 package org.bonitasoft.migration.version.to7_7_0
 
-import org.bonitasoft.migration.core.MigrationStep
-import org.bonitasoft.migration.core.VersionMigration
+import spock.lang.Specification
+import spock.lang.Unroll
 
-/**
- */
-class MigrateTo7_7_0 extends VersionMigration {
+class MigrateTo7_7_0Test extends Specification {
 
-    @Override
-    List<MigrationStep> getMigrationSteps() {
-        //keep one line per step to avoid false-positive merge conflict
-        return [
-                new AddNewTenantResourceColumns()
+    @Unroll
+    def "should migration to 7.7.0 include step '#stepName'"(def stepName) {
+        given:
+        def migrateTo = new MigrateTo7_7_0()
+
+        expect:
+        def steps = migrateTo.migrationSteps
+        steps.collect {
+            it.class.getSimpleName()
+        }.contains(stepName)
+
+        where:
+        stepName << [
+                "AddNewTenantResourceColumns"
         ]
+
     }
 }
