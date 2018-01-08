@@ -1,6 +1,6 @@
-/**
+/*
  * Copyright (C) 2017 Bonitasoft S.A.
- * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
+ * Bonitasoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
  * version 2.1 of the License.
@@ -10,21 +10,33 @@
  * You should have received a copy of the GNU Lesser General Public License along with this
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
- **/
+ */
 package org.bonitasoft.migration.version.to7_6_2
 
-import org.bonitasoft.migration.core.MigrationStep
-import org.bonitasoft.migration.core.VersionMigration
+import org.bonitasoft.migration.version.to7_6_0.MigrateTo7_6_0
+import spock.lang.Specification
+import spock.lang.Unroll
 
 /**
+ * @author Emmanuel Duchastenier
  */
-class MigrateTo7_6_2 extends VersionMigration {
+class MigrateTo7_6_2Test extends Specification {
 
-    @Override
-    def List<MigrationStep> getMigrationSteps() {
-        //keep one line per step to avoid false-positive merge conflict
-        return [
-                new ReplaceGroupUniqueIndexBySimpleIndex()
+    @Unroll
+    def "should migration to 7.6.2 include step '#stepName'"(def stepName) {
+        given:
+        def migrateTo = new MigrateTo7_6_2()
+
+        expect:
+        def steps = migrateTo.migrationSteps
+        steps.collect {
+            it.class.getSimpleName()
+        }.contains(stepName)
+
+        where:
+        stepName << [
+                "ReplaceGroupUniqueIndexBySimpleIndex"
         ]
+
     }
 }
