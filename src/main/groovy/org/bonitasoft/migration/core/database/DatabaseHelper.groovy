@@ -314,6 +314,14 @@ END""")
         }
     }
 
+    String getUniqueKeyNameOnTable(String tableName) {
+        def query = getScriptContent("/database/uniqueUnnamedKey", "uniqueKey")
+        def firstRow = sql.firstRow(query, [tableName])
+        if (firstRow != null) {
+            return firstRow.CONSTRAINT_NAME
+        }
+    }
+
     /**
      * remove existing index if already exists and create new index
      * @param tableName
