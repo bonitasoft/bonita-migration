@@ -39,7 +39,7 @@ abstract class VersionMigration {
         migrateBonitaHomeClient(newBonitaHome)
         migrateBonitaHomeServer(newBonitaHome);
 
-        dir.delete()
+        IOUtil.deleteDirectory(dir)
     }
 
     private GString getBonitaHomePath(boolean isSp) {
@@ -129,6 +129,8 @@ abstract class VersionMigration {
         } else {
             println "Not found any tenants."
         }
+
+        IOUtil.deleteDirectory(newClientBonitaHome)
     }
 
     def migrateBonitaHomeServer(File newBonitaHome) {
@@ -161,6 +163,8 @@ abstract class VersionMigration {
                 IOUtil.copyDirectory(new File(bonitaHomeToMigrate.path + "/conf/tenants/template"), new File(bonitaHomeToMigrate.path + "/conf/tenants/$tenantId"));
             }
         }
+
+        IOUtil.deleteDirectory(bonitaHomeToMigrate)
     }
 
     def move(File src, File dest) {
