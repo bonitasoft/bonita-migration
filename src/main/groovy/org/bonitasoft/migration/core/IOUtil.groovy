@@ -25,7 +25,7 @@ import java.util.zip.ZipInputStream
  */
 class IOUtil {
 
-    private final static int DEFAULT_BUFFER_SIZE = 1024 * 4;
+    private final static int DEFAULT_BUFFER_SIZE = 1024 * 4
 
     public static read = System.in.newReader().&readLine
 
@@ -37,10 +37,10 @@ class IOUtil {
 
     static void deleteDirectory(File dir) {
         if (dir == null) {
-            throw new IllegalArgumentException("Can't execute migrateDirectory method with arguments : dir = " + dir);
+            throw new IllegalArgumentException("Can't execute migrateDirectory method with arguments : dir = " + dir)
         }
 
-        println "Replacing all content of $dir..."
+        println "Deleting all content of $dir..."
 
         if (!dir.deleteDir()) {
             throw new IllegalStateException("Migration failed. Unable to delete : " + dir)
@@ -50,24 +50,24 @@ class IOUtil {
     static void copyDirectory(File srcDir, File destDir) throws IOException {
         if (!destDir.exists()) {
             if (!destDir.mkdirs()) {
-                throw new IOException("Destination '" + destDir + "' directory cannot be created");
+                throw new IOException("Destination '" + destDir + "' directory cannot be created")
             }
-            destDir.setLastModified(srcDir.lastModified());
+            destDir.setLastModified(srcDir.lastModified())
             if (!destDir.canWrite()) {
-                throw new IOException("Destination '" + destDir + "' cannot be written to");
+                throw new IOException("Destination '" + destDir + "' cannot be written to")
             }
         }
         // recurse
-        File[] files = srcDir.listFiles();
+        File[] files = srcDir.listFiles()
         if (files == null) {  // null if security restricted
-            throw new IOException("Failed to list contents of " + srcDir);
+            throw new IOException("Failed to list contents of " + srcDir)
         }
         for (int i = 0; i < files.length; i++) {
-            File copiedFile = new File(destDir, files[i].getName());
+            File copiedFile = new File(destDir, files[i].getName())
             if (files[i].isDirectory()) {
-                copyDirectory(files[i], copiedFile);
+                copyDirectory(files[i], copiedFile)
             } else {
-                copyFile(files[i], copiedFile);
+                copyFile(files[i], copiedFile)
             }
         }
     }
@@ -76,21 +76,21 @@ class IOUtil {
         if (destFile.exists() && !(destFile.delete())) {
             throw new IllegalStateException("Migration failed. Unable to delete : " + destFile)
         }
-        FileInputStream input = new FileInputStream(srcFile);
+        FileInputStream input = new FileInputStream(srcFile)
         try {
-            FileOutputStream output = new FileOutputStream(destFile);
+            FileOutputStream output = new FileOutputStream(destFile)
             try {
-                byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
-                long count = 0;
-                int n = 0;
+                byte[] buffer = new byte[DEFAULT_BUFFER_SIZE]
+                long count = 0
+                int n = 0
                 while (-1 != (n = input.read(buffer))) {
-                    output.write(buffer, 0, n);
-                    count += n;
+                    output.write(buffer, 0, n)
+                    count += n
                 }
             } finally {
                 try {
                     if (output != null) {
-                        output.close();
+                        output.close()
                     }
                 } catch (IOException ignored) {
                     // ignore
@@ -99,7 +99,7 @@ class IOUtil {
         } finally {
             try {
                 if (input != null) {
-                    input.close();
+                    input.close()
                 }
             } catch (IOException ignored) {
                 // ignore
@@ -107,45 +107,45 @@ class IOUtil {
         }
         if (srcFile.length() != destFile.length()) {
             throw new IOException("Failed to copy full contents from '" +
-                    srcFile + "' to '" + destFile + "'");
+                    srcFile + "' to '" + destFile + "'")
         }
-        destFile.setLastModified(srcFile.lastModified());
+        destFile.setLastModified(srcFile.lastModified())
     }
 
     static Object deserialize(byte[] bytes, ClassLoader theClassLoader) {
         //had to override the method of objectinputstream to be able to give the object classloader in input
         ObjectInputStream input = new ObjectInputStream(new ByteArrayInputStream(bytes)) {
             protected Class<?> resolveClass(ObjectStreamClass objectStreamClass) throws IOException, ClassNotFoundException {
-                return Class.forName(objectStreamClass.getName(), true, theClassLoader);
+                return Class.forName(objectStreamClass.getName(), true, theClassLoader)
             }
-        };
+        }
         try {
-            return input.readObject();
+            return input.readObject()
         } finally {
-            input.close();
+            input.close()
         }
     }
 
     static byte[] serialize(Object object) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ObjectOutputStream out;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream()
+        ObjectOutputStream out
         try {
-            out = new ObjectOutputStream(baos);
-            out.writeObject(object);
-            out.flush();
+            out = new ObjectOutputStream(baos)
+            out.writeObject(object)
+            out.flush()
         } finally {
-            out.close();
+            out.close()
         }
-        return baos.toByteArray();
+        return baos.toByteArray()
     }
 
     static void askIfWeContinue() {
         if (!isAutoAccept()) {
             println "Continue migration? (yes/no): "
-            def String input = read();
+            def String input = read()
             if (input != "yes") {
                 println "Migration cancelled"
-                System.exit(0);
+                System.exit(0)
             }
         }
     }
@@ -160,13 +160,13 @@ class IOUtil {
             while ((entry = zipStream.getNextEntry()) != null) {
                 def file = new File(outputDirectory, entry.getName())
                 if (entry.isDirectory()) {
-                    file.mkdirs();
+                    file.mkdirs()
                 } else {
                     file.createNewFile()
                     file.withOutputStream { os ->
                         int read
                         while ((read = zipStream.read(buff)) != -1) {
-                            os.write(buff, 0, read);
+                            os.write(buff, 0, read)
                         }
 
                     }
