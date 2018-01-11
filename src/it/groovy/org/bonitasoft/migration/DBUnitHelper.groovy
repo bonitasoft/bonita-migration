@@ -267,6 +267,20 @@ class DBUnitHelper {
         }
         scannedFiles
     }
+    
+    def countConfigFileWithName(String contentType, String configFile) {
+        def scannedFiles = 0
+        context.sql.eachRow("""
+                SELECT tenant_id, content_type
+                FROM configuration
+                WHERE resource_name=${configFile}   
+                AND content_type=${contentType}    
+                ORDER BY tenant_id 
+                """) {
+            scannedFiles++
+        }
+        scannedFiles
+    }
 
     String getConfigFileContent(long tenantId, String contentType, String configFile) {
         String content = getBlobContentAsString(context.sql.firstRow("""
