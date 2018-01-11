@@ -35,7 +35,8 @@ class MigrateTo7_6_2Test extends Specification {
 
         where:
         stepName << [
-                "ReplaceGroupUniqueIndexBySimpleIndex"
+                "ReplaceGroupUniqueIndexBySimpleIndex",
+                "RemoveJaasStandardCfg"
         ]
 
     }

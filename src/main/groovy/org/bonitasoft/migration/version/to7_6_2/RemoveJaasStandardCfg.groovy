@@ -13,19 +13,22 @@
  **/
 package org.bonitasoft.migration.version.to7_6_2
 
+import org.bonitasoft.migration.core.MigrationContext
 import org.bonitasoft.migration.core.MigrationStep
-import org.bonitasoft.migration.core.VersionMigration
+import org.bonitasoft.migration.core.database.ConfigurationHelper
 
 /**
+ * @author Anthony Birembaut
  */
-class MigrateTo7_6_2 extends VersionMigration {
+class RemoveJaasStandardCfg extends MigrationStep {
 
     @Override
-    def List<MigrationStep> getMigrationSteps() {
-        //keep one line per step to avoid false-positive merge conflict
-        return [
-                new ReplaceGroupUniqueIndexBySimpleIndex(),
-                new RemoveJaasStandardCfg()
-        ]
+    def execute(MigrationContext context) {
+        context.configurationHelper.deleteConfigurationFile("jaas-standard.cfg", 0, "PLATFORM_PORTAL")
+    }
+
+    @Override
+    String getDescription() {
+        return "Remove unused jaas-standard.cfg configuration file"
     }
 }
