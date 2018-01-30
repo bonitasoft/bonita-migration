@@ -41,10 +41,11 @@ class MigrationRunner {
         def warnings = [:]
         versionMigrations.each {
             logger.info "Execute migration to version " + it.getVersion()
+            def bonitaHomeDir = null
             it.context = context
             context.setVersion(it.getVersion())
             if (Version.valueOf(it.getVersion()) < Version.valueOf("7.3.0")) {
-                it.migrateBonitaHome(isSp)
+                bonitaHomeDir = it.migrateBonitaHome(isSp)
             }
 
             it.getMigrationSteps().each { step ->
@@ -61,6 +62,11 @@ class MigrationRunner {
             }
             changePlatformVersion(context.sql, it.getVersion())
             lastVersion = it.getVersion()
+
+            if (bonitaHomeDir) {
+                logger.debug("Removing entire content of bonita-home folder $bonitaHomeDir")
+                bonitaHomeDir.deleteDir()
+            }
         }
         logSuccessfullyCompleted(migrationStartDate, lastVersion)
         if (warnings) {
