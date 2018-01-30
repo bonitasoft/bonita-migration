@@ -39,7 +39,7 @@ abstract class VersionMigration {
         migrateBonitaHomeClient(newBonitaHome)
         migrateBonitaHomeServer(newBonitaHome)
 
-        dir.delete()
+        dir
     }
 
     private GString getBonitaHomePath(boolean isSp) {
