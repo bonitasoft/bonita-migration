@@ -1,11 +1,11 @@
 package org.bonitasoft.migration.plugin
 
-import static org.bonitasoft.migration.plugin.VersionUtils.dotted
-import static org.bonitasoft.migration.plugin.VersionUtils.underscored
-
 import com.github.zafarkhaja.semver.Version
 import org.gradle.api.Project
 import org.gradle.api.tasks.testing.Test
+
+import static org.bonitasoft.migration.plugin.VersionUtils.dotted
+import static org.bonitasoft.migration.plugin.VersionUtils.underscored
 
 /**
  * @author Baptiste Mesta.
@@ -26,6 +26,10 @@ class TestMigrationTask extends Test {
                 "db.driverClass": String.valueOf(project.database.dbdriverClass),
                 "auto.accept"   : "true"
         ]
+        if (isSP) {
+            // From 7.3.0, 'bonita.client.home' is the default key used by EngineStarterSP to retrieve licenses:
+            testValues["bonita.client.home"] = String.valueOf(project.buildDir) + "/licenses"
+        }
         if (Version.valueOf(bonitaVersion) <= Version.valueOf("7.3.0")) {
             testValues.put("bonita.home", String.valueOf(project.buildDir.absolutePath + File.separator +
                     "bonita-home-" + dotted(bonitaVersion) + File.separator + "bonita-home-to-migrate"))
