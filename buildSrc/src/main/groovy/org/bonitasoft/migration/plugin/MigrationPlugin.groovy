@@ -1,18 +1,16 @@
 package org.bonitasoft.migration.plugin
 
-import org.bonitasoft.migration.plugin.cleandb.CleanDbPluginExtension
-import org.bonitasoft.migration.plugin.dist.MigrationDistribution
-
-import static org.bonitasoft.migration.plugin.VersionUtils.underscored
-
 import com.github.zafarkhaja.semver.Version
+import org.bonitasoft.migration.plugin.cleandb.CleanDbPluginExtension
 import org.bonitasoft.migration.plugin.cleandb.CleanDbTask
+import org.bonitasoft.migration.plugin.dist.MigrationDistribution
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.tasks.Copy
 
+import static org.bonitasoft.migration.plugin.VersionUtils.underscored
 /**
  *
  *
@@ -48,6 +46,9 @@ class MigrationPlugin implements Plugin<Project> {
                 createConfigurationForBonitaVersion(project, it, migrationPluginExtension, allVersions)
                 PrepareTestTask prepareTestTask = createPrepareTestTask(project, it, previousVersions,
                         migrationPluginExtension.isSP)
+                if (migrationPluginExtension.isSP) {
+                    prepareTestTask.dependsOn("getLicenses")
+                }
                 Task runMigrationTask = createRunMigrationTask(project, it, migrationPluginExtension.isSP)
                 Task migrationTestTask = createTestMigrationTask(project, it, migrationPluginExtension.isSP)
                 runMigrationTask.dependsOn(prepareTestTask)
