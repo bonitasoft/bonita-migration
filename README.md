@@ -9,19 +9,19 @@ This project migrates an installed Bonita community instance from one version to
 Build migration
 ---------------
 ```
-./gradlew.sh build
+./gradlew build
 ```
 
 Integration tests
 -----------------
 ```
-./gradlew.sh integrationTest allMigrationTests
+./gradlew integrationTest allMigrationTests
 ```
 
 Test specific version
 -----------------
 ```
-./gradlew.sh testMigration_X_Y_Z
+./gradlew testMigration_X_Y_Z
 ```
 
 Customize database to use
@@ -52,7 +52,7 @@ Example: run test migration 7.6.0 on a sqlserver:
 Publication
 -----------
 ```
-./gradlew.sh publishToMavenLocal
+./gradlew publishToMavenLocal
 ```
 
 

@@ -1,13 +1,14 @@
 package org.bonitasoft.migration.plugin
 
+import com.github.zafarkhaja.semver.Version
+import org.gradle.api.Project
+import org.gradle.api.tasks.JavaExec
+
 import static groovy.io.FileType.DIRECTORIES
 import static groovy.io.FileType.FILES
 import static org.bonitasoft.migration.plugin.VersionUtils.dotted
 import static org.bonitasoft.migration.plugin.VersionUtils.semver
 
-import com.github.zafarkhaja.semver.Version
-import org.gradle.api.Project
-import org.gradle.api.tasks.JavaExec
 /**
  * @author Baptiste Mesta.
  */
@@ -27,6 +28,9 @@ class PrepareTestTask extends JavaExec {
                 "db.driverClass": String.valueOf(project.database.dbdriverClass),
                 "auto.accept"   : "true"
         ]
+        if (isSP) {
+            testValues["bonita.client.home"] = String.valueOf(project.buildDir) + "/licenses"
+        }
         if (semver(previousVersion) < semver("7.3.0")) {
             def bonitaHomeFolder = String.valueOf(project.buildDir.absolutePath + File.separator +
                     "bonita-home-" + dotted(targetVersion))
