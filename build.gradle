@@ -4,6 +4,9 @@ import com.github.zafarkhaja.semver.Version
 
 buildscript {
     repositories {
+        mavenLocal()
+        maven { url 'http://repositories.rd.lan/maven/all' }
+        // fallback solution in case the Bonitasoft internal repository is not available
         mavenCentral()
     }
 }
@@ -12,8 +15,8 @@ plugins {
 }
 repositories {
     mavenLocal()
-    maven { url 'http://repositories.rd.lan/maven/releases/' }
-    maven { url 'http://repositories.rd.lan/maven/snapshots/' }
+    maven { url 'http://repositories.rd.lan/maven/all' }
+    // fallback solution in case the Bonitasoft internal repository is not available
     mavenCentral()
 }
 
