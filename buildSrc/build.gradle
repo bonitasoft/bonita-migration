@@ -1,5 +1,7 @@
 
 repositories {
+    maven { url 'http://repositories.rd.lan/maven/all' }
+    // fallback solution in case the Bonitasoft internal repository is not available
     jcenter()
     mavenCentral()
 }
