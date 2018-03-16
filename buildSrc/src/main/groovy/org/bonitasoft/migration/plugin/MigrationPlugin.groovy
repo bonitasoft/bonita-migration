@@ -180,10 +180,15 @@ class MigrationPlugin implements Plugin<Project> {
         return createDependencyWithoutGroovy(project, name)
     }
 
-    def getTestEngineDependencyName(MigrationPluginExtension migrationPluginExtension, version) {
+    def getTestEngineDependencyName(MigrationPluginExtension migrationPluginExtension, String version) {
         String name
         if (migrationPluginExtension.isSP) {
-            name = "com.bonitasoft.engine.test:bonita-integration-tests-local-sp:${version}:tests"
+            // test modules changed in 7.7.0
+            if (Version.valueOf(version) > Version.valueOf("7.6.9")){
+                name = "com.bonitasoft.engine.test:bonita-integration-tests-client-sp:${version}"
+            }else{
+                name = "com.bonitasoft.engine.test:bonita-integration-tests-local-sp:${version}:tests"
+            }
         } else {
             name = "org.bonitasoft.engine.test:bonita-server-test-utils:${version}"
         }
