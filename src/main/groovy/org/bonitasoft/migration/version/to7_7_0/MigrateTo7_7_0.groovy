@@ -25,7 +25,8 @@ class MigrateTo7_7_0 extends VersionMigration {
         //keep one line per step to avoid false-positive merge conflict
         return [
                 new AddNewTenantResourceColumns(),
-                new RemoveUnusedEventTriggerInstances()
+                new RemoveUnusedEventTriggerInstances(),
+                new ChangeContractInputSerialization()
         ]
     }
 }
