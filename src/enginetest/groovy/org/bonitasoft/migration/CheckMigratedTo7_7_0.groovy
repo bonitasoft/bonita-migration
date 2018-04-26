@@ -57,4 +57,16 @@ class CheckMigratedTo7_7_0 extends Specification {
         client.processAPI.searchTimerEventTriggerInstances(processInstance.id,
                 new SearchOptionsBuilder(0, 100).done()).count == 1
     }
+
+
+    def "should have migrated contract data to the new serialization"() {
+        given:
+        def client = new APIClient()
+        client.login("install","install")
+        def processInstance = client.processAPI.searchArchivedProcessInstances(new SearchOptionsBuilder(0, 1).filter("name", "ProcessWithContract").done()).result[0]
+        when:
+        def contractDataValue = client.processAPI.getProcessInputValueAfterInitialization(processInstance.sourceObjectId, "myInput")
+        then:
+        contractDataValue == "theInputValue"
+    }
 }

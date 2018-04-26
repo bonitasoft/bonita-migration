@@ -14,6 +14,8 @@
 
 package org.bonitasoft.migration.core.database
 
+import static org.bonitasoft.migration.core.MigrationStep.DBVendor.*
+
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import org.bonitasoft.migration.core.Logger
@@ -21,7 +23,6 @@ import org.bonitasoft.migration.core.MigrationStep.DBVendor
 import org.bonitasoft.migration.core.database.schema.ColumnDefinition
 import org.bonitasoft.migration.core.database.schema.ForeignKeyDefinition
 import org.bonitasoft.migration.core.database.schema.IndexDefinition
-
 /**
  * @author Baptiste Mesta
  */
@@ -55,23 +56,23 @@ class DatabaseHelper {
      * @param statement
      * @return
      */
-    def boolean executeDbVendorStatement(String statement) {
+    boolean executeDbVendorStatement(String statement) {
         return sql.execute(statement)
     }
 
-    def boolean execute(String statement) {
+    boolean execute(String statement) {
         return sql.execute(adaptFor(statement))
     }
 
-    def boolean execute(String statement, List<Object> params) {
+    boolean execute(String statement, List<Object> params) {
         return sql.execute(adaptFor(statement), params)
     }
 
-    def int executeUpdate(GString statement) {
+    int executeUpdate(GString statement) {
         return sql.executeUpdate(adaptFor(statement))
     }
 
-    def int executeUpdate(String statement) {
+    int executeUpdate(String statement) {
         return sql.executeUpdate(adaptFor(statement))
     }
 
@@ -85,13 +86,13 @@ class DatabaseHelper {
     @Deprecated
     def String adaptFor(String statement) {
         switch (dbVendor) {
-            case DBVendor.ORACLE:
+            case ORACLE:
                 return adaptForOracle(statement)
                 break;
-            case DBVendor.MYSQL:
+            case MYSQL:
                 return adaptForMysql(statement)
                 break;
-            case DBVendor.SQLSERVER:
+            case SQLSERVER:
                 return adaptForSqlServer(statement)
                 break;
             default:
@@ -144,33 +145,32 @@ class DatabaseHelper {
     }
 
     def renameColumn(String table, String oldName, String newName, String newType) {
+        def sql = "ALTER TABLE $table RENAME $oldName TO $newName"
         switch (dbVendor) {
-            case DBVendor.ORACLE:
-                execute("ALTER TABLE $table RENAME COLUMN $oldName TO $newName")
-                break;
-            case DBVendor.MYSQL:
-                execute("ALTER TABLE $table CHANGE COLUMN $oldName $newName $newType")
-                break;
-            case DBVendor.SQLSERVER:
-                execute("""BEGIN
-EXEC sp_rename '${table}.$oldName', '$newName', 'COLUMN'
-END""")
-                break;
-            default:
-                executeDbVendorStatement("ALTER TABLE $table RENAME $oldName TO $newName")
+            case ORACLE:
+                sql = "ALTER TABLE ${table} RENAME COLUMN ${oldName} TO ${newName}"
+                break
+            case MYSQL:
+                sql = "ALTER TABLE $table CHANGE COLUMN `${oldName}` `${newName}` ${newType}"
+                break
+            case SQLSERVER:
+                sql = """BEGIN
+EXEC sp_rename '${table}.${oldName}', '${newName}', 'COLUMN'
+END"""
         }
+        executeDbVendorStatement(sql as String)
     }
 
 
     def dropTableIfExists(String tableName) {
         switch (dbVendor) {
         //same script for Postgres and MySQL
-            case DBVendor.POSTGRES:
-            case DBVendor.MYSQL:
+            case POSTGRES:
+            case MYSQL:
                 executeDbVendorStatement("DROP TABLE IF EXISTS $tableName")
                 break
 
-            case DBVendor.ORACLE:
+            case ORACLE:
                 def query = """
                     SELECT *
                     FROM user_tables
@@ -181,7 +181,7 @@ END""")
                 }
                 break
 
-            case DBVendor.SQLSERVER:
+            case SQLSERVER:
                 executeDbVendorStatement("""
                     IF OBJECT_ID('$tableName', 'U') IS NOT NULL
                     DROP TABLE $tableName;
@@ -193,10 +193,10 @@ END""")
 
     def renameTable(String table, String newName) {
         switch (dbVendor) {
-            case DBVendor.MYSQL:
+            case MYSQL:
                 execute("RENAME TABLE $table TO $newName")
                 break;
-            case DBVendor.SQLSERVER:
+            case SQLSERVER:
                 execute("sp_rename $table , $newName")
                 break;
             default:
@@ -206,13 +206,13 @@ END""")
 
     def dropNotNull(String table, String column, String type) {
         switch (dbVendor) {
-            case DBVendor.ORACLE:
+            case ORACLE:
                 execute("ALTER TABLE $table MODIFY $column NULL")
                 break;
-            case DBVendor.MYSQL:
+            case MYSQL:
                 execute("ALTER TABLE $table MODIFY $column $type NULL")
                 break;
-            case DBVendor.SQLSERVER:
+            case SQLSERVER:
                 execute("ALTER TABLE $table ALTER COLUMN $column $type NULL")
                 break;
             default:
@@ -222,10 +222,10 @@ END""")
 
     def dropColumn(String table, String column) {
         switch (dbVendor) {
-            case DBVendor.ORACLE:
+            case ORACLE:
                 execute("ALTER TABLE $table DROP COLUMN $column")
                 break;
-            case DBVendor.SQLSERVER:
+            case SQLSERVER:
                 execute("ALTER TABLE $table DROP COLUMN $column")
                 break;
             default:
@@ -234,7 +234,7 @@ END""")
     }
 
     def addColumn(String table, String column, String type, String defaultValue, String constraint) {
-        execute("ALTER TABLE $table ADD $column $type ${defaultValue != null ? "DEFAULT $defaultValue" : ""} ${constraint != null ? constraint : ""}")
+        sql.execute("ALTER TABLE $table ADD $column $type ${defaultValue != null ? "DEFAULT $defaultValue" : ""} ${constraint != null ? constraint : ""}" as String)
     }
 
     def dropForeignKey(String table, String foreignKeyName) {
@@ -244,7 +244,7 @@ END""")
         }
         def request
         switch (dbVendor) {
-            case DBVendor.MYSQL:
+            case MYSQL:
                 request = "ALTER TABLE " + table + " DROP FOREIGN KEY " + foreignKeyName
                 break;
             default:
@@ -271,7 +271,7 @@ END""")
         sql.eachRow(query, [tableName]) { row ->
             def request
             switch (dbVendor) {
-                case DBVendor.MYSQL:
+                case MYSQL:
                     request = "ALTER TABLE " + row.TABLE_NAME + " DROP PRIMARY KEY"
                     break;
                 default:
@@ -297,17 +297,17 @@ END""")
     def dropUniqueKey(String tableName, String ukName) {
         if (hasUniqueKeyOnTable(tableName, ukName)) {
             switch (dbVendor) {
-                case DBVendor.POSTGRES:
-                case DBVendor.SQLSERVER:
+                case POSTGRES:
+                case SQLSERVER:
                     sql.execute("ALTER TABLE " + tableName + " DROP CONSTRAINT " + ukName)
                     break
-                case DBVendor.ORACLE:
+                case ORACLE:
                     sql.execute("ALTER TABLE " + tableName + " DROP CONSTRAINT " + ukName)
                     if (hasIndexOnTable(tableName, ukName)) {
                         sql.execute("DROP INDEX " + ukName)
                     }
                     break
-                case DBVendor.MYSQL:
+                case MYSQL:
                     sql.execute("ALTER TABLE " + tableName + " DROP INDEX " + ukName)
             }
 
@@ -349,14 +349,14 @@ END""")
         if (hasIndexOnTable(tableName, indexName)) {
             def String query
             switch (dbVendor) {
-                case DBVendor.POSTGRES:
-                case DBVendor.ORACLE:
+                case POSTGRES:
+                case ORACLE:
                     query = "DROP INDEX " + indexName
                     break
-                case DBVendor.MYSQL:
+                case MYSQL:
                     query = "DROP INDEX " + indexName + " on " + tableName
                     break
-                case DBVendor.SQLSERVER:
+                case SQLSERVER:
                     query = "DROP INDEX " + tableName + "." + indexName
                     break
             }
@@ -455,7 +455,7 @@ END""")
     def boolean hasIndexOnTable(String tableName, String indexName) {
         def query
         switch (dbVendor) {
-            case DBVendor.POSTGRES:
+            case POSTGRES:
                 query = """
                     SELECT
                         pg_class.relname AS table_name,
@@ -472,7 +472,7 @@ END""")
                     """
                 break
 
-            case DBVendor.ORACLE:
+            case ORACLE:
                 query = """
                     SELECT
                         i.TABLE_NAME,
@@ -485,7 +485,7 @@ END""")
                     """
                 break
 
-            case DBVendor.MYSQL:
+            case MYSQL:
                 query = """
                 SELECT
                     DISTINCT s.TABLE_NAME,
@@ -502,7 +502,7 @@ END""")
                     """
                 break
 
-            case DBVendor.SQLSERVER:
+            case SQLSERVER:
                 query = """
                    SELECT
                         t.name,
@@ -530,8 +530,8 @@ END""")
     def boolean hasColumnOnTable(String tableName, String columnName) {
         def query
         switch (dbVendor) {
-            case DBVendor.POSTGRES:
-            case DBVendor.SQLSERVER:
+            case POSTGRES:
+            case SQLSERVER:
                 query = """
                     SELECT
                         C.TABLE_NAME,
@@ -544,7 +544,7 @@ END""")
                     """
                 break
 
-            case DBVendor.ORACLE:
+            case ORACLE:
                 query = """
                    SELECT
                         c.TABLE_NAME,
@@ -557,7 +557,7 @@ END""")
                     """
                 break
 
-            case DBVendor.MYSQL:
+            case MYSQL:
                 query = """
                 SELECT
                     c.TABLE_NAME,
@@ -631,13 +631,17 @@ END""")
     }
 
     String getBlobContentAsString(Object blobValue) {
+        new String(getBlobContentAsBytes(blobValue))
+    }
+
+    byte[] getBlobContentAsBytes(blobValue) {
         def bytesContent
-        if (DBVendor.ORACLE == dbVendor) {
+        if (ORACLE == dbVendor) {
             bytesContent = blobValue.binaryStream.bytes
         } else {
             bytesContent = blobValue
         }
-        new String(bytesContent)
+        bytesContent
     }
 
     def addSequenceOnAllTenants(int sequenceKey) {

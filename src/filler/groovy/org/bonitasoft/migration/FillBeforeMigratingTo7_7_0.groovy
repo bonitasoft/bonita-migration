@@ -13,10 +13,13 @@
  **/
 package org.bonitasoft.migration
 
+import static org.assertj.core.api.Assertions.assertThat
 import static org.awaitility.Awaitility.await
 
 import groovy.sql.Sql
+import org.assertj.core.api.Assertions
 import org.bonitasoft.engine.api.APIClient
+import org.bonitasoft.engine.bpm.contract.Type
 import org.bonitasoft.engine.bpm.flownode.TimerType
 import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder
 import org.bonitasoft.engine.expression.Expression
@@ -92,6 +95,24 @@ class FillBeforeMigratingTo7_7_0 {
 
     private Expression expr(String value) {
         new ExpressionBuilder().createConstantStringExpression(value)
+    }
+
+
+    @FillAction
+    void 'create process with contract input'() {
+        def process = new ProcessDefinitionBuilder().createNewInstance("ProcessWithContract", "1.0")
+                .addContract().addInput("myInput", Type.TEXT, "a test input")
+                .getProcess()
+
+        def client = new APIClient()
+        client.login("install", "install")
+
+        def processDefinition = client.processAPI.deployAndEnableProcess(process)
+        def processInstance = client.processAPI.startProcessWithInputs(processDefinition.id, [myInput: "theInputValue"])
+        await().until({
+            client.processAPI.getFinalArchivedProcessInstance(processInstance.id).endDate != null
+        })
+        assertThat(client.processAPI.getProcessInputValueAfterInitialization(processInstance.id, "myInput")).isEqualTo("theInputValue")
     }
 
 
