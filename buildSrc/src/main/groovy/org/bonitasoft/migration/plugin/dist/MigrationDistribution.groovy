@@ -14,16 +14,19 @@
 
 package org.bonitasoft.migration.plugin.dist
 
+import static org.bonitasoft.migration.plugin.PropertiesUtils.loadProperties
+import static org.bonitasoft.migration.plugin.VersionUtils.getVersion
+import static org.bonitasoft.migration.plugin.VersionUtils.getVersionList
+
 import com.github.zafarkhaja.semver.Version
 import org.bonitasoft.migration.plugin.MigrationPluginExtension
-import org.bonitasoft.migration.plugin.cleandb.CleanDbTask
+import org.bonitasoft.migration.plugin.db.JdbcDriverDependencies
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.Copy
-import org.gradle.api.tasks.testing.Test
+
 /**
- *
- * comes in addition of the application plugin to add bonita homes and do all common things on the migration distribution
+ * Comes in addition of the application plugin to add bonita homes and do all common things on the migration distribution
  *
  * @author Baptiste Mesta
  */
@@ -34,16 +37,11 @@ class MigrationDistribution implements Plugin<Project> {
 
     static final String TASK_ADD_BONITA_HOMES = "addBonitaHomes"
     static final String TASK_ADD_VERSION_IN_DIST = "addVersionsToTheDistribution"
-    static final String TASK_INTEGRATION_TEST = "integrationTest"
-
 
     @Override
     void apply(Project project) {
         project.applicationDefaultJvmArgs = ["-Dfile.encoding=UTF-8"]
 
-        project.configurations {
-            drivers
-        }
         project.distributions {
             main {
                 contents {
@@ -53,12 +51,9 @@ class MigrationDistribution implements Plugin<Project> {
                 }
             }
         }
-        defineExtraSourceSets(project)
         project.afterEvaluate {
             def configuration = project.extensions.getByType(MigrationPluginExtension.class)
-            configuration.currentVersionModifier = loadProperties(project.file
-                    (configuration
-                            .migrationProperties)).getProperty("currentVersionModifier")
+            configuration.currentVersionModifier = loadProperties(project.file(configuration.migrationProperties)).getProperty("currentVersionModifier")
             project.mainClassName = "${configuration.isSP ? 'com' : 'org'}.bonitasoft.migration.core.Migration"
             defineConfigurations(project, configuration)
             defineDependencies(project, configuration)
@@ -67,19 +62,11 @@ class MigrationDistribution implements Plugin<Project> {
         }
     }
 
-    def loadProperties(File propertiesFile) {
-        def props = new Properties()
-        propertiesFile.withInputStream {
-            props.load(it)
-        }
-        return props
-    }
-
     private void defineTasks(Project project, MigrationPluginExtension configuration) {
         //Define tasks
         project.task(TASK_ADD_BONITA_HOMES, type: Copy) {
             group = MIGRATION_DISTRIBUTION_GROUP
-            description = "Get all bonita home for each version and put it in the distribution"
+            description = "Get all bonita home for each version and put it in the distribution."
             getVersionList(project, configuration).findAll { (Version.valueOf(it) < Version.valueOf("7.3.0")) }.collect {
                 version ->
                 from(project.configurations."config_$version".files[0].getParent()) {
@@ -91,15 +78,9 @@ class MigrationDistribution implements Plugin<Project> {
         }
         project.task(TASK_ADD_VERSION_IN_DIST, type: AddVersionsToTheDistributionTask) {
             group = MIGRATION_DISTRIBUTION_GROUP
-            description = "Put possible bonita version inside the distribution"
+            description = "Put possible bonita version inside the distribution."
             versionsToAdd = getVersionList(project, configuration)
             propertiesFile = new File(project.projectDir, 'src/main/resources/bonita-versions.properties')
-        }
-
-        project.task(TASK_INTEGRATION_TEST, type: Test) {
-            testClassesDirs = project.sourceSets.integrationTest.output.classesDirs
-            classpath = project.sourceSets.integrationTest.runtimeClasspath
-            reports.html.destination = project.file("${project.buildDir}/reports/integrationTests")
         }
 
         project.tasks.clean.doLast {
@@ -114,32 +95,9 @@ class MigrationDistribution implements Plugin<Project> {
         }
     }
 
-    static def getVersionList(project, configuration) {
-        // use normalize to ensure the file content has only LF eol which is then used to split the lines (ex: manage
-        // Windows CRLF checkout)
-        project.file(configuration.versionListFile).text.normalize().split("\n").toList()
-    }
-
     private void defineTaskDependencies(Project project, MigrationPluginExtension configuration) {
-
-        def setSystemPropertiesForEngine = {
-            systemProperties = [
-                    "db.vendor"     : String.valueOf(project.database.properties.dbvendor),
-                    "db.url"        : String.valueOf(project.database.properties.dburl),
-                    "db.user"       : String.valueOf(project.database.properties.dbuser),
-                    "db.password"   : String.valueOf(project.database.properties.dbpassword),
-                    "db.driverClass": String.valueOf(project.database.properties.dbdriverClass),
-                    "bonita.home"   : String.valueOf(project.rootProject.buildDir.absolutePath + File.separator + "bonita-home"),
-            ]
-        }
-
-        project.tasks.integrationTest {
-            doFirst setSystemPropertiesForEngine
-        }
         project.tasks.processResources.dependsOn project.tasks.addBonitaHomes
         project.tasks.processResources.dependsOn project.tasks.addVersionsToTheDistribution
-        def cleanDb = project.task("cleandb_" + (configuration.isSP ? "com" : "org"), type: CleanDbTask)
-        project.tasks.integrationTest.dependsOn cleanDb
     }
 
     private defineDependencies(Project project, MigrationPluginExtension configuration) {
@@ -150,38 +108,11 @@ class MigrationDistribution implements Plugin<Project> {
                                 ":${getVersion(project, configuration, it)}" +
                                 ":${configuration.isSP ? '' : 'full'}@zip")
             }
-            drivers group: 'org.postgresql', name: 'postgresql', version: '9.3-1102-jdbc41'
-            drivers group: 'mysql', name: 'mysql-connector-java', version: '5.1.26'
-            drivers group: 'com.oracle', name: 'ojdbc', version: '6'
-            drivers group: 'com.microsoft.jdbc', name: 'sqlserver', version: '6.0.8112.100_41'
-            compile group: 'org.postgresql', name: 'postgresql', version: '9.3-1102-jdbc41'
-            compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.26'
 
-            integrationTestCompile project.sourceSets.main.output
-            integrationTestCompile project.configurations.testCompile
-            integrationTestCompile project.sourceSets.test.output
-            integrationTestRuntime project.configurations.testRuntime
-
+            // the following jdbc drivers will be included in the distribution
+            runtime JdbcDriverDependencies.mysql
+            runtime JdbcDriverDependencies.postgres
         }
-    }
-
-    static String getVersion(Project project, MigrationPluginExtension configuration, String version) {
-        def versionList = getVersionList(project, configuration)
-        return getVersion(versionList, version, configuration)
-    }
-
-    static String getVersion(List<String> versionList, String version, MigrationPluginExtension configuration) {
-        if (versionList.last() == version) {
-            if (configuration.currentVersionModifier != "NONE") {
-                if (configuration.currentVersionModifier == "SNAPSHOT") {
-                    return version + "-SNAPSHOT"
-                } else {
-                    //alpha, beta, rc tags have a dot here
-                    return version + "." + configuration.currentVersionModifier
-                }
-            }
-        }
-        return version
     }
 
     private defineConfigurations(Project project, MigrationPluginExtension configuration) {
@@ -190,12 +121,4 @@ class MigrationDistribution implements Plugin<Project> {
         }
     }
 
-    private defineExtraSourceSets(Project project) {
-        project.sourceSets {
-            integrationTest {
-                groovy.srcDir project.file('src/it/groovy')
-                resources.srcDir project.file('src/it/resources')
-            }
-        }
-    }
 }

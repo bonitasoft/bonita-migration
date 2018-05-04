@@ -1,11 +1,11 @@
 package org.bonitasoft.migration.plugin
 
+import static org.bonitasoft.migration.plugin.VersionUtils.dotted
+import static org.bonitasoft.migration.plugin.VersionUtils.underscored
+
 import com.github.zafarkhaja.semver.Version
 import org.gradle.api.Project
 import org.gradle.api.tasks.testing.Test
-
-import static org.bonitasoft.migration.plugin.VersionUtils.dotted
-import static org.bonitasoft.migration.plugin.VersionUtils.underscored
 
 /**
  * @author Baptiste Mesta.

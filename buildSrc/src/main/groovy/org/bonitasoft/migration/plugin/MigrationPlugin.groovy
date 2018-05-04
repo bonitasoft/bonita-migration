@@ -1,20 +1,37 @@
+/**
+ * Copyright (C) 2015-2018 Bonitasoft S.A.
+ * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
+ * This library is free software; you can redistribute it and/or modify it under the terms
+ * of the GNU Lesser General Public License as published by the Free Software Foundation
+ * version 2.1 of the License.
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ * You should have received a copy of the GNU Lesser General Public License along with this
+ * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
+ * Floor, Boston, MA 02110-1301, USA.
+ **/
+
 package org.bonitasoft.migration.plugin
 
+import static PropertiesUtils.loadProperties
+import static org.bonitasoft.migration.plugin.VersionUtils.getVersion
+import static org.bonitasoft.migration.plugin.VersionUtils.getVersionBefore
+import static org.bonitasoft.migration.plugin.VersionUtils.getVersionList
+import static org.bonitasoft.migration.plugin.VersionUtils.underscored
+
 import com.github.zafarkhaja.semver.Version
-import org.bonitasoft.migration.plugin.cleandb.CleanDbPluginExtension
-import org.bonitasoft.migration.plugin.cleandb.CleanDbTask
-import org.bonitasoft.migration.plugin.dist.MigrationDistribution
+import org.bonitasoft.migration.plugin.db.DatabasePluginExtension
+import org.bonitasoft.migration.plugin.db.CleanDbTask
+import org.bonitasoft.migration.plugin.db.JdbcDriverDependencies
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.tasks.Copy
+import org.gradle.api.tasks.testing.Test
 
-import static org.bonitasoft.migration.plugin.VersionUtils.underscored
 /**
- *
- *
- *
  * @author Baptiste Mesta
  */
 class MigrationPlugin implements Plugin<Project> {
@@ -27,51 +44,72 @@ class MigrationPlugin implements Plugin<Project> {
             }
             enginetest {
             }
-        }
-        def migrationPluginExtension = project.extensions.create("migration", MigrationPluginExtension.class)
-        project.extensions.create("database", CleanDbPluginExtension)
-        project.afterEvaluate {
-            // use normalize to ensure the file content has only LF eol which is then used to split the lines (ex:
-            // manage Windows CRLF checkout)
-            def allVersions = project.file(migrationPluginExtension.versionListFile).text.normalize().split("\n").toList()
-            migrationPluginExtension.currentVersionModifier = loadProperties(project.file
-                    (migrationPluginExtension
-                            .migrationProperties)).getProperty("currentVersionModifier")
-            createConfigurationForBonitaVersion(project, allVersions.first(), migrationPluginExtension, allVersions)
-            List<String> previousVersions = allVersions.subList(0, allVersions.size() - 1)
-            List<String> versions = allVersions.subList(1, allVersions.size())
-            def currentVersion = allVersions.last()
-            def allMigrationTests = project.task("allMigrationTests", description: "Run all migration tests", group: "migration")
-            versions.each {
-                createConfigurationForBonitaVersion(project, it, migrationPluginExtension, allVersions)
-                PrepareTestTask prepareTestTask = createPrepareTestTask(project, it, previousVersions,
-                        migrationPluginExtension.isSP)
-                if (migrationPluginExtension.isSP) {
-                    prepareTestTask.dependsOn("getLicenses")
-                }
-                Task runMigrationTask = createRunMigrationTask(project, it, migrationPluginExtension.isSP)
-                Task migrationTestTask = createTestMigrationTask(project, it, migrationPluginExtension.isSP)
-                runMigrationTask.dependsOn(prepareTestTask)
-                migrationTestTask.dependsOn(runMigrationTask)
-                allMigrationTests.dependsOn(migrationTestTask)
+            integrationTest {
+                groovy.srcDir project.file('src/it/groovy')
+                resources.srcDir project.file('src/it/resources')
             }
-            getDependencies(project, "fillerCompileOnly").add(getEngineDependency(project, migrationPluginExtension,
-                    currentVersion, allVersions))
-            getDependencies(project, "fillerCompileOnly").add(getTestEngineDependency(project,
-                    migrationPluginExtension, currentVersion, allVersions))
-            getDependencies(project, "enginetestCompileOnly").add(getEngineDependency(project,
-                    migrationPluginExtension, currentVersion, allVersions))
-            getDependencies(project, "enginetestCompileOnly").add(getTestEngineDependency(project,
-                    migrationPluginExtension, currentVersion, allVersions))
+        }
+
+        project.configurations {
+            drivers
+        }
+
+        defineJdbcDriversConfiguration(project)
+
+        def migrationPluginExtension = project.extensions.create("migration", MigrationPluginExtension.class)
+        project.extensions.create("database", DatabasePluginExtension)
+
+        project.afterEvaluate {
+            createMigrationTestsTasks(project, migrationPluginExtension)
+            createIntegrationTestTasks(project, migrationPluginExtension)
         }
     }
 
-    def loadProperties(File propertiesFile) {
-        def props = new Properties()
-        propertiesFile.withInputStream {
-            props.load(it)
+    def defineJdbcDriversConfiguration(Project project) {
+        project.dependencies {
+            // the following jdbc drivers are available for integration and migration tests
+            drivers JdbcDriverDependencies.mysql
+            drivers JdbcDriverDependencies.oracle
+            drivers JdbcDriverDependencies.postgres
+            drivers JdbcDriverDependencies.sqlserver
         }
-        return props
+    }
+
+    // =================================================================================================================
+    // for migration tests
+    // =================================================================================================================
+
+    def createMigrationTestsTasks(Project project, MigrationPluginExtension migrationPluginExtension) {
+        def allVersions = getVersionList(project, migrationPluginExtension)
+        migrationPluginExtension.currentVersionModifier = loadProperties(project.file(migrationPluginExtension.migrationProperties)).getProperty("currentVersionModifier")
+        createConfigurationForBonitaVersion(project, allVersions.first(), migrationPluginExtension, allVersions)
+        List<String> previousVersions = allVersions.subList(0, allVersions.size() - 1)
+        List<String> versions = allVersions.subList(1, allVersions.size())
+
+        def allMigrationTests = project.task("allMigrationTests", description: "Run all migration tests", group: "migration")
+
+        def currentVersion = allVersions.last()
+        versions.each {
+            createConfigurationForBonitaVersion(project, it, migrationPluginExtension, allVersions)
+            PrepareMigrationTestTask prepareTestTask = createPrepareTestTask(project, it, previousVersions,
+                    migrationPluginExtension.isSP)
+            if (migrationPluginExtension.isSP) {
+                prepareTestTask.dependsOn("getLicenses")
+            }
+            Task runMigrationTask = createRunMigrationTask(project, it, migrationPluginExtension.isSP)
+            Task migrationTestTask = createTestMigrationTask(project, it, migrationPluginExtension.isSP)
+            runMigrationTask.dependsOn(prepareTestTask)
+            migrationTestTask.dependsOn(runMigrationTask)
+            allMigrationTests.dependsOn(migrationTestTask)
+        }
+        getDependencies(project, "fillerCompileOnly").add(getEngineDependency(project, migrationPluginExtension,
+                currentVersion, allVersions))
+        getDependencies(project, "fillerCompileOnly").add(getTestEngineDependency(project,
+                migrationPluginExtension, currentVersion, allVersions))
+        getDependencies(project, "enginetestCompileOnly").add(getEngineDependency(project,
+                migrationPluginExtension, currentVersion, allVersions))
+        getDependencies(project, "enginetestCompileOnly").add(getTestEngineDependency(project,
+                migrationPluginExtension, currentVersion, allVersions))
     }
 
     def getDependencies(Project project, String configurationName) {
@@ -79,7 +117,6 @@ class MigrationPlugin implements Plugin<Project> {
     }
 
     def createTestMigrationTask(Project project, String version, boolean isSP) {
-
         TestMigrationTask migrationTestTask = project.tasks.create(name: "testMigration_" + underscored(version), type:
                 TestMigrationTask, description: "test the migration of version $version", group: "migration")
         migrationTestTask.configureBonita(project, version, isSP)
@@ -97,8 +134,8 @@ class MigrationPlugin implements Plugin<Project> {
 
     def createPrepareTestTask(Project project, String targetVersion, List<String> previousVersions, boolean isSP) {
         def cleandb = project.tasks.create(name: "cleandb_" + underscored(targetVersion), type: CleanDbTask)
-        PrepareTestTask prepareTestTask = project.tasks.create(name: "prepareTestFor_" + underscored(targetVersion), type:
-                PrepareTestTask)
+        PrepareMigrationTestTask prepareTestTask = project.tasks.create(name: "prepareTestFor_" + underscored(targetVersion), type:
+                PrepareMigrationTestTask)
         def previousVersion = getVersionBefore(previousVersions, targetVersion)
         prepareTestTask.configureBonita(project, underscored(previousVersion),
                 underscored(targetVersion),
@@ -118,19 +155,6 @@ class MigrationPlugin implements Plugin<Project> {
         prepareTestTask
     }
 
-    def getVersionBefore(List<String> previousVersions, String targetVersion) {
-        for (int i = 0; i < previousVersions.size(); i++) {
-            if (previousVersions.get(i).equals(targetVersion)) {
-                return previousVersions.get(i - 1)
-            }
-        }
-        if (Version.valueOf(targetVersion) > Version.valueOf(previousVersions.last())) {
-            return previousVersions.last()
-        }
-        throw new IllegalStateException("no previous version for $targetVersion")
-    }
-
-
     Configuration createConfigurationForBonitaVersion(Project project, String bonitaVersion, MigrationPluginExtension extension, List<String> versionList) {
         Configuration configuration = project.configurations.create(underscored(bonitaVersion))
         if (Version.valueOf(bonitaVersion) < Version.valueOf("7.3.0")) {
@@ -145,13 +169,13 @@ class MigrationPlugin implements Plugin<Project> {
 
     def getBonitaHomeDependency(MigrationPluginExtension migrationPluginExtension, List<String> versionList, String
             bonitaVersion) {
-        def version = MigrationDistribution.getVersion(versionList, bonitaVersion, migrationPluginExtension)
+        def version = getVersion(versionList, bonitaVersion, migrationPluginExtension)
         return "org.bonitasoft.console:bonita-home${migrationPluginExtension.isSP ? '-sp' : ''}:${version}:${migrationPluginExtension.isSP ? '' : 'full'}@zip"
     }
 
 
     def getEngineDependency(Project project, MigrationPluginExtension migrationPluginExtension, String bonitaVersion, List<String> versionList) {
-        def version = MigrationDistribution.getVersion(versionList, bonitaVersion, migrationPluginExtension)
+        def version = getVersion(versionList, bonitaVersion, migrationPluginExtension)
         String name = getEngineDependencyName(migrationPluginExtension, version)
         return createDependencyWithoutGroovy(project, name)
     }
@@ -175,7 +199,7 @@ class MigrationPlugin implements Plugin<Project> {
 
     def getTestEngineDependency(Project project, MigrationPluginExtension migrationPluginExtension, String bonitaVersion, List<String> versionList) {
         String name
-        def version = MigrationDistribution.getVersion(versionList, bonitaVersion, migrationPluginExtension)
+        def version = getVersion(versionList, bonitaVersion, migrationPluginExtension)
         name = getTestEngineDependencyName(migrationPluginExtension, version)
         return createDependencyWithoutGroovy(project, name)
     }
@@ -189,4 +213,50 @@ class MigrationPlugin implements Plugin<Project> {
         }
         name
     }
+
+    // =================================================================================================================
+    // for integration tests
+    // =================================================================================================================
+
+    private createIntegrationTestTasks(Project project, MigrationPluginExtension migrationPluginExtension) {
+        defineIntegrationTestDependencies(project)
+        defineIntegrationTestTask(project, migrationPluginExtension)
+    }
+
+    private defineIntegrationTestDependencies(Project project) {
+        project.dependencies {
+            integrationTestCompile project.sourceSets.main.output
+            integrationTestCompile project.configurations.testCompile
+            integrationTestCompile project.sourceSets.test.output
+            integrationTestCompile project.configurations.drivers
+            integrationTestRuntime project.configurations.testRuntime
+        }
+    }
+
+    private void defineIntegrationTestTask(Project project, MigrationPluginExtension migrationPluginExtension) {
+        def setSystemPropertiesForIntegrationTest = {
+            systemProperties = [
+                    "db.vendor"     : String.valueOf(project.database.properties.dbvendor),
+                    "db.url"        : String.valueOf(project.database.properties.dburl),
+                    "db.user"       : String.valueOf(project.database.properties.dbuser),
+                    "db.password"   : String.valueOf(project.database.properties.dbpassword),
+                    "db.driverClass": String.valueOf(project.database.properties.dbdriverClass)
+            ]
+        }
+
+        project.task('integrationTest', type: Test) {
+            group = 'Verification'
+            description = 'Run integration tests.'
+            testClassesDirs = project.sourceSets.integrationTest.output.classesDirs
+            classpath = project.sourceSets.integrationTest.runtimeClasspath
+            reports.html.destination = project.file("${project.buildDir}/reports/integrationTests")
+        }
+
+        project.tasks.integrationTest {
+            doFirst setSystemPropertiesForIntegrationTest
+        }
+        def cleanDb = project.task("cleandb_it_" + (migrationPluginExtension.isSP ? "com" : "org"), type: CleanDbTask)
+        project.tasks.integrationTest.dependsOn cleanDb
+    }
+
 }

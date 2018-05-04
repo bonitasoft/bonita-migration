@@ -12,22 +12,18 @@
  * Floor, Boston, MA 02110-1301, USA.
  **/
 
-package org.bonitasoft.migration.plugin.cleandb
-
-import org.gradle.api.file.FileCollection
-
+package org.bonitasoft.migration.plugin.db
 /**
  * @author Baptiste Mesta
  */
-class CleanDbPluginExtension{
+class DatabasePluginExtension {
 
-    def String dbvendor
-    def String dbRootUser
-    def String dbRootPassword
-    def String dbuser
-    def String dbpassword
-    def String dbdriverClass
-    def String dburl
-    def FileCollection classpath
+    String dbvendor
+    String dbRootUser
+    String dbRootPassword
+    String dbuser
+    String dbpassword
+    String dbdriverClass
+    String dburl
 
 }
