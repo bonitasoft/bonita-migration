@@ -185,7 +185,7 @@ class MigrationPlugin implements Plugin<Project> {
         String name
         if (migrationPluginExtension.isSP) {
             // test modules changed in 7.7.0
-            if (Version.valueOf(version) > Version.valueOf("7.6.9")){
+            if (Version.valueOf(getRawVersion(version)) >= Version.valueOf("7.7.0")){
                 name = "com.bonitasoft.engine.test:bonita-integration-tests-client-sp:${version}"
             }else{
                 name = "com.bonitasoft.engine.test:bonita-integration-tests-local-sp:${version}:tests"
@@ -195,4 +195,15 @@ class MigrationPlugin implements Plugin<Project> {
         }
         name
     }
+
+    // Bonita alpha, beta and weekly does not follow semantic versioning, so only keep 1st digits
+    // Versions look like 7.7.0.alpha-07, semver compliant would be 7.7.0-alpha-07.
+    // So without this extra step, we get the following error
+    // "Unexpected character 'DOT(.)' at position '5', expecting '[HYPHEN, PLUS, EOI]'"
+    private static String getRawVersion(String version) {
+        def (major, minor, patch) =  version.split('\\.')
+        String rawVersion = major + '.' + minor + '.' + patch
+        rawVersion
+    }
+
 }
