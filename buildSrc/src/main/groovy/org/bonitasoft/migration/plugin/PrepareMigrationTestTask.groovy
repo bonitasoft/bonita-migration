@@ -12,7 +12,7 @@ import static org.bonitasoft.migration.plugin.VersionUtils.semver
 /**
  * @author Baptiste Mesta.
  */
-class PrepareTestTask extends JavaExec {
+class PrepareMigrationTestTask extends JavaExec {
 
     String targetVersion
     boolean isSP

@@ -12,7 +12,7 @@
  * Floor, Boston, MA 02110-1301, USA.
  **/
 
-package org.bonitasoft.migration.plugin.cleandb
+package org.bonitasoft.migration.plugin.db
 
 import groovy.sql.Sql
 import org.gradle.api.DefaultTask
@@ -30,18 +30,21 @@ class CleanDbTask extends DefaultTask {
 
     @TaskAction
     def cleanDb() {
-        def CleanDbPluginExtension properties = project.database
-        logger.info "Migration of ${properties.dbvendor}"
-        List<URL> urls = new ArrayList<URL>()
-        properties.classpath.each { File file ->
+        DatabasePluginExtension properties = project.extensions.getByType(DatabasePluginExtension.class)
+        logger.quiet "Clean database for vendor ${properties.dbvendor}"
+
+        def drivers =  project.files(project.getConfigurations().getByName("drivers"))
+        List<URL> urls = new ArrayList<>()
+        drivers.each { File file ->
             urls.add(file.toURI().toURL())
         }
         //workaround classpath issue
         def loader1 = Sql.class.getClassLoader()
-        properties.classpath.each { File file ->
+        drivers.each { File file ->
             loader1.addURL(file.toURI().toURL())
         }
         Sql.class.getClassLoader().loadClass(properties.dbdriverClass)
+
         switch (properties.dbvendor) {
             case "oracle":
                 cleanOracleDb(properties)
@@ -58,24 +61,23 @@ class CleanDbTask extends DefaultTask {
         }
     }
 
-    private List extractDataBaseNameAndGenericUrl(CleanDbPluginExtension properties) {
+    private List extractDataBaseNameAndGenericUrl(DatabasePluginExtension properties) {
         def genericUrl, databaseName
-        logger.info "drop and create: $properties.dburl"
         def parsedUrl = (properties.dburl =~ /(jdbc:\w+:\/\/)([\w\d\.-]+):(\d+)\/([\w\-_\d]+).*/)
         def serverName = parsedUrl[0][2]
         def portNumber = parsedUrl[0][3]
         databaseName = parsedUrl[0][4]
         genericUrl = parsedUrl[0][1] + serverName + ":" + portNumber + "/"
-        logger.info "recreate database $databaseName on server $serverName and port $portNumber with driver $properties.dbdriverClass"
-        logger.info "url is  $genericUrl"
+        logger.quiet "Will use database $databaseName on server $serverName and port $portNumber with driver $properties.dbdriverClass"
+        logger.quiet "Generic url is  $genericUrl"
         [databaseName, genericUrl]
     }
 
-    private void cleanMysqlDb(CleanDbPluginExtension properties) {
+    private void cleanMysqlDb(DatabasePluginExtension properties) {
         def (databaseName, genericUrl) = extractDataBaseNameAndGenericUrl(properties)
         checkRootCredentials(properties)
 
-        def Sql sql = Sql.newInstance(genericUrl, properties.dbRootUser, properties.dbRootPassword, properties.dbdriverClass)
+        Sql sql = Sql.newInstance(genericUrl, properties.dbRootUser, properties.dbRootPassword, properties.dbdriverClass)
         sql.executeUpdate("DROP DATABASE IF EXISTS " + databaseName)
         sql.eachRow("SELECT DISTINCT user FROM mysql.user WHERE user ='" + properties.dbuser + "'") {
             sql.executeUpdate("DROP USER " + properties.dbuser)
@@ -86,10 +88,10 @@ class CleanDbTask extends DefaultTask {
         sql.close()
     }
 
-    private void cleanPostgresDb(CleanDbPluginExtension properties) {
+    private void cleanPostgresDb(DatabasePluginExtension properties) {
         def (databaseName, genericUrl) = extractDataBaseNameAndGenericUrl(properties)
         checkRootCredentials(properties)
-        def Sql sql = Sql.newInstance((String) genericUrl, (String) properties.dbRootUser, (String) properties.dbRootPassword, (String) properties.dbdriverClass)
+        Sql sql = Sql.newInstance((String) genericUrl, properties.dbRootUser, properties.dbRootPassword, properties.dbdriverClass)
 
         // postgres 9.3 script version
         sql.eachRow("""
@@ -114,17 +116,14 @@ class CleanDbTask extends DefaultTask {
         sql.close()
     }
 
-    private void checkRootCredentials(CleanDbPluginExtension properties) {
+    private void checkRootCredentials(DatabasePluginExtension properties) {
         if (properties.dbRootUser == null || properties.dbRootUser.isEmpty() || properties.dbRootPassword == null || properties.dbRootPassword.isEmpty()) {
-            throw new IllegalStateException("must specify db.root.user and db.root.password for postgres")
+            throw new IllegalStateException("must specify db.root.user and db.root.password for ${properties.dbvendor}")
         }
     }
 
-    private void cleanSqlServerDb(CleanDbPluginExtension properties) {
-        logger.info "cleaning sqlserver database $properties.dburl"
-        if (properties.dbRootUser == null || properties.dbRootUser.isEmpty() || properties.dbRootPassword == null || properties.dbRootPassword.isEmpty()) {
-            throw new IllegalStateException("must specify db.root.user and db.root.password for sqlserver")
-        }
+    private void cleanSqlServerDb(DatabasePluginExtension properties) {
+        checkRootCredentials(properties)
 
         def parsedUrl = (properties.dburl =~ /(jdbc:\w+:\/\/)([\w\d\.-]+):(\d+);database=([\w\-_\d]+).*/)
         def serverName = parsedUrl[0][2]
@@ -133,7 +132,7 @@ class CleanDbTask extends DefaultTask {
         def genericUrl = parsedUrl[0][1] + serverName + ":" + portNumber
         logger.info "recreate database $databaseName on server $serverName and port $portNumber with driver $properties.dbdriverClass"
         logger.info "url is  $genericUrl"
-        def Sql sql = Sql.newInstance(genericUrl, properties.dbRootUser, properties.dbRootPassword, properties.dbdriverClass)
+        Sql sql = Sql.newInstance(genericUrl, properties.dbRootUser, properties.dbRootPassword, properties.dbdriverClass)
         def script = this.getClass().getResourceAsStream("/init-sqlserver.sql").text
         script = script.replace("@sqlserver.db.name@", databaseName)
         script = script.replace("@sqlserver.connection.username@", properties.dbuser)
@@ -142,13 +141,11 @@ class CleanDbTask extends DefaultTask {
         sql.close()
     }
 
-    private void cleanOracleDb(CleanDbPluginExtension properties) {
-        logger.info "cleaning oracle database $properties.dbuser"
-        if (properties.dbRootUser == null || properties.dbRootUser.isEmpty() || properties.dbRootPassword == null || properties.dbRootPassword.isEmpty()) {
-            throw new IllegalStateException("must specify db.root.user and db.root.password for oracle")
-        }
+    private void cleanOracleDb(DatabasePluginExtension properties) {
+        checkRootCredentials(properties)
+
         def props = [user: properties.dbRootUser, password: properties.dbRootPassword] as Properties
-        def Sql sql = Sql.newInstance(properties.dburl, props, properties.dbdriverClass)
+        Sql sql = Sql.newInstance(properties.dburl, props, properties.dbdriverClass)
 
         sql.execute("""
 declare
