@@ -74,7 +74,8 @@ class MigrateProcessDefinitionXmlWithXSDTest extends Specification {
                     "BBPMC-452/process-design4.xml",
                     "BBPMC-452/process-design5.xml",
                     "BBPMC-452/process-design6.xml",
-                    "bdm_multiple.xml"
+                    "bdm_multiple.xml",
+                    "process-design-BS-18338_multi-iteration_send_and_receive_tasks.xml"
         ]
     }
 
@@ -130,16 +131,16 @@ $migratedProcessDefinition
         }
 
         where:
-        givenXml                        | expectedXml
-        "original.xml"                  | "expected/migrated.xml"
-        "BBPMC-452/process-design1.xml" | "expected/BBPMC-452/process-design1.xml"
-        "BBPMC-452/process-design2.xml" | "expected/BBPMC-452/process-design2.xml"
-        "BBPMC-452/process-design3.xml" | "expected/BBPMC-452/process-design3.xml"
-        "BBPMC-452/process-design4.xml" | "expected/BBPMC-452/process-design4.xml"
-        "BBPMC-452/process-design5.xml" | "expected/BBPMC-452/process-design5.xml"
-        "BBPMC-452/process-design6.xml" | "expected/BBPMC-452/process-design6.xml"
-        "bdm_multiple.xml"              | "expected/bdm_multiple.xml"
-
+        givenXml                                                | expectedXml
+        "original.xml"                                          | "expected/migrated.xml"
+        "BBPMC-452/process-design1.xml"                         | "expected/BBPMC-452/process-design1.xml"
+        "BBPMC-452/process-design2.xml"                         | "expected/BBPMC-452/process-design2.xml"
+        "BBPMC-452/process-design3.xml"                         | "expected/BBPMC-452/process-design3.xml"
+        "BBPMC-452/process-design4.xml"                                         | "expected/BBPMC-452/process-design4.xml"
+        "BBPMC-452/process-design5.xml"                                         | "expected/BBPMC-452/process-design5.xml"
+        "BBPMC-452/process-design6.xml"                                         | "expected/BBPMC-452/process-design6.xml"
+    "bdm_multiple.xml"                                                          | "expected/bdm_multiple.xml"
+        "process-design-BS-18338_multi-iteration_send_and_receive_tasks.xml"    | "expected/process-design-BS-18338_multi-iteration_send_and_receive_tasks.xml"
     }
 
     def "should report error when process xsd validation fails"() {
