@@ -70,18 +70,8 @@
         <xsl:element name="{name()}">
             <xsl:apply-templates select="@*" />
 
-            <xsl:apply-templates select="incomingTransition" />
-            <xsl:apply-templates select="outgoingTransition" />
-            <xsl:apply-templates select="connector" />
-            <xsl:apply-templates select="description" />
-            <xsl:apply-templates select="displayDescription" />
-            <xsl:apply-templates select="displayName" />
-            <xsl:apply-templates select="displayDescriptionAfterCompletion" />
-            <xsl:apply-templates select="defaultTransition" />
-            <xsl:apply-templates select="dataDefinitions" />
-            <xsl:apply-templates select="businessDataDefinitions" />
-            <xsl:apply-templates select="operations" />
-            <xsl:apply-templates select="boundaryEvents" />
+            <xsl:call-template name="commonActivityChildNamedTemplate" />
+
             <xsl:apply-templates select="catchMessageEventTrigger" />
         </xsl:element>
     </xsl:template>
@@ -90,18 +80,8 @@
         <xsl:element name="{name()}">
             <xsl:apply-templates select="@*" />
 
-            <xsl:apply-templates select="incomingTransition" />
-            <xsl:apply-templates select="outgoingTransition" />
-            <xsl:apply-templates select="connector" />
-            <xsl:apply-templates select="description" />
-            <xsl:apply-templates select="displayDescription" />
-            <xsl:apply-templates select="displayName" />
-            <xsl:apply-templates select="displayDescriptionAfterCompletion" />
-            <xsl:apply-templates select="defaultTransition" />
-            <xsl:apply-templates select="dataDefinitions" />
-            <xsl:apply-templates select="businessDataDefinitions" />
-            <xsl:apply-templates select="operations" />
-            <xsl:apply-templates select="boundaryEvents" />
+            <xsl:call-template name="commonActivityChildNamedTemplate" />
+
             <xsl:apply-templates select="throwMessageEventTrigger" />
         </xsl:element>
     </xsl:template>

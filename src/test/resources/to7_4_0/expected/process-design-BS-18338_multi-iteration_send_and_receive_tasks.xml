@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<def:processDefinition xmlns:def="http://www.bonitasoft.org/ns/process/client/7.4" id="_0" name="IteratorCaller" version="1.1">
+    <description/>
+    <displayDescription/>
+    <parameters/>
+    <actors>
+        <actor initiator="true" id="_65537" name="Employee actor">
+            <description>This is an example of actor that is mapped to any ACME users</description>
+        </actor>
+    </actors>
+    <actorInitiator>_65537</actorInitiator>
+    <flowElements id="_7282544943062835405">
+        <receiveTask id="_6333978609595215485" name="Step3">
+            <outgoingTransition>_8443638224878586673</outgoingTransition>
+            <dataDefinitions>
+                <dataDefinition id="_6878173575407106009" name="multiInstanceIterator" transient="false" className="java.lang.Integer"/>
+            </dataDefinitions>
+            <businessDataDefinitions/>
+            <operations/>
+            <multiInstanceLoopCharacteristics isSequential="false" loopDataInputRef="iter" dataInputItemRef="multiInstanceIterator"/>
+            <boundaryEvents/>
+            <catchMessageEventTrigger name="Notify Caller"/>
+        </receiveTask>
+        <sendTask id="_8657294294082783805" name="Step2">
+            <incomingTransition>_6167313851637512958</incomingTransition>
+            <outgoingTransition>_5236469411320165058</outgoingTransition>
+            <dataDefinitions>
+                <dataDefinition id="_5101903968302105694" name="multiInstanceIterator" transient="false" className="java.lang.Integer"/>
+            </dataDefinitions>
+            <businessDataDefinitions/>
+            <operations/>
+            <multiInstanceLoopCharacteristics isSequential="false" loopDataInputRef="iter" dataInputItemRef="multiInstanceIterator"/>
+            <boundaryEvents/>
+            <throwMessageEventTrigger name="SendMessage">
+                <targetProcess id="_65597" name="IteratorCallee" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                    <content>IteratorCallee</content>
+                </targetProcess>
+                <targetFlowNode id="_65605" name="Start2" expressionType="TYPE_CONSTANT" returnType="java.lang.String" interpreter="">
+                    <content>Start2</content>
+                </targetFlowNode>
+            </throwMessageEventTrigger>
+        </sendTask>
+        <userTask id="_4744803437825369503" name="Step1" actorName="Employee actor" priority="NORMAL">
+            <incomingTransition>_7728963729586879939</incomingTransition>
+            <outgoingTransition>_6167313851637512958</outgoingTransition>
+            <dataDefinitions/>
+            <businessDataDefinitions/>
+            <operations/>
+            <boundaryEvents/>
+            <contract>
+                <inputDefinitions/>
+                <constraints/>
+            </contract>
+            <context/>
+            <expectedDuration expressionType="TYPE_CONSTANT" id="_65560" returnType="java.lang.Long" name="expectedDuration expression">
+                <content>3600000</content>
+            </expectedDuration>
+        </userTask>
+        <transitions>
+            <transition id="_6167313851637512958" name="4744803437825369503_-&gt;_8657294294082783805" source="_4744803437825369503" target="_8657294294082783805"/>
+            <transition id="_7728963729586879939" name="9037969053042913707_-&gt;_4744803437825369503" source="_9037969053042913707" target="_4744803437825369503"/>
+            <transition id="_8443638224878586673" name="6333978609595215485_-&gt;_6369021331598608872" source="_6333978609595215485" target="_6369021331598608872"/>
+            <transition id="_5236469411320165058" name="8657294294082783805_-&gt;_6369021331598608872" source="_8657294294082783805" target="_6369021331598608872"/>
+        </transitions>
+        <startEvent id="_9037969053042913707" name="Start1" interrupting="true">
+            <outgoingTransition>_7728963729586879939</outgoingTransition>
+        </startEvent>
+        <endEvent id="_6369021331598608872" name="End1">
+            <incomingTransition>_5236469411320165058</incomingTransition>
+            <incomingTransition>_8443638224878586673</incomingTransition>
+        </endEvent>
+        <dataDefinitions>
+            <dataDefinition id="_6113089997408229152" name="iter" transient="false" className="java.util.Collection">
+                <defaultValue id="_65673" name="iter" expressionType="TYPE_READ_ONLY_SCRIPT" returnType="java.util.List" interpreter="GROOVY">
+                    <content>return [1, 2, 3, 4]</content>
+                </defaultValue>
+            </dataDefinition>
+        </dataDefinitions>
+        <businessDataDefinitions/>
+        <documentDefinitions/>
+        <documentListDefinitions/>
+        <connectors/>
+        <elementFinder/>
+    </flowElements>
+    <stringIndexes>
+        <stringIndex index="1"/>
+        <stringIndex index="2"/>
+        <stringIndex index="3"/>
+        <stringIndex index="4"/>
+        <stringIndex index="5"/>
+    </stringIndexes>
+    <contract>
+        <inputDefinitions/>
+        <constraints/>
+    </contract>
+    <context/>
+</def:processDefinition>
