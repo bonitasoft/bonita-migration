@@ -18,7 +18,7 @@ import groovy.sql.Sql
 import org.bonitasoft.migration.core.Logger
 
 /**
- * Created by laurentleseigneur on 01/06/2017.
+ * @author Laurent Leseigneur
  */
 class ConfigurationHelper {
 
@@ -28,13 +28,17 @@ class ConfigurationHelper {
 
     def insertConfigurationFile(String fileName, long tenantId, String type, byte[] content) {
         logger.debug(String.format("insert configuration file | tenant id: %3d | type: %-25s | file name: %s", tenantId, type, fileName))
-        sql.executeInsert("INSERT INTO configuration(tenant_id,content_type,resource_name,resource_content) VALUES (${tenantId}, ${type}, ${fileName}, ${content})")
+        sql.executeInsert("INSERT INTO configuration(tenant_id,content_type,resource_name,resource_content) VALUES (${tenantId}, ${type}, ${fileName}, ${ensureContentNeverEmpty(content)})")
     }
 
 
     def updateConfigurationFileContent(String fileName, long tenantId, String type, byte[] content) {
         logger.debug(String.format("update configuration file | tenant id: %3d | type: %-25s | file name: %s", tenantId, type, fileName))
-        sql.execute("UPDATE configuration SET resource_content = ${content} WHERE tenant_id = ${tenantId} AND content_type = ${type} AND resource_name = ${fileName}")
+        sql.execute("UPDATE configuration SET resource_content = ${ensureContentNeverEmpty(content)} WHERE tenant_id = ${tenantId} AND content_type = ${type} AND resource_name = ${fileName}")
+    }
+
+    def static ensureContentNeverEmpty(byte[] content) {
+        return content.length == 0 ? System.lineSeparator().bytes : content
     }
 
 
@@ -145,7 +149,8 @@ class ConfigurationHelper {
         foundFiles
     }
 
-    protected static GString newPropertyEntry(String propertyKey, String newPropertyValue, String keyValueSeparator, String comment) {
+    protected
+    static GString newPropertyEntry(String propertyKey, String newPropertyValue, String keyValueSeparator, String comment) {
         comment ? "# ${comment}\n${propertyKey}${keyValueSeparator}${newPropertyValue}" : "${propertyKey}${keyValueSeparator}${newPropertyValue}"
     }
 
@@ -153,7 +158,7 @@ class ConfigurationHelper {
         appendToAllConfigurationFilesIfPropertyIsMissing(fileName, propertyKey, propertyValue, "=")
     }
 
-    def void updateAllConfigurationFilesIfPermissionValueIsMissing(String fileName, List<String> keysToConsider, String permissionValue) {
+    void updateAllConfigurationFilesIfPermissionValueIsMissing(String fileName, List<String> keysToConsider, String permissionValue) {
         def foundFiles = 0
         def results = sql.rows("""
                 SELECT tenant_id, content_type, resource_content
