@@ -47,7 +47,7 @@ class DatabaseHelper {
      * @return
      */
     @Deprecated
-    def boolean execute(GString statement) {
+    boolean execute(GString statement) {
         //TODO: replace statement by file name, get current version from context & split statement against @@ joker
         return sql.execute(adaptFor(statement))
     }
@@ -85,24 +85,24 @@ class DatabaseHelper {
      * @return
      */
     @Deprecated
-    def String adaptFor(String statement) {
+    String adaptFor(String statement) {
         switch (dbVendor) {
             case ORACLE:
                 return adaptForOracle(statement)
-                break;
+                break
             case MYSQL:
                 return adaptForMysql(statement)
-                break;
+                break
             case SQLSERVER:
                 return adaptForSqlServer(statement)
-                break;
+                break
             default:
                 return statement
         }
     }
 
-    def static String adaptForOracle(String statement) {
-        def oracleStatement = statement;
+    static String adaptForOracle(String statement) {
+        def oracleStatement = statement
         oracleStatement = oracleStatement.replaceAll("BYTEA", "BLOB")
         oracleStatement = oracleStatement.replaceAll("BIGINT", "NUMBER(19, 0)")
         oracleStatement = oracleStatement.replaceAll("INT8", "NUMBER(19, 0)")
@@ -115,18 +115,18 @@ class DatabaseHelper {
         oracleStatement = oracleStatement.replaceAll("BOOLEAN", " NUMBER(1)")
         oracleStatement = oracleStatement.replaceAll("true", "1")
         oracleStatement = oracleStatement.replaceAll("false", "0")
-        return oracleStatement;
+        return oracleStatement
     }
 
-    def static String adaptForMysql(String statement) {
-        def mysqlStatement = statement;
+    static String adaptForMysql(String statement) {
+        def mysqlStatement = statement
         mysqlStatement = mysqlStatement.replaceAll("BYTEA", "BLOB")
         mysqlStatement = mysqlStatement.replaceAll("INT8", "BIGINT")
-        return mysqlStatement;
+        return mysqlStatement
     }
 
-    def static String adaptForSqlServer(String statement) {
-        def sqlServerStatement = statement;
+    static String adaptForSqlServer(String statement) {
+        def sqlServerStatement = statement
         sqlServerStatement = sqlServerStatement.replaceAll("BYTEA", "VARBINARY(MAX)")
         sqlServerStatement = sqlServerStatement.replaceAll("BLOB", "VARBINARY(MAX)")
         sqlServerStatement = sqlServerStatement.replaceAll("BIGINT", "NUMERIC(19, 0)")
@@ -142,7 +142,7 @@ class DatabaseHelper {
         sqlServerStatement = sqlServerStatement.replaceAll("false", "0")
         sqlServerStatement = sqlServerStatement.replaceAll("true", "1")
         sqlServerStatement = sqlServerStatement.replaceAll(";", "\nGO")
-        return sqlServerStatement;
+        return sqlServerStatement
     }
 
     def renameColumn(String table, String oldName, String newName, String newType) {
@@ -196,10 +196,10 @@ END"""
         switch (dbVendor) {
             case MYSQL:
                 execute("RENAME TABLE $table TO $newName")
-                break;
+                break
             case SQLSERVER:
                 execute("sp_rename $table , $newName")
-                break;
+                break
             default:
                 execute("ALTER TABLE $table RENAME TO $newName")
         }
@@ -209,13 +209,13 @@ END"""
         switch (dbVendor) {
             case ORACLE:
                 execute("ALTER TABLE $table MODIFY $column NULL")
-                break;
+                break
             case MYSQL:
                 execute("ALTER TABLE $table MODIFY $column $type NULL")
-                break;
+                break
             case SQLSERVER:
                 execute("ALTER TABLE $table ALTER COLUMN $column $type NULL")
-                break;
+                break
             default:
                 execute("ALTER TABLE $table ALTER COLUMN $column DROP NOT NULL")
         }
@@ -288,7 +288,7 @@ END"""
         switch (dbVendor) {
             case MYSQL:
                 request = "ALTER TABLE " + table + " DROP FOREIGN KEY " + foreignKeyName
-                break;
+                break
             default:
                 request = "ALTER TABLE " + table + " DROP CONSTRAINT " + foreignKeyName
         }
@@ -315,7 +315,7 @@ END"""
             switch (dbVendor) {
                 case MYSQL:
                     request = "ALTER TABLE " + row.TABLE_NAME + " DROP PRIMARY KEY"
-                    break;
+                    break
                 default:
                     request = "ALTER TABLE " + row.TABLE_NAME + " DROP CONSTRAINT " + row.CONSTRAINT_NAME
             }
@@ -371,7 +371,7 @@ END"""
      * @param columns
      * @return create index SQl statement
      */
-    def String addOrReplaceIndex(String tableName, String indexName, String... columns) {
+    String addOrReplaceIndex(String tableName, String indexName, String... columns) {
         dropIndexIfExists(tableName, indexName)
 
         def concatenatedColumns = columns.collect { it }.join(", ")
@@ -389,7 +389,7 @@ END"""
      */
     def dropIndexIfExists(String tableName, String indexName) {
         if (hasIndexOnTable(tableName, indexName)) {
-            def String query
+            String query
             switch (dbVendor) {
                 case POSTGRES:
                 case ORACLE:
@@ -413,7 +413,7 @@ END"""
      * @param indexName
      * @return
      */
-    def IndexDefinition getIndexDefinition(String tableName, String indexName) {
+    IndexDefinition getIndexDefinition(String tableName, String indexName) {
         def query = getScriptContent("/database/indexDefinition", "indexDefinition")
         def indexDefinition = new IndexDefinition(tableName, indexName)
         sql.eachRow(query, [tableName, indexName]) {
@@ -427,7 +427,7 @@ END"""
      * @param tableName table pointed by foreign keys
      * @return list of FkDefinition
      */
-    def List<ForeignKeyDefinition> getForeignKeyReferences(String tableName) {
+    List<ForeignKeyDefinition> getForeignKeyReferences(String tableName) {
         def query = getScriptContent("/database/foreignKeyReference", "foreignKeyRef")
         def fkReferences = []
         sql.eachRow(query, [tableName]) { row ->
@@ -442,7 +442,7 @@ END"""
      * @param foreignKeyName
      * @return true if exists, false otherwise
      */
-    def boolean hasForeignKeyOnTable(String tableName, String foreignKeyName) {
+    boolean hasForeignKeyOnTable(String tableName, String foreignKeyName) {
         def query = getScriptContent("/database/foreignKey", "foreignKey")
         def firstRow = sql.firstRow(query, [tableName, foreignKeyName])
         return firstRow != null
@@ -454,7 +454,7 @@ END"""
      * @param pkName name of the primary key
      * @return true if exists, false otherwise
      */
-    def boolean hasPrimaryKeyOnTable(String tableName, String pkName) {
+    boolean hasPrimaryKeyOnTable(String tableName, String pkName) {
         def primaryKey = getPrimaryKey(tableName)
         primaryKey != null && primaryKey == pkName
 
@@ -466,7 +466,7 @@ END"""
      * @param ukName name of the unique key
      * @return true if exists, false otherwise
      */
-    def boolean hasUniqueKeyOnTable(String tableName, String ukName) {
+    boolean hasUniqueKeyOnTable(String tableName, String ukName) {
         def query = getScriptContent("/database/uniqueKey", "uniqueKey")
         def firstRow = sql.firstRow(query, [tableName, ukName])
         return firstRow != null
@@ -478,7 +478,7 @@ END"""
      * @param tableName
      * @return pk name if exists, null otherwise
      */
-    def String getPrimaryKey(String tableName) {
+    String getPrimaryKey(String tableName) {
         def query = getScriptContent("/database/primaryKey", "primaryKey")
         def firstRow = sql.firstRow(query, [tableName])
         if (firstRow != null) {
@@ -494,7 +494,7 @@ END"""
      * @param indexName
      * @return true if exists, false otherwise
      */
-    def boolean hasIndexOnTable(String tableName, String indexName) {
+    boolean hasIndexOnTable(String tableName, String indexName) {
         def query
         switch (dbVendor) {
             case POSTGRES:
@@ -569,7 +569,7 @@ END"""
      * @param columnName
      * @return true if exists, false otherwise
      */
-    def boolean hasColumnOnTable(String tableName, String columnName) {
+    boolean hasColumnOnTable(String tableName, String columnName) {
         def query
         switch (dbVendor) {
             case POSTGRES:
@@ -621,12 +621,12 @@ END"""
         return firstRow != null
     }
 
-    def GroovyRowResult selectFirstRow(GString string) {
+    GroovyRowResult selectFirstRow(GString string) {
         return sql.firstRow(adaptFor(string))
     }
 
-    def long getAndUpdateNextSequenceId(long sequenceId, long tenantId) {
-        def long nextId = (Long) selectFirstRow("SELECT nextId from sequence WHERE id = $sequenceId and tenantId = $tenantId").get("nextId")
+    long getAndUpdateNextSequenceId(long sequenceId, long tenantId) {
+        long nextId = (Long) selectFirstRow("SELECT nextId from sequence WHERE id = $sequenceId and tenantId = $tenantId").get("nextId")
         executeUpdate("UPDATE sequence SET nextId = ${nextId + 1} WHERE tenantId = $tenantId and id = $sequenceId")
         return nextId
     }

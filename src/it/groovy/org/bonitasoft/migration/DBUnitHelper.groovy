@@ -39,7 +39,7 @@ class DBUnitHelper {
     private Logger logger
 
     DBUnitHelper(MigrationContext context) {
-        context.loadProperties();
+        context.loadProperties()
         context.openSqlConnection()
         this.context = context
         this.logger = context.logger
@@ -83,17 +83,17 @@ class DBUnitHelper {
         })
     }
 
-    def String[] createTables(String folder, String feature) {
+    String[] createTables(String folder, String feature) {
         logger.info("Create tables from sql file in $folder with suffix $feature")
         executeScript(DBUnitHelper.class.getClassLoader().getResource("sql/v${folder}/${context.dbVendor.name().toLowerCase()}-${feature}.sql"))
     }
 
-    def String[] createTables(String folder) {
+    String[] createTables(String folder) {
         logger.info("Create tables from sql file in $folder")
         executeScript(DBUnitHelper.class.getClassLoader().getResource("sql/v${folder}/${context.dbVendor.name().toLowerCase()}.sql"))
     }
 
-    def boolean hasTable(String tableName) {
+    boolean hasTable(String tableName) {
         def query
         switch (context.dbVendor) {
             case MigrationStep.DBVendor.POSTGRES:
@@ -134,31 +134,31 @@ class DBUnitHelper {
         return firstRow != null
     }
 
-    def boolean hasIndexOnTable(String tableName, String indexName) {
+    boolean hasIndexOnTable(String tableName, String indexName) {
         context.databaseHelper.hasIndexOnTable(tableName, indexName)
     }
 
-    def boolean hasColumnOnTable(String tableName, String columnName) {
+    boolean hasColumnOnTable(String tableName, String columnName) {
         context.databaseHelper.hasColumnOnTable(tableName, columnName)
     }
 
-    def boolean hasForeignKeyOnTable(String tableName, String foreignKey) {
+    boolean hasForeignKeyOnTable(String tableName, String foreignKey) {
         context.databaseHelper.hasForeignKeyOnTable(tableName, foreignKey)
     }
 
-    def boolean hasPrimaryKeyOnTable(String tableName, String pkName) {
+    boolean hasPrimaryKeyOnTable(String tableName, String pkName) {
         context.databaseHelper.hasPrimaryKeyOnTable(tableName, pkName)
     }
 
-    def boolean hasUniqueKeyOnTable(String tableName, String ukName) {
+    boolean hasUniqueKeyOnTable(String tableName, String ukName) {
         context.databaseHelper.hasUniqueKeyOnTable(tableName, ukName)
     }
 
-    def String getPrimaryKey(String tableName) {
+    String getPrimaryKey(String tableName) {
         context.databaseHelper.getPrimaryKey(tableName)
     }
 
-    def IndexDefinition getIndexDefinition(String tableName, String indexName) {
+    IndexDefinition getIndexDefinition(String tableName, String indexName) {
         context.databaseHelper.getIndexDefinition(tableName, indexName)
     }
 
@@ -172,14 +172,14 @@ class DBUnitHelper {
         context.databaseHelper.getBlobContentAsString(blobValue)
     }
 
-    def JdbcDatabaseTester createTester() {
+    JdbcDatabaseTester createTester() {
         new JdbcDatabaseTester(context.dbDriverClassName, context.dburl, context.dbUser, context.dbPassword) {
-            public IDatabaseConnection getConnection() {
+            IDatabaseConnection getConnection() {
                 if (context.dbVendor == MigrationStep.DBVendor.ORACLE) {
-                    def conn = DriverManager.getConnection(context.dburl, context.dbUser, context.dbPassword);
-                    return new OracleConnection(conn, context.dbUser);
+                    def conn = DriverManager.getConnection(context.dburl, context.dbUser, context.dbPassword)
+                    return new OracleConnection(conn, context.dbUser)
                 } else {
-                    return super.getConnection();
+                    return super.getConnection()
                 }
             }
         }
