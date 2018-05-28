@@ -238,6 +238,11 @@ END"""
         }
     }
 
+    /**
+     * <b>IMPORTANT</b>: the default value is only used to fill the column when creating it. The default instruction is
+     * then removed from the column as Bonita is always responsible for setting field values: we never rely on the database
+     * to set field values.
+     */
     def addColumn(String table, String column, String type, String defaultValue, String constraint) {
         sql.execute("ALTER TABLE $table ADD $column $type ${defaultValue != null ? "DEFAULT $defaultValue" : ""} ${constraint != null ? constraint : ""}" as String)
         dropColumnDefaultValueIfExists(table, column)
