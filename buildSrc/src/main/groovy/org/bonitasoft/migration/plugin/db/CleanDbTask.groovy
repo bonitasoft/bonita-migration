@@ -23,6 +23,11 @@ import org.gradle.api.tasks.TaskAction
  */
 class CleanDbTask extends DefaultTask {
 
+    private boolean dropOnly = false
+    void setDropOnly(boolean dropOnly) {
+        this.dropOnly = dropOnly
+    }
+
     @Override
     String getDescription() {
         return "Drop and recreate the database in order to launch test in a clean one."
@@ -32,6 +37,7 @@ class CleanDbTask extends DefaultTask {
     def cleanDb() {
         DatabasePluginExtension properties = project.extensions.getByType(DatabasePluginExtension.class)
         logger.quiet "Clean database for vendor ${properties.dbvendor}"
+        logger.quiet "Drop only (no db and credentials creation)? ${dropOnly}"
 
         def drivers =  project.files(project.getConfigurations().getByName("drivers"))
         List<URL> urls = new ArrayList<>()
@@ -62,36 +68,55 @@ class CleanDbTask extends DefaultTask {
     }
 
     private List extractDataBaseNameAndGenericUrl(DatabasePluginExtension properties) {
-        def genericUrl, databaseName
-        def parsedUrl = (properties.dburl =~ /(jdbc:\w+:\/\/)([\w\d\.-]+):(\d+)\/([\w\-_\d]+).*/)
-        def serverName = parsedUrl[0][2]
-        def portNumber = parsedUrl[0][3]
-        databaseName = parsedUrl[0][4]
-        genericUrl = parsedUrl[0][1] + serverName + ":" + portNumber + "/"
-        logger.quiet "Will use database $databaseName on server $serverName and port $portNumber with driver $properties.dbdriverClass"
-        logger.quiet "Generic url is  $genericUrl"
+        DbParser.DbConnectionSettings dbConnectionSettings = new DbParser().extractDbConnectionSettings(properties.dburl)
+
+        def genericUrl = dbConnectionSettings.genericUrl
+        def databaseName = dbConnectionSettings.databaseName
+        logger.info "Will use database $databaseName with generic url $genericUrl"
         [databaseName, genericUrl]
     }
 
     private void cleanMysqlDb(DatabasePluginExtension properties) {
-        def (databaseName, genericUrl) = extractDataBaseNameAndGenericUrl(properties)
         checkRootCredentials(properties)
+        def (databaseName, genericUrl) = extractDataBaseNameAndGenericUrl(properties)
 
-        Sql sql = Sql.newInstance(genericUrl, properties.dbRootUser, properties.dbRootPassword, properties.dbdriverClass)
+        Sql sql = newSqlInstance(genericUrl, properties.dbRootUser, properties.dbRootPassword, properties.dbdriverClass)
         sql.executeUpdate("DROP DATABASE IF EXISTS " + databaseName)
         sql.eachRow("SELECT DISTINCT user FROM mysql.user WHERE user ='" + properties.dbuser + "'") {
             sql.executeUpdate("DROP USER " + properties.dbuser)
         }
-        sql.executeUpdate("CREATE USER " + properties.dbuser + " IDENTIFIED BY '" + properties.dbpassword + "'")
-        sql.executeUpdate("CREATE DATABASE " + databaseName + " DEFAULT CHARACTER SET utf8")
-        sql.executeUpdate("GRANT ALL ON " + databaseName + ".* TO " + properties.dbuser)
+
+        if (!dropOnly) {
+            sql.executeUpdate("CREATE USER " + properties.dbuser + " IDENTIFIED BY '" + properties.dbpassword + "'")
+            sql.executeUpdate("CREATE DATABASE " + databaseName + " DEFAULT CHARACTER SET utf8")
+            sql.executeUpdate("GRANT ALL ON " + databaseName + ".* TO " + properties.dbuser)
+        }
         sql.close()
     }
 
+    private static Sql newSqlInstance(String url, String user, String password, String driverClassName) {
+        Sql sql= Sql.newInstance(url, user, password, driverClassName)
+        setQueryTimeout(sql)
+        sql
+    }
+
+    private static Sql newSqlInstance(String url, Properties properties, String driverClassName) {
+        Sql sql = Sql.newInstance(url, properties, driverClassName)
+        setQueryTimeout(sql)
+        sql
+    }
+
+    // avoid making db operations make the build freeze
+    private static void setQueryTimeout(Sql sql) {
+        sql.withStatement {
+            stmt -> stmt.queryTimeout = 60 // in seconds
+        }
+    }
+
     private void cleanPostgresDb(DatabasePluginExtension properties) {
-        def (databaseName, genericUrl) = extractDataBaseNameAndGenericUrl(properties)
         checkRootCredentials(properties)
-        Sql sql = Sql.newInstance((String) genericUrl, properties.dbRootUser, properties.dbRootPassword, properties.dbdriverClass)
+        def (databaseName, genericUrl) = extractDataBaseNameAndGenericUrl(properties)
+        Sql sql = newSqlInstance((String) genericUrl, properties.dbRootUser, properties.dbRootPassword, properties.dbdriverClass)
 
         // postgres 9.3 script version
         sql.eachRow("""
@@ -100,7 +125,7 @@ class CleanDbTask extends DefaultTask {
                     WHERE upper(pg_stat_activity.datname) = upper('$databaseName')
                       AND pid <> pg_backend_pid()
                     """ as String) {
-            logger.info("disconnect connexion id $it.pid from database $databaseName")
+            logger.info("disconnect connection id $it.pid from database $databaseName")
             sql.execute("""
                     SELECT pg_terminate_backend(pg_stat_activity.pid)
                     FROM pg_stat_activity
@@ -109,10 +134,14 @@ class CleanDbTask extends DefaultTask {
                         """ as String)
         }
 
-        logger.info "cleaning postgres database $databaseName"
         sql.executeUpdate("DROP DATABASE IF EXISTS $databaseName;".toString())
-        sql.executeUpdate("CREATE DATABASE $databaseName OWNER $properties.dbuser;".toString())
-        sql.executeUpdate("GRANT ALL PRIVILEGES ON DATABASE $databaseName TO $properties.dbuser;".toString())
+        sql.executeUpdate("DROP ROLE IF EXISTS $properties.dbuser;".toString())
+
+        if (!dropOnly) {
+            sql.executeUpdate("CREATE ROLE $properties.dbuser WITH LOGIN PASSWORD '$properties.dbpassword';".toString())
+            sql.executeUpdate("CREATE DATABASE $databaseName OWNER $properties.dbuser;".toString())
+            sql.executeUpdate("GRANT ALL PRIVILEGES ON DATABASE $databaseName TO $properties.dbuser;".toString())
+        }
         sql.close()
     }
 
@@ -124,46 +153,54 @@ class CleanDbTask extends DefaultTask {
 
     private void cleanSqlServerDb(DatabasePluginExtension properties) {
         checkRootCredentials(properties)
+        def (databaseName, genericUrl) = extractDataBaseNameAndGenericUrl(properties)
 
-        def parsedUrl = (properties.dburl =~ /(jdbc:\w+:\/\/)([\w\d\.-]+):(\d+);database=([\w\-_\d]+).*/)
-        def serverName = parsedUrl[0][2]
-        def portNumber = parsedUrl[0][3]
-        def databaseName = parsedUrl[0][4]
-        def genericUrl = parsedUrl[0][1] + serverName + ":" + portNumber
-        logger.info "recreate database $databaseName on server $serverName and port $portNumber with driver $properties.dbdriverClass"
-        logger.info "url is  $genericUrl"
-        Sql sql = Sql.newInstance(genericUrl, properties.dbRootUser, properties.dbRootPassword, properties.dbdriverClass)
-        def script = this.getClass().getResourceAsStream("/init-sqlserver.sql").text
+        Sql sql = newSqlInstance(genericUrl, properties.dbRootUser, properties.dbRootPassword, properties.dbdriverClass)
+
+        executeSqlServerScript(sql, "/sqlserver-01-drop.sql", properties, databaseName)
+        if (!dropOnly) {
+            executeSqlServerScript(sql, "/sqlserver-02-create.sql", properties, databaseName)
+        }
+
+        sql.close()
+    }
+
+    private void executeSqlServerScript(Sql sql, String scriptPath, DatabasePluginExtension properties, String databaseName) {
+        def script = this.getClass().getResourceAsStream(scriptPath).text
         script = script.replace("@sqlserver.db.name@", databaseName)
         script = script.replace("@sqlserver.connection.username@", properties.dbuser)
         script = script.replace("@sqlserver.connection.password@", properties.dbpassword)
-        script.split("GO").each { sql.executeUpdate(it) }
-        sql.close()
+        script.split("GO").each {
+            logger.info "Executing query $it"
+            sql.executeUpdate(it)
+        }
     }
 
     private void cleanOracleDb(DatabasePluginExtension properties) {
         checkRootCredentials(properties)
 
-        def props = [user: properties.dbRootUser, password: properties.dbRootPassword] as Properties
-        Sql sql = Sql.newInstance(properties.dburl, props, properties.dbdriverClass)
+        Properties props = [user: properties.dbRootUser, password: properties.dbRootPassword] as Properties
+        Sql sql = newSqlInstance(properties.dburl, props, properties.dbdriverClass)
 
-        sql.execute("""
-declare
-  v_count number;
-  v_banner varchar2(50) := 'Oracle Database 12c%';
+        // important: the position of the + operator to ensure groovy call the append method instead of the positive one
+        // see https://stackoverflow.com/a/31045805
+        def sqlQuery = """
+  declare
+    v_count number;
+    v_banner varchar2(50) := 'Oracle Database 12c%';
 
   cursor c1 is
-    select s.sid, s.serial#, s.username """
-                + ''' from gv$session s ''' + """
-    where s.type != 'BACKGROUND' and (upper(s.username) = upper('${properties.dbuser}') OR upper(s.username) = upper('${
-            properties.dbuser
-        }_bdm'));
+    select s.sid, s.serial#, s.username """ +
+                ' from gv$session s ' +
+                """
+    where s.type != 'BACKGROUND' and ( upper(s.username) = upper('${properties.dbuser}') );
 
-  cursor c2 is
-"""
-                + ''' select v.banner from v$version v; '''
-                + """
-                    begin
+  cursor c2 is""" +
+                '''
+    select v.banner from v$version v;
+        ''' +
+                """
+  begin
   -- disconnect sessions
   for session_rec in c1
   loop
@@ -178,20 +215,16 @@ declare
     end if;
   end loop;
 
-
   -- drop user if exists
   select count(1) into v_count from dba_users where upper(username) = upper('${properties.dbuser}');
   if v_count != 0
   then
     execute immediate 'drop user ${properties.dbuser} cascade';
   end if;
+        """
 
-  select count(1) into v_count from dba_users where upper(username) = upper('${properties.dbuser}_bdm');
-  if v_count != 0
-  then
-    execute immediate 'drop user ${properties.dbuser}_bdm cascade';
-  end if;
-
+        if (!dropOnly) {
+            sqlQuery += """
   -- recreate user
   execute immediate 'CREATE USER ${properties.dbuser} IDENTIFIED BY ${properties.dbpassword}';
   execute immediate 'ALTER USER ${properties.dbuser} QUOTA 300M ON USERS';
@@ -200,16 +233,11 @@ declare
   execute immediate 'GRANT select ON sys.pending_trans\$ TO ${properties.dbuser}';
   execute immediate 'GRANT select ON sys.dba_2pc_pending TO ${properties.dbuser}';
   execute immediate 'GRANT execute ON sys.dbms_system TO ${properties.dbuser}';
+            """
+        }
+        sqlQuery += "end;"
 
-  execute immediate 'CREATE USER ${properties.dbuser}_bdm IDENTIFIED BY ${properties.dbpassword}';
-  execute immediate 'ALTER USER ${properties.dbuser}_bdm QUOTA 300M ON USERS';
-  execute immediate 'GRANT connect, resource TO ${properties.dbuser}_bdm';
-  execute immediate 'GRANT select ON sys.dba_pending_transactions TO ${properties.dbuser}_bdm';
-  execute immediate 'GRANT select ON sys.pending_trans\$ TO ${properties.dbuser}_bdm';
-  execute immediate 'GRANT select ON sys.dba_2pc_pending TO ${properties.dbuser}_bdm';
-  execute immediate 'GRANT execute ON sys.dbms_system TO ${properties.dbuser}_bdm';
-end;
-"""
-        )
+        sql.execute(sqlQuery)
     }
+
 }

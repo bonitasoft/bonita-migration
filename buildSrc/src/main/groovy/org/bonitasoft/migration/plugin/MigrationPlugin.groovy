@@ -14,15 +14,16 @@
 
 package org.bonitasoft.migration.plugin
 
-import static PropertiesUtils.loadProperties
+import static org.bonitasoft.migration.plugin.PropertiesUtils.loadProperties
 import static org.bonitasoft.migration.plugin.VersionUtils.getVersion
 import static org.bonitasoft.migration.plugin.VersionUtils.getVersionBefore
 import static org.bonitasoft.migration.plugin.VersionUtils.getVersionList
 import static org.bonitasoft.migration.plugin.VersionUtils.underscored
 
 import com.github.zafarkhaja.semver.Version
-import org.bonitasoft.migration.plugin.db.DatabasePluginExtension
 import org.bonitasoft.migration.plugin.db.CleanDbTask
+import org.bonitasoft.migration.plugin.db.DatabasePluginExtension
+import org.bonitasoft.migration.plugin.db.DatabaseResourcesConfigurator
 import org.bonitasoft.migration.plugin.db.JdbcDriverDependencies
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -61,8 +62,11 @@ class MigrationPlugin implements Plugin<Project> {
         project.extensions.create("database", DatabasePluginExtension)
 
         project.afterEvaluate {
+            DatabaseResourcesConfigurator.configureDatabaseResources(project)
             createMigrationTestsTasks(project, migrationPluginExtension)
-            createIntegrationTestTasks(project, migrationPluginExtension)
+            createIntegrationTestTasks(project)
+
+            DatabaseResourcesConfigurator.finalizeTasksDependenciesOnDatabaseResources(project)
         }
     }
 
@@ -235,9 +239,9 @@ class MigrationPlugin implements Plugin<Project> {
     // for integration tests
     // =================================================================================================================
 
-    private createIntegrationTestTasks(Project project, MigrationPluginExtension migrationPluginExtension) {
+    private createIntegrationTestTasks(Project project) {
         defineIntegrationTestDependencies(project)
-        defineIntegrationTestTask(project, migrationPluginExtension)
+        defineIntegrationTestTask(project)
     }
 
     private defineIntegrationTestDependencies(Project project) {
@@ -250,15 +254,9 @@ class MigrationPlugin implements Plugin<Project> {
         }
     }
 
-    private void defineIntegrationTestTask(Project project, MigrationPluginExtension migrationPluginExtension) {
+    private void defineIntegrationTestTask(Project project) {
         def setSystemPropertiesForIntegrationTest = {
-            systemProperties = [
-                    "db.vendor"     : String.valueOf(project.database.properties.dbvendor),
-                    "db.url"        : String.valueOf(project.database.properties.dburl),
-                    "db.user"       : String.valueOf(project.database.properties.dbuser),
-                    "db.password"   : String.valueOf(project.database.properties.dbpassword),
-                    "db.driverClass": String.valueOf(project.database.properties.dbdriverClass)
-            ]
+            systemProperties = DatabaseResourcesConfigurator.getDatabaseConnectionSystemProperties(project)
         }
 
         project.task('integrationTest', type: Test) {
@@ -267,13 +265,10 @@ class MigrationPlugin implements Plugin<Project> {
             testClassesDirs = project.sourceSets.integrationTest.output.classesDirs
             classpath = project.sourceSets.integrationTest.runtimeClasspath
             reports.html.destination = project.file("${project.buildDir}/reports/integrationTests")
-        }
 
-        project.tasks.integrationTest {
             doFirst setSystemPropertiesForIntegrationTest
         }
-        def cleanDb = project.task("cleandb_it_" + (migrationPluginExtension.isSP ? "com" : "org"), type: CleanDbTask)
-        project.tasks.integrationTest.dependsOn cleanDb
+
     }
 
 }
