@@ -117,17 +117,6 @@ group 'org.bonitasoft.migration'
 
 artifacts { archives distZip }
 
-database {
-    dbvendor = System.getProperty("db.vendor", "postgres")
-    dburl = System.getProperty("db.url", "jdbc:postgresql://localhost:5432/migration");
-    dbuser = System.getProperty("db.user", "bonita")
-    dbpassword = System.getProperty("db.password", "bpm")
-    dbdriverClass = System.getProperty("db.driverClass", "org.postgresql.Driver")
-    dbRootUser = System.getProperty("db.root.user", "postgres")
-    dbRootPassword = System.getProperty("db.root.password", "postgres")
-}
-
-
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
