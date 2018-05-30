@@ -25,5 +25,9 @@ class DatabasePluginExtension {
     String dbpassword
     String dbdriverClass
     String dburl
+    String dbDatabaseName
+    String dbServerName
+    String dbServerPort
+    boolean isDockerDb
 
 }
