@@ -1,13 +1,14 @@
 package org.bonitasoft.migration.plugin
 
-import com.github.zafarkhaja.semver.Version
-import org.gradle.api.Project
-import org.gradle.api.tasks.JavaExec
-
 import static groovy.io.FileType.DIRECTORIES
 import static groovy.io.FileType.FILES
 import static org.bonitasoft.migration.plugin.VersionUtils.dotted
 import static org.bonitasoft.migration.plugin.VersionUtils.semver
+
+import com.github.zafarkhaja.semver.Version
+import org.bonitasoft.migration.plugin.db.DatabaseResourcesConfigurator
+import org.gradle.api.Project
+import org.gradle.api.tasks.JavaExec
 
 /**
  * @author Baptiste Mesta.
@@ -20,16 +21,9 @@ class PrepareMigrationTestTask extends JavaExec {
 
     @Override
     void exec() {
-        def testValues = [
-                "db.vendor"     : String.valueOf(project.database.dbvendor),
-                "db.url"        : String.valueOf(project.database.dburl),
-                "db.user"       : String.valueOf(project.database.dbuser),
-                "db.password"   : String.valueOf(project.database.dbpassword),
-                "db.driverClass": String.valueOf(project.database.dbdriverClass),
-                "auto.accept"   : "true"
-        ]
+        def testValues = DatabaseResourcesConfigurator.getDatabaseConnectionSystemProperties(project)
         if (isSP) {
-            testValues["bonita.client.home"] = String.valueOf(project.buildDir) + "/licenses"
+            testValues.put("bonita.client.home", String.valueOf(project.buildDir) + "/licenses")
         }
         if (semver(previousVersion) < semver("7.3.0")) {
             def bonitaHomeFolder = String.valueOf(project.buildDir.absolutePath + File.separator +
@@ -39,14 +33,12 @@ class PrepareMigrationTestTask extends JavaExec {
             delete(bonitaHomeToMigrate)
             copyDir(blankBonitaHomeInPreviousVersion, bonitaHomeToMigrate)
             testValues.put("bonita.home", bonitaHomeToMigrate)
-            //add the Initializer for version < 7.3
         }
         args getFillersToRun()
         setSystemProperties testValues
         setDescription "Setup the engine in order to run migration tests on it."
         setMain "org.bonitasoft.migration.filler.FillerRunner"
         setDebug System.getProperty("filler.debug") != null
-
 
         super.exec()
     }
