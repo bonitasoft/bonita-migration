@@ -182,45 +182,64 @@ class CleanDbTask extends DefaultTask {
         Properties props = [user: properties.dbRootUser, password: properties.dbRootPassword] as Properties
         Sql sql = newSqlInstance(properties.dburl, props, properties.dbdriverClass)
 
-        // important: the position of the + operator to ensure groovy call the append method instead of the positive one
-        // see https://stackoverflow.com/a/31045805
-        def sqlQuery = """
+        def sqlQuery = """-- Drop/Create user script 
   declare
-    v_count number;
-    v_banner varchar2(50) := 'Oracle Database 12c%';
+    v_count         number := 0;
+    v_max_retries   number := 10;
 
-  cursor c1 is
-    select s.sid, s.serial#, s.username """ +
-                ' from gv$session s ' +
-                """
-    where s.type != 'BACKGROUND' and ( upper(s.username) = upper('${properties.dbuser}') );
-
-  cursor c2 is""" +
-                '''
-    select v.banner from v$version v;
-        ''' +
-                """
   begin
+  -- lock user if exists
+  select count(1) into v_count from dba_users where upper(username) = upper('${properties.dbuser}');
+  if v_count != 0
+  then
+    execute immediate 'ALTER USER ${properties.dbuser} ACCOUNT LOCK';
+  end if;
+
   -- disconnect sessions
-  for session_rec in c1
+  for session_rec in (
+            select s.sid, s.serial# from v\$session s
+            where s.type != 'BACKGROUND' and ( upper(s.username) = upper('${properties.dbuser}') )
+            )
   loop
-    execute immediate 'ALTER SYSTEM DISCONNECT SESSION session_rec.sid,session_rec.serial# IMMEDIATE';
+    begin
+      execute immediate 'ALTER SYSTEM DISCONNECT SESSION '''|| session_rec.sid || ',' || session_rec.serial# || ''' IMMEDIATE';
+    EXCEPTION
+      WHEN OTHERS THEN
+        -- ORA-00030: User session ID does not exist. In this case, sesion has been dropped since we have performed the
+        -- search query. So we can ignore this error.
+        if SQLCODE != -30
+        then
+          RAISE;
+        end if;
+    end;
   end loop;
 
   -- for oracle 12c
-  for cur_banner in c2 loop
-    if cur_banner.banner LIKE v_banner
+  for cur_banner in ( select v.banner from v\$version v ) loop
+    if cur_banner.banner LIKE 'Oracle Database 12c%'
     then
       execute immediate 'alter session set "_ORACLE_SCRIPT"=true';
     end if;
   end loop;
 
   -- drop user if exists
-  select count(1) into v_count from dba_users where upper(username) = upper('${properties.dbuser}');
-  if v_count != 0
-  then
-    execute immediate 'drop user ${properties.dbuser} cascade';
-  end if;
+  FOR i IN 1 .. v_max_retries LOOP
+    BEGIN
+      select count(1) into v_count from dba_users where upper(username) = upper('${properties.dbuser}');
+      if v_count != 0
+      then
+        execute immediate 'drop user ${properties.dbuser} cascade';
+      end if;
+      EXIT;
+    EXCEPTION
+      WHEN OTHERS THEN
+      if i >= v_max_retries
+      then
+        RAISE;
+      end if;
+      dbms_lock.sleep( seconds => 5 ); -- Try to prevent ORA-01940: cannot drop a user that is currently connected
+    END;
+   END LOOP;
         """
 
         if (!dropOnly) {
@@ -237,7 +256,7 @@ class CleanDbTask extends DefaultTask {
         }
         sqlQuery += "end;"
 
-        sql.execute(sqlQuery)
+        sql.execute(sqlQuery as String)
     }
 
 }
