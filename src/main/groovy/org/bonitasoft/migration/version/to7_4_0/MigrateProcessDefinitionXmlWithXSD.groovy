@@ -17,6 +17,7 @@ package org.bonitasoft.migration.version.to7_4_0
 import org.bonitasoft.migration.core.Logger
 import org.bonitasoft.migration.core.MigrationContext
 import org.bonitasoft.migration.core.MigrationStep
+import org.bonitasoft.migration.version.to7_2_0.MigrateProcessDefXml
 import org.codehaus.groovy.runtime.InvokerHelper
 
 import javax.xml.XMLConstants
@@ -91,7 +92,11 @@ class MigrateProcessDefinitionXmlWithXSD extends MigrationStep {
     }
 
     String migrateProcessDefinitionXML(String processDefinitionXMLAsText) {
-        applyChangesOnXml(new XmlParser().parseText(processDefinitionXMLAsText))
+        def processDefNode = new XmlParser().parseText(processDefinitionXMLAsText)
+        // remove potential extra <flowNodes> tags (already fixed in 7.2.0, but not for customer who have migrated
+        // before step 7.2.0 was fixed):
+        new MigrateProcessDefXml().removeFlowNodes(processDefNode)
+        applyChangesOnXml(processDefNode)
     }
 
     protected String applyChangesOnXml(Node processDefinitionXml) {
