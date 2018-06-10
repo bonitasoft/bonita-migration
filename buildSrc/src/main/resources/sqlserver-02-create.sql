@@ -1,5 +1,8 @@
 -- Create database
-CREATE DATABASE [@sqlserver.db.name@];
+IF NOT EXISTS (SELECT name FROM master.dbo.sysdatabases WHERE name = N'@sqlserver.db.name@')
+BEGIN
+  CREATE DATABASE [@sqlserver.db.name@];
+END
 GO
 
 -- Enable Row Versioning-Based Isolation Levels
