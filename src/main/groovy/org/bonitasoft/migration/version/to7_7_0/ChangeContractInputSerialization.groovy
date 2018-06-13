@@ -13,10 +13,11 @@
  **/
 package org.bonitasoft.migration.version.to7_7_0
 
-import static org.bonitasoft.migration.core.MigrationStep.DBVendor.*
-
 import org.bonitasoft.migration.core.MigrationContext
 import org.bonitasoft.migration.core.MigrationStep
+import org.bonitasoft.migration.core.database.DatabaseHelper
+
+import static org.bonitasoft.migration.core.MigrationStep.DBVendor.*
 
 class ChangeContractInputSerialization extends MigrationStep {
 
@@ -42,7 +43,7 @@ class ChangeContractInputSerialization extends MigrationStep {
         updateSerializationOnTable(context, "arch_contract_data", type)
     }
 
-    private void updateSerializationOnTable(MigrationContext context, String table_name, String newType) {
+    private static void updateSerializationOnTable(MigrationContext context, String table_name, String newType) {
         def databaseHelper = context.databaseHelper
         def sql = context.sql
 
@@ -51,7 +52,7 @@ class ChangeContractInputSerialization extends MigrationStep {
         //move data
         sql.eachRow("SELECT * FROM $table_name" as String) { contract_data ->
             sql.executeUpdate("UPDATE $table_name SET tmp_val = ? WHERE tenantid = ? AND id = ?",
-                    deserialize(databaseHelper.getBlobContentAsBytes(contract_data.val)),
+                    deserialize(databaseHelper, contract_data.val),
                     contract_data.tenantid,
                     contract_data.id,
             )
@@ -62,8 +63,12 @@ class ChangeContractInputSerialization extends MigrationStep {
         databaseHelper.renameColumn(table_name, "tmp_val", "val", newType)
     }
 
-     String deserialize(byte[] content) {
-        return new ObjectInputStream(new ByteArrayInputStream(content)).readObject() as String
+    static String deserialize(DatabaseHelper databaseHelper, Object contractDataVal) {
+        if (contractDataVal != null) {
+            byte[] content = databaseHelper.getBlobContentAsBytes(contractDataVal)
+            return new ObjectInputStream(new ByteArrayInputStream(content)).readObject() as String
+        }
+        return null
     }
 
     @Override
