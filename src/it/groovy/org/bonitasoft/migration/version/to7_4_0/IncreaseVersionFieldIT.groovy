@@ -36,7 +36,11 @@ class IncreaseVersionFieldIT extends Specification {
     def setup() {
         dropTestTables()
         migrationContext.setVersion("7.4.0")
-        dbUnitHelper.createTables("7_4_0/version", "size")
+        dbUnitHelper.createTables("7_4_0/${subfolderSqlScriptResource()}", "size")
+    }
+
+    protected String subfolderSqlScriptResource() {
+        'version'
     }
 
     def cleanup() {

@@ -22,12 +22,13 @@ import org.bonitasoft.migration.core.MigrationStep
  */
 class IncreaseVersionField extends MigrationStep {
 
-
     @Override
     def execute(MigrationContext context) {
+        // Drop default value potentially introduced by the 6.3.9 to 6.4.0 migration, see BS-17381
+        context.databaseHelper.dropColumnDefaultValueIfExists('arch_document_mapping', 'version')
+        context.databaseHelper.dropColumnDefaultValueIfExists('document_mapping', 'version')
         context.databaseHelper.executeScript("versionFieldSize", "size")
     }
-
 
     @Override
     String getDescription() {
