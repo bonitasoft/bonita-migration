@@ -14,28 +14,28 @@
 package org.bonitasoft.migration.version.to7_7_1
 
 import spock.lang.Specification
+import spock.lang.Unroll
 
 /**
  * @author Emmanuel Duchastenier
  */
 class MigrateTo7_7_1Test extends Specification {
 
-//    @Unroll
-//    def "should migration to 7.7.1 include step '#stepName'"(def stepName) {
-//        given:
-//        def migrateTo = new MigrateTo7_7_1()
-//
-//        expect:
-//        def steps = migrateTo.migrationSteps
-//        steps.collect {
-//            it.class.getSimpleName()
-//        }.contains(stepName)
-//
-//        where:
-//        stepName << [
-//        ]
-//
-//    }
+    @Unroll
+    def "should migration to 7.7.1 include step '#stepName'"(def stepName) {
+        given:
+        def migrateTo = new MigrateTo7_7_1()
+
+        expect:
+        def steps = migrateTo.migrationSteps
+        steps.collect {
+            it.class.getSimpleName()
+        }.contains(stepName)
+
+        where:
+        stepName << [
+                "RenameConnectorDependencyFilename"
+        ]
+
+    }
 }
-
-
