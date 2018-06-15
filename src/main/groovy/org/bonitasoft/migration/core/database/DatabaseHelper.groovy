@@ -235,6 +235,43 @@ END"""
 
     def addColumn(String table, String column, String type, String defaultValue, String constraint) {
         sql.execute("ALTER TABLE $table ADD $column $type ${defaultValue != null ? "DEFAULT $defaultValue" : ""} ${constraint != null ? constraint : ""}" as String)
+        dropColumnDefaultValueIfExists(table, column)
+    }
+
+    void dropColumnDefaultValueIfExists(String table, String column) {
+        switch (dbVendor) {
+            case ORACLE:
+                sql.execute("ALTER TABLE $table MODIFY $column default NULL" as String)
+                break
+            case SQLSERVER:
+                def defaultConstraintName = getSqlServerDefaultValueConstraintName(table, column)
+                if (defaultConstraintName != null) {
+                    sql.execute("ALTER TABLE $table DROP CONSTRAINT $defaultConstraintName" as String)
+                }
+                break
+            default:
+                sql.execute("ALTER TABLE $table ALTER COLUMN $column drop default" as String)
+        }
+    }
+
+    private String getSqlServerDefaultValueConstraintName(String table, String column) {
+        return sql.firstRow("""
+            SELECT name FROM SYS.DEFAULT_CONSTRAINTS
+            WHERE PARENT_OBJECT_ID = OBJECT_ID('$table')
+            AND PARENT_COLUMN_ID = (SELECT column_id FROM sys.columns
+                                    WHERE NAME = N'$column'
+                                    AND object_id = OBJECT_ID(N'$table'))
+            """ as String)?.get('name')
+    }
+
+    /**
+     * <b>IMPORTANT</b>: see {@link #addColumn(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}
+     * for warnings about the default value.
+     */
+    def addColumnIfNotExist(String table, String columnName, String type, String defaultValue, String constraint) {
+        if (!hasColumnOnTable(table, columnName)) {
+            addColumn(table, columnName, type, defaultValue, constraint)
+        }
     }
 
     def dropForeignKey(String table, String foreignKeyName) {
