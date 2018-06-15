@@ -25,7 +25,7 @@ class MigrateTo7_7_1 extends VersionMigration {
     List<MigrationStep> getMigrationSteps() {
         //keep one line per step to avoid false-positive merge conflict
         return [
-//                new ()
+                new RenameConnectorDependencyFilename()
         ]
     }
 }
