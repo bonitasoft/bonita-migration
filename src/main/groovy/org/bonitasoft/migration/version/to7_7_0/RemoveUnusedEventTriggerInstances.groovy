@@ -20,14 +20,17 @@ class RemoveUnusedEventTriggerInstances extends MigrationStep {
 
     @Override
     def execute(MigrationContext context) {
-        def numberOfRows = context.sql.executeUpdate("DELETE FROM event_trigger_instance WHERE kind <> 'timer'")
-        context.logger.info("removed $numberOfRows unused event trigger instances")
-        context.databaseHelper.dropColumn("event_trigger_instance", "kind")
-        context.databaseHelper.dropColumn("event_trigger_instance", "messageName")
-        context.databaseHelper.dropColumn("event_trigger_instance", "targetProcess")
-        context.databaseHelper.dropColumn("event_trigger_instance", "targetFlowNode")
-        context.databaseHelper.dropColumn("event_trigger_instance", "signalName")
-        context.databaseHelper.dropColumn("event_trigger_instance", "errorCode")
+        def dbHelper = context.databaseHelper
+        if (dbHelper.hasColumnOnTable('event_trigger_instance', 'kind')) { // so that this step is re-entrant
+            def numberOfRows = context.sql.executeUpdate("DELETE FROM event_trigger_instance WHERE kind <> 'timer'")
+            context.logger.info("removed $numberOfRows unused event trigger instances")
+        }
+        dbHelper.dropColumn("event_trigger_instance", "kind")
+        dbHelper.dropColumn("event_trigger_instance", "messageName")
+        dbHelper.dropColumn("event_trigger_instance", "targetProcess")
+        dbHelper.dropColumn("event_trigger_instance", "targetFlowNode")
+        dbHelper.dropColumn("event_trigger_instance", "signalName")
+        dbHelper.dropColumn("event_trigger_instance", "errorCode")
     }
 
     @Override
