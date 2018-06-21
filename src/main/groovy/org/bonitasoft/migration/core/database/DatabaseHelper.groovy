@@ -14,8 +14,6 @@
 
 package org.bonitasoft.migration.core.database
 
-import static org.bonitasoft.migration.core.MigrationStep.DBVendor.*
-
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import org.bonitasoft.migration.core.Logger
@@ -23,6 +21,9 @@ import org.bonitasoft.migration.core.MigrationStep.DBVendor
 import org.bonitasoft.migration.core.database.schema.ColumnDefinition
 import org.bonitasoft.migration.core.database.schema.ForeignKeyDefinition
 import org.bonitasoft.migration.core.database.schema.IndexDefinition
+
+import static org.bonitasoft.migration.core.MigrationStep.DBVendor.*
+
 /**
  * @author Baptiste Mesta
  */
@@ -221,15 +222,19 @@ END"""
     }
 
     def dropColumn(String table, String column) {
-        switch (dbVendor) {
-            case ORACLE:
-                execute("ALTER TABLE $table DROP COLUMN $column")
-                break;
-            case SQLSERVER:
-                execute("ALTER TABLE $table DROP COLUMN $column")
-                break;
-            default:
-                execute("ALTER TABLE $table DROP $column")
+        if (hasColumnOnTable(table, column)) {
+            switch (dbVendor) {
+                case ORACLE:
+                    execute("ALTER TABLE $table DROP COLUMN $column")
+                    break;
+                case SQLSERVER:
+                    execute("ALTER TABLE $table DROP COLUMN $column")
+                    break;
+                default:
+                    execute("ALTER TABLE $table DROP $column")
+            }
+        } else {
+            logger.info("Column '$column' does not exist on table '$table'. Skipping DROP instruction.")
         }
     }
 

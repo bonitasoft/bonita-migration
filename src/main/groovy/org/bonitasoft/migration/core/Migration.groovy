@@ -25,6 +25,11 @@ import com.github.zafarkhaja.semver.Version
 class Migration {
 
     public static final Version FIRST_VERSION_WITHOUT_BONITA_HOME = Version.valueOf("7.3.0")
+
+    // This list contains the steps in which we cannot stop. Migration will execute steps but slide until next version:
+    public static List<Version> TRANSITION_VERSIONS = ["7.7.0"].collect {
+        Version.valueOf(it)
+    }
     Logger logger = new Logger()
     MigrationContext context
     DisplayUtil displayUtil = new DisplayUtil()
@@ -89,12 +94,19 @@ class Migration {
         }
         context.sourceVersion = version
         def versions = getVersionsAfter(version)
+        def visibleVersions = filterOutInvisibleVersions(versions)
         if (context.targetVersion == null) {
             println "enter the target version"
-            context.targetVersion = Version.valueOf(MigrationUtil.askForOptions(versions.collect { it.toString() }))
+            context.targetVersion = Version.valueOf(MigrationUtil.askForOptions(visibleVersions.collect {
+                it.toString()
+            }))
         }
-        verifyTargetVersionIsValid(versions)
+        verifyTargetVersionIsValid(visibleVersions)
         return getVersionsToExecute(versions)
+    }
+
+    static List<Version> filterOutInvisibleVersions(List<Version> versions) {
+        versions.findAll { !TRANSITION_VERSIONS.contains(it) }
     }
 
     def verifyPlatformIsTheSameInBonitaHome(Version version) {
@@ -110,7 +122,7 @@ class Migration {
 
     def verifyPlatformIsValid(Version platformVersionInDatabase) {
         if (platformVersionInDatabase.majorVersion != 7) {
-            throw new IllegalStateException("Sorry the but this tool can't manage version under 7.0.0")
+            throw new IllegalStateException("Sorry, but this tool can't manage version under 7.0.0")
         }
     }
 
@@ -137,7 +149,12 @@ class Migration {
             throw new IllegalStateException("The version is already in $context.sourceVersion")
         }
         if (!possibleTarget?.contains(context.targetVersion)) {
-            throw new IllegalStateException("$context.targetVersion is not yet handled by this version of the migration tool")
+            if (System.getProperty("ignore.invalid.target.version") != null && TRANSITION_VERSIONS.contains(context.targetVersion)) {
+                // only accept this hidden sysprop "ignore.invalid.target.version" if the targetVersion is in the list of invisible transition versions:
+                logger.info("Ignoring normally-forbidden target version $context.targetVersion (for tests only)")
+            } else {
+                throw new IllegalStateException("$context.targetVersion is not yet handled by this version of the migration tool")
+            }
         }
     }
 
