@@ -108,7 +108,7 @@ class MigrationTest extends Specification {
         migration.run(false)
         then:
         def IllegalStateException throwable = thrown()
-        throwable.message == "Sorry the but this tool can't manage version under 7.0.0"
+        throwable.message == "Sorry, but this tool can't manage version under 7.0.0"
     }
 
     def "same target and source version should throw exception"() {
@@ -153,6 +153,59 @@ class MigrationTest extends Specification {
         "7.2.9" | "7.3.1" || ["MigrateTo7_3_0", "MigrateTo7_3_1"]
         "7.2.2" | "7.3.0" || ["MigrateTo7_2_9", "MigrateTo7_3_0"]
         "7.2.0" | "7.2.9" || ["MigrateTo7_2_1", "MigrateTo7_2_2", "MigrateTo7_2_9"]
+        "7.6.3" | "7.7.1" || ["MigrateTo7_7_0", "MigrateTo7_7_1"]
+    }
+
+    def "should throw exception if trying to migrate to 7.7.0"() {
+        given:
+        versionInDatabase("7.6.3")
+        targetVersion("7.7.0")
+
+        when:
+        migration.run(false)
+
+        then:
+        IllegalStateException throwable = thrown()
+        throwable.message == "7.7.0 is not yet handled by this version of the migration tool"
+    }
+
+    def "should NOT throw exception if trying to migrate to 7.7.0 and SysProp \"ignore.invalid.target.version\" provided"() {
+        given:
+        versionInDatabase("7.6.3")
+        targetVersion("7.7.0")
+        System.setProperty("ignore.invalid.target.version", "value")
+
+        when:
+        migration.run(false)
+
+        then:
+        noExceptionThrown()
+    }
+
+    def "should INDEED throw exception if trying to migrate to 7.6.9 and SysProp \"ignore.invalid.target.version\" provided but 7.6.9 not in invisible TRANSITION VERSION list"() {
+        given:
+        versionInDatabase("7.6.3")
+        targetVersion("7.6.9")
+        System.setProperty("ignore.invalid.target.version", "value")
+
+        when:
+        migration.run(false)
+
+        then:
+        IllegalStateException throwable = thrown()
+        throwable.message == "7.6.9 is not yet handled by this version of the migration tool"
+    }
+
+    def "should allow to migrate from 7.7.0 to 7.7.1"() {
+        given:
+        versionInDatabase("7.7.0")
+        targetVersion("7.7.1")
+
+        when:
+        migration.run(true)
+
+        then:
+        noExceptionThrown()
     }
 
 

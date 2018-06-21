@@ -94,7 +94,7 @@ class MigrationContext {
         def systemProp = System.getProperty(property)
         def propertyFromFile = properties.getProperty(property)
         if (systemProp != null) {
-            logger.info "Using property $property overrided by system property (instead of $propertyFromFile): $systemProp"
+            logger.info "Using property $property overriden by system property (instead of $propertyFromFile): $systemProp"
             return systemProp
         }
         if (propertyFromFile != null) {

@@ -1,12 +1,12 @@
 package org.bonitasoft.migration.plugin
 
-import static org.bonitasoft.migration.plugin.VersionUtils.dotted
-import static org.bonitasoft.migration.plugin.VersionUtils.semver
-
 import com.github.zafarkhaja.semver.Version
 import org.bonitasoft.migration.plugin.db.DatabaseResourcesConfigurator
 import org.gradle.api.Project
 import org.gradle.api.tasks.JavaExec
+
+import static org.bonitasoft.migration.plugin.VersionUtils.dotted
+import static org.bonitasoft.migration.plugin.VersionUtils.semver
 
 /**
  * @author Baptiste Mesta.
@@ -19,6 +19,10 @@ class RunMigrationTask extends JavaExec {
     @Override
     void exec() {
         def testValues = DatabaseResourcesConfigurator.getDatabaseConnectionSystemProperties(project)
+
+        // for MigrationTests, we need to allow to target a version that is forbidden, like 7.7.0:
+        testValues.put("ignore.invalid.target.version", "true") // value is not important
+
         testValues.put("target.version", String.valueOf(bonitaVersion))
         if (semver(bonitaVersion) <= Version.valueOf("7.3.0")) {
             testValues.put("bonita.home", String.valueOf(project.buildDir.absolutePath + File.separator +
