@@ -14,6 +14,7 @@
 
 package org.bonitasoft.migration
 
+import org.bonitasoft.engine.api.APIClient
 import org.bonitasoft.engine.api.TenantAPIAccessor
 import org.junit.Rule
 import spock.lang.Specification
@@ -21,10 +22,22 @@ import spock.lang.Specification
  * @author Baptiste Mesta
  */
 class After7_2_0DefaultTest extends Specification {
+
     @Rule
     public After7_2_0Initializer initializer = new After7_2_0Initializer()
 
-    def "check we can login with created user"() {
+    def "verify we can login with the tenant admin"() {
+        given:
+        def client = new APIClient()
+
+        when:
+        client.login("install", "install")
+
+        then:
+        client.session != null
+    }
+
+    def "verify we can login with user 'john'"() {
         expect:
         TenantAPIAccessor.getLoginAPI().login("john", "bpm")
     }
