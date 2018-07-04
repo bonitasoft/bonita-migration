@@ -27,24 +27,6 @@ class CheckMigratedTo7_7_0 extends Specification {
     @Rule
     public After7_2_0Initializer initializer = new After7_2_0Initializer()
 
-    @Rule
-    public BonitaEngineRule bonitaEngineRule = BonitaEngineRule.create().reuseExistingPlatform()
-
-    def setupSpec() {
-        CheckerUtils.initializeEngineSystemProperties()
-    }
-
-    def "verify we can login on migrated platform"() {
-        given:
-        def client = new APIClient()
-
-        when:
-        client.login("install", "install")
-
-        then:
-        client.session != null
-    }
-
     def "should not have signal and message event trigger anymore"() {
         given:
         def client = new APIClient()
