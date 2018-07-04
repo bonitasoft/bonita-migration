@@ -245,6 +245,10 @@ END"""
      */
     def addColumn(String table, String column, String type, String defaultValue, String constraint) {
         sql.execute("ALTER TABLE $table ADD $column $type ${defaultValue != null ? "DEFAULT $defaultValue" : ""} ${constraint != null ? constraint : ""}" as String)
+        // in this case, sqlserver sets the constraint but lets the column with a null value, so set the value by hand
+        if (dbVendor == SQLSERVER && defaultValue !=null && constraint == null) {
+            sql.execute("UPDATE $table set $column = $defaultValue" as String)
+        }
         dropColumnDefaultValueIfExists(table, column)
     }
 
