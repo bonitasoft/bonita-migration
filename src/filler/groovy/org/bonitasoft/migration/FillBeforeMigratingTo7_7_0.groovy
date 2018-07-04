@@ -17,8 +17,12 @@ import static org.assertj.core.api.Assertions.assertThat
 import static org.awaitility.Awaitility.await
 
 import groovy.sql.Sql
-import org.assertj.core.api.Assertions
 import org.bonitasoft.engine.api.APIClient
+import org.bonitasoft.engine.bdm.BusinessObjectModelConverter
+import org.bonitasoft.engine.bdm.model.BusinessObject
+import org.bonitasoft.engine.bdm.model.BusinessObjectModel
+import org.bonitasoft.engine.bdm.model.field.FieldType
+import org.bonitasoft.engine.bdm.model.field.SimpleField
 import org.bonitasoft.engine.bpm.contract.Type
 import org.bonitasoft.engine.bpm.flownode.TimerType
 import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder
@@ -27,6 +31,7 @@ import org.bonitasoft.engine.expression.ExpressionBuilder
 import org.bonitasoft.engine.search.SearchOptionsBuilder
 import org.bonitasoft.engine.test.junit.BonitaEngineRule
 import org.bonitasoft.migration.filler.FillAction
+import org.bonitasoft.migration.filler.FillerBdmInitializer
 import org.bonitasoft.migration.filler.FillerInitializer
 import org.bonitasoft.migration.filler.FillerUtils
 import org.junit.Rule
@@ -34,7 +39,6 @@ import org.junit.Rule
 /**
  * @author Laurent Leseigneur
  */
-
 class FillBeforeMigratingTo7_7_0 {
 
     @Rule
@@ -115,6 +119,32 @@ class FillBeforeMigratingTo7_7_0 {
         assertThat(client.processAPI.getProcessInputValueAfterInitialization(processInstance.id, "myInput")).isEqualTo("theInputValue")
     }
 
+    @FillerBdmInitializer
+    void 'deploy BDM'() {
+        def businessObjectModel = createBusinessObjectModel()
+        final BusinessObjectModelConverter converter = new BusinessObjectModelConverter()
+        final byte[] zip = converter.zip(businessObjectModel)
+
+        def client = new APIClient()
+        client.login("install", "install")
+        client.tenantAdministrationAPI.pause()
+        client.tenantAdministrationAPI.installBusinessDataModel(zip)
+        client.tenantAdministrationAPI.resume()
+        client.logout()
+    }
+
+    private static BusinessObjectModel createBusinessObjectModel() {
+        final SimpleField firstName = new SimpleField()
+        firstName.setName("name")
+        firstName.setType(FieldType.STRING)
+        firstName.setLength(Integer.valueOf(100))
+        final BusinessObject testEntity = new BusinessObject()
+        testEntity.setQualifiedName("com.company.model.TestEntity")
+        testEntity.addField(firstName)
+        final BusinessObjectModel model = new BusinessObjectModel()
+        model.addBusinessObject(testEntity)
+        model
+    }
 
 }
 
