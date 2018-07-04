@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2017 Bonitasoft S.A.
+ * Copyright (C) 2017-2018 Bonitasoft S.A.
  * Bonitasoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
@@ -13,9 +13,16 @@
  **/
 package org.bonitasoft.migration
 
+import org.assertj.core.api.JUnitSoftAssertions
 import org.bonitasoft.engine.api.APIClient
+import org.bonitasoft.engine.bdm.BusinessObjectModelConverter
+import org.bonitasoft.engine.bdm.model.BusinessObject
+import org.bonitasoft.engine.bdm.model.BusinessObjectModel
+import org.bonitasoft.engine.bdm.model.field.FieldType
+import org.bonitasoft.engine.bdm.model.field.SimpleField
 import org.bonitasoft.engine.search.SearchOptionsBuilder
-import org.bonitasoft.engine.test.junit.BonitaEngineRule
+import org.bonitasoft.engine.tenant.TenantResource
+import org.bonitasoft.engine.tenant.TenantResourceState
 import org.junit.Rule
 import spock.lang.Specification
 
@@ -26,6 +33,9 @@ class CheckMigratedTo7_7_0 extends Specification {
 
     @Rule
     public After7_2_0Initializer initializer = new After7_2_0Initializer()
+
+    @Rule
+    public final JUnitSoftAssertions softly = new JUnitSoftAssertions()
 
     def "should not have signal and message event trigger anymore"() {
         given:
@@ -51,4 +61,48 @@ class CheckMigratedTo7_7_0 extends Specification {
         then:
         contractDataValue == "theInputValue"
     }
+
+    def "should have migrated BDM in Tenant Resource"() {
+        given:
+        def client = new APIClient()
+        client.login("install", "install")
+        when:
+        TenantResource bdmResource = client.tenantAdministrationAPI.businessDataModelResource
+        then:
+        softly.assertThat(bdmResource.lastUpdateDate).describedAs('bdm tenant resource last update date').isNotNull()
+        softly.assertThat(bdmResource.state).describedAs('bdm tenant resource state').isEqualTo(TenantResourceState.INSTALLED)
+    }
+
+    def "should be able to deploy a new BDM"() {
+        given:
+        def client = new APIClient()
+        client.login("install", "install")
+        client.tenantAdministrationAPI.pause()
+
+        def businessObjectModel = createBusinessObjectModel()
+        final BusinessObjectModelConverter converter = new BusinessObjectModelConverter()
+        final byte[] zip = converter.zip(businessObjectModel)
+
+        when:
+        client.tenantAdministrationAPI.cleanAndUninstallBusinessDataModel()
+        client.tenantAdministrationAPI.installBusinessDataModel(zip)
+        client.tenantAdministrationAPI.resume()
+
+        then:
+        client.tenantAdministrationAPI.businessDataModelResource != null
+    }
+
+    private static BusinessObjectModel createBusinessObjectModel() {
+        final SimpleField firstName = new SimpleField()
+        firstName.setName("firstName")
+        firstName.setType(FieldType.STRING)
+        firstName.setLength(Integer.valueOf(50))
+        final BusinessObject newEntity = new BusinessObject()
+        newEntity.setQualifiedName("com.company.model.NewEntity")
+        newEntity.addField(firstName)
+        final BusinessObjectModel model = new BusinessObjectModel()
+        model.addBusinessObject(newEntity)
+        model
+    }
+
 }

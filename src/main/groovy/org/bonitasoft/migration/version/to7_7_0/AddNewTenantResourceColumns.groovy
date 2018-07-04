@@ -23,7 +23,7 @@ class AddNewTenantResourceColumns extends MigrationStep {
         def databaseHelper = context.databaseHelper
         def dbVendorColumns = DbVendorColumns.valueOf(context.dbVendor.name())
         databaseHelper.addColumnIfNotExist("tenant_resource", "lastUpdatedBy", dbVendorColumns.getType("lastUpdatedBy"), "-1", "NOT NULL")
-        databaseHelper.addColumnIfNotExist("tenant_resource", "lastUpdateDate", dbVendorColumns.getType("lastUpdateDate"), null, null)
+        databaseHelper.addColumnIfNotExist("tenant_resource", "lastUpdateDate", dbVendorColumns.getType("lastUpdateDate"), "0", null)
         databaseHelper.addColumnIfNotExist("tenant_resource", "state", dbVendorColumns.getType("state"), "\'INSTALLED\'", "NOT NULL")
     }
 

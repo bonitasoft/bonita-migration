@@ -62,7 +62,7 @@ values (1, 1, 'resource', 'TEST', $content.bytes)
         def tenantResource = migrationContext.sql.firstRow("SELECT * FROM tenant_resource WHERE tenantId  = 1 and id = 1")
 
         tenantResource.lastUpdatedBy == -1
-        tenantResource.lastUpdateDate == null
+        tenantResource.lastUpdateDate == 0
         tenantResource.state == 'INSTALLED'
     }
 
