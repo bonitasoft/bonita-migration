@@ -14,6 +14,8 @@
 
 package org.bonitasoft.migration.core.database
 
+import static org.bonitasoft.migration.core.MigrationStep.DBVendor.*
+
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import org.bonitasoft.migration.core.Logger
@@ -21,8 +23,6 @@ import org.bonitasoft.migration.core.MigrationStep.DBVendor
 import org.bonitasoft.migration.core.database.schema.ColumnDefinition
 import org.bonitasoft.migration.core.database.schema.ForeignKeyDefinition
 import org.bonitasoft.migration.core.database.schema.IndexDefinition
-
-import static org.bonitasoft.migration.core.MigrationStep.DBVendor.*
 
 /**
  * @author Baptiste Mesta
@@ -259,6 +259,12 @@ END"""
                     sql.execute("ALTER TABLE $table DROP CONSTRAINT $defaultConstraintName" as String)
                 }
                 break
+            case MYSQL:
+                String defaultColumnValue = getMysqlColumnDefaultValue(table, column)
+                if (defaultColumnValue != null) {
+                    sql.execute("ALTER TABLE $table ALTER COLUMN $column drop default" as String)
+                }
+                break
             default:
                 sql.execute("ALTER TABLE $table ALTER COLUMN $column drop default" as String)
         }
@@ -272,6 +278,15 @@ END"""
                                     WHERE NAME = N'$column'
                                     AND object_id = OBJECT_ID(N'$table'))
             """ as String)?.get('name')
+    }
+
+    private String getMysqlColumnDefaultValue(String table, String column) {
+        return sql.firstRow("""
+                    SELECT column_default FROM INFORMATION_SCHEMA.COLUMNS 
+                    WHERE table_name = '$table'
+                    AND column_name = '$column'
+                    AND column_default is not null
+            """ as String)?.get('column_default')
     }
 
     /**
