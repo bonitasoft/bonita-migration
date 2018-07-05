@@ -72,10 +72,10 @@ Example: run test migration 7.6.0 on Sqlserver:
 ./gradlew testMigration_7_6_0 \
 -Ddb.vendor=sqlserver \
 -Ddb.url=jdbc:sqlserver://myhost:1433;database=migration \
--Ddb.user=migration_ci \
--Ddb.password=migration_ci \
 -Ddb.root.user=sa \
 -Ddb.root.password=StrongPassword \
+-Ddb.user=migration_ci \
+-Ddb.password=migration_ci \
 -Ddb.driverClass=com.microsoft.sqlserver.jdbc.SQLServerDriver
 ```
 
@@ -84,10 +84,10 @@ Example: run integration tests on Postgresql:
 ./gradlew integrationTest \
 -Ddb.vendor=postgres \
 -Ddb.url=jdbc:postgresql://localhost:5432/bonita \
--Ddb.user=bonita \
--Ddb.password=bpm \
 -Ddb.root.user=postgres \
 -Ddb.root.password=postgres \
+-Ddb.user=bonita \
+-Ddb.password=bpm \
 -Ddb.driverClass=org.postgresql.Driver
 ```
 
@@ -98,6 +98,8 @@ Example: run all tests on Oracle:
 -Ddb.url=jdbc:oracle:thin:@localhost:1521:xe \
 -Ddb.root.user="sys as sysdba" \
 -Ddb.root.password=oracle \
+-Ddb.user=bonita \
+-Ddb.password=bpm \
 -Ddb.driverClass=oracle.jdbc.OracleDriver
 ```
 
@@ -105,9 +107,11 @@ Example: run all tests on Mysql:
 ```
 ./gradlew clean integrationTest allMigrationTests --info --stacktrace \
 -Ddb.vendor=mysql \
-"-Ddb.url=jdbc:mysql://localhost:3306/bonita?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8" \
+-Ddb.url=jdbc:mysql://localhost:3306/bonita?allowMultiQueries=true \
 -Ddb.root.user=root \
 -Ddb.root.password=root \
+-Ddb.user=bonita \
+-Ddb.password=bpm \
 -Ddb.driverClass=com.mysql.jdbc.Driver
 ```
 
