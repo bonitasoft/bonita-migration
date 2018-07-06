@@ -15,6 +15,7 @@ package org.bonitasoft.migration.version.to7_6_2
 
 import org.bonitasoft.migration.core.MigrationStep
 import org.bonitasoft.migration.core.VersionMigration
+import org.bonitasoft.migration.version.to7_3_0.FixJarJarDependencyName
 
 /**
  */
@@ -26,6 +27,7 @@ class MigrateTo7_6_2 extends VersionMigration {
         return [
                 new ReplaceGroupUniqueIndexBySimpleIndex(),
                 new RemoveJaasStandardCfg()
+                , new FixJarJarDependencyName()
         ]
     }
 }

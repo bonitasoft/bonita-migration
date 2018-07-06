@@ -15,6 +15,7 @@ package org.bonitasoft.migration.version.to7_7_2
 
 import org.bonitasoft.migration.core.MigrationStep
 import org.bonitasoft.migration.core.VersionMigration
+import org.bonitasoft.migration.version.to7_3_0.FixJarJarDependencyName
 
 /**
  * @author Emmanuel Duchastenier
@@ -25,6 +26,7 @@ class MigrateTo7_7_2 extends VersionMigration {
     List<MigrationStep> getMigrationSteps() {
         //keep one line per step to avoid false-positive merge conflict
         return [
+                new FixJarJarDependencyName()
         ]
     }
 }

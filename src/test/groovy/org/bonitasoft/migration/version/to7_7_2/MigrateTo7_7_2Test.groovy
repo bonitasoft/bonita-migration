@@ -1,6 +1,6 @@
-/*
- * Copyright (C) 2017 Bonitasoft S.A.
- * Bonitasoft, 32 rue Gustave Eiffel - 38000 Grenoble
+/**
+ * Copyright (C) 2018 Bonitasoft S.A.
+ * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
  * version 2.1 of the License.
@@ -10,36 +10,30 @@
  * You should have received a copy of the GNU Lesser General Public License along with this
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
- */
-package org.bonitasoft.migration.version.to7_4_3
+ **/
+package org.bonitasoft.migration.version.to7_7_2
 
 import spock.lang.Specification
 import spock.lang.Unroll
-
 /**
- * @author Laurent Leseigneur
+ * @author Emmanuel Duchastenier
  */
-class MigrateTo7_4_3Test extends Specification {
+class MigrateTo7_7_2Test extends Specification {
 
     @Unroll
-    def "should migration to 7.4.3 include #stepName step"(def stepName) {
+    def "should migration to 7.7.2 include step '#stepName'"(def stepName) {
         given:
-        def migrateTo = new MigrateTo7_4_3()
+        def migrateTo = new MigrateTo7_7_2()
 
         expect:
         def steps = migrateTo.migrationSteps
         steps.collect {
             it.class.getSimpleName()
-        }.contains(stepName) == true
+        }.contains(stepName)
 
         where:
         stepName << [
-                "FixProcessPermissionRuleScript"
-                , "UpdateCompoundPermissionMapping"
-                , "FixProcessSupervisorPermissionRuleScript"
-                , "AddAvatarPermission"
-                , "AddCSRFCookieSecure"
-                , "FixJarJarDependencyName"
+                "FixJarJarDependencyName"
         ]
 
     }

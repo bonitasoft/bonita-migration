@@ -35,6 +35,7 @@ class MigrateTo7_7_1Test extends Specification {
         where:
         stepName << [
                 "RenameConnectorDependencyFilename"
+                , "FixJarJarDependencyName"
         ]
 
     }
