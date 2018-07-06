@@ -40,6 +40,7 @@ class MigrateTo7_5_0Test extends Specification {
                 , "FixProcessSupervisorPermissionRuleScript"
                 , "AddAvatarPermission"
                 , "AddCSRFCookieSecure"
+                , "FixJarJarDependencyName"
         ]
 
     }

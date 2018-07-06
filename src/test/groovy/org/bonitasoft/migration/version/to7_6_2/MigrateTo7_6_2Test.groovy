@@ -13,10 +13,8 @@
  */
 package org.bonitasoft.migration.version.to7_6_2
 
-import org.bonitasoft.migration.version.to7_6_0.MigrateTo7_6_0
 import spock.lang.Specification
 import spock.lang.Unroll
-
 /**
  * @author Emmanuel Duchastenier
  */
@@ -37,6 +35,7 @@ class MigrateTo7_6_2Test extends Specification {
         stepName << [
                 "ReplaceGroupUniqueIndexBySimpleIndex",
                 "RemoveJaasStandardCfg"
+                , "FixJarJarDependencyName"
         ]
 
     }

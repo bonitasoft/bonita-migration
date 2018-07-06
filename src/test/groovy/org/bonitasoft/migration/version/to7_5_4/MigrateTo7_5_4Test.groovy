@@ -27,6 +27,6 @@ class MigrateTo7_5_4Test extends Specification {
         def steps = migrateToNextVersion.migrationSteps
 
         then:
-        steps.size() == 0
+        steps.size() == 1
     }
 }
