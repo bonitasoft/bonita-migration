@@ -15,7 +15,6 @@ package org.bonitasoft.migration.version.to7_3_1
 
 import spock.lang.Specification
 import spock.lang.Unroll
-
 /**
  * @author Laurent Leseigneur
  */
@@ -33,7 +32,8 @@ class MigrateTo7_3_1Test extends Specification {
         }.contains(stepName) == true
 
         where:
-        stepName << ["FixDependenciesName", "FixProcessPermissionRuleScript", "UpdateCompoundPermissionMapping", "AddAvatarPermission"]
+        stepName << ["FixDependenciesName", "FixProcessPermissionRuleScript", "UpdateCompoundPermissionMapping", "AddAvatarPermission"
+                     , "FixJarJarDependencyName"]
 
     }
 }

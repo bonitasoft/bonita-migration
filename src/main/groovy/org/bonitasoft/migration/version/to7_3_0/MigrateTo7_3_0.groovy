@@ -36,6 +36,7 @@ class MigrateTo7_3_0 extends VersionMigration {
                 //same as in 7_2_0 step, in case customer already migrated in 7.2.0+
                 new MigrateProcessDefXmlCallActivity(),
                 new MigrateAutoLoginConfig()
+                , new FixJarJarDependencyName()
         ]
     }
 }

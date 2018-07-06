@@ -34,7 +34,8 @@ class MigrateTo7_6_0Test extends Specification {
 
         where:
         stepName << ["RemoveDefaultGroovyScriptsAndUpdateTheirConfiguration",
-                     "RemovePlatformInitCommunityCustomProperties"]
+                     "RemovePlatformInitCommunityCustomProperties"
+                     , "FixJarJarDependencyName"]
 
     }
 }

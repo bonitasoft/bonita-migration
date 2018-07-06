@@ -15,6 +15,7 @@ package org.bonitasoft.migration.version.to7_5_2
 
 import org.bonitasoft.migration.core.MigrationStep
 import org.bonitasoft.migration.core.VersionMigration
+import org.bonitasoft.migration.version.to7_3_0.FixJarJarDependencyName
 import org.bonitasoft.migration.version.to7_3_1.AddAvatarPermission
 import org.bonitasoft.migration.version.to7_3_1.UpdateCompoundPermissionMapping
 import org.bonitasoft.migration.version.to7_3_3.FixProcessSupervisorPermissionRuleScript
@@ -33,6 +34,7 @@ class MigrateTo7_5_2 extends VersionMigration {
                 new FixProcessSupervisorPermissionRuleScript(),
                 new AddAvatarPermission()
                 , new AddCSRFCookieSecure()
+                , new FixJarJarDependencyName()
         ]
     }
 }
