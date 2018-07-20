@@ -87,24 +87,31 @@ class MigrationContext {
         if (level != null) {
             logger.setLevel(level)
         }
-
     }
 
     private String getSystemPropertyOrFromConfigFile(String property, Properties properties, boolean mandatory) {
         def systemProp = System.getProperty(property)
         def propertyFromFile = properties.getProperty(property)
         if (systemProp != null) {
-            logger.info "Using property $property overriden by system property (instead of $propertyFromFile): $systemProp"
+            logger.info "Using property $property overriden by system property (instead of ${hidePasswordValue(property, propertyFromFile)}): ${hidePasswordValue(property, systemProp)}"
             return systemProp
         }
         if (propertyFromFile != null) {
-            logger.info "Using property $property from configuration file: $propertyFromFile"
+            logger.info "Using property $property from configuration file: ${hidePasswordValue(property, propertyFromFile)}"
             return propertyFromFile
         }
         if (mandatory) {
             throw new IllegalStateException("The property $property is neither set in system property nor in the configuration file ")
         }
-        return null;
+        return null
+    }
+
+    private String hidePasswordValue(String property, String value) {
+        isPasswordProperty(property) ? "*****" : value
+    }
+
+    private boolean isPasswordProperty(String property) {
+        property.contains("password")
     }
 
     def openSqlConnection() {
