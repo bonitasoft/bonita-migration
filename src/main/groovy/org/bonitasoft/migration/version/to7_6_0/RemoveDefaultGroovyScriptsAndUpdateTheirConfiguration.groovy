@@ -157,7 +157,7 @@ class RemoveDefaultGroovyScriptsAndUpdateTheirConfiguration extends MigrationSte
         if (warnings) {
             warnings += """For these files, you will not benefit from the potential fixes in the future.
 ${LINE_SEPARATOR}You are advised to customize your scripts by creating new ones in separate files.
-${LINE_SEPARATOR}See https://documentation.bonitasoft.com/?page=rest-api-authorization for more details."""
+${LINE_SEPARATOR}See https://documentation.bonitasoft.com/bonita/7.6/rest-api-authorization for more details."""
         }
         warnings
     }
