@@ -49,11 +49,9 @@ class Migration {
 
 
     void run(boolean isSp) {
-        context.loadProperties()
         setupOutputs()
-        printWarning()
-        println "using db vendor: " + context.dbVendor
-        println "using db url: " + context.dburl
+        printMigrationBannerAndGlobalWarnings(isSp)
+        context.loadProperties()
 
         context.openSqlConnection()
         context.sourceVersion = getPlatformVersion()
@@ -207,13 +205,20 @@ class Migration {
     }
 
     private Properties getMigrationProperties() {
-        def migrationProperties = new Properties()
-        this.class.getResourceAsStream("/bonita-versions.properties").withStream {
-            migrationProperties.load(it)
-        }
-        return migrationProperties
+        return loadFromClasspath("/bonita-versions.properties")
     }
 
+    private Properties getProjectProperties() {
+        return loadFromClasspath("/bonita-migration-info.properties")
+    }
+
+    private Properties loadFromClasspath(String name) {
+        def properties = new Properties()
+        this.class.getResourceAsStream(name).withStream {
+            properties.load(it)
+        }
+        return properties
+    }
 
     static def setupOutputs() {
         def logInFile = new FileOutputStream(new File("migration-" + new Date().format("yyyy-MM-dd-HHmmss") + ".log"))
@@ -222,9 +227,9 @@ class Migration {
     }
 
 
-    def printWarning() {
-        println ''
-        displayUtil.printInRectangle("", "Bonita migration tool", "",
+    def printMigrationBannerAndGlobalWarnings(boolean isSp) {
+        def migrationToolVersion = getProjectProperties().getProperty("migration.tool.version", "DEV")
+        displayUtil.printInRectangle("", "Bonita migration tool ${migrationToolVersion} ${Edition.from(isSp).displayName} edition", "",
                 "This tool will migrate your installation of Bonita.",
                 "Both database and bonita home will be modified.",
                 "Please refer to the documentation for further steps to completely migrate your production environment.",
