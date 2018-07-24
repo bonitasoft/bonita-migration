@@ -166,3 +166,11 @@ task("testJar", type: Jar) {
     classifier = 'tests'
     from sourceSets.test.output+sourceSets.intTest.output
 }
+
+processResources {
+    filesMatching('**/bonita-migration-info.properties') {
+        expand(
+            'project_version': project.property('version'),
+        )
+    }
+}
