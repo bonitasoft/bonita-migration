@@ -171,14 +171,6 @@ public class MigrationUtil {
         return Version.valueOf(sql.firstRow("SELECT version FROM platform")[0] as String);
     }
 
-    static Edition getEdition(Sql sql) {
-        String information = sql.firstRow("SELECT information FROM platform")[0] as String
-        if (information == null || information.trim() == "") {
-            return Edition.COMMUNITY
-        }
-        return Edition.SUBSCRIPTION
-    }
-
     public static Object getId(File feature, String dbVendor, String fileExtension, Object it, Sql sql) {
         if (it == null || sql == null) {
             throw new IllegalArgumentException("Can't execute getId method with arguments : it = " + it + ", sql = " + sql);

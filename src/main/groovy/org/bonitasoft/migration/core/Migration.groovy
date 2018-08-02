@@ -25,7 +25,6 @@ import com.github.zafarkhaja.semver.Version
 class Migration {
 
     public static final Version FIRST_VERSION_WITHOUT_BONITA_HOME = Version.valueOf("7.3.0")
-    public static final Version FIRST_VERSION_WITH_EDITION_INFORMATION = Version.valueOf("7.1.0")
 
     // This list contains the steps in which we cannot stop. Migration will execute steps but slide until next version:
     public static List<Version> TRANSITION_VERSIONS = ["7.7.0"].collect {
@@ -48,44 +47,17 @@ class Migration {
     }
 
 
-    void run(boolean isSp) {
+    public void run(boolean isSp) {
         setupOutputs()
         printMigrationBannerAndGlobalWarnings(isSp)
         context.loadProperties()
 
         context.openSqlConnection()
-        context.sourceVersion = getPlatformVersion()
-
-        verifyPlatformIsValid()
-        ensureMigrationAndBonitaEditionsAreMatching(isSp)
         def versionMigrations = getMigrationVersionsToRun()
 
         def runner = getRunner(versionMigrations)
         runner.run(isSp)
         context.closeSqlConnection()
-    }
-
-    void ensureMigrationAndBonitaEditionsAreMatching(boolean isSp) {
-        Edition migrationToolEdition = Edition.from(isSp)
-
-        if (context.sourceVersion < FIRST_VERSION_WITH_EDITION_INFORMATION) {
-            logger.warn "The current Bonita version does not allow to know if it is a Community or Subscription edition"
-            logger.warn "Please check manually if it is a ${migrationToolEdition.displayName} edition"
-            MigrationUtil.askIfWeContinue()
-            return
-        }
-
-        Edition bonitaEdition = MigrationUtil.getEdition(context.sql)
-        logger.debug("Ensuring Bonita and Migration Tool editions are matching...")
-        logger.debug "Migration tool edition: ${migrationToolEdition}"
-        logger.debug "Bonita edition: ${bonitaEdition}"
-        if (migrationToolEdition != bonitaEdition) {
-            String errorMsg = "Bonita and Migration Tool editions are not matching." +
-                    " Bonita edition: ${bonitaEdition.displayName}." +
-                    " Migration Tool edition: ${migrationToolEdition.displayName}"
-            throw new IllegalStateException(errorMsg)
-        }
-        logger.debug("Editions are matching")
     }
 
     protected MigrationRunner getRunner(List<VersionMigration> versionMigrations) {
@@ -111,11 +83,14 @@ class Migration {
     }
 
 
-    List<VersionMigration> getMigrationVersionsToRun() {
-        Version version = context.sourceVersion
+    def List<VersionMigration> getMigrationVersionsToRun() {
+        def version = Version.valueOf(getPlatformVersion().normalVersion)
+        verifyPlatformIsValid(version)
+        logger.info("Detected version in database: " + version)
         if (version < FIRST_VERSION_WITHOUT_BONITA_HOME) {
             verifyPlatformIsTheSameInBonitaHome(version)
         }
+        context.sourceVersion = version
         def versions = getVersionsAfter(version)
         def visibleVersions = filterOutInvisibleVersions(versions)
         if (context.targetVersion == null) {
@@ -143,16 +118,14 @@ class Migration {
         }
     }
 
-    def verifyPlatformIsValid() {
-        Version currentPlatformVersion = context.sourceVersion
-        logger.info "Detected version in database: $currentPlatformVersion"
-        if (currentPlatformVersion.majorVersion != 7) {
+    def verifyPlatformIsValid(Version platformVersionInDatabase) {
+        if (platformVersionInDatabase.majorVersion != 7) {
             throw new IllegalStateException("Sorry, but this tool can't manage version under 7.0.0")
         }
     }
 
     private Version getPlatformVersion() {
-        return Version.valueOf(MigrationUtil.getPlatformVersion(context.sql).normalVersion)
+        return MigrationUtil.getPlatformVersion(context.sql)
     }
 
     private Version getBonitaHomeVersion() {
