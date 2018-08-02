@@ -1,9 +1,5 @@
 package org.bonitasoft.migration.core
 
-import static org.assertj.core.api.Assertions.assertThat
-
-import java.nio.file.Files
-
 import com.github.zafarkhaja.semver.Version
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
@@ -11,6 +7,8 @@ import org.junit.Rule
 import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
 import spock.lang.Unroll
+
+import java.nio.file.Files
 
 /**
  * @author Baptiste Mesta
@@ -39,7 +37,6 @@ class MigrationTest extends Specification {
         given:
         versionInDatabase("7.2.0")
         versionInBonitaHome("7.2.1")
-        bonitaEditionIsCommunity()
         when:
         migration.run(false)
         then:
@@ -52,7 +49,6 @@ class MigrationTest extends Specification {
         versionInDatabase("7.3.0")
         versionInBonitaHome("7.2.1")
         targetVersion("7.3.1")
-        bonitaEditionIsCommunity()
         when:
         migration.run(false)
         then:
@@ -63,7 +59,6 @@ class MigrationTest extends Specification {
         given:
         versionInDatabase("7.3.0")
         targetVersion("7.3.1")
-        bonitaEditionIsCommunity()
         when:
         migration.run(false)
         then:
@@ -74,7 +69,6 @@ class MigrationTest extends Specification {
         given:
         versionInDatabase("7.2.9")
         targetVersion("7.3.1")
-        bonitaEditionIsCommunity()
         when:
         migration.run(false)
         then:
@@ -87,7 +81,6 @@ class MigrationTest extends Specification {
         versionInDatabase("7.0.9")
         versionInBonitaHome("7.0.9")
         targetVersion("7.2.0")
-        bonitaEditionIsCommunity()
         when:
         migration.run(false)
         then:
@@ -99,7 +92,6 @@ class MigrationTest extends Specification {
         given:
         versionInDatabase("7.3.0")
         targetVersion("7.10.10")
-        bonitaEditionIsCommunity()
         when:
         migration.run(false)
         then:
@@ -112,7 +104,6 @@ class MigrationTest extends Specification {
         versionInDatabase("6.5.0")
         versionInBonitaHome("6.5.0")
         targetVersion("7.2.0")
-        bonitaEditionIsCommunity()
         when:
         migration.run(false)
         then:
@@ -124,7 +115,6 @@ class MigrationTest extends Specification {
         given:
         versionInDatabase("7.3.1")
         targetVersion("7.3.1")
-        bonitaEditionIsCommunity()
         when:
         migration.run(false)
         then:
@@ -137,7 +127,6 @@ class MigrationTest extends Specification {
         given:
         versionInDatabase("7.3.1")
         targetVersion("7.2.9")
-        bonitaEditionIsCommunity()
         when:
         migration.run(false)
         then:
@@ -151,7 +140,6 @@ class MigrationTest extends Specification {
         versionInDatabase(source)
         versionInBonitaHome(source)
         targetVersion(target)
-        bonitaEditionIsCommunity()
         when:
         migration.run(false)
         then:
@@ -172,7 +160,6 @@ class MigrationTest extends Specification {
         given:
         versionInDatabase("7.6.3")
         targetVersion("7.7.0")
-        bonitaEditionIsCommunity()
 
         when:
         migration.run(false)
@@ -186,7 +173,6 @@ class MigrationTest extends Specification {
         given:
         versionInDatabase("7.6.3")
         targetVersion("7.7.0")
-        bonitaEditionIsCommunity()
         System.setProperty("ignore.invalid.target.version", "value")
 
         when:
@@ -200,7 +186,6 @@ class MigrationTest extends Specification {
         given:
         versionInDatabase("7.6.3")
         targetVersion("7.6.9")
-        bonitaEditionIsCommunity()
         System.setProperty("ignore.invalid.target.version", "value")
 
         when:
@@ -215,7 +200,6 @@ class MigrationTest extends Specification {
         given:
         versionInDatabase("7.7.0")
         targetVersion("7.7.1")
-        bonitaEditionIsSubscription()
 
         when:
         migration.run(true)
@@ -224,62 +208,13 @@ class MigrationTest extends Specification {
         noExceptionThrown()
     }
 
-    def "should detect when migration and bonita editions are not matching"() {
-        given:
-        versionInDatabase('7.3.0')
-        bonitaEditionIsCommunity()
-
-        when:
-        migration.ensureMigrationAndBonitaEditionsAreMatching(true)
-
-        then:
-        IllegalStateException throwable = thrown()
-        assertThat(throwable).describedAs("Detection error message")
-                .hasMessageStartingWith("Bonita and Migration Tool editions are not matching.")
-                .hasMessageEndingWith("Bonita edition: Community. Migration Tool edition: Subscription")
-    }
-
-    def "should detect when migration and bonita editions are matching"() {
-        given:
-        versionInDatabase('7.3.0')
-        bonitaEditionIsCommunity()
-
-        when:
-        migration.ensureMigrationAndBonitaEditionsAreMatching(false)
-
-        then:
-        notThrown(Exception)
-    }
-
-    def "should not check editions when version is lower than 7.1.0"() {
-        given:
-        versionInDatabase('7.0.2')
-
-        when:
-        migration.ensureMigrationAndBonitaEditionsAreMatching(true)
-
-        then:
-        0 * sql.firstRow('SELECT information FROM platform')
-    }
-
-    // =================================================================================================================
-    // UTILS
-    // =================================================================================================================
-
-    private void bonitaEditionIsCommunity() {
-        sql.firstRow('SELECT information FROM platform') >> new GroovyRowResult([information: ''])
-    }
-
-    private void bonitaEditionIsSubscription() {
-        sql.firstRow('SELECT information FROM platform') >> new GroovyRowResult([information: "data_that_show_bonita_edition_is_subscription"])
-    }
 
     protected void targetVersion(String s) {
         migrationContext.targetVersion >> Version.valueOf(s)
     }
 
     protected void versionInDatabase(String s) {
-        sql.firstRow('SELECT version FROM platform') >> new GroovyRowResult([version: s])
+        sql.firstRow(_ as String) >> new GroovyRowResult([version: s])
         migrationContext.sourceVersion >> Version.valueOf(s)
     }
 
