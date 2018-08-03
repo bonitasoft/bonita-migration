@@ -1,12 +1,12 @@
 package org.bonitasoft.migration.plugin
 
-import static org.bonitasoft.migration.plugin.VersionUtils.dotted
-import static org.bonitasoft.migration.plugin.VersionUtils.underscored
-
 import com.github.zafarkhaja.semver.Version
 import org.bonitasoft.migration.plugin.db.DatabaseResourcesConfigurator
 import org.gradle.api.Project
 import org.gradle.api.tasks.testing.Test
+
+import static org.bonitasoft.migration.plugin.VersionUtils.dotted
+import static org.bonitasoft.migration.plugin.VersionUtils.underscored
 
 /**
  * @author Baptiste Mesta.
@@ -15,7 +15,6 @@ class TestMigrationTask extends Test {
 
     private String bonitaVersion
     private boolean isSP
-
 
     @Override
     void executeTests() {
@@ -29,6 +28,18 @@ class TestMigrationTask extends Test {
                     "bonita-home-" + dotted(bonitaVersion) + File.separator + "bonita-home-to-migrate"))
         }
         setSystemProperties testValues
+
+        def property = project.property('org.gradle.jvmargs')
+        if (property) {
+            println "Using extra property 'org.gradle.jvmargs=$property'"
+            jvmArgs property.toString().split(" ")
+        }
+        def sysProperty = System.getProperty("org.gradle.jvmargs")
+        if (sysProperty) {
+            println "Using extra property 'org.gradle.jvmargs=$property'"
+            jvmArgs sysProperty.split(" ")
+        }
+
         super.executeTests()
     }
 
@@ -43,10 +54,10 @@ class TestMigrationTask extends Test {
 
         if (Version.valueOf(bonitaVersion) < Version.valueOf("7.2.0")) {
             include "**/*Before7_2_0DefaultTest*"
-        }else {
+        } else {
             include "**/*After7_2_0DefaultTest*"
         }
-        include "**/*To" + underscored(bonitaVersion) + (isSP ? "SP" : "") +"*"
+        include "**/*To" + underscored(bonitaVersion) + (isSP ? "SP" : "") + "*"
     }
 
 }

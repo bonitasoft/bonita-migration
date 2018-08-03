@@ -1,14 +1,14 @@
 package org.bonitasoft.migration.plugin
 
-import static groovy.io.FileType.DIRECTORIES
-import static groovy.io.FileType.FILES
-import static org.bonitasoft.migration.plugin.VersionUtils.dotted
-import static org.bonitasoft.migration.plugin.VersionUtils.semver
-
 import com.github.zafarkhaja.semver.Version
 import org.bonitasoft.migration.plugin.db.DatabaseResourcesConfigurator
 import org.gradle.api.Project
 import org.gradle.api.tasks.JavaExec
+
+import static groovy.io.FileType.DIRECTORIES
+import static groovy.io.FileType.FILES
+import static org.bonitasoft.migration.plugin.VersionUtils.dotted
+import static org.bonitasoft.migration.plugin.VersionUtils.semver
 
 /**
  * @author Baptiste Mesta.
@@ -35,6 +35,18 @@ class PrepareMigrationTestTask extends JavaExec {
             testValues.put("bonita.home", bonitaHomeToMigrate)
         }
         args getFillersToRun()
+
+        def property = project.property('org.gradle.jvmargs')
+        if (property) {
+            println "Using extra property 'org.gradle.jvmargs=$property'"
+            jvmArgs property.toString().split(" ")
+        }
+        def sysProperty = System.getProperty("org.gradle.jvmargs")
+        if (sysProperty) {
+            println "Using extra property 'org.gradle.jvmargs=$property'"
+            jvmArgs sysProperty.split(" ")
+        }
+
         setSystemProperties testValues
         setDescription "Setup the engine in order to run migration tests on it."
         setMain "org.bonitasoft.migration.filler.FillerRunner"
