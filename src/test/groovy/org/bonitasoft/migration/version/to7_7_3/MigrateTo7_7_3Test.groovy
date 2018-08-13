@@ -34,7 +34,8 @@ class MigrateTo7_7_3Test extends Specification {
 
         where:
         stepName << [
-                "FixJarJarDependencyName"
+                "FixJarJarDependencyName",
+                "ChangeContractInputSerializationOnMysqlToCorrectFormatIfNotDone"
         ]
 
     }

@@ -11,24 +11,22 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
-package org.bonitasoft.migration.version.to7_7_2
+package org.bonitasoft.migration.version.to7_7_4
 
 import org.bonitasoft.migration.core.MigrationStep
 import org.bonitasoft.migration.core.VersionMigration
-import org.bonitasoft.migration.version.to7_3_0.FixJarJarDependencyName
 import org.bonitasoft.migration.version.to7_7_1.ChangeContractInputSerializationOnMysqlToCorrectFormatIfNotDone
 
 /**
  * @author Emmanuel Duchastenier
  */
-class MigrateTo7_7_2 extends VersionMigration {
+class MigrateTo7_7_4 extends VersionMigration {
 
     @Override
     List<MigrationStep> getMigrationSteps() {
         //keep one line per step to avoid false-positive merge conflict
         return [
-                new FixJarJarDependencyName()
-                , new ChangeContractInputSerializationOnMysqlToCorrectFormatIfNotDone()
+                new ChangeContractInputSerializationOnMysqlToCorrectFormatIfNotDone()
         ]
     }
 }
