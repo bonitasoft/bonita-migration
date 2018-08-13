@@ -28,6 +28,7 @@ class MigrateTo7_7_1 extends VersionMigration {
         return [
                 new RenameConnectorDependencyFilename()
                 , new FixJarJarDependencyName()
+                , new ChangeContractInputSerializationOnMysqlToCorrectFormatIfNotDone()
         ]
     }
 }

@@ -33,7 +33,7 @@ class ChangeContractInputSerialization extends MigrationStep {
                 type = "TEXT"
                 break
             case MYSQL:
-                type = "MEDIUMTEXT"
+                type = "LONGTEXT"
                 break
             case SQLSERVER:
                 type = "NVARCHAR(MAX)"
