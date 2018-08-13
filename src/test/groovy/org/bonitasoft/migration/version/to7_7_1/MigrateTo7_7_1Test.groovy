@@ -36,6 +36,7 @@ class MigrateTo7_7_1Test extends Specification {
         stepName << [
                 "RenameConnectorDependencyFilename"
                 , "FixJarJarDependencyName"
+                , "ChangeContractInputSerializationOnMysqlToCorrectFormatIfNotDone"
         ]
 
     }
