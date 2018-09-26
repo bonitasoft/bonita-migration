@@ -14,6 +14,9 @@
 
 package org.bonitasoft.migration
 
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
+
 /**
  * @author Baptiste Mesta
  */
@@ -31,5 +34,27 @@ class CheckerUtils {
         def split = System.getProperty("db.url").split("/")
         def databaseName = split[split.length - 1]
         System.setProperty("db.database.name", databaseName);
+    }
+
+
+    static byte[] createTestPageContent(String pageName, String displayName, String description) throws Exception {
+        ByteArrayOutputStream e = new ByteArrayOutputStream();
+        ZipOutputStream zos = new ZipOutputStream(e);
+        zos.putNextEntry(new ZipEntry("Index.groovy"));
+        zos.write("return \"\";".getBytes());
+        zos.putNextEntry(new ZipEntry("page.properties"));
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("name=");
+        stringBuilder.append(pageName);
+        stringBuilder.append("\n");
+        stringBuilder.append("displayName=");
+        stringBuilder.append(displayName);
+        stringBuilder.append("\n");
+        stringBuilder.append("description=");
+        stringBuilder.append(description);
+        stringBuilder.append("\n");
+        zos.write(stringBuilder.toString().getBytes());
+        zos.closeEntry();
+        return e.toByteArray();
     }
 }
