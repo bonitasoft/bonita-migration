@@ -11,23 +11,26 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
-
 package org.bonitasoft.migration.version.to7_8_0
 
+import org.bonitasoft.migration.core.MigrationContext
 import org.bonitasoft.migration.core.MigrationStep
-import org.bonitasoft.migration.core.VersionMigration
-import org.bonitasoft.migration.version.to7_8_0.ChangeProfileEntryForProcessList
 
-/**
- * @author Anthony Birembaut
- */
-class MigrateTo7_8_0 extends VersionMigration {
+class ChangeProfileEntryForProcessList extends MigrationStep {
+
     @Override
-    def List<MigrationStep> getMigrationSteps() {
-        //keep one line per step to avoid false-positive merge conflict
-        return [
-            new AddHiddenFieldToPages(),
-            new ChangeProfileEntryForProcessList()
-        ]
+    def execute(MigrationContext context) {
+        renamePageValueToUseNewProcessListPage(context)
+    }
+
+    private static renamePageValueToUseNewProcessListPage(MigrationContext context) {
+        def newName = 'custompage_processlistBonita'
+        context.logger.info("Updating processlistinguser => $newName for profileentry")
+        context.databaseHelper.executeUpdate("UPDATE profileentry SET PAGE = '$newName' WHERE PAGE = 'processlistinguser'")
+    }
+
+    @Override
+    String getDescription() {
+        return "Rename profileentry page token for user processlisting"
     }
 }

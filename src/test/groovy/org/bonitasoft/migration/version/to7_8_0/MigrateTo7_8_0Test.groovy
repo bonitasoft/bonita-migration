@@ -1,6 +1,5 @@
 package org.bonitasoft.migration.version.to7_8_0
 
-
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -22,7 +21,8 @@ class MigrateTo7_8_0Test extends Specification {
 
         where:
         stepName << [
-                "AddHiddenFieldToPages"
+                "AddHiddenFieldToPages",
+                "ChangeProfileEntryForProcessList"
         ]
 
     }
