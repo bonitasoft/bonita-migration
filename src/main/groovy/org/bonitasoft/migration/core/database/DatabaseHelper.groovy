@@ -192,6 +192,29 @@ END"""
         }
     }
 
+    String concat(String... argsToConcat){
+        // If called from a GString, calling a toString at the end might be necessary
+        def result
+        if (argsToConcat.size() > 2) {
+            if (dbVendor == ORACLE) {
+                result = argsToConcat.first()
+                for (int i = 1; i in argsToConcat.getIndices(); i++) {
+                    result = result + " || " + argsToConcat[i]
+                }
+                return result
+            } else {
+                result = " concat( " + argsToConcat.first()
+                for (int i = 1; i < argsToConcat.size(); i++) {
+                    result = result + ", " + argsToConcat[i]
+                }
+                result = result + " )"
+                return result
+            }
+        } else {
+            return argsToConcat.first()
+        }
+    }
+
     def renameTable(String table, String newName) {
         switch (dbVendor) {
             case MYSQL:

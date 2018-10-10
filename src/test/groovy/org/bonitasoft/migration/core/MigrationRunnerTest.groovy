@@ -17,6 +17,7 @@ package org.bonitasoft.migration.core
 import groovy.sql.Sql
 import org.bonitasoft.migration.core.database.DatabaseHelper
 import org.bonitasoft.migration.version.to7_5_0.MigrateTo7_5_0
+import org.bonitasoft.migration.version.to7_8_0.MigrateTo7_8_0
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -99,6 +100,22 @@ class MigrationRunnerTest extends Specification {
 
         then:
         1 * displayUtil.printInRectangleWithTitle("Migration to version 7.5.0", [MigrateTo7_5_0.WARN_MESSAGE_JAVA_8] as String[])
+    }
+
+     def "run check blocking pre-requisites before running migration"() {
+        setup:
+        def versionMigration_7_8_0 = Mock(VersionMigration)
+        versionMigration_7_8_0.version >> "7.8.0"
+        versionMigration_7_8_0.getPreMigrationBlockingMessages(migrationContext) >> ["Blocking Message"]
+        versionMigration_7_8_0.getMigrationSteps() >> []
+
+        MigrationRunner migrationRunner = new MigrationRunner(versionMigrations: [versionMigration_7_8_0], context: migrationContext, logger: logger, displayUtil: displayUtil)
+
+        when:
+        migrationRunner.run(false)
+
+        then:
+        1 * displayUtil.printInRectangleWithTitle("Migration to version 7.8.0", ["Blocking Message"] as String[])
     }
 
     def "should gather ALL pre-requisites before asking for confirmation"() {
