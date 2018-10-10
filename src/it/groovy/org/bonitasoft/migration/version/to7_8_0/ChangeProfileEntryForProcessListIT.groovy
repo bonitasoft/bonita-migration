@@ -16,12 +16,18 @@ package org.bonitasoft.migration.version.to7_8_0
 import org.bonitasoft.migration.DBUnitHelper
 import org.bonitasoft.migration.core.Logger
 import org.bonitasoft.migration.core.MigrationContext
+import spock.lang.Shared
 import spock.lang.Specification
 
 class ChangeProfileEntryForProcessListIT extends Specification {
 
+    @Shared
     def logger = new Logger()
+
+    @Shared
     def migrationContext = new MigrationContext(logger: logger)
+
+    @Shared
     def dbUnitHelper = new DBUnitHelper(migrationContext)
 
     def migrationStep = new ChangeProfileEntryForProcessList()

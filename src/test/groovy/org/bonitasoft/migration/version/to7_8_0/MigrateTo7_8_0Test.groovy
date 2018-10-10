@@ -23,6 +23,7 @@ class MigrateTo7_8_0Test extends Specification {
         stepName << [
                 "AddHiddenFieldToPages",
                 "ChangeProfileEntryForProcessList"
+                , "MigrateV6Forms"
         ]
 
     }

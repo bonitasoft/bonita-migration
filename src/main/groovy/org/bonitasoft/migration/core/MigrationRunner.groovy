@@ -34,52 +34,73 @@ class MigrationRunner {
 
     def run(boolean isSp) {
 
-        checkPreRequisites()
+        if (!hasBlockingPrerequisites()) {
+            checkPreWarningRequisites()
 
-        Date migrationStartDate = new Date()
-        String lastVersion
-        def warnings = [:]
-        versionMigrations.each {
-            logger.info "Execute migration to version " + it.getVersion()
-            def bonitaHomeDir = null
-            it.context = context
-            context.setVersion(it.getVersion())
-            if (Version.valueOf(it.getVersion()) < Version.valueOf("7.3.0")) {
-                bonitaHomeDir = it.migrateBonitaHome(isSp)
-            }
-
-            it.getMigrationSteps().each { step ->
-                logger.info "---------------"
-                logger.info "| Execute migration step: " + step.description
-                Date stepStartDate = new Date()
-                step.execute(context)
-                def stepWarningMessage = step.warning
-                if (stepWarningMessage) {
-                    warnings.put("migration to version:${it.version} - step:${step.description}", stepWarningMessage)
+            Date migrationStartDate = new Date()
+            String lastVersion
+            def warnings = [:]
+            versionMigrations.each {
+                logger.info "Execute migration to version " + it.getVersion()
+                def bonitaHomeDir = null
+                it.context = context
+                context.setVersion(it.getVersion())
+                if (Version.valueOf(it.getVersion()) < Version.valueOf("7.3.0")) {
+                    bonitaHomeDir = it.migrateBonitaHome(isSp)
                 }
-                MigrationUtil.printSuccessMigration(stepStartDate, migrationStartDate)
-                logger.info "---------------"
-            }
-            changePlatformVersion(context.sql, it.getVersion())
-            lastVersion = it.getVersion()
 
-            if (bonitaHomeDir) {
-                logger.debug("Removing entire content of bonita-home folder $bonitaHomeDir")
-                bonitaHomeDir.deleteDir()
+                it.getMigrationSteps().each { step ->
+                    logger.info "---------------"
+                    logger.info "| Execute migration step: " + step.description
+                    Date stepStartDate = new Date()
+                    step.execute(context)
+                    def stepWarningMessage = step.warning
+                    if (stepWarningMessage) {
+                        warnings.put("migration to version:${it.version} - step:${step.description}", stepWarningMessage)
+                    }
+                    MigrationUtil.printSuccessMigration(stepStartDate, migrationStartDate)
+                    logger.info "---------------"
+                }
+                changePlatformVersion(context.sql, it.getVersion())
+                lastVersion = it.getVersion()
+
+                if (bonitaHomeDir) {
+                    logger.debug("Removing entire content of bonita-home folder $bonitaHomeDir")
+                    bonitaHomeDir.deleteDir()
+                }
             }
-        }
-        logSuccessfullyCompleted(migrationStartDate, lastVersion)
-        if (warnings) {
-            println "[WARNING] However, some warnings require your attention:"
-            warnings.each { line ->
-                displayUtil.printInRectangleWithTitle(line.key, line.value.split("\n"))
+            logSuccessfullyCompleted(migrationStartDate, lastVersion)
+            if (warnings) {
+                println "[WARNING] However, some warnings require your attention:"
+                warnings.each { line ->
+                    displayUtil.printInRectangleWithTitle(line.key, line.value.split("\n"))
+                }
             }
         }
     }
 
-    private void checkPreRequisites() {
-        checkOverrideValidity()
+    private boolean hasBlockingPrerequisites() {
 
+        Map<String, String[]> beforeMigrationBlocks = [:]
+        versionMigrations.each {
+            VersionMigration versionMigration ->
+                String[] preVersionBlockings = versionMigration.getPreMigrationBlockingMessages(context)
+                if (preVersionBlockings) {
+                    beforeMigrationBlocks.put("Migration to version ${versionMigration.getVersion()}", preVersionBlockings)
+                }
+        }
+        if (beforeMigrationBlocks) {
+            println "[SEVERE] Some migration steps cannot complete :"
+            beforeMigrationBlocks.each { warning ->
+                displayUtil.printInRectangleWithTitle(warning.key, warning.value)
+            }
+            return true
+        }
+        return false
+    }
+
+    private void checkPreWarningRequisites() {
+        checkOverrideValidity()
         Map<String, String[]> beforeMigrationWarnings = [:]
         versionMigrations.each {
             // Warn before running ANY migration step if there are pre-migration warnings:

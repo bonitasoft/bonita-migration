@@ -24,8 +24,7 @@ class AddHiddenFieldToPagesIT extends Specification {
 
     def setup() {
         dropTestTables()
-        dbUnitHelper.createTables("7_8_0")
-
+        dbUnitHelper.createTables("7_8_0/pages_and_forms")
     }
 
     def cleanup() {
@@ -33,7 +32,7 @@ class AddHiddenFieldToPagesIT extends Specification {
     }
 
     private String[] dropTestTables() {
-        dbUnitHelper.dropTables(["page"] as String[])
+        dbUnitHelper.dropTables(["page", "form_mapping", "page_mapping", "process_definition", "process_instance", "bar_resource"] as String[])
     }
 
     def "should add a hidden field defaulting to false"() {

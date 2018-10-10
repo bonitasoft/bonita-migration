@@ -26,6 +26,8 @@ abstract class VersionMigration {
 
     String[] getPreMigrationWarnings() { [] }
 
+    String[] getPreMigrationBlockingMessages(MigrationContext context) { [] }
+
     def migrateBonitaHome(boolean isSp) {
         def dir = File.createTempDir()
 
