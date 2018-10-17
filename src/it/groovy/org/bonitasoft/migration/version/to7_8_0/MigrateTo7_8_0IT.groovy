@@ -13,7 +13,6 @@ import static org.bonitasoft.migration.version.to7_8_0.MigrateTo7_8_0.V6_FORMS_I
  */
 class MigrateTo7_8_0IT extends Specification {
 
-
     @Shared
     Logger logger = new Logger()
 

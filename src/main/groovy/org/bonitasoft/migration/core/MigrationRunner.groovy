@@ -104,7 +104,7 @@ class MigrationRunner {
         Map<String, String[]> beforeMigrationWarnings = [:]
         versionMigrations.each {
             // Warn before running ANY migration step if there are pre-migration warnings:
-            String[] preVersionWarnings = it.getPreMigrationWarnings()
+            String[] preVersionWarnings = it.getPreMigrationWarnings(context)
             if (preVersionWarnings) {
                 beforeMigrationWarnings.put("Migration to version ${it.getVersion()}", preVersionWarnings)
             }

@@ -13,6 +13,7 @@
  */
 package org.bonitasoft.migration.version.to7_5_0
 
+import org.bonitasoft.migration.core.MigrationContext
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -48,9 +49,10 @@ class MigrateTo7_5_0Test extends Specification {
     def "should 7.5.0 preStepWarning warn about Java 1.8"() {
         setup:
         def migrateTo750 = new MigrateTo7_5_0()
+        def context = Mock(MigrationContext)
 
         when:
-        def warnings = migrateTo750.preMigrationWarnings
+        def warnings = migrateTo750.getPreMigrationWarnings(context)
 
         then:
         warnings.size() == 1
