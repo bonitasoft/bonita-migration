@@ -17,11 +17,8 @@ package org.bonitasoft.migration.core
 import groovy.sql.Sql
 import org.bonitasoft.migration.core.database.DatabaseHelper
 import org.bonitasoft.migration.version.to7_5_0.MigrateTo7_5_0
-import org.bonitasoft.migration.version.to7_8_0.MigrateTo7_8_0
 import spock.lang.Specification
 import spock.lang.Unroll
-
-
 /**
  * @author Baptiste Mesta
  */
@@ -40,7 +37,6 @@ class MigrationRunnerTest extends Specification {
 
     def setup() {
         versionMigration.getMigrationSteps() >> migrationStepList
-        versionMigration.getPreMigrationWarnings() >> []
         migrationContext.sql = sql
         migrationContext.databaseHelper = databaseHelper
         migrationRunner = new MigrationRunner(versionMigrations: [versionMigration], context: migrationContext, logger: logger, displayUtil: displayUtil)
@@ -87,7 +83,7 @@ class MigrationRunnerTest extends Specification {
         setup:
         def versionMigration_7_5_0 = Mock(VersionMigration)
         versionMigration_7_5_0.version >> "7.5.0"
-        versionMigration_7_5_0.getPreMigrationWarnings() >> [MigrateTo7_5_0.WARN_MESSAGE_JAVA_8]
+        versionMigration_7_5_0.getPreMigrationWarnings(migrationContext) >> [MigrateTo7_5_0.WARN_MESSAGE_JAVA_8]
         versionMigration_7_5_0.getMigrationSteps() >> []
 
         // so that we don't get asked for confirmation:
@@ -122,11 +118,11 @@ class MigrationRunnerTest extends Specification {
         setup:
         def versionMigration_7_4_9 = Mock(VersionMigration)
         versionMigration_7_4_9.version >> "7.4.9"
-        versionMigration_7_4_9.getPreMigrationWarnings() >> ["Warning 7.4.9"]
+        versionMigration_7_4_9.getPreMigrationWarnings(migrationContext) >> ["Warning 7.4.9"]
         versionMigration_7_4_9.getMigrationSteps() >> []
         def versionMigration_7_5_0 = Mock(VersionMigration)
         versionMigration_7_5_0.version >> "7.5.0"
-        versionMigration_7_5_0.getPreMigrationWarnings() >> ["Warning 7.5.0"]
+        versionMigration_7_5_0.getPreMigrationWarnings(migrationContext) >> ["Warning 7.5.0"]
         versionMigration_7_5_0.getMigrationSteps() >> []
 
         // so that we don't get asked for confirmation:

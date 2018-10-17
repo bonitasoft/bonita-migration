@@ -13,6 +13,7 @@
  **/
 package org.bonitasoft.migration.version.to7_5_0
 
+import org.bonitasoft.migration.core.MigrationContext
 import org.bonitasoft.migration.core.MigrationStep
 import org.bonitasoft.migration.core.VersionMigration
 import org.bonitasoft.migration.version.to7_3_0.FixJarJarDependencyName
@@ -47,7 +48,7 @@ If your JRE or JDK is older than 1.8, you need to update your target environment
     }
 
     @Override
-    String[] getPreMigrationWarnings() {
+    String[] getPreMigrationWarnings(MigrationContext context) {
         [WARN_MESSAGE_JAVA_8]
     }
 }

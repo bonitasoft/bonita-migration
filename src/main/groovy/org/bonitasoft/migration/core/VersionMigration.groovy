@@ -24,7 +24,7 @@ abstract class VersionMigration {
 
     abstract List<MigrationStep> getMigrationSteps()
 
-    String[] getPreMigrationWarnings() { [] }
+    String[] getPreMigrationWarnings(MigrationContext context) { [] }
 
     String[] getPreMigrationBlockingMessages(MigrationContext context) { [] }
 
