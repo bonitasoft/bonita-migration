@@ -34,7 +34,7 @@ class MigrateTo7_8_0 extends VersionMigration {
              "To continue running these processes in Bonita 7.8 and more, forms must be replaced by forms using the UI Designer and the new contract mechanism,",
              "in a Studio version prior to 7.8.",
              "To know more, check the (documentation) (link: https://documentation.bonitasoft.com/bonita/7.8/migrate-a-form-from-6-x).",
-             "The latest Bonita version to support 6.x forms and overview pages is Bonita 7.7.x, supported until June 2020.",
+             "The latest Bonita version to support 6.x forms and overview pages is Bonita 7.7.x.",
              "If you have any questions, contact the Bonita Support Team. The problematic V6 forms are:"]
 
 
@@ -74,7 +74,7 @@ AND p.tenantid = f.page_mapping_tenant_id
         if (v6forms.size() != 0) {
             blockingMessage.addAll(V6_FORMS_IN_ACTIVE_INSTANCES_OR_ENABLED_PROCESSES_PRESENT_MESSAGE)
             for (GroovyRowResult v6form in v6forms) {
-                blockingMessage.add(normalizeNamed(v6form[0] as String))
+                blockingMessage.add('* ' + normalizeNamed(v6form[0] as String))
             }
         }
 

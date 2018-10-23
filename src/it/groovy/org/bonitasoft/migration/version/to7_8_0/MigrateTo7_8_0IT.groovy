@@ -62,9 +62,9 @@ VALUES(1, 3, 4837119744348201769, 'MessageReceiverProcess_733', '1.0', '', 15384
         def blockingMessages = v7_8_0.getPreMigrationBlockingMessages(migrationContext)
 
         then:
-        !blockingMessages.contains("process/")
-        !blockingMessages.contains("taskInstance/")
-        blockingMessages.contains("MessageReceiverProcess_733/1.0 (Instantiation form)")
+        !blockingMessages.contains("* process/")
+        !blockingMessages.contains("* taskInstance/")
+        blockingMessages.contains("* MessageReceiverProcess_733/1.0 (Instantiation form)")
         verifyGeneralErrorMessage(blockingMessages)
     }
 
@@ -94,9 +94,9 @@ VALUES(1, 3, 4837119744348201769, 'MessageReceiverProcess_733', '1.0', '', 15384
         def blockingMessages = v7_8_0.getPreMigrationBlockingMessages(migrationContext)
 
         then:
-        !blockingMessages.contains("process/")
-        !blockingMessages.contains("taskInstance/")
-        blockingMessages.contains("MessageReceiverProcess_733/1.0/MessageReceivedAckTask (Task form)")
+        !blockingMessages.contains("* process/")
+        !blockingMessages.contains("* taskInstance/")
+        blockingMessages.contains("* MessageReceiverProcess_733/1.0/MessageReceivedAckTask (Task form)")
         verifyGeneralErrorMessage(blockingMessages)
     }
 
@@ -190,9 +190,9 @@ VALUES(1, 3, 4837119744348201769, 'MessageReceiverProcess_733', '1.0', '', 15384
         def blockingMessages = v7_8_0.getPreMigrationBlockingMessages(migrationContext)
 
         then:
-        !blockingMessages.contains("process/")
-        !blockingMessages.contains("taskInstance/")
-        blockingMessages.findAll { it == "MessageReceiverProcess_733/1.0 (Instantiation form)" }.size() == 1
+        !blockingMessages.contains("* process/")
+        !blockingMessages.contains("* taskInstance/")
+        blockingMessages.findAll { it == "* MessageReceiverProcess_733/1.0 (Instantiation form)" }.size() == 1
         verifyGeneralErrorMessage(blockingMessages)
     }
 
@@ -248,10 +248,10 @@ VALUES(1, 3, 4837119744348201769, 'MessageReceiverProcess_733', '1.0', '', 15384
         def blockingMessages = v7_8_0.getPreMigrationBlockingMessages(migrationContext)
 
         then:
-        !blockingMessages.contains("process/")
-        !blockingMessages.contains("taskInstance/")
-        blockingMessages.findAll { it == "MessageReceiverProcess_733/1.0 (Instantiation form)" }.size() == 1
-        blockingMessages.findAll { it == "MessageReceiverProcess_733/1.0/Step1 (Task form)" }.size() == 1
+        !blockingMessages.contains("* process/")
+        !blockingMessages.contains("* taskInstance/")
+        blockingMessages.findAll { it == "* MessageReceiverProcess_733/1.0 (Instantiation form)" }.size() == 1
+        blockingMessages.findAll { it == "* MessageReceiverProcess_733/1.0/Step1 (Task form)" }.size() == 1
         verifyGeneralErrorMessage(blockingMessages)
     }
 
