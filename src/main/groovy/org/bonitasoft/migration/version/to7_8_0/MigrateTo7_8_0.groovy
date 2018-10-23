@@ -33,7 +33,7 @@ class MigrateTo7_8_0 extends VersionMigration {
              "Migration cannot be performed.",
              "To continue running these processes in Bonita 7.8 and more, forms must be replaced by forms using the UI Designer and the new contract mechanism,",
              "in a Studio version prior to 7.8.",
-             "To know more, check the (documentation) (link: https://documentation.bonitasoft.com/bonita/7.8/migrate-a-form-from-6-x).",
+             "To know more, check the documentation (https://www.bonitasoft.com/bos_redirect.php?bos_redirect_id=681&bos_redirect_product=bos&bos_redirect_major_version=7.8).",
              "The latest Bonita version to support 6.x forms and overview pages is Bonita 7.7.x.",
              "If you have any questions, contact the Bonita Support Team. The problematic V6 forms are:"]
 
