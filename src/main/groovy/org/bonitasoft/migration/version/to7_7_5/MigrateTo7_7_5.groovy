@@ -23,7 +23,8 @@ class MigrateTo7_7_5 extends VersionMigration {
     @Override
     List<MigrationStep> getMigrationSteps() {
         return [
-                new WarnAboutNoEventWhenDeletingArchive()
+                new WarnAboutNoEventWhenDeletingArchive(),
+                new DeleteOrphanArchContractData()
         ]
     }
 }

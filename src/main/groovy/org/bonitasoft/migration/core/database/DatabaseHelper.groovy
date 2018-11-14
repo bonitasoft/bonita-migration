@@ -662,12 +662,17 @@ END"""
      * @param scriptName
      */
     def executeScript(String folderName, String scriptName) {
-        def statements = getScriptContent(getVersionFolder() + "/$folderName", scriptName).split("@@|GO|;")
+        executeScript(version, folderName, scriptName)
+    }
+
+    def executeScript(String version, String folderName, String scriptName) {
+        def statements = getScriptContent(getVersionFolder(version) + "/$folderName", scriptName).split("@@|GO|;")
         statements.each {
             def trimmed = it.trim()
             if (trimmed != null && !trimmed.empty) {
                 println "execute statement:\n${trimmed}"
-                sql.execute(trimmed)
+                def count = sql.executeUpdate(trimmed)
+                println "updated $count rows"
             }
         }
     }
@@ -683,7 +688,7 @@ END"""
         scriptContent
     }
 
-    private GString getVersionFolder() {
+    private GString getVersionFolder(String version) {
         def versionFolder = "/version/to_${version.replace('.', '_')}"
         versionFolder
     }
