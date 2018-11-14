@@ -51,6 +51,9 @@ class TestMigrationTask extends Test {
         classpath = project.files(project.sourceSets.enginetest.runtimeClasspath,
                 project.getConfigurations().getByName(underscored(bonitaVersion)),
                 project.getConfigurations().getByName("drivers"))
+        //add as input the database configuration, tests must  be relaunched when database configuration change
+        inputs.property("dbvendor", project.extensions.database.dbvendor)
+        inputs.property("dburl", project.extensions.database.dburl)
 
         if (Version.valueOf(bonitaVersion) < Version.valueOf("7.2.0")) {
             include "**/*Before7_2_0DefaultTest*"
