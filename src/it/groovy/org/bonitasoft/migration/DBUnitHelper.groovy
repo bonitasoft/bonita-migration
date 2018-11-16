@@ -16,6 +16,9 @@
  */
 package org.bonitasoft.migration
 
+import java.sql.DriverManager
+import java.sql.SQLException
+
 import groovy.xml.StreamingMarkupBuilder
 import org.bonitasoft.migration.core.Logger
 import org.bonitasoft.migration.core.MigrationContext
@@ -27,15 +30,18 @@ import org.dbunit.dataset.ReplacementDataSet
 import org.dbunit.dataset.xml.FlatXmlDataSet
 import org.dbunit.ext.oracle.OracleConnection
 
-import java.sql.DriverManager
-import java.sql.SQLException
-
 /**
  * @author Baptiste Mesta
  */
 class DBUnitHelper {
 
-    private MigrationContext context
+    private static final INSTANCE = new DBUnitHelper(new MigrationContext(logger: new Logger()))
+
+    static DBUnitHelper getInstance() {
+        return INSTANCE
+    }
+
+    MigrationContext context
     private Logger logger
 
     DBUnitHelper(MigrationContext context) {
@@ -85,12 +91,12 @@ class DBUnitHelper {
 
     String[] createTables(String folder, String feature) {
         logger.info("Create tables from sql file in $folder with suffix $feature")
-        executeScript(DBUnitHelper.class.getClassLoader().getResource("sql/v${folder}/${context.dbVendor.name().toLowerCase()}-${feature}.sql"))
+        executeScript(INSTANCE.class.getClassLoader().getResource("sql/v${folder}/${context.dbVendor.name().toLowerCase()}-${feature}.sql"))
     }
 
     String[] createTables(String folder) {
         logger.info("Create tables from sql file in $folder")
-        executeScript(DBUnitHelper.class.getClassLoader().getResource("sql/v${folder}/${context.dbVendor.name().toLowerCase()}.sql"))
+        executeScript(INSTANCE.class.getClassLoader().getResource("sql/v${folder}/${context.dbVendor.name().toLowerCase()}.sql"))
     }
 
     boolean hasTable(String tableName) {

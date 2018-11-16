@@ -25,14 +25,11 @@ import spock.lang.Specification
 class FixProcessPermissionRuleScriptIT extends Specification {
 
     public static final List<String> tables = ["configuration", "tenant"]
-    @Shared
-    Logger logger = Mock(Logger)
 
     @Shared
-    MigrationContext migrationContext = new MigrationContext(logger: logger)
-
+    DBUnitHelper dbUnitHelper = DBUnitHelper.getInstance()
     @Shared
-    DBUnitHelper dbUnitHelper = new DBUnitHelper(migrationContext)
+    MigrationContext migrationContext = dbUnitHelper.context
 
     def setup() {
         dropTestTables()

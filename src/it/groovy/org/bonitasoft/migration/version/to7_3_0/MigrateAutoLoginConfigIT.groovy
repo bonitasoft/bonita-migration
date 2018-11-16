@@ -33,14 +33,11 @@ class MigrateAutoLoginConfigIT extends Specification {
     public static final long PROCESS_2 = 4756258087450718363L
     public static final long PROCESS_3 = 9656258087450718363L
     public static final long PROCESS_4 = 1648258087450718363L
-    @Shared
-    Logger logger = Mock(Logger)
 
     @Shared
-    MigrationContext migrationContext = new MigrationContext(logger: logger)
-
+    DBUnitHelper dbUnitHelper = DBUnitHelper.getInstance()
     @Shared
-    DBUnitHelper dbUnitHelper = new DBUnitHelper(migrationContext)
+    MigrationContext migrationContext = dbUnitHelper.context
 
     def setup() {
         migrationContext.setVersion("7.3.0")

@@ -27,18 +27,14 @@ class DatabaseHelperIT extends Specification {
     private static final TABLE_NAME = 'table_origin'
 
     @Shared
-    Logger logger = new Logger()
-
+    DBUnitHelper dbUnitHelper = DBUnitHelper.getInstance()
     @Shared
-    MigrationContext migrationContext = new MigrationContext(logger: logger)
-
-    @Shared
-    DBUnitHelper dbUnitHelper = new DBUnitHelper(migrationContext)
+    MigrationContext migrationContext = dbUnitHelper.context
 
     def setup() {
         dropTestTables()
         String folder = 'core/column_default_value'
-        logger.info("Create tables from sql file in $folder")
+        migrationContext.logger.info("Create tables from sql file in $folder")
         dbUnitHelper.executeScript(DBUnitHelper.class.getClassLoader().getResource("sql/$folder/${migrationContext.dbVendor.name().toLowerCase()}.sql"))
     }
 

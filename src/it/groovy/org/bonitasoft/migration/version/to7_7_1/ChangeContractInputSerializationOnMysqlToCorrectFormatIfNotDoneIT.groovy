@@ -15,13 +15,9 @@ import spock.lang.Specification
 class ChangeContractInputSerializationOnMysqlToCorrectFormatIfNotDoneIT extends Specification {
 
     @Shared
-    Logger logger = new Logger()
-
+    DBUnitHelper dbUnitHelper = DBUnitHelper.getInstance()
     @Shared
-    MigrationContext migrationContext = new MigrationContext(logger: logger)
-
-    @Shared
-    DBUnitHelper dbUnitHelper = new DBUnitHelper(migrationContext)
+    MigrationContext migrationContext = dbUnitHelper.context
 
     ChangeContractInputSerializationOnMysqlToCorrectFormatIfNotDone migrationStep = Spy(ChangeContractInputSerializationOnMysqlToCorrectFormatIfNotDone)
 

@@ -16,14 +16,17 @@ package org.bonitasoft.migration.core
 
 import com.github.zafarkhaja.semver.Version
 import groovy.sql.Sql
+import org.apache.commons.dbcp2.BasicDataSource
 import org.bonitasoft.migration.core.database.ConfigurationHelper
 import org.bonitasoft.migration.core.database.DatabaseHelper
+
+import javax.sql.DataSource
+import java.util.concurrent.*
 
 /**
  * @author Baptiste Mesta
  */
 class MigrationContext {
-
     static {
         String.metaClass.toVersion = {
             Version.valueOf(delegate)
@@ -31,6 +34,7 @@ class MigrationContext {
     }
 
     public final static String TARGET_VERSION = "target.version"
+
     public final static String BONITA_HOME = "bonita.home"
     public final static String DB_URL = "db.url"
     public final static String DB_USER = "db.user"
@@ -38,11 +42,12 @@ class MigrationContext {
     public final static String DB_DRIVERCLASS = "db.driverClass"
     public final static String DB_VENDOR = "db.vendor"
     public final static String LOGGER_LEVEL = "logger.level"
+    MigrationStep.DBVendor dbVendor
 
-    def MigrationStep.DBVendor dbVendor
-    def Sql sql
-    def File bonitaHome
-    def String dburl
+    ThreadLocal<Sql> sql
+    DataSource dataSource
+    File bonitaHome
+    String dburl
     String dbDriverClassName
     String dbUser
     String dbPassword
@@ -51,22 +56,23 @@ class MigrationContext {
     Logger logger
     DatabaseHelper databaseHelper
     ConfigurationHelper configurationHelper
+    ExecutorService executorService
 
 
-    public MigrationContext() {
+    MigrationContext() {
     }
 
     /**
      * Load properties form the 'Config.properties' file inside the distribution
      * @return the properties of the migration distribution
      */
-    public void loadProperties() {
-        Properties properties = new Properties();
+    void loadProperties() {
+        Properties properties = new Properties()
         def configFile = new File("../Config.properties")
         try {
             new FileInputStream(configFile).withStream {
                 logger.info "Using file " + configFile.absolutePath
-                properties.load(it);
+                properties.load(it)
             }
         } catch (IOException ignored) {
             logger.warn "Failed to load $configFile.absolutePath"
@@ -115,23 +121,52 @@ class MigrationContext {
     }
 
     def openSqlConnection() {
-        sql = MigrationUtil.getSqlConnection(dburl, dbUser, dbPassword, dbDriverClassName)
-        autoCommitOn(sql.connection)
-        databaseHelper = new DatabaseHelper(dbVendor: dbVendor, sql: sql, logger: logger)
-        configurationHelper=new ConfigurationHelper(sql:sql,logger:logger,databaseHelper: databaseHelper)
+        executorService = Executors.newFixedThreadPool(10)
+        setupDataSource()
+        sql = ThreadLocal.<Sql> withInitial({ new Sql(dataSource) })
+
+        databaseHelper = new DatabaseHelper(dbVendor: dbVendor, sql: getSql(), logger: logger)
+        configurationHelper = new ConfigurationHelper(sql: getSql(), logger: logger, databaseHelper: databaseHelper)
     }
 
-    @groovy.transform.CompileStatic
-    void autoCommitOn(java.sql.Connection conn) {
-        conn.setAutoCommit(true)
+    private setupDataSource() {
+        def dataSource = new BasicDataSource()
+        dataSource.defaultAutoCommit = true
+        dataSource.setDriverClassName(dbDriverClassName)
+        dataSource.setUrl(dburl)
+        dataSource.setUsername(dbUser)
+        dataSource.setPassword(dbPassword)
+        dataSource.setInitialSize(3)
+        dataSource.setMaxTotal(10)
+        this.dataSource = dataSource
+    }
+
+    def getSql() {
+        def get = sql.get()
+        try {
+            if (dbVendor.equals(MigrationStep.DBVendor.ORACLE)) {
+                get.execute("SELECT 1 FROM dual")
+            } else {
+                get.execute("SELECT 1")
+            }
+        } catch (Throwable throwable) {
+            sql.remove()
+        }
+        sql.get()
     }
 
     def closeSqlConnection() {
-        sql.close()
         sql = null
+        ((BasicDataSource) dataSource).close()
+        executorService.shutdown()
+        executorService.awaitTermination(2, TimeUnit.MINUTES)
     }
 
     def setVersion(String version) {
         databaseHelper.setVersion(version)
+    }
+
+    def <T> Future<T> asyncExec(Callable<T> callable) {
+        executorService.submit(callable)
     }
 }
