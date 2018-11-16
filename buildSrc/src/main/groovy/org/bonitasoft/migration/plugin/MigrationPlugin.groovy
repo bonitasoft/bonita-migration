@@ -14,12 +14,6 @@
 
 package org.bonitasoft.migration.plugin
 
-import static org.bonitasoft.migration.plugin.PropertiesUtils.loadProperties
-import static org.bonitasoft.migration.plugin.VersionUtils.getVersion
-import static org.bonitasoft.migration.plugin.VersionUtils.getVersionBefore
-import static org.bonitasoft.migration.plugin.VersionUtils.getVersionList
-import static org.bonitasoft.migration.plugin.VersionUtils.underscored
-
 import com.github.zafarkhaja.semver.Version
 import org.bonitasoft.migration.plugin.db.CleanDbTask
 import org.bonitasoft.migration.plugin.db.DatabasePluginExtension
@@ -28,11 +22,13 @@ import org.bonitasoft.migration.plugin.db.JdbcDriverDependencies
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.UnknownTaskException
 import org.gradle.api.artifacts.Configuration
-import org.gradle.api.artifacts.DependencySet
 import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.testing.Test
 
+import static org.bonitasoft.migration.plugin.PropertiesUtils.loadProperties
+import static org.bonitasoft.migration.plugin.VersionUtils.*
 /**
  * @author Baptiste Mesta
  */
@@ -54,6 +50,7 @@ class MigrationPlugin implements Plugin<Project> {
 
         project.configurations {
             drivers
+            xarecovery
         }
 
         defineJdbcDriversConfiguration(project)
@@ -67,6 +64,12 @@ class MigrationPlugin implements Plugin<Project> {
             createIntegrationTestTasks(project)
 
             DatabaseResourcesConfigurator.finalizeTasksDependenciesOnDatabaseResources(project)
+        }
+    }
+
+    def defineXaRecoveryConfiguration(Project project) {
+        project.dependencies {
+            xarecovery 'com.bonitasoft.tools.sqlserver:sqlserver-xa-recovery:1.0.1@jar'
         }
     }
 
@@ -145,7 +148,20 @@ class MigrationPlugin implements Plugin<Project> {
         prepareTestTask.configureBonita(project, underscored(previousVersion),
                 underscored(targetVersion),
                 isSP)
-        prepareTestTask.dependsOn cleandb
+        DatabasePluginExtension properties = project.extensions.getByType(DatabasePluginExtension.class)
+        if (properties.dbvendor == 'sqlserver') {
+            defineXaRecoveryConfiguration(project)
+            def xaRecoveryTask
+            try {
+                xaRecoveryTask = project.tasks.getByName('xarecovery') // create it only once
+            } catch (UnknownTaskException ignored) {
+                xaRecoveryTask = project.tasks.create(name: "xarecovery", type: RunMsSqlserverXARecoveryTask)
+            }
+            prepareTestTask.dependsOn xaRecoveryTask
+            xaRecoveryTask.dependsOn cleandb
+        } else {
+            prepareTestTask.dependsOn cleandb
+        }
         if (Version.valueOf(previousVersion) < Version.valueOf("7.3.0")) {
             def unpackBonitaHome = project.task("unpackBonitaHomeFor_" + targetVersion, type: Copy) {
                 from {
@@ -188,6 +204,7 @@ class MigrationPlugin implements Plugin<Project> {
     def createDependencyWithoutGroovy(Project project, String name) {
         project.dependencies.create(name){
             exclude module: "groovy-all"
+            exclude module: "sqlserver"
         }
     }
 

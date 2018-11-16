@@ -24,13 +24,43 @@ WHERE login_name = '@sqlserver.connection.username@'
 EXEC(@kill_all);
 GO
 
+revoke execute on sp_sqljdbc_xa_install to [SqlJDBCXAUser]
+GO
+revoke execute on xp_sqljdbc_xa_init to [SqlJDBCXAUser]
+GO
+revoke execute on xp_sqljdbc_xa_start to [SqlJDBCXAUser]
+GO
+revoke execute on xp_sqljdbc_xa_end to [SqlJDBCXAUser]
+GO
+revoke execute on xp_sqljdbc_xa_prepare to [SqlJDBCXAUser]
+GO
+revoke execute on xp_sqljdbc_xa_commit to [SqlJDBCXAUser]
+GO
+revoke execute on xp_sqljdbc_xa_rollback to [SqlJDBCXAUser]
+GO
+revoke execute on xp_sqljdbc_xa_recover to [SqlJDBCXAUser]
+GO
+revoke execute on xp_sqljdbc_xa_forget to [SqlJDBCXAUser]
+GO
+revoke execute on xp_sqljdbc_xa_rollback_ex to [SqlJDBCXAUser]
+GO
+revoke execute on xp_sqljdbc_xa_forget_ex to [SqlJDBCXAUser]
+GO
+revoke execute on xp_sqljdbc_xa_prepare_ex to [SqlJDBCXAUser]
+GO
+revoke execute on xp_sqljdbc_xa_init_ex to [SqlJDBCXAUser]
+GO
+EXEC sp_droprolemember 'SqlJDBCXAUser', '@sqlserver.connection.username@'
+GO
+--    EXEC sp_sqljdbc_xa_uninstall
+--GO
 
 -- Drop user in the master database (used for xa) if exists
 -- There should not be any sessions associated to this user as it uses the login (we previously removed it and all its associated running sessions)
-IF EXISTS (SELECT name FROM sys.database_principals WHERE name = '@sqlserver.connection.username@')
-BEGIN
-  DROP USER @sqlserver.connection.username@;
-END
+--IF EXISTS (SELECT name FROM sys.database_principals WHERE name = '@sqlserver.connection.username@')
+--BEGIN
+    DROP USER @sqlserver.connection.username@;
+--END
 GO
 
 

@@ -14,12 +14,12 @@ class DatabaseResourcesConfigurator {
         String dbVendor = System.getProperty("db.vendor", "postgres")
         DatabasePluginExtension extension = project.extensions.getByType(DatabasePluginExtension.class)
         extension.dbvendor = dbVendor
-        if (shouldUseDockerDb(dbVendor)) {
-            DockerDatabaseContainerTasksCreator.createTaks(project)
+        if (shouldUseDockerDb()) {
+            DockerDatabaseContainerTasksCreator.createTasks(project)
             extension.isDockerDb = true
         }
-        // for docker database containers that have no xa transaction support like sqlserver, rely on an external database
         else {
+            // for docker database containers that have no xa transaction support like ancient versions of sqlserver, rely on an external database:
             project.logger.quiet 'Not using docker database, set the database properties using system properties'
             extension.dburl = System.getProperty(SYS_PROP_DB_URL, "jdbc:sqlserver://sqlserver2.rd.lan:1533;database=mig_ci")
             extension.dbuser = System.getProperty("db.user", "mig_ci")
@@ -39,8 +39,8 @@ class DatabaseResourcesConfigurator {
         }
     }
 
-    private static boolean shouldUseDockerDb(String dbVendor) {
-        DockerDatabaseContainerTasksCreator.supportedVendors().contains(dbVendor) && System.getProperty(SYS_PROP_DB_URL) == null
+    private static boolean shouldUseDockerDb() {
+        System.getProperty(SYS_PROP_DB_URL) == null
     }
 
     def static finalizeTasksDependenciesOnDatabaseResources(Project project) {

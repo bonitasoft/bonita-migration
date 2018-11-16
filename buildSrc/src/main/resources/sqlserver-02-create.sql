@@ -46,12 +46,46 @@ USE master;
 GO
 
 -- Create user if not exists
-IF NOT EXISTS (SELECT name FROM sys.database_principals WHERE name = '@sqlserver.connection.username@')
-BEGIN
-  CREATE USER @sqlserver.connection.username@ FOR LOGIN @sqlserver.connection.username@;
-END
+--IF NOT EXISTS (SELECT name FROM sys.database_principals WHERE name = '@sqlserver.connection.username@')
+--BEGIN
+    CREATE USER @sqlserver.connection.username@ FOR LOGIN @sqlserver.connection.username@;
 GO
 
--- Grant XA permissions
-EXEC sp_addrolemember [SqlJDBCXAUser], '@sqlserver.connection.username@';
+--    EXEC sp_sqljdbc_xa_install
+--GO
+
+    -- Grant privileges to [SqlJDBCXAUser] role to the extended stored procedures.
+    grant execute on sp_sqljdbc_xa_install to [SqlJDBCXAUser]
+GO
+
+    grant execute on xp_sqljdbc_xa_init to [SqlJDBCXAUser]
+GO
+    grant execute on xp_sqljdbc_xa_start to [SqlJDBCXAUser]
+GO
+    grant execute on xp_sqljdbc_xa_end to [SqlJDBCXAUser]
+GO
+    grant execute on xp_sqljdbc_xa_prepare to [SqlJDBCXAUser]
+GO
+    grant execute on xp_sqljdbc_xa_commit to [SqlJDBCXAUser]
+GO
+    grant execute on xp_sqljdbc_xa_rollback to [SqlJDBCXAUser]
+GO
+    grant execute on xp_sqljdbc_xa_recover to [SqlJDBCXAUser]
+GO
+    grant execute on xp_sqljdbc_xa_forget to [SqlJDBCXAUser]
+GO
+    grant execute on xp_sqljdbc_xa_rollback_ex to [SqlJDBCXAUser]
+GO
+    grant execute on xp_sqljdbc_xa_forget_ex to [SqlJDBCXAUser]
+GO
+    grant execute on xp_sqljdbc_xa_prepare_ex to [SqlJDBCXAUser]
+GO
+    grant execute on xp_sqljdbc_xa_init_ex to [SqlJDBCXAUser]
+GO
+
+    -- Grant XA permissions
+    -- Add users to the user [SqlJDBCXAUser] role as needed.
+    EXEC sp_addrolemember [SqlJDBCXAUser], '@sqlserver.connection.username@'
+
+--END
 GO
