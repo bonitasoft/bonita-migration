@@ -44,6 +44,7 @@ class MigrationRunner {
                 logger.info "Execute migration to version " + it.getVersion()
                 def bonitaHomeDir = null
                 it.context = context
+                it.logger = logger
                 context.setVersion(it.getVersion())
                 if (Version.valueOf(it.getVersion()) < Version.valueOf("7.3.0")) {
                     bonitaHomeDir = it.migrateBonitaHome(isSp)
@@ -71,7 +72,7 @@ class MigrationRunner {
             }
             logSuccessfullyCompleted(migrationStartDate, lastVersion)
             if (warnings) {
-                println "[WARNING] However, some warnings require your attention:"
+                logger.warn " However, some warnings require your attention:"
                 warnings.each { line ->
                     displayUtil.printInRectangleWithTitle(line.key, line.value.split("\n"))
                 }
@@ -90,7 +91,7 @@ class MigrationRunner {
                 }
         }
         if (beforeMigrationBlocks) {
-            println "[SEVERE] Some migration steps cannot complete :"
+            logger.info "[SEVERE] Some migration steps cannot complete :"
             beforeMigrationBlocks.each { warning ->
                 displayUtil.printInRectangleWithTitle(warning.key, warning.value)
             }
@@ -110,7 +111,7 @@ class MigrationRunner {
             }
         }
         if (beforeMigrationWarnings) {
-            println "[WARNING] Some migration steps have important pre-requisites:"
+            logger.warn "Some migration steps have important pre-requisites:"
             beforeMigrationWarnings.each { warning ->
                 displayUtil.printInRectangleWithTitle(warning.key, warning.value)
             }

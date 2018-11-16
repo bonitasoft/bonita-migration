@@ -328,7 +328,7 @@ END"""
 
     def dropForeignKey(String table, String foreignKeyName) {
         if (!hasForeignKeyOnTable(table, foreignKeyName)) {
-            println "foreign key ${foreignKeyName} not found on table ${table}"
+            logger.info "foreign key ${foreignKeyName} not found on table ${table}"
             return
         }
         def request
@@ -339,7 +339,7 @@ END"""
             default:
                 request = "ALTER TABLE " + table + " DROP CONSTRAINT " + foreignKeyName
         }
-        println "Executing request: $request"
+        logger.info "Executing request: $request"
         sql.execute(request)
     }
 
@@ -366,8 +366,8 @@ END"""
                 default:
                     request = "ALTER TABLE " + row.TABLE_NAME + " DROP CONSTRAINT " + row.CONSTRAINT_NAME
             }
-            println row
-            println "Executing request: $request"
+            logger.info row as String
+            logger.info "Executing request: $request"
             sql.execute(request)
         }
 
@@ -689,7 +689,7 @@ END"""
         statements.each {
             def trimmed = it.trim()
             if (trimmed != null && !trimmed.empty) {
-                println "execute statement:\n${trimmed}"
+                logger.info "execute statement:\n${trimmed}"
                 sql.execute(trimmed)
             }
         }
@@ -698,7 +698,7 @@ END"""
     private String getScriptContent(String folderName, String scriptName) {
         def scriptContent = ""
         def sqlFile = "$folderName/${dbVendor.toString().toLowerCase()}_${scriptName}.sql"
-        println "execute script: $sqlFile"
+        logger.info "execute script: $sqlFile"
         def stream1 = this.class.getResourceAsStream(sqlFile)
         stream1.withStream { InputStream s ->
             scriptContent = s.text

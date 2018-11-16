@@ -72,7 +72,7 @@ abstract class VersionMigration {
         IOUtil.deleteDirectory(new File(oldClientBonitaHome.path + "/conf"))
 
 //deactivate the security if it was not active
-        println "Check if security was enabled"
+        logger.info "Check if security was enabled"
         def oldSecurityFile = new File(oldClientBonitaHome.path + "/platform/tenant-template/conf/security-config.properties")
         def newSecurityFile = new File(newClientBonitaHome.path + "/platform/tenant-template/conf/security-config.properties")
         def props = new Properties()
@@ -84,13 +84,13 @@ abstract class VersionMigration {
         def secuEnabled = props.getProperty("security.rest.api.authorizations.check.enabled")
         if (!"true".equals(secuEnabled)) {
             if (secuEnabled == null) {
-                println "Security of REST APIs is disabled, to enable it modify the file security-config.properties in the client tenant configuration folder of the bonita home"
+                logger.info "Security of REST APIs is disabled, to enable it modify the file security-config.properties in the client tenant configuration folder of the bonita home"
             }
             def newProps = new Properties()
             newSecurityFile.withDataInputStream { s ->
                 newProps.load(s)
                 newProps.setProperty("security.rest.api.authorizations.check.enabled", "false")
-                newProps.store(newSecurityFile.newWriter(), null);
+                newProps.store(newSecurityFile.newWriter(), null)
             }
         }
 
@@ -104,16 +104,16 @@ abstract class VersionMigration {
         MigrationUtil.migrateDirectory(newClientBonitaHome.path + currentDir, oldClientBonitaHome.path + currentDir, false)
 
         def tenantsClientDir = new File(oldClientBonitaHome, "/tenants")
-        println "Checking for tenants in $tenantsClientDir"
+        logger.info "Checking for tenants in $tenantsClientDir"
         if (tenantsClientDir.exists()) {
             def tenants = Arrays.asList(tenantsClientDir.listFiles())
             if (tenants.empty) {
-                println "No tenants found."
+                logger.info "No tenants found."
             } else {
-                println "Executing update for each tenant : " + tenants
+                logger.info "Executing update for each tenant : " + tenants
                 tenantsClientDir.eachDir { tenant ->
-                    println "For tenant : " + tenant.name
-                    PrintStream stdout = DisplayUtil.executeWrappedWithTabs {
+                    logger.info "For tenant : " + tenant.name
+                    DisplayUtil.executeWrappedWithTabs {
                         currentDir = "/conf"
                         MigrationUtil.migrateDirectory(newClientBonitaHome.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir, true)
 
@@ -129,24 +129,24 @@ abstract class VersionMigration {
                 }
             }
         } else {
-            println "Not found any tenants."
+            logger.info "Not found any tenants."
         }
     }
 
     def migrateBonitaHomeServer(File newBonitaHome) {
-        println "migration bonita home server"
-        def bonitaHomeToMigrate = new File(context.bonitaHome, "engine-server");
+        logger.info "migration bonita home server"
+        def bonitaHomeToMigrate = new File(context.bonitaHome, "engine-server")
 //Copy original engine-server
-        IOUtil.copyDirectory(new File(newBonitaHome, "engine-server"), bonitaHomeToMigrate);
+        IOUtil.copyDirectory(new File(newBonitaHome, "engine-server"), bonitaHomeToMigrate)
 
 
         def tenantsFolder = new File(bonitaHomeToMigrate, "work/tenants")
-        println " tenants folder is $tenantsFolder"
+        logger.info "Tenants folder is $tenantsFolder"
         tenantsFolder.listFiles().each { tenantFolder ->
-            println "executing migration on tenant $tenantFolder"
+            logger.info "executing migration on tenant $tenantFolder"
             if (!tenantFolder.getName().equals("template")) {
                 def tenantId = Long.valueOf(tenantFolder.getName())
-                println "migrating tenant: " + tenantId
+                logger.info "Migrating tenant: $tenantId"
                 //MOVE:  server/tenants/X/work/processes -> engine-server/work/tenants/X/processes
                 move(new File(tenantFolder.path + "/work/processes"), new File(bonitaHomeToMigrate.path + "/work/tenants/$tenantId/processes"))
                 //MOVE:  server/tenants/X/work/security-scripts-> engine-server/work/tenants/X/security-scripts
@@ -154,24 +154,24 @@ abstract class VersionMigration {
                 //Create:  X -> engine-server/work/tenants/X/bonita-tenant-id.properties that contains tenantId=X
 
                 def tenantProperties = bonitaHomeToMigrate.path + "/work/tenants/$tenantId/bonita-tenant-id.properties"
-                println "Write file $tenantProperties"
+                logger.info "Write file $tenantProperties"
                 new File(tenantProperties).write("tenantId=$tenantId")
                 //Copy:  X -> engine-server/work/tenants/template/* -> engine-server/work/tenants/X/.
-                println "Moving ${new File(bonitaHomeToMigrate.path + "/work/tenants/template").path} to ${new File(bonitaHomeToMigrate.path + "/work/tenants/$tenantId").path}"
-                IOUtil.copyDirectory(new File(bonitaHomeToMigrate.path + "/work/tenants/template"), new File(bonitaHomeToMigrate.path + "/work/tenants/$tenantId"));
+                logger.info "Moving ${new File(bonitaHomeToMigrate.path + "/work/tenants/template").path} to ${new File(bonitaHomeToMigrate.path + "/work/tenants/$tenantId").path}"
+                IOUtil.copyDirectory(new File(bonitaHomeToMigrate.path + "/work/tenants/template"), new File(bonitaHomeToMigrate.path + "/work/tenants/$tenantId"))
                 //Copy:  X -> engine-server/conf/tenants/template/* -> engine-server/conf/tenants/X/.
-                IOUtil.copyDirectory(new File(bonitaHomeToMigrate.path + "/conf/tenants/template"), new File(bonitaHomeToMigrate.path + "/conf/tenants/$tenantId"));
+                IOUtil.copyDirectory(new File(bonitaHomeToMigrate.path + "/conf/tenants/template"), new File(bonitaHomeToMigrate.path + "/conf/tenants/$tenantId"))
             }
         }
     }
 
     def move(File src, File dest) {
         if (src.exists()) {
-            println "Move $src to $dest"
+            logger.info "Move $src to $dest"
             IOUtil.copyDirectory(src, dest)
             IOUtil.deleteDirectory(src)
         } else {
-            println "src file $src does not exists"
+            logger.info "src file $src does not exists"
         }
     }
 }
