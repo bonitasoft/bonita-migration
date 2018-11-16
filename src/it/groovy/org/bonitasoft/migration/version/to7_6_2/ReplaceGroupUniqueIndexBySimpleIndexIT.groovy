@@ -1,7 +1,6 @@
 package org.bonitasoft.migration.version.to7_6_2
 
 import org.bonitasoft.migration.DBUnitHelper
-import org.bonitasoft.migration.core.Logger
 import org.bonitasoft.migration.core.MigrationContext
 import spock.lang.Shared
 import spock.lang.Specification
@@ -12,14 +11,9 @@ import spock.lang.Specification
 class ReplaceGroupUniqueIndexBySimpleIndexIT extends Specification {
 
     @Shared
-    Logger logger = new Logger()
-
-
+    DBUnitHelper dbUnitHelper = DBUnitHelper.getInstance()
     @Shared
-    MigrationContext migrationContext = new MigrationContext(logger: logger)
-
-    @Shared
-    DBUnitHelper dbUnitHelper = new DBUnitHelper(migrationContext)
+    MigrationContext migrationContext = dbUnitHelper.context
 
     private ReplaceGroupUniqueIndexBySimpleIndex migrationStep = new ReplaceGroupUniqueIndexBySimpleIndex()
 

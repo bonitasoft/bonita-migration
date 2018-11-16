@@ -16,7 +16,6 @@ package org.bonitasoft.migration.version.to7_6_0
 import static org.bonitasoft.migration.version.to7_6_0.RemoveDefaultGroovyScriptsAndUpdateTheirConfiguration.DYNAMIC_PERMISSIONS_FILE
 
 import org.bonitasoft.migration.DBUnitHelper
-import org.bonitasoft.migration.core.Logger
 import org.bonitasoft.migration.core.MigrationContext
 import spock.lang.Shared
 import spock.lang.Specification
@@ -30,13 +29,9 @@ class UpdateDynamicPermissionChecksCustomIT extends Specification {
     static COUNT_SCRIPTS_SQL = "SELECT count(*) AS cpt FROM configuration WHERE tenant_id=? AND content_type=? and resource_name='ActorMemberPermissionRule.groovy'"
 
     @Shared
-    Logger logger = new Logger()
-
+    DBUnitHelper dbUnitHelper = DBUnitHelper.getInstance()
     @Shared
-    MigrationContext migrationContext = new MigrationContext(logger: logger)
-
-    @Shared
-    DBUnitHelper dbUnitHelper = new DBUnitHelper(migrationContext)
+    MigrationContext migrationContext = dbUnitHelper.context
 
     byte[] defaultRuleContent = this.class.getResource("/to7_6_0/ActorMemberPermissionRule.groovy.txt").bytes
 

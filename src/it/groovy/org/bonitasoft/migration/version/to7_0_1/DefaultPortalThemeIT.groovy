@@ -14,13 +14,9 @@ import static org.assertj.core.api.Assertions.assertThat
 class DefaultPortalThemeIT extends Specification {
 
     @Shared
-    Logger logger = Mock(Logger)
-
+    DBUnitHelper dbUnitHelper = DBUnitHelper.getInstance()
     @Shared
-    MigrationContext migrationContext = new MigrationContext(logger: logger)
-
-    @Shared
-    DBUnitHelper dbUnitHelper = new DBUnitHelper(migrationContext)
+    MigrationContext migrationContext = dbUnitHelper.context
 
     def setup() {
         migrationContext.setVersion("7.0.1")

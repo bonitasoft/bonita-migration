@@ -123,6 +123,7 @@ targetCompatibility = 1.7
 dependencies {
     compile "org.codehaus.groovy:groovy-all:2.4.4"
     compile "com.github.zafarkhaja:java-semver:0.9.0"
+    compile group: 'org.apache.commons', name: 'commons-dbcp2', version: '2.5.0'
 
     testRuntime "cglib:cglib-nodep:2.2"
     testRuntime 'org.objenesis:objenesis:1.2'
