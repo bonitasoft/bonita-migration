@@ -118,32 +118,13 @@ Example: run all tests on Mysql:
 
 ### Let the build run docker database containers
 
-For `mysql`, `oracle` and `postgres`, the build can start the related dabase container for you. To do so, only pass the
-`db.vendor` System Property (if you provide a `db.url` System Property in addition, the build won't start the database
-container and will expect you to run an external database).
+The build can start the related database container for you. To do so, only pass the `db.vendor` System Property.
+If you provide a `db.url` System Property in addition, the build won't start the database container and will expect you to run an external database.
 
 Example: run all integration and migration tests on Oracle:
 ```
 ./gradlew clean integrationTest allMigrationTests -Ddb.vendor=oracle
 ```
-
-For `sqlserver`, it is not possible to use a docker container as the engine require xa datasource and xa transactions are
-currently not supported by the Docker image (see [mssql-docker#28](https://github.com/Microsoft/mssql-docker/issues/28))
-So in that case:
-* you must run an external sqlserver database
-* even if you pass only the `db.vendor` System Property, no docker container will be started by the build
-
-However, when running the integration tests (which do not require xa datasource), you can run a SQL Server 2017 docker
-instance that you start by yourself like in the following 
-```
-docker run -d --name bonita-sqlserver-2017 \
--e 'ACCEPT_EULA=Y' \
--e 'SA_PASSWORD=StrongPassword' \
--p 1433:1433 \
-registry.rd.lan/bonitasoft/sqlserver-2017
-```
-
-
 
 
 Customize database to use for integration tests in IDE

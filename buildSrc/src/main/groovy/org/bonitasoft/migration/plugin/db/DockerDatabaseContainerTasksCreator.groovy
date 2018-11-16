@@ -1,7 +1,5 @@
 package org.bonitasoft.migration.plugin.db
 
-import static java.lang.String.format
-
 import com.bmuschko.gradle.docker.tasks.container.DockerCreateContainer
 import com.bmuschko.gradle.docker.tasks.container.DockerInspectContainer
 import com.bmuschko.gradle.docker.tasks.container.DockerRemoveContainer
@@ -10,6 +8,7 @@ import com.bmuschko.gradle.docker.tasks.container.extras.DockerWaitHealthyContai
 import com.bmuschko.gradle.docker.tasks.image.DockerPullImage
 import org.gradle.api.Project
 
+import static java.lang.String.format
 
 /**
  * Gradle plugin to start docker database containers and performed tests with them
@@ -44,12 +43,18 @@ class DockerDatabaseContainerTasksCreator {
              driverClassName: 'com.mysql.jdbc.Driver',
              rootUser       : 'root',
              rootPassword   : 'root'
+            ],
+            [name           : 'sqlserver',
+             repository     : 'registry.rd.lan/bonitasoft/sqlserver-2019',
+             tag            : '1.1.1',
+             portBinding    : 1433,
+             uriTemplate    : 'jdbc:sqlserver://%s:%s;database=bonita',
+             driverClassName: 'com.microsoft.sqlserver.jdbc.SQLServerDriver',
+             rootUser       : 'sa',
+             rootPassword   : 'DeLorean1985',
+             databaseName   : 'bonita'
             ]
     ]
-
-    static List<String> supportedVendors() {
-        ['oracle','postgres','mysql']
-    }
 
     private static String getDockerHost() {
         def dockerHost = System.getenv('DOCKER_HOST')
@@ -59,7 +64,7 @@ class DockerDatabaseContainerTasksCreator {
         return 'localhost'
     }
 
-    def static createTaks(Project project) {
+    def static createTasks(Project project) {
         // required to have the environment correctly setup: see https://github.com/bmuschko/gradle-docker-plugin/issues/575#issuecomment-383704012
         project.plugins.apply('com.bmuschko.docker-remote-api')
         vendors.each { vendor ->
