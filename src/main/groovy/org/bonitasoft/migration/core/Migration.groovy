@@ -46,7 +46,6 @@ class Migration {
         new Migration().run(false)
     }
 
-
     public void run(boolean isSp) {
         setupOutputs()
         printMigrationBannerAndGlobalWarnings(isSp)
@@ -94,7 +93,7 @@ class Migration {
         def versions = getVersionsAfter(version)
         def visibleVersions = filterOutInvisibleVersions(versions)
         if (context.targetVersion == null) {
-            println "enter the target version"
+            println "Enter the target version"
             context.targetVersion = Version.valueOf(MigrationUtil.askForOptions(visibleVersions.collect {
                 it.toString()
             }))

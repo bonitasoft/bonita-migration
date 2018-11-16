@@ -31,7 +31,7 @@ class MigrateArchProcessCommentIndex extends MigrationStep {
         if (!"sourceObjectId".equalsIgnoreCase(indexDefinition.columnDefinitions.get(0).columnName)) {
             helper.addOrReplaceIndex(ARCH_PROCESS_COMMENT, "idx1_arch_process_comment", "sourceobjectid", "tenantid")
         } else {
-            println("index does not need to be migrated.")
+            context.logger.info("Index does not need to be migrated.")
         }
 
     }

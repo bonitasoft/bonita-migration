@@ -42,7 +42,7 @@ DESCRIPTION='Application theme based on bootstrap "Default" theme. (see http://b
 CONTENTNAME='bonita-bootstrap-default-theme.zip'
 where name='custompage_defaulttheme'
 """)
-        println "$updatedRows application themes were update"
+        context.logger.info "$updatedRows application themes were update"
         return updatedRows
     }
 
