@@ -14,7 +14,6 @@
 package org.bonitasoft.migration.version.to7_4_0
 
 import org.bonitasoft.migration.DBUnitHelper
-import org.bonitasoft.migration.core.Logger
 import org.bonitasoft.migration.core.MigrationContext
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -24,16 +23,11 @@ import spock.lang.Unroll
  */
 class WarnAboutCSRFIT extends Specification {
 
-
-    Logger logger = Mock(Logger)
-
-    MigrationContext migrationContext = new MigrationContext(logger: logger)
-
-    DBUnitHelper dbUnitHelper = new DBUnitHelper(migrationContext)
+    DBUnitHelper dbUnitHelper = DBUnitHelper.getInstance()
+    MigrationContext migrationContext = dbUnitHelper.context
 
     def setup() {
         migrationContext.setVersion("7.4.0")
-        migrationContext.setLogger(logger)
         dropTestTables()
         dbUnitHelper.createTables("7_4_0/csrf", "csrf")
     }

@@ -1,7 +1,6 @@
 package org.bonitasoft.migration.version.to7_3_1
 
 import org.bonitasoft.migration.DBUnitHelper
-import org.bonitasoft.migration.core.Logger
 import org.bonitasoft.migration.core.MigrationContext
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
@@ -14,13 +13,9 @@ import spock.lang.Specification
 class FixDependenciesNameIT extends Specification {
 
     @Shared
-    Logger logger = new Logger()
-
+    DBUnitHelper dbUnitHelper = DBUnitHelper.getInstance()
     @Shared
-    MigrationContext migrationContext = new MigrationContext(logger: logger)
-
-    @Shared
-    DBUnitHelper dbUnitHelper = new DBUnitHelper(migrationContext)
+    MigrationContext migrationContext = dbUnitHelper.context
 
     @Rule
     TemporaryFolder temporaryFolder

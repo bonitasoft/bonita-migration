@@ -27,13 +27,9 @@ import spock.lang.Unroll
 class MigrateProcessDefXmlIT extends Specification {
 
     @Shared
-    Logger logger = Mock(Logger)
-
+    DBUnitHelper dbUnitHelper = DBUnitHelper.getInstance()
     @Shared
-    MigrationContext migrationContext = new MigrationContext(logger: logger)
-
-    @Shared
-    DBUnitHelper dbUnitHelper = new DBUnitHelper(migrationContext)
+    MigrationContext migrationContext = dbUnitHelper.context
 
     def xmlSlurper = new XmlSlurper(false, false)
 

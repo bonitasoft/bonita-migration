@@ -14,8 +14,6 @@
 
 package org.bonitasoft.migration.core.database
 
-import static org.bonitasoft.migration.core.MigrationStep.DBVendor.*
-
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import org.bonitasoft.migration.core.Logger
@@ -23,6 +21,8 @@ import org.bonitasoft.migration.core.MigrationStep.DBVendor
 import org.bonitasoft.migration.core.database.schema.ColumnDefinition
 import org.bonitasoft.migration.core.database.schema.ForeignKeyDefinition
 import org.bonitasoft.migration.core.database.schema.IndexDefinition
+
+import static org.bonitasoft.migration.core.MigrationStep.DBVendor.*
 
 /**
  * @author Baptiste Mesta
@@ -668,6 +668,59 @@ END"""
         return firstRow != null
     }
 
+    /**
+     * @param tableName
+     * @param columnName
+     */
+    String getColumnType(String tableName, String columnName) {
+        def query
+        switch (dbVendor) {
+            case POSTGRES:
+            case SQLSERVER:
+                query = """
+                    SELECT
+                        C.DATA_TYPE
+                    FROM
+                        INFORMATION_SCHEMA.COLUMNS C
+                    WHERE
+                         UPPER( C.TABLE_NAME ) = UPPER( ? )
+                    AND UPPER( C.COLUMN_NAME ) = UPPER( ? )
+                    """
+                break
+
+            case ORACLE:
+                query = """
+                   SELECT
+                        c.DATA_TYPE
+                    FROM
+                        user_tab_cols c
+                    WHERE
+                         UPPER( c.TABLE_NAME ) = UPPER( ? )
+                    AND UPPER( c.COLUMN_NAME ) = UPPER( ? )
+                    """
+                break
+
+            case MYSQL:
+                query = """
+                SELECT
+                    c.DATA_TYPE
+                FROM
+                    INFORMATION_SCHEMA.COLUMNS c
+                WHERE
+                    c.TABLE_SCHEMA =(
+                        SELECT
+                            DATABASE()
+                    )
+                    AND UPPER( c.TABLE_NAME ) = UPPER( ? )
+                    AND UPPER( c.COLUMN_NAME ) = UPPER( ? )
+                    """
+                break
+        }
+
+        def firstRow = sql.firstRow(query, [tableName, columnName])
+        return firstRow.DATA_TYPE
+    }
+
     GroovyRowResult selectFirstRow(GString string) {
         return sql.firstRow(adaptFor(string))
     }
@@ -685,12 +738,17 @@ END"""
      * @param scriptName
      */
     def executeScript(String folderName, String scriptName) {
-        def statements = getScriptContent(getVersionFolder() + "/$folderName", scriptName).split("@@|GO|;")
+        executeScript(version, folderName, scriptName)
+    }
+
+    def executeScript(String version, String folderName, String scriptName) {
+        def statements = getScriptContent(getVersionFolder(version) + "/$folderName", scriptName).split("@@|GO|;")
         statements.each {
             def trimmed = it.trim()
             if (trimmed != null && !trimmed.empty) {
                 logger.info "execute statement:\n${trimmed}"
-                sql.execute(trimmed)
+                def count = sql.executeUpdate(trimmed)
+                println "updated $count rows"
             }
         }
     }
@@ -706,7 +764,7 @@ END"""
         scriptContent
     }
 
-    private GString getVersionFolder() {
+    private GString getVersionFolder(String version) {
         def versionFolder = "/version/to_${version.replace('.', '_')}"
         versionFolder
     }
@@ -724,13 +782,11 @@ END"""
     }
 
     byte[] getBlobContentAsBytes(blobValue) {
-        def bytesContent
         if (ORACLE == dbVendor) {
-            bytesContent = blobValue.binaryStream.bytes
+            return blobValue.binaryStream.bytes
         } else {
-            bytesContent = blobValue
+            return blobValue
         }
-        bytesContent
     }
 
     def addSequenceOnAllTenants(int sequenceKey) {

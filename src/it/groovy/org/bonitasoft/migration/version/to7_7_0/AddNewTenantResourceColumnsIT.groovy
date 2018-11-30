@@ -23,13 +23,9 @@ import spock.lang.Unroll
 class AddNewTenantResourceColumnsIT extends Specification {
 
     @Shared
-    Logger logger = new Logger()
-
+    DBUnitHelper dbUnitHelper = DBUnitHelper.getInstance()
     @Shared
-    MigrationContext migrationContext = new MigrationContext(logger: logger)
-
-    @Shared
-    DBUnitHelper dbUnitHelper = new DBUnitHelper(migrationContext)
+    MigrationContext migrationContext = dbUnitHelper.context
 
     private AddNewTenantResourceColumns migrationStep = new AddNewTenantResourceColumns()
 

@@ -14,17 +14,14 @@
 package org.bonitasoft.migration.version.to7_7_0
 
 import org.bonitasoft.migration.DBUnitHelper
-import org.bonitasoft.migration.core.Logger
 import org.bonitasoft.migration.core.MigrationContext
-import spock.lang.Shared
 import spock.lang.Specification
-import spock.lang.Unroll
 
 class RemoveUnusedEventTriggerInstancesIT extends Specification {
 
-    def logger = new Logger()
-    def migrationContext = new MigrationContext(logger: logger)
-    def dbUnitHelper = new DBUnitHelper(migrationContext)
+
+    def dbUnitHelper = DBUnitHelper.getInstance()
+    MigrationContext migrationContext = dbUnitHelper.context
 
     def migrationStep = new RemoveUnusedEventTriggerInstances()
 

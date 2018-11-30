@@ -26,13 +26,10 @@ import spock.lang.Unroll
 class EnsureAddedIndexOnArchProcessCommentIT extends Specification {
 
     @Shared
-    Logger logger = Mock(Logger)
-
+    DBUnitHelper dbUnitHelper = DBUnitHelper.getInstance()
     @Shared
-    MigrationContext migrationContext = new MigrationContext(logger: logger)
+    MigrationContext migrationContext = dbUnitHelper.context
 
-    @Shared
-    DBUnitHelper dbUnitHelper = new DBUnitHelper(migrationContext)
 
     def setup() {
         migrationContext.setVersion("7.1.5")
