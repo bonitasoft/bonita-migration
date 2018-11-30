@@ -15,6 +15,7 @@ package org.bonitasoft.migration.version.to7_7_0
 
 import org.bonitasoft.migration.core.MigrationStep
 import org.bonitasoft.migration.core.VersionMigration
+import org.bonitasoft.migration.version.to7_7_5.DeleteOrphanArchContractData
 
 /**
  */
@@ -26,6 +27,7 @@ class MigrateTo7_7_0 extends VersionMigration {
         return [
                 new AddNewTenantResourceColumns(),
                 new RemoveUnusedEventTriggerInstances(),
+                new DeleteOrphanArchContractData(),
                 new ChangeContractInputSerialization()
         ]
     }

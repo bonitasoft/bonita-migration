@@ -37,7 +37,7 @@ class MigrationRunnerTest extends Specification {
 
     def setup() {
         versionMigration.getMigrationSteps() >> migrationStepList
-        migrationContext.sql = sql
+        migrationContext.sql = ThreadLocal.<Sql>withInitial({sql})
         migrationContext.databaseHelper = databaseHelper
         migrationRunner = new MigrationRunner(versionMigrations: [versionMigration], context: migrationContext, logger: logger, displayUtil: displayUtil)
     }

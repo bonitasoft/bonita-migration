@@ -13,13 +13,9 @@ import spock.lang.Unroll
 class DropOrphanWaitingEventsIT extends Specification {
 
     @Shared
-    Logger logger = Mock(Logger)
-
+    DBUnitHelper dbUnitHelper = DBUnitHelper.getInstance()
     @Shared
-    MigrationContext migrationContext = new MigrationContext(logger: logger)
-
-    @Shared
-    DBUnitHelper dbUnitHelper = new DBUnitHelper(migrationContext)
+    MigrationContext migrationContext = dbUnitHelper.context
 
     def setup() {
         cleanTables()

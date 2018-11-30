@@ -1,6 +1,6 @@
 package org.bonitasoft.migration.version.to7_1_2
+
 import org.bonitasoft.migration.DBUnitHelper
-import org.bonitasoft.migration.core.Logger
 import org.bonitasoft.migration.core.MigrationContext
 import spock.lang.Shared
 import spock.lang.Specification
@@ -10,13 +10,10 @@ import spock.lang.Specification
 class EnsureDroppedArchTransitionInstIT extends Specification {
 
     @Shared
-    Logger logger = Mock(Logger)
-
+    DBUnitHelper dbUnitHelper = DBUnitHelper.getInstance()
     @Shared
-    MigrationContext migrationContext = new MigrationContext(logger: logger)
+    MigrationContext migrationContext = dbUnitHelper.context
 
-    @Shared
-    DBUnitHelper dbUnitHelper = new DBUnitHelper(migrationContext)
 
     def "should drop arch_transition_instance table when exists"() {
         dbUnitHelper.createTables("7_0_0", "archTransition")

@@ -27,14 +27,11 @@ class UpdateCompoundPermissionMappingIT extends Specification {
     public static final String OTHER_PERMISSION = "otherKey=otherValue"
     public static final String TENANT_TEMPLATE_PORTAL = "TENANT_TEMPLATE_PORTAL"
     public static final String TENANT_PORTAL = "TENANT_PORTAL"
-    @Shared
-    Logger logger = Mock(Logger)
 
     @Shared
-    MigrationContext migrationContext = new MigrationContext(logger: logger)
-
+    DBUnitHelper dbUnitHelper = DBUnitHelper.getInstance()
     @Shared
-    DBUnitHelper dbUnitHelper = new DBUnitHelper(migrationContext)
+    MigrationContext migrationContext = dbUnitHelper.context
 
     def setup() {
         dropTestTables()
