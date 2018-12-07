@@ -11,7 +11,7 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
-package org.bonitasoft.migration.version.to7_8_1
+package org.bonitasoft.migration.version.to7_9_0
 
 import org.bonitasoft.migration.core.MigrationStep
 import org.bonitasoft.migration.core.VersionMigration
@@ -19,7 +19,7 @@ import org.bonitasoft.migration.core.VersionMigration
 /**
  * @author Emmanuel Duchastenier
  */
-class MigrateTo7_8_1 extends VersionMigration {
+class MigrateTo7_9_0 extends VersionMigration {
 
     @Override
     List<MigrationStep> getMigrationSteps() {
