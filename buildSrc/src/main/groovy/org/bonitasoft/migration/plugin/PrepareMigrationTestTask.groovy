@@ -52,6 +52,11 @@ class PrepareMigrationTestTask extends JavaExec {
         setMain "org.bonitasoft.migration.filler.FillerRunner"
         setDebug System.getProperty("filler.debug") != null
 
+        // From version 7.9.1+, use Java 11 to prepare migration tests:
+        if (Version.valueOf(targetVersion.replaceAll("_", ".")) >= Version.valueOf("7.9.1")) {
+            AlternateJVMRunner.useAlternateJVMRunnerIfRequired(project, this)
+        }
+
         super.exec()
     }
 

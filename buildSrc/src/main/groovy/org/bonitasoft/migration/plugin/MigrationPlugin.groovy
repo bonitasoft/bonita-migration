@@ -126,16 +126,16 @@ class MigrationPlugin implements Plugin<Project> {
 
     def createTestMigrationTask(Project project, String version, boolean isSP) {
         TestMigrationTask migrationTestTask = project.tasks.create(name: "testMigration_" + underscored(version), type:
-                TestMigrationTask, description: "test the migration of version $version", group: "migration")
+                TestMigrationTask, description: "test Bonita after migrating to version $version", group: "migration")
         migrationTestTask.configureBonita(project, version, isSP)
         migrationTestTask.dependsOn project.tasks.getByName("testClasses")//bug? need to have the test compiled in
         migrationTestTask
     }
 
     def createRunMigrationTask(Project project, String version, boolean isSP) {
-        def runMigrationTask = project.tasks.create(name: "migration_" + underscored(version), type:
-                RunMigrationTask)
-        runMigrationTask.configureBonita(project, version, isSP)
+        RunMigrationTask runMigrationTask = project.tasks.create(name: "migration_" + underscored(version), type:
+                RunMigrationTask, description: "Run the migration step to version $version", group: 'RunMigration')
+        runMigrationTask.configureBonita(version, isSP)
         runMigrationTask.dependsOn project.tasks.getByName("distZip")
         runMigrationTask
     }
@@ -156,9 +156,9 @@ class MigrationPlugin implements Plugin<Project> {
                 xaRecoveryTask = project.tasks.getByName('xarecovery') // create it only once
             } catch (UnknownTaskException ignored) {
                 xaRecoveryTask = project.tasks.create(name: "xarecovery", type: RunMsSqlserverXARecoveryTask)
+                xaRecoveryTask.dependsOn cleandb
             }
             prepareTestTask.dependsOn xaRecoveryTask
-            xaRecoveryTask.dependsOn cleandb
         } else {
             prepareTestTask.dependsOn cleandb
         }

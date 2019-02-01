@@ -36,8 +36,8 @@ class CleanDbTask extends DefaultTask {
     @TaskAction
     def cleanDb() {
         DatabasePluginExtension properties = project.extensions.getByType(DatabasePluginExtension.class)
-        logger.quiet "Clean database for vendor ${properties.dbvendor}"
-        logger.quiet "Drop only (no db and credentials creation)? ${dropOnly}"
+        logger.info "Clean database for vendor ${properties.dbvendor}"
+        logger.info "Drop only (no db and credentials creation)? ${dropOnly}"
 
         def drivers =  project.files(project.getConfigurations().getByName("drivers"))
         List<URL> urls = new ArrayList<>()

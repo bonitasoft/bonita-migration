@@ -40,6 +40,11 @@ class TestMigrationTask extends Test {
             jvmArgs sysProperty.split(" ")
         }
 
+        // From version 7.9.0+, use Java 11 to run migration tests:
+        if (Version.valueOf(bonitaVersion) >= Version.valueOf("7.9.0")) {
+            AlternateJVMRunner.useAlternateJVMRunnerIfRequired(project, this)
+        }
+
         super.executeTests()
     }
 
