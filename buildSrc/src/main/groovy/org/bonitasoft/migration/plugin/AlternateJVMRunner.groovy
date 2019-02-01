@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Bonitasoft S.A.
+ * Copyright (C) 2019 Bonitasoft S.A.
  * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
@@ -11,12 +11,23 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
-
 package org.bonitasoft.migration.plugin
 
+import org.gradle.api.Project
+import org.gradle.api.Task
+
 /**
- * @author Laurent Leseigneur
+ * @author Emmanuel Duchastenier
  */
-class MigrationConstants {
-    public static final String MIGRATION_PREFIX = 'migrateTo'
+class AlternateJVMRunner {
+
+    public final static String ALTERNATE_JVM = 'org.bonitasoft.migration.runtime.alternateJvm'
+
+    static useAlternateJVMRunnerIfRequired(Project project, Task task) {
+        if (project.hasProperty(ALTERNATE_JVM)) {
+            def alternateJvm = project.property(ALTERNATE_JVM)
+            project.logger.info("Parameter '$ALTERNATE_JVM' detected. ${project.name} will use alternate JVM '$alternateJvm' to run $task")
+            task.executable = alternateJvm
+        }
+    }
 }
