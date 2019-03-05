@@ -154,6 +154,7 @@ class MigrationTest extends Specification {
         "7.2.2" | "7.3.0" || ["MigrateTo7_2_9", "MigrateTo7_3_0"]
         "7.2.0" | "7.2.9" || ["MigrateTo7_2_1", "MigrateTo7_2_2", "MigrateTo7_2_9"]
         "7.6.3" | "7.7.1" || ["MigrateTo7_7_0", "MigrateTo7_7_1"]
+        "7.7.5" | "7.8.3" || ["MigrateTo7_8_0", "MigrateTo7_8_1", "MigrateTo7_8_2", "MigrateTo7_8_3"]
     }
 
     def "should throw exception if trying to migrate to 7.7.0"() {
@@ -166,7 +167,7 @@ class MigrationTest extends Specification {
 
         then:
         IllegalStateException throwable = thrown()
-        throwable.message == "7.7.0 is not yet handled by this version of the migration tool"
+        throwable.message == "Migrating to version 7.7.0 is forbidden. Please choose a more recent version"
     }
 
     def "should NOT throw exception if trying to migrate to 7.7.0 and SysProp \"ignore.invalid.target.version\" provided"() {
@@ -180,6 +181,9 @@ class MigrationTest extends Specification {
 
         then:
         noExceptionThrown()
+
+        cleanup:
+        System.clearProperty("ignore.invalid.target.version")
     }
 
     def "should INDEED throw exception if trying to migrate to 7.6.9 and SysProp \"ignore.invalid.target.version\" provided but 7.6.9 not in invisible TRANSITION VERSION list"() {
@@ -194,6 +198,9 @@ class MigrationTest extends Specification {
         then:
         IllegalStateException throwable = thrown()
         throwable.message == "7.6.9 is not yet handled by this version of the migration tool"
+
+        cleanup:
+        System.clearProperty("ignore.invalid.target.version")
     }
 
     def "should allow to migrate from 7.7.0 to 7.7.1"() {
@@ -208,6 +215,30 @@ class MigrationTest extends Specification {
         noExceptionThrown()
     }
 
+    def "should throw exception if trying to migrate to 7.8.2"() {
+        given:
+        versionInDatabase("7.7.5")
+        targetVersion("7.8.2")
+
+        when:
+        migration.run(false)
+
+        then:
+        IllegalStateException throwable = thrown()
+        throwable.message == "Migrating to version 7.8.2 is forbidden. Please choose a more recent version"
+    }
+
+    def "should allow to migrate from 7.8.1 to 7.8.3"() {
+        given:
+        versionInDatabase("7.8.1")
+        targetVersion("7.8.3")
+
+        when:
+        migration.run(true)
+
+        then:
+        noExceptionThrown()
+    }
 
     protected void targetVersion(String s) {
         migrationContext.targetVersion >> Version.valueOf(s)
