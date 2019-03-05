@@ -24,10 +24,10 @@ import com.github.zafarkhaja.semver.Version
  */
 class Migration {
 
-    public static final Version FIRST_VERSION_WITHOUT_BONITA_HOME = Version.valueOf("7.3.0")
+    public static final Version FIRST_VERSION_WITHOUT_BONITA_HOME = Version.valueOf('7.3.0')
 
     // This list contains the steps in which we cannot stop. Migration will execute steps but slide until next version:
-    public static List<Version> TRANSITION_VERSIONS = ["7.7.0"].collect {
+    public static List<Version> TRANSITION_VERSIONS = ['7.7.0', '7.8.0', '7.8.1', '7.8.2'].collect {
         Version.valueOf(it)
     }
     Logger logger = new Logger()
@@ -146,9 +146,13 @@ class Migration {
             throw new IllegalStateException("The version is already in $context.sourceVersion")
         }
         if (!possibleTarget?.contains(context.targetVersion)) {
-            if (System.getProperty("ignore.invalid.target.version") != null && TRANSITION_VERSIONS.contains(context.targetVersion)) {
-                // only accept this hidden sysprop "ignore.invalid.target.version" if the targetVersion is in the list of invisible transition versions:
-                logger.info("Ignoring normally-forbidden target version $context.targetVersion (for tests only)")
+            if (TRANSITION_VERSIONS.contains(context.targetVersion)) {
+                if (System.getProperty("ignore.invalid.target.version") != null) {
+                    // only accept this hidden sysprop "ignore.invalid.target.version" if the targetVersion is in the list of invisible transition versions:
+                    logger.info("Ignoring normally-forbidden target version $context.targetVersion (for tests only)")
+                } else {
+                    throw new IllegalStateException("Migrating to version $context.targetVersion is forbidden. Please choose a more recent version")
+                }
             } else {
                 throw new IllegalStateException("$context.targetVersion is not yet handled by this version of the migration tool")
             }
@@ -171,7 +175,9 @@ class Migration {
     }
 
     private static List<Version> parseVersionsFromMigrationProperties(String versionsAsString) {
-        return versionsAsString.substring(1, versionsAsString.length() - 1).split(",").collect { it.trim() }.collect {
+        return versionsAsString.substring(1, versionsAsString.length() - 1).split(",").collect {
+            it.trim()
+        }.collect {
             Version.valueOf(it)
         }
     }
