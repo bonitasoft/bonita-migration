@@ -25,6 +25,7 @@ class MigrateTo7_9_0 extends VersionMigration {
     List<MigrationStep> getMigrationSteps() {
         // keep one line per step to avoid false-positive merge conflict:
         return [
+                new RemoveCleanInvalidSessionsJob()
         ]
     }
 
