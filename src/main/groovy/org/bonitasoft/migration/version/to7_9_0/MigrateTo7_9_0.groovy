@@ -15,10 +15,9 @@ package org.bonitasoft.migration.version.to7_9_0
 
 import org.bonitasoft.migration.core.MigrationStep
 import org.bonitasoft.migration.core.VersionMigration
-import org.bonitasoft.migration.version.to7_9_0.ChangeProfileEntryForOrganizationImport
 
 /**
- * @author Emmanuel Duchastenier
+ * @author Danila Mazour
  */
 class MigrateTo7_9_0 extends VersionMigration {
 
@@ -26,8 +25,9 @@ class MigrateTo7_9_0 extends VersionMigration {
     List<MigrationStep> getMigrationSteps() {
         // keep one line per step to avoid false-positive merge conflict:
         return [
-                new RemoveCleanInvalidSessionsJob()
-                , new ChangeProfileEntryForOrganizationImport()
+                new RemoveCleanInvalidSessionsJob(),
+                new ChangeProfileEntryForOrganizationImport(),
+                new UpdateConnectorDefinitionsForJava11()
         ]
     }
 

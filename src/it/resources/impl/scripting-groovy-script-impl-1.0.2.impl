@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<implementation:connectorImplementation xmlns:implementation="http://www.bonitasoft.org/ns/connector/implementation/6.0">
+<implementationId>scripting-groovy-script-impl</implementationId>
+<implementationVersion>1.0.2</implementationVersion>
+<definitionId>scripting-groovy-script</definitionId>
+ <definitionVersion>1.0.1</definitionVersion>
+ <implementationClassname>org.bonitasoft.connectors.scripting.GroovyScriptConnector</implementationClassname>
+  <description>Support Groovy 2.2.4</description>
+   <jarDependencies>
+<jarDependency>bonita-connector-scripting-groovy-script-impl-1.0.2.jar</jarDependency>
+<jarDependency>mail-1.4.5.jar</jarDependency>
+ </jarDependencies>
+ </implementation:connectorImplementation>
