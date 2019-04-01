@@ -3,9 +3,7 @@ package org.bonitasoft.migration.version.to7_9_0
 import spock.lang.Specification
 import spock.lang.Unroll
 
-/**
- * @author Anthony Birembaut
- */
+
 class MigrateTo7_9_0Test extends Specification {
 
     @Unroll
@@ -21,8 +19,9 @@ class MigrateTo7_9_0Test extends Specification {
 
         where:
         stepName << [
-                "RemoveCleanInvalidSessionsJob"
-                , "ChangeProfileEntryForOrganizationImport"
+                "RemoveCleanInvalidSessionsJob",
+                "ChangeProfileEntryForOrganizationImport",
+                "UpdateConnectorDefinitionsForJava11"
         ]
 
     }
