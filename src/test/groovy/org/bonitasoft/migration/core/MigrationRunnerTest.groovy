@@ -25,7 +25,7 @@ import spock.lang.Unroll
 class MigrationRunnerTest extends Specification {
 
     def logger = Spy(Logger.class)
-    VersionMigration versionMigration = Mock(VersionMigration);
+    VersionMigration versionMigration = Mock(VersionMigration)
     MigrationStep migrationStep1 = Mock(MigrationStep)
     MigrationStep migrationStep2 = Mock(MigrationStep)
     List<MigrationStep> migrationStepList = [migrationStep1, migrationStep2]
