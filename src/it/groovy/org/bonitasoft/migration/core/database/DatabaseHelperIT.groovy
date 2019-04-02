@@ -19,17 +19,15 @@ import groovy.sql.GroovyRowResult
 import org.bonitasoft.migration.DBUnitHelper
 import org.bonitasoft.migration.core.Logger
 import org.bonitasoft.migration.core.MigrationContext
-import spock.lang.Shared
 import spock.lang.Specification
 
 class DatabaseHelperIT extends Specification {
 
     private static final TABLE_NAME = 'table_origin'
 
-    @Shared
-    DBUnitHelper dbUnitHelper = DBUnitHelper.getInstance()
-    @Shared
-    MigrationContext migrationContext = dbUnitHelper.context
+    def spiedLogger = Spy(Logger.class)
+    MigrationContext migrationContext = new MigrationContext(logger: spiedLogger)
+    DBUnitHelper dbUnitHelper = new DBUnitHelper(migrationContext)
 
     def setup() {
         dropTestTables()
@@ -73,6 +71,21 @@ class DatabaseHelperIT extends Specification {
 
     private int countRows() {
         migrationContext.sql.firstRow("SELECT count(*) AS cpt FROM $TABLE_NAME" as String).get("cpt") as int
+    }
+
+    def "should drop index before adding it if already exists"() {
+        given:
+        DatabaseHelper databaseHelper = migrationContext.databaseHelper
+        databaseHelper.execute("CREATE INDEX idx_test ON $TABLE_NAME (id)")
+
+        when:
+        databaseHelper.addOrReplaceIndex(TABLE_NAME, 'idx_test', 'id')
+
+        then:
+        1 * spiedLogger.info({
+            // written like this as the query is not formatted the same on all DB vendors:
+            it.contains('DROP INDEX') && it.contains('idx_test')
+        })
     }
 
 }
