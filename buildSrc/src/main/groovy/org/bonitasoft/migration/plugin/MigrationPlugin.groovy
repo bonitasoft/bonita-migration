@@ -205,6 +205,9 @@ class MigrationPlugin implements Plugin<Project> {
         project.dependencies.create(name){
             exclude module: "groovy-all"
             exclude module: "sqlserver"
+            exclude module: "postgresql"
+            exclude module: "mysql-connector-java"
+            exclude module: "ojdbc"
         }
     }
 

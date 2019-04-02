@@ -43,7 +43,7 @@ class DbParser {
         DbConnectionSettings settings = new DbConnectionSettings()
         settings.dbUrl = dburl
 
-        def parsedUrl = (dburl =~ /(jdbc:.*:@)([\w\d\.-]+):(\d+):([\w\-_\d]+).*/)
+        def parsedUrl = (dburl =~ /(jdbc:.*:@\/\/)([\w\d\.-]+):(\d+)\/([\w\-_\.\d]+).*/)
         settings.serverName = parsedUrl[0][2]
         settings.portNumber = parsedUrl[0][3]
         settings.databaseName = parsedUrl[0][4]
