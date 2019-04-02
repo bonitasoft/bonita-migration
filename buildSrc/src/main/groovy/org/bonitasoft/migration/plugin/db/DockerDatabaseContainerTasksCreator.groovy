@@ -17,17 +17,17 @@ class DockerDatabaseContainerTasksCreator {
 
     def static vendors = [
             [name           : 'oracle',
-             repository     : 'registry.rd.lan/bonitasoft/oracle-11g',
-             tag            : '1.2.0',
+             repository     : 'registry.rd.lan/bonitasoft/oracle-12c-ee',
+             tag            : '0.1.1',
              portBinding    : 1521,
-             uriTemplate    : 'jdbc:oracle:thin:@//%s:%s/xe',
+             uriTemplate    : 'jdbc:oracle:thin:@//%s:%s/ORCLPDB1.localdomain',
              driverClassName: 'oracle.jdbc.OracleDriver',
              rootUser       : 'sys as sysdba',
-             rootPassword   : 'oracle'
+             rootPassword   : 'Oradoc_db1'
             ],
             [name           : 'postgres',
-             repository     : 'registry.rd.lan/bonitasoft/postgres-9.3',
-             tag            : '1.2.3',
+             repository     : 'registry.rd.lan/bonitasoft/postgres-11',
+             tag            : '0.0.2',
              portBinding    : 5432,
              uriTemplate    : 'jdbc:postgresql://%s:%s/bonita',
              driverClassName: 'org.postgresql.Driver',
@@ -36,17 +36,17 @@ class DockerDatabaseContainerTasksCreator {
              databaseName   : 'bonita'
             ],
             [name           : 'mysql',
-             repository     : 'registry.rd.lan/bonitasoft/mysql-5.5.49',
-             tag            : '1.1.1',
+             repository     : 'registry.rd.lan/bonitasoft/mysql-5.5.61',
+             tag            : '1.1.2',
              portBinding    : 3306,
-             uriTemplate    : 'jdbc:mysql://%s:%s/bonita?allowMultiQueries=true',
+             uriTemplate    : 'jdbc:mysql://%s:%s/bonita?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8',
              driverClassName: 'com.mysql.jdbc.Driver',
              rootUser       : 'root',
              rootPassword   : 'root'
             ],
             [name           : 'sqlserver',
              repository     : 'registry.rd.lan/bonitasoft/sqlserver-2019',
-             tag            : '1.1.1',
+             tag            : '1.1.5',
              portBinding    : 1433,
              uriTemplate    : 'jdbc:sqlserver://%s:%s;database=bonita',
              driverClassName: 'com.microsoft.sqlserver.jdbc.SQLServerDriver',
@@ -104,7 +104,7 @@ class DockerDatabaseContainerTasksCreator {
 
                 dependsOn startContainer
                 targetContainerId { startContainer.getContainerId() }
-                timeout = 240
+                timeout = 360
             }
 
             def inspectContainer = project.tasks.create("inspect${uniqueName}ContainerUrl", DockerInspectContainer) {
@@ -152,8 +152,8 @@ class DockerDatabaseContainerTasksCreator {
                     DatabasePluginExtension extension = project.extensions.getByType(DatabasePluginExtension)
                     extension.dbvendor = vendor.name
                     extension.dbdriverClass = vendor.driverClassName
-                    extension.dbRootUser= vendor.rootUser
-                    extension.dbRootPassword= vendor.rootPassword
+                    extension.dbRootUser = vendor.rootUser
+                    extension.dbRootPassword = vendor.rootPassword
                     // Common to all databases
                     extension.dbuser = 'bonita'
                     extension.dbpassword = 'bpm'
