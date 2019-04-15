@@ -29,10 +29,13 @@ import org.gradle.api.tasks.testing.Test
 
 import static org.bonitasoft.migration.plugin.PropertiesUtils.loadProperties
 import static org.bonitasoft.migration.plugin.VersionUtils.*
+
 /**
  * @author Baptiste Mesta
  */
 class MigrationPlugin implements Plugin<Project> {
+
+    List<String> allVersions
 
     @Override
     void apply(Project project) {
@@ -53,13 +56,16 @@ class MigrationPlugin implements Plugin<Project> {
             xarecovery
         }
 
-        defineJdbcDriversConfiguration(project)
-
         def migrationPluginExtension = project.extensions.create("migration", MigrationPluginExtension.class)
+
         project.extensions.create("database", DatabasePluginExtension)
 
         project.afterEvaluate {
             DatabaseResourcesConfigurator.configureDatabaseResources(project)
+
+            allVersions = getVersionList(project, migrationPluginExtension)
+            defineAllJdbcDriversConfigurations(project)
+
             createMigrationTestsTasks(project, migrationPluginExtension)
             createIntegrationTestTasks(project)
 
@@ -70,25 +76,63 @@ class MigrationPlugin implements Plugin<Project> {
     def defineXaRecoveryConfiguration(Project project) {
         project.dependencies {
             xarecovery 'com.bonitasoft.tools.sqlserver:sqlserver-xa-recovery:1.0.1@jar'
+            xarecovery JdbcDriverDependencies.sqlserver
         }
     }
 
-    def defineJdbcDriversConfiguration(Project project) {
+    def defineAllJdbcDriversConfigurations(Project project) {
+        // TODO: remove this:
         project.dependencies {
-            // the following jdbc drivers are available for integration and migration tests
+            // the following jdbc drivers are available for integration tests:
             drivers JdbcDriverDependencies.mysql
             drivers JdbcDriverDependencies.oracle
             drivers JdbcDriverDependencies.postgres
             drivers JdbcDriverDependencies.sqlserver
         }
+
+        // Creating a specific driver configuration for each DB vendor and bonita version:
+        String dbVendor = project.extensions.database.dbvendor
+        allVersions.each { version ->
+            Configuration configuration = project.configurations.create(getDatabaseDriverConfigurationName(dbVendor, version))
+            configuration.dependencies.add(getDatabaseDriverDependency(project, dbVendor, version))
+            println "Creating configuration: $configuration"
+        }
+    }
+
+    def static getDatabaseDriverConfigurationName(String dbVendor, String bonitaVersion) {
+        "${dbVendor}_${underscored(bonitaVersion)}" // Example: mysql_7_8_4, postgres_7_9_0
+    }
+
+    static Configuration getDatabaseDriverConfiguration(Project project, String bonitaVersion) {
+        return project.getConfigurations().getByName(getDatabaseDriverConfigurationName(project.extensions.database.dbvendor, bonitaVersion))
+    }
+
+    def static getDatabaseDriverDependency(Project project, String dbVendor, String bonitaVersion) {
+        String dep
+        switch (dbVendor) {
+            case 'mysql':
+                if (Version.valueOf(bonitaVersion) < Version.valueOf("7.9.0")) {
+                    dep = JdbcDriverDependencies.mysql
+                } else {
+                    dep = JdbcDriverDependencies.mysql8
+                }
+                break
+            case 'oracle':
+                dep = JdbcDriverDependencies.oracle
+                break
+            case 'sqlserver':
+                dep = JdbcDriverDependencies.sqlserver
+                break
+            default:
+                dep = JdbcDriverDependencies.postgres
+        }
+        return createDependencyWithoutGroovy(project, dep)
     }
 
     // =================================================================================================================
     // for migration tests
     // =================================================================================================================
-
     def createMigrationTestsTasks(Project project, MigrationPluginExtension migrationPluginExtension) {
-        def allVersions = getVersionList(project, migrationPluginExtension)
         migrationPluginExtension.currentVersionModifier = loadProperties(project.file(migrationPluginExtension.migrationProperties)).getProperty("currentVersionModifier")
         createConfigurationForBonitaVersion(project, allVersions.first(), migrationPluginExtension, allVersions)
         List<String> previousVersions = allVersions.subList(0, allVersions.size() - 1)
@@ -141,10 +185,12 @@ class MigrationPlugin implements Plugin<Project> {
     }
 
     def createPrepareTestTask(Project project, String targetVersion, List<String> previousVersions, boolean isSP) {
-        def cleandb = project.tasks.create(name: "cleandb_" + underscored(targetVersion), type: CleanDbTask)
+        def previousVersion = getVersionBefore(previousVersions, targetVersion)
+        def cleandb = project.tasks.create(name: "cleandb_" + underscored(targetVersion), type: CleanDbTask) {
+            bonitaVersion = previousVersion
+        }
         PrepareMigrationTestTask prepareTestTask = project.tasks.create(name: "prepareTestFor_" + underscored(targetVersion), type:
                 PrepareMigrationTestTask)
-        def previousVersion = getVersionBefore(previousVersions, targetVersion)
         prepareTestTask.configureBonita(project, underscored(previousVersion),
                 underscored(targetVersion),
                 isSP)
@@ -166,9 +212,9 @@ class MigrationPlugin implements Plugin<Project> {
             def unpackBonitaHome = project.task("unpackBonitaHomeFor_" + targetVersion, type: Copy) {
                 from {
                     def conf = project.configurations.getByName(underscored(previousVersion))
-                    project.zipTree(conf.files.find{it.name.contains("bonita-home")}.getAbsolutePath())
+                    project.zipTree(conf.files.find { it.name.contains("bonita-home") }.getAbsolutePath())
                 }
-                into new File(project.buildDir,"bonita-home-"+targetVersion)
+                into new File(project.buildDir, "bonita-home-" + targetVersion)
 
             }
             prepareTestTask.dependsOn unpackBonitaHome
@@ -201,8 +247,8 @@ class MigrationPlugin implements Plugin<Project> {
         return createDependencyWithoutGroovy(project, name)
     }
 
-    def createDependencyWithoutGroovy(Project project, String name) {
-        project.dependencies.create(name){
+    static createDependencyWithoutGroovy(Project project, String name) {
+        project.dependencies.create(name) {
             exclude module: "groovy-all"
             exclude module: "sqlserver"
             exclude module: "postgresql"
@@ -233,9 +279,9 @@ class MigrationPlugin implements Plugin<Project> {
         String name
         if (migrationPluginExtension.isSP) {
             // test modules changed in 7.7.0
-            if (Version.valueOf(getRawVersion(version)) >= Version.valueOf("7.7.0")){
+            if (Version.valueOf(getRawVersion(version)) >= Version.valueOf("7.7.0")) {
                 name = "com.bonitasoft.engine.test:bonita-integration-tests-client-sp:${version}"
-            }else{
+            } else {
                 name = "com.bonitasoft.engine.test:bonita-integration-tests-local-sp:${version}:tests"
             }
         } else {
@@ -249,7 +295,7 @@ class MigrationPlugin implements Plugin<Project> {
     // So without this extra step, we get the following error
     // "Unexpected character 'DOT(.)' at position '5', expecting '[HYPHEN, PLUS, EOI]'"
     private static String getRawVersion(String version) {
-        def (major, minor, patch) =  version.split('\\.')
+        def (major, minor, patch) = version.split('\\.')
         String rawVersion = major + '.' + minor + '.' + patch
         rawVersion
     }

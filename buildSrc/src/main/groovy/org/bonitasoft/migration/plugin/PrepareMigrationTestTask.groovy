@@ -7,6 +7,7 @@ import org.gradle.api.tasks.JavaExec
 
 import static groovy.io.FileType.DIRECTORIES
 import static groovy.io.FileType.FILES
+import static org.bonitasoft.migration.plugin.MigrationPlugin.getDatabaseDriverConfiguration
 import static org.bonitasoft.migration.plugin.VersionUtils.dotted
 import static org.bonitasoft.migration.plugin.VersionUtils.semver
 
@@ -103,9 +104,10 @@ class PrepareMigrationTestTask extends JavaExec {
         this.previousVersion = previousVersion
         this.isSP = isSP
         this.targetVersion = targetVersion
-        classpath(project.getConfigurations().getByName(previousVersion),
+        classpath(
+                project.getConfigurations().getByName(previousVersion), // Bonita version configuration (eg. 7_8_0)
                 project.sourceSets.filler.runtimeClasspath,
-                project.getConfigurations().getByName("drivers")
+                getDatabaseDriverConfiguration(project, previousVersion)
         )
     }
 }

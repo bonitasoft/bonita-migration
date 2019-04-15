@@ -109,8 +109,11 @@ class MigrationDistribution implements Plugin<Project> {
                                 ":${configuration.isSP ? '' : 'full'}@zip")
             }
 
-            // the following jdbc drivers will be included in the distribution
-            runtime JdbcDriverDependencies.mysql
+            // the following jdbc drivers will be included in the distribution:
+
+            // We can always include this version because mysql8 non-xa driver class
+            // inherits from the pre-8 version of the non-xa driver:
+            runtime JdbcDriverDependencies.mysql8
             runtime JdbcDriverDependencies.postgres
         }
     }

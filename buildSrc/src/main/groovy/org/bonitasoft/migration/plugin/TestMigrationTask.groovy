@@ -5,6 +5,7 @@ import org.bonitasoft.migration.plugin.db.DatabaseResourcesConfigurator
 import org.gradle.api.Project
 import org.gradle.api.tasks.testing.Test
 
+import static org.bonitasoft.migration.plugin.MigrationPlugin.getDatabaseDriverConfiguration
 import static org.bonitasoft.migration.plugin.VersionUtils.dotted
 import static org.bonitasoft.migration.plugin.VersionUtils.underscored
 
@@ -53,9 +54,11 @@ class TestMigrationTask extends Test {
         this.isSP = isSP
         this.bonitaVersion = bonitaVersion
         testClassesDirs = project.sourceSets.enginetest.output.classesDirs
-        classpath = project.files(project.sourceSets.enginetest.runtimeClasspath,
+        classpath = project.files(
+                project.sourceSets.enginetest.runtimeClasspath,
                 project.getConfigurations().getByName(underscored(bonitaVersion)),
-                project.getConfigurations().getByName("drivers"))
+                getDatabaseDriverConfiguration(project, bonitaVersion)
+        )
         //add as input the database configuration, tests must  be relaunched when database configuration change
         inputs.property("dbvendor", project.extensions.database.dbvendor)
         inputs.property("dburl", project.extensions.database.dburl)

@@ -29,6 +29,7 @@ class MigrateTo7_9_0 extends VersionMigration {
                 , new ChangeProfileEntryForOrganizationImport()
                 , new UpdateConnectorDefinitionsForJava11()
                 , new AddMessageAndWaitingEventDBIndices()
+                , new RenameCommandSystemColumn()
         ]
     }
 

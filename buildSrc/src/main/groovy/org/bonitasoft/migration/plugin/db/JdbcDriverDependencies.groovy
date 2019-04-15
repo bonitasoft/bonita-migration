@@ -17,6 +17,7 @@ package org.bonitasoft.migration.plugin.db
 class JdbcDriverDependencies {
 
     final static String mysql = 'mysql:mysql-connector-java:5.1.47'
+    final static String mysql8 = 'mysql:mysql-connector-java:8.0.14'
     final static String oracle = 'com.oracle:ojdbc:8.12.2.0.1'
     final static String postgres = 'org.postgresql:postgresql:42.2.5'
     final static String sqlserver = 'com.microsoft.sqlserver:mssql-jdbc:7.2.1.jre8'

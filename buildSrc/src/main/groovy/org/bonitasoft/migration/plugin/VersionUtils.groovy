@@ -18,7 +18,7 @@ class VersionUtils {
         return Version.valueOf(version.replace('_','.'))
     }
 
-    static def getVersionList(project, configuration) {
+    static List<String> getVersionList(project, configuration) {
         // use normalize to ensure the file content has only LF eol which is then used to split the lines (ex: manage
         // Windows CRLF checkout)
         project.file(configuration.versionListFile).text.normalize().split("\n").toList()
