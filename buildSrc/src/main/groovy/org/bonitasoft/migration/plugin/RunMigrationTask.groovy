@@ -4,6 +4,7 @@ import com.github.zafarkhaja.semver.Version
 import org.bonitasoft.migration.plugin.db.DatabaseResourcesConfigurator
 import org.gradle.api.tasks.JavaExec
 
+import static org.bonitasoft.migration.plugin.MigrationPlugin.getDatabaseDriverConfiguration
 import static org.bonitasoft.migration.plugin.VersionUtils.dotted
 import static org.bonitasoft.migration.plugin.VersionUtils.semver
 
@@ -31,7 +32,11 @@ class RunMigrationTask extends JavaExec {
         logger.info "execute migration with properties $systemProperties"
         setMain "${isSP ? 'com' : 'org'}.bonitasoft.migration.core.Migration"
         logger.info "using classpath:"
-        classpath(project.sourceSets.main.output, project.sourceSets.main.runtimeClasspath, project.getConfigurations().getByName("drivers"))
+        classpath(
+                project.sourceSets.main.output,
+                project.sourceSets.main.runtimeClasspath,
+                getDatabaseDriverConfiguration(project, bonitaVersion)
+        )
         setDebug System.getProperty("migration.debug") != null
 
         AlternateJVMRunner.useAlternateJVMRunnerIfRequired(project, this)

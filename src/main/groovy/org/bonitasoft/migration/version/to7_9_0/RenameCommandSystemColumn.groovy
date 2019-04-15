@@ -13,31 +13,21 @@
  **/
 package org.bonitasoft.migration.version.to7_9_0
 
-import spock.lang.Specification
-import spock.lang.Unroll
 
-class MigrateTo7_9_0Test extends Specification {
+import org.bonitasoft.migration.core.MigrationContext
+import org.bonitasoft.migration.core.MigrationStep
+/**
+ * @author Emmanuel Duchastenier
+ */
+class RenameCommandSystemColumn extends MigrationStep {
 
-    @Unroll
-    def "should migration to 7.9.0 include step '#stepName'"(def stepName) {
-        given:
-        def migrateTo = new MigrateTo7_9_0()
-
-        expect:
-        def steps = migrateTo.migrationSteps
-        steps.collect {
-            it.class.getSimpleName()
-        }.contains(stepName)
-
-        where:
-        stepName << [
-                "RemoveCleanInvalidSessionsJob"
-                , "ChangeProfileEntryForOrganizationImport"
-                , "UpdateConnectorDefinitionsForJava11"
-                , "AddMessageAndWaitingEventDBIndices"
-                , "RenameCommandSystemColumn"
-        ]
-
+    @Override
+    def execute(MigrationContext context) {
+        context.databaseHelper.renameColumn('command', 'system', 'isSystem', 'BOOLEAN')
     }
 
+    @Override
+    String getDescription() {
+        return "Renaming COMMAND.'system' column to 'isSystem' for MySQL 8+ compatibility"
+    }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Bonitasoft S.A.
+ * Copyright (C) 2015-2019 Bonitasoft S.A.
  * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
@@ -11,19 +11,22 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
-
 package org.bonitasoft.migration.plugin.db
 
 import groovy.sql.Sql
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
+import static org.bonitasoft.migration.plugin.MigrationPlugin.getDatabaseDriverConfiguration
+
 /**
  * @author Baptiste Mesta
  */
 class CleanDbTask extends DefaultTask {
 
+    String bonitaVersion = "7.8.4"
     private boolean dropOnly = false
+
     void setDropOnly(boolean dropOnly) {
         this.dropOnly = dropOnly
     }
@@ -39,7 +42,7 @@ class CleanDbTask extends DefaultTask {
         logger.info "Clean database for vendor ${properties.dbvendor}"
         logger.info "Drop only (no db and credentials creation)? ${dropOnly}"
 
-        def drivers =  project.files(project.getConfigurations().getByName("drivers"))
+        def drivers = project.files(getDatabaseDriverConfiguration(project, bonitaVersion))
         List<URL> urls = new ArrayList<>()
         drivers.each { File file ->
             urls.add(file.toURI().toURL())
@@ -95,7 +98,7 @@ class CleanDbTask extends DefaultTask {
     }
 
     private static Sql newSqlInstance(String url, String user, String password, String driverClassName) {
-        Sql sql= Sql.newInstance(url, user, password, driverClassName)
+        Sql sql = Sql.newInstance(url, user, password, driverClassName)
         setQueryTimeout(sql)
         sql
     }
