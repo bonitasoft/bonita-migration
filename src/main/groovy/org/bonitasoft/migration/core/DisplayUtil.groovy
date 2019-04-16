@@ -26,10 +26,10 @@ class DisplayUtil {
         def flatten = list.collect { it.split("\n") }.flatten()
         def maxSize = getMaxSize(flatten as String[])
         printLine(maxSize)
-        println String.format("|%1\$-${maxSize}s|", title)
+        println String.format("| %1\$-${maxSize}s|", title)
         printLine(maxSize)
         flatten.drop(1).each {
-            println String.format("|%1\$-${maxSize}s|", it)
+            println String.format("|   %1\$-${maxSize}s|", it)
         }
         printLine(maxSize)
 
