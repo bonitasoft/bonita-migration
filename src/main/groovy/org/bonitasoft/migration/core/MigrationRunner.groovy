@@ -57,7 +57,7 @@ class MigrationRunner {
                     step.execute(context)
                     def stepWarningMessage = step.warning
                     if (stepWarningMessage) {
-                        warnings.put("migration to version:${it.version} - step:${step.description}", stepWarningMessage)
+                        warnings.put("Migration to version:${it.version} - step: ${step.description}", stepWarningMessage)
                     }
                     MigrationUtil.printSuccessMigration(stepStartDate, migrationStartDate)
                     logger.info "---------------"

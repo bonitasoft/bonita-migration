@@ -26,6 +26,7 @@ class ConnectorMigrationReport {
     }
 
     Map<ProcessDefinition, ConnectorMigrationReportOfProcess> processes = [:]
+    Set<String> processesWithFailedConnectorMigration = new LinkedHashSet<>()
 
 
     def reportFailure(ProcessDefinition processDefinition, List<ConnectorImplementation> newImplementations,
@@ -89,6 +90,7 @@ class ConnectorMigrationReport {
                 }
             }
             if (!report.koConnectors.empty) {
+                processesWithFailedConnectorMigration.add(process.name + " (${process.version})")
                 report.koConnectors.each { koConnector ->
                     logger.warn("  Unable to migrate connector(s) $koConnector.connectorIds to version $koConnector.newVersion:")
                     koConnector.usedBy.each { entry ->
@@ -108,8 +110,11 @@ class ConnectorMigrationReport {
     }
 
     String getFailureReport() {
+        def formattedListOfProcessesWithFailedConnectorMigration = "- " + processesWithFailedConnectorMigration.join("\n- ")
         return """
-We could not migrate some connectors.
+We could not migrate some connectors on the following processes:
+${formattedListOfProcessesWithFailedConnectorMigration}
+
 
 These connectors will not work on a Java 11 platform.
 You will need to replace them manually.

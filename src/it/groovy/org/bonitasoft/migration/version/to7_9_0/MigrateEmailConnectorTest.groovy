@@ -122,8 +122,14 @@ class MigrateEmailConnectorTest extends Specification {
         utils.insertConnectorDependency('bonita-connector-email-1.0.12.jar', 5196158028417589387)
         utils.insertConnectorDependency('mail-1.4.5.jar', 5196158028417589387)
 
+        utils.createProcessDefinition(5196158028417589386, 'My Second Process', '1.2.0')
+        utils.insertConnectorImplementation('email-1.0.12.impl', 5196158028417589386)
+        utils.insertConnectorDependency('bonita-connector-email-1.0.12.jar', 5196158028417589386)
+        utils.insertConnectorDependency('mail-1.4.5.jar', 5196158028417589386)
+
         // depends on mail-1.4.5
         utils.insertConnectorImplementation('scripting-groovy-script-impl-1.0.2.impl', 5196158028417589387)
+        utils.insertConnectorImplementation('scripting-groovy-script-impl-1.0.2.impl', 5196158028417589386)
         logger.clear()
         when:
         migrationStep.execute(migrationContext)
@@ -131,8 +137,13 @@ class MigrateEmailConnectorTest extends Specification {
         then:
         logger.warnLogs.join("\n") == """  Unable to migrate connector(s) [email-impl] to version 1.1.0:
     dependency mail-1.4.5.jar is already used by:
+    - scripting-groovy-script-impl in version 1.0.2
+  Unable to migrate connector(s) [email-impl] to version 1.1.0:
+    dependency mail-1.4.5.jar is already used by:
     - scripting-groovy-script-impl in version 1.0.2"""
-        migrationStep.warning.contains("We could not migrate some connectors.")
+        migrationStep.warning.contains("We could not migrate some connectors on the following processes:")
+        migrationStep.warning.contains("- My Process (1.0.0)")
+        migrationStep.warning.contains("- My Second Process (1.2.0)")
     }
 
     def "should not produce warnings when connector is migrated correctly"() {
