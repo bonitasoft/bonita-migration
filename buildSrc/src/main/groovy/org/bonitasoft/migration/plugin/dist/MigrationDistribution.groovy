@@ -115,6 +115,7 @@ class MigrationDistribution implements Plugin<Project> {
             // inherits from the pre-8 version of the non-xa driver:
             runtime JdbcDriverDependencies.mysql8
             runtime JdbcDriverDependencies.postgres
+            runtime JdbcDriverDependencies.sqlserver
         }
     }
 

@@ -95,7 +95,7 @@ class MigrationPlugin implements Plugin<Project> {
         allVersions.each { version ->
             Configuration configuration = project.configurations.create(getDatabaseDriverConfigurationName(dbVendor, version))
             configuration.dependencies.add(getDatabaseDriverDependency(project, dbVendor, version))
-            println "Creating configuration: $configuration"
+            project.logger.info "Creating database configuration: $configuration"
         }
     }
 
