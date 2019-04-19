@@ -36,6 +36,7 @@ class MigrateTo7_9_0Test extends Specification {
                 , "UpdateConnectorDefinitionsForJava11"
                 , "AddMessageAndWaitingEventDBIndices"
                 , "RenameCommandSystemColumn"
+                , "RenameBonitaDefaultTheme"
         ]
 
     }
