@@ -48,6 +48,7 @@ class MigrateTo7_9_0 extends VersionMigration {
                 , new UpdateConnectorDefinitionsForJava11()
                 , new AddMessageAndWaitingEventDBIndices()
                 , new RenameCommandSystemColumn()
+                , new RenameBonitaDefaultTheme()
         ]
     }
 

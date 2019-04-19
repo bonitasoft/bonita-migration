@@ -104,7 +104,7 @@ class DockerDatabaseContainerTasksCreator {
 
                 dependsOn startContainer
                 targetContainerId { startContainer.getContainerId() }
-                timeout = 360
+                timeout = 420
             }
 
             def inspectContainer = project.tasks.create("inspect${uniqueName}ContainerUrl", DockerInspectContainer) {
