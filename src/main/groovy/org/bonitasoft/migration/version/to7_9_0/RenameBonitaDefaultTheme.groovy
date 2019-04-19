@@ -19,33 +19,33 @@ import org.bonitasoft.migration.core.MigrationStep
 
 class RenameBonitaDefaultTheme extends MigrationStep {
 
+    public static final String BONITA_THEME_NEW_NAME = 'custompage_themeBonita'
+    public static final String BONITA_THEME_OLD_NAME = "custompage_bonitadefaulttheme"
+
     @Override
     def execute(MigrationContext context) {
-        List<GroovyRowResult> listTenantId = getAllTenantIds(context);
-        for(def index = 0; index < listTenantId.size(); index++) {
-            if (themeNameAlreadyExists(context, listTenantId.get(index))) {
-                context.logger.error('There is already a theme with name custompage_themeBonita. Bonita default theme will not be migrated to its new name')
+        List<Long> listTenantId = getAllTenantIds(context)
+        for (long tenantId : listTenantId) {
+            if (themeWithNewNameAlreadyExists(context, tenantId)) {
+                context.logger.error("""There is already a theme with name 'custompage_themeBonita' on tenant $tenantId. 
+Bonita default theme will not be migrated to the new name on this tenant""")
             } else {
-                updateNameAndDisplayNameAndContentNameOfPages(context, listTenantId.get(index))
+                updateNameAndDisplayNameAndContentNameOfPages(context, tenantId)
             }
         }
     }
 
-    private static List<GroovyRowResult> getAllTenantIds(context) {
-        return context.sql.rows("SELECT tenantId FROM page")
+    private static List<Long> getAllTenantIds(context) {
+        return context.sql.rows("SELECT tenantId FROM page").tenantId
     }
 
-    private static updateNameAndDisplayNameAndContentNameOfPages(MigrationContext context, GroovyRowResult tenantIdRow) {
-        def newPageName = 'custompage_themeBonita'
+    private static updateNameAndDisplayNameAndContentNameOfPages(MigrationContext context, long tenantId) {
         def newPageDisplayName = 'Bonita theme'
         def newPageContentName = 'bonita-theme.zip'
-        def tenantId = tenantIdRow.getAt(0)
-        context.logger.info("Updating theme information for all profile entries")
-        context.databaseHelper.executeUpdate("UPDATE page SET NAME = '$newPageName', displayName = '$newPageDisplayName', contentName = '$newPageContentName' WHERE NAME = 'custompage_bonitadefaulttheme' AND tenantId = $tenantId")
+        context.databaseHelper.executeUpdate("UPDATE page SET NAME = '${BONITA_THEME_NEW_NAME}', displayName = '$newPageDisplayName', contentName = '$newPageContentName' WHERE NAME = '${BONITA_THEME_OLD_NAME}' AND tenantId = $tenantId")
     }
 
-    private static boolean themeNameAlreadyExists(MigrationContext context, GroovyRowResult tenantIdRow) {
-        def tenantId = tenantIdRow.getAt(0)
+    private static boolean themeWithNewNameAlreadyExists(MigrationContext context, long tenantId) {
         return context.sql.rows("SELECT name FROM page WHERE name = 'custompage_themeBonita' AND tenantId = $tenantId").size() >= 1
     }
 

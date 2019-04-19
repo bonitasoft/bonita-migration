@@ -19,6 +19,9 @@ import org.bonitasoft.migration.core.MigrationContext
 import spock.lang.Shared
 import spock.lang.Specification
 
+import static org.bonitasoft.migration.version.to7_9_0.RenameBonitaDefaultTheme.BONITA_THEME_NEW_NAME
+import static org.bonitasoft.migration.version.to7_9_0.RenameBonitaDefaultTheme.BONITA_THEME_OLD_NAME
+
 /**
  * @author Dumitru Corini
  */
@@ -55,7 +58,7 @@ class RenameBonitaDefaultThemeIT extends Specification {
         byte[] content = "myValue".getBytes()
         migrationContext.sql.execute("""
 INSERT INTO page (tenantId, id, name, displayName, description, installationDate, installedBy, provided, hidden, lastModificationDate, lastUpdatedBy, contentName, content, contentType, processDefinitionId)
-VALUES (1, 1, 'custompage_bonitadefaulttheme', 'Bonita default theme', 'Application theme based on Bonita theme.', 1, 1, ${dbUnitHelper.trueValue()}, ${dbUnitHelper.falseValue()}, 1, 1, 'bonita-default-theme.zip', $content, 'a content', 1)
+VALUES (1, 1, '${BONITA_THEME_OLD_NAME}', 'Bonita default theme', 'Application theme based on Bonita theme.', 1, 1, ${dbUnitHelper.trueValue()}, ${dbUnitHelper.falseValue()}, 1, 1, 'bonita-default-theme.zip', $content, 'a content', 1)
 """)
         migrationContext.sql.execute("""
 INSERT INTO page (tenantId, id, name, displayName, description, installationDate, installedBy, provided, hidden, lastModificationDate, lastUpdatedBy, contentName, content, contentType, processDefinitionId)
@@ -65,7 +68,7 @@ VALUES (1, 2, 'custompage_htmlexample', 'HTML example page', 'HTML and Javascrip
         migrationStep.execute(migrationContext)
 
         then:
-        List updatedRows = migrationContext.sql.rows("SELECT id FROM page WHERE name ='custompage_themeBonita'")
+        List updatedRows = migrationContext.sql.rows("SELECT id FROM page WHERE name ='${BONITA_THEME_NEW_NAME}'")
         updatedRows.size() == 1
         updatedRows[0].id == 1
     }
@@ -75,7 +78,7 @@ VALUES (1, 2, 'custompage_htmlexample', 'HTML example page', 'HTML and Javascrip
         byte[] content = "myValue".getBytes()
         migrationContext.sql.execute("""
 INSERT INTO page (tenantId, id, name, displayName, description, installationDate, installedBy, provided, hidden, lastModificationDate, lastUpdatedBy, contentName, content, contentType, processDefinitionId)
-VALUES (1, 1, 'custompage_bonitadefaulttheme', 'Bonita default theme', 'Application theme based on Bonita theme.', 1, 1, ${dbUnitHelper.trueValue()}, ${dbUnitHelper.falseValue()}, 1, 1, 'bonita-default-theme.zip', $content, 'a content', 1)
+VALUES (1, 1, '${BONITA_THEME_OLD_NAME}', 'Bonita default theme', 'Application theme based on Bonita theme.', 1, 1, ${dbUnitHelper.trueValue()}, ${dbUnitHelper.falseValue()}, 1, 1, 'bonita-default-theme.zip', $content, 'a content', 1)
 """)
         migrationContext.sql.execute("""
 INSERT INTO page (tenantId, id, name, displayName, description, installationDate, installedBy, provided, hidden, lastModificationDate, lastUpdatedBy, contentName, content, contentType, processDefinitionId)
@@ -93,7 +96,7 @@ VALUES (1, 4, 'custompage_htmlexample', 'HTML example page', 'HTML and Javascrip
         migrationStep.execute(migrationContext)
 
         then:
-        List updatedNameRows = migrationContext.sql.rows("SELECT id FROM page WHERE name ='custompage_themeBonita'")
+        List updatedNameRows = migrationContext.sql.rows("SELECT id FROM page WHERE name ='${BONITA_THEME_NEW_NAME}'")
         updatedNameRows.size() == 1
         updatedNameRows[0].id == 1
         List updatedDisplayNameRows = migrationContext.sql.rows("SELECT id FROM page WHERE displayName ='Bonita theme'")
@@ -109,11 +112,11 @@ VALUES (1, 4, 'custompage_htmlexample', 'HTML example page', 'HTML and Javascrip
         byte[] content = "myValue".getBytes()
         migrationContext.sql.execute("""
 INSERT INTO page (tenantId, id, name, displayName, description, installationDate, installedBy, provided, hidden, lastModificationDate, lastUpdatedBy, contentName, content, contentType, processDefinitionId)
-VALUES (2, 1, 'custompage_bonitadefaulttheme', 'Bonita default theme', 'Application theme based on Bonita theme.', 1, 1, ${dbUnitHelper.trueValue()}, ${dbUnitHelper.falseValue()}, 1, 1, 'bonita-default-theme.zip', $content, 'a content', 1)
+VALUES (2, 1, '${BONITA_THEME_OLD_NAME}', 'Bonita default theme', 'Application theme based on Bonita theme.', 1, 1, ${dbUnitHelper.trueValue()}, ${dbUnitHelper.falseValue()}, 1, 1, 'bonita-default-theme.zip', $content, 'a content', 1)
 """)
         migrationContext.sql.execute("""
 INSERT INTO page (tenantId, id, name, displayName, description, installationDate, installedBy, provided, hidden, lastModificationDate, lastUpdatedBy, contentName, content, contentType, processDefinitionId)
-VALUES (1, 2, 'custompage_bonitadefaulttheme', 'Bonita default theme', 'Application theme based on Bonita theme.', 1, 1, ${dbUnitHelper.trueValue()}, ${dbUnitHelper.falseValue()}, 1, 1, 'bonita-default-theme.zip', $content, 'a content', 2)
+VALUES (1, 2, '${BONITA_THEME_OLD_NAME}', 'Bonita default theme', 'Application theme based on Bonita theme.', 1, 1, ${dbUnitHelper.trueValue()}, ${dbUnitHelper.falseValue()}, 1, 1, 'bonita-default-theme.zip', $content, 'a content', 2)
 """)
         migrationContext.sql.execute("""
 INSERT INTO page (tenantId, id, name, displayName, description, installationDate, installedBy, provided, hidden, lastModificationDate, lastUpdatedBy, contentName, content, contentType, processDefinitionId)
@@ -123,7 +126,7 @@ VALUES (1, 3, 'custompage_themeBonitaCustom', 'Bonita theme', 'Application theme
         migrationStep.execute(migrationContext)
 
         then:
-        List updatedRows = migrationContext.sql.rows("SELECT tenantId FROM page WHERE name ='custompage_themeBonita' ORDER BY tenantId")
+        List updatedRows = migrationContext.sql.rows("SELECT tenantId FROM page WHERE name ='${BONITA_THEME_NEW_NAME}' ORDER BY tenantId")
         updatedRows.size() == 2
 
         updatedRows[0].tenantId == 1
@@ -135,11 +138,11 @@ VALUES (1, 3, 'custompage_themeBonitaCustom', 'Bonita theme', 'Application theme
         byte[] content = "myValue".getBytes()
         migrationContext.sql.execute("""
 INSERT INTO page (tenantId, id, name, displayName, description, installationDate, installedBy, provided, hidden, lastModificationDate, lastUpdatedBy, contentName, content, contentType, processDefinitionId)
-VALUES (1, 1, 'custompage_bonitadefaulttheme', 'Bonita default theme', 'Application theme based on Bonita theme.', 1, 1, ${dbUnitHelper.trueValue()}, ${dbUnitHelper.falseValue()}, 1, 1, 'bonita-default-theme.zip', $content, 'a content', 1)
+VALUES (1, 1, '${BONITA_THEME_OLD_NAME}', 'Bonita default theme', 'Application theme based on Bonita theme.', 1, 1, ${dbUnitHelper.trueValue()}, ${dbUnitHelper.falseValue()}, 1, 1, 'bonita-default-theme.zip', $content, 'a content', 1)
 """)
         migrationContext.sql.execute("""
 INSERT INTO page (tenantId, id, name, displayName, description, installationDate, installedBy, provided, hidden, lastModificationDate, lastUpdatedBy, contentName, content, contentType, processDefinitionId)
-VALUES (1, 2, 'custompage_themeBonita', 'Bonita default theme custom', 'Application theme based on Bonita theme.', 1, 1, ${dbUnitHelper.trueValue()}, ${dbUnitHelper.falseValue()}, 1, 1, 'bonita-default-theme-custom.zip', $content, 'a content', 2)
+VALUES (1, 2, '${BONITA_THEME_NEW_NAME}', 'Bonita default theme custom', 'Application theme based on Bonita theme.', 1, 1, ${dbUnitHelper.trueValue()}, ${dbUnitHelper.falseValue()}, 1, 1, 'bonita-default-theme-custom.zip', $content, 'a content', 2)
 """)
         migrationContext.sql.execute("""
 INSERT INTO page (tenantId, id, name, displayName, description, installationDate, installedBy, provided, hidden, lastModificationDate, lastUpdatedBy, contentName, content, contentType, processDefinitionId)
@@ -150,28 +153,28 @@ VALUES (1, 3, 'custompage_themeBonitaCustom', 'Bonita theme', 'Application theme
         migrationStep.execute(migrationContext)
 
         then:
-        List unupdatedRows = migrationContext.sql.rows("SELECT id FROM page WHERE name='custompage_bonitadefaulttheme'")
+        List unupdatedRows = migrationContext.sql.rows("SELECT id FROM page WHERE name='${BONITA_THEME_OLD_NAME}'")
         unupdatedRows.size() == 1
 
         unupdatedRows[0].id == 1
 
-        List unchangedRows = migrationContext.sql.rows("SELECT displayName, contentName FROM page WHERE name='custompage_themeBonita'")
+        List unchangedRows = migrationContext.sql.rows("SELECT displayName, contentName FROM page WHERE name='${BONITA_THEME_NEW_NAME}'")
         unchangedRows.size() == 1
 
         unchangedRows[0].displayName == "Bonita default theme custom"
         unchangedRows[0].contentName == "bonita-default-theme-custom.zip"
     }
 
-    def "should migrate a tenant if he does not have a theme with the name, while another has any"() {
+    def "should only migrate tenants on which there is not already a page with the new name"() {
         given:
         byte[] content = "myValue".getBytes()
         migrationContext.sql.execute("""
 INSERT INTO page (tenantId, id, name, displayName, description, installationDate, installedBy, provided, hidden, lastModificationDate, lastUpdatedBy, contentName, content, contentType, processDefinitionId)
-VALUES (1, 1, 'custompage_bonitadefaulttheme', 'Bonita default theme', 'Application theme based on Bonita theme.', 1, 1, ${dbUnitHelper.trueValue()}, ${dbUnitHelper.falseValue()}, 1, 1, 'bonita-default-theme.zip', $content, 'a content', 1)
+VALUES (1, 1, '${BONITA_THEME_OLD_NAME}', 'Bonita default theme', 'Application theme based on Bonita theme.', 1, 1, ${dbUnitHelper.trueValue()}, ${dbUnitHelper.falseValue()}, 1, 1, 'bonita-default-theme.zip', $content, 'a content', 1)
 """)
         migrationContext.sql.execute("""
 INSERT INTO page (tenantId, id, name, displayName, description, installationDate, installedBy, provided, hidden, lastModificationDate, lastUpdatedBy, contentName, content, contentType, processDefinitionId)
-VALUES (1, 2, 'custompage_themeBonita', 'Bonita default theme custom', 'Application theme based on Bonita theme.', 1, 1, ${dbUnitHelper.trueValue()}, ${dbUnitHelper.falseValue()}, 1, 1, 'bonita-default-theme-custom.zip', $content, 'a content', 2)
+VALUES (1, 2, '${BONITA_THEME_NEW_NAME}', 'Bonita default theme custom', 'Application theme based on Bonita theme.', 1, 1, ${dbUnitHelper.trueValue()}, ${dbUnitHelper.falseValue()}, 1, 1, 'bonita-default-theme-custom.zip', $content, 'a content', 2)
 """)
         migrationContext.sql.execute("""
 INSERT INTO page (tenantId, id, name, displayName, description, installationDate, installedBy, provided, hidden, lastModificationDate, lastUpdatedBy, contentName, content, contentType, processDefinitionId)
@@ -179,7 +182,7 @@ VALUES (1, 3, 'custompage_themeBonitaCustom', 'Bonita theme', 'Application theme
 """)
         migrationContext.sql.execute("""
 INSERT INTO page (tenantId, id, name, displayName, description, installationDate, installedBy, provided, hidden, lastModificationDate, lastUpdatedBy, contentName, content, contentType, processDefinitionId)
-VALUES (2, 4, 'custompage_bonitadefaulttheme', 'Bonita default theme', 'Application theme based on Bonita theme.', 1, 1, ${dbUnitHelper.trueValue()}, ${dbUnitHelper.falseValue()}, 1, 1, 'bonita-default-theme.zip', $content, 'a content', 1)
+VALUES (2, 4, '${BONITA_THEME_OLD_NAME}', 'Bonita default theme', 'Application theme based on Bonita theme.', 1, 1, ${dbUnitHelper.trueValue()}, ${dbUnitHelper.falseValue()}, 1, 1, 'bonita-default-theme.zip', $content, 'a content', 1)
 """)
         migrationContext.sql.execute("""
 INSERT INTO page (tenantId, id, name, displayName, description, installationDate, installedBy, provided, hidden, lastModificationDate, lastUpdatedBy, contentName, content, contentType, processDefinitionId)
@@ -189,14 +192,12 @@ VALUES (2, 5, 'custompage_themeBonitaCustom', 'Bonita theme', 'Application theme
         migrationStep.execute(migrationContext)
 
         then:
-        List unupdatedRows = migrationContext.sql.rows("SELECT id FROM page WHERE name='custompage_bonitadefaulttheme'")
+        List unupdatedRows = migrationContext.sql.rows("SELECT id FROM page WHERE name='${BONITA_THEME_OLD_NAME}'")
         unupdatedRows.size() == 1
-
         unupdatedRows[0].id == 1
 
-        List updatedRows = migrationContext.sql.rows("SELECT id FROM page WHERE name='custompage_themeBonita' AND tenantId='2'")
+        List updatedRows = migrationContext.sql.rows("SELECT id FROM page WHERE name='${BONITA_THEME_NEW_NAME}' AND tenantId=2")
         updatedRows.size() == 1
-
         updatedRows[0].id == 4
     }
 }
