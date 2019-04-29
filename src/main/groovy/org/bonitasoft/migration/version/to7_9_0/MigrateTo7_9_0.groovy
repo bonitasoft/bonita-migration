@@ -52,6 +52,7 @@ class MigrateTo7_9_0 extends VersionMigration {
                 , new AddDeprecatedToLivingApplicationLayout()
                 , new AddCreationDateOnMessageInstance()
                 , new AddIndexLogicalGroupOnFlownodeInstance()
+                , new AddIndexActivityKindOnFlownodeInstance()
         ]
     }
 
