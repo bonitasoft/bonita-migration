@@ -38,6 +38,7 @@ class MigrateTo7_9_0Test extends Specification {
                 , "RenameCommandSystemColumn"
                 , "RenameBonitaDefaultTheme"
                 , "AddDeprecatedToLivingApplicationLayout"
+                , "AddCreationDateOnMessageInstance"
         ]
 
     }

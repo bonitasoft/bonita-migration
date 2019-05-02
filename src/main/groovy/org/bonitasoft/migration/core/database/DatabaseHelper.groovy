@@ -78,7 +78,7 @@ class DatabaseHelper {
     }
 
     /**
-     * adapting could have a different result that a fresh install
+     * adapting could have a different result than a fresh install
      * example: VARCHAR(50) should be a VARCHAR2(50 CHAR) in oracle
      * example: column name contains reserved keyword (qrtz_simprop_triggers)
      * @param statement
@@ -267,9 +267,9 @@ END"""
      * to set field values.
      */
     def addColumn(String table, String column, String type, String defaultValue, String constraint) {
-        sql.execute("ALTER TABLE $table ADD $column $type ${defaultValue != null ? "DEFAULT $defaultValue" : ""} ${constraint != null ? constraint : ""}" as String)
+        sql.execute("""ALTER TABLE $table ADD $column $type ${defaultValue != null ? "DEFAULT $defaultValue" : ""} ${constraint != null ? constraint : ""}""" as String)
         // in this case, sqlserver sets the constraint but lets the column with a null value, so set the value by hand
-        if (dbVendor == SQLSERVER && defaultValue !=null && constraint == null) {
+        if (dbVendor == SQLSERVER && defaultValue != null && constraint == null) {
             sql.execute("UPDATE $table set $column = $defaultValue" as String)
         }
         dropColumnDefaultValueIfExists(table, column)

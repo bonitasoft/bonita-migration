@@ -50,6 +50,7 @@ class MigrateTo7_9_0 extends VersionMigration {
                 , new RenameCommandSystemColumn()
                 , new RenameBonitaDefaultTheme()
                 , new AddDeprecatedToLivingApplicationLayout()
+                , new AddCreationDateOnMessageInstance()
         ]
     }
 
