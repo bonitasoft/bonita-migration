@@ -19,17 +19,15 @@ import org.bonitasoft.migration.core.MigrationContext
 import spock.lang.Shared
 import spock.lang.Specification
 
-import static org.bonitasoft.migration.version.to7_9_0.AddDeprecatedToLivingApplicationLayout.DEFAULT_LAYOUT_NAME
-import static org.bonitasoft.migration.version.to7_9_0.AddDeprecatedToLivingApplicationLayout.DEFAULT_LAYOUT_OLD_DISPLAY_NAME
-import static org.bonitasoft.migration.version.to7_9_0.AddDeprecatedToLivingApplicationLayout.DEFAULT_LAYOUT_NEW_DISPLAY_NAME
-import static org.bonitasoft.migration.version.to7_9_0.AddDeprecatedToLivingApplicationLayout.DEFAULT_LAYOUT_OLD_DESCRIPTION
-import static org.bonitasoft.migration.version.to7_9_0.AddDeprecatedToLivingApplicationLayout.DEFAULT_LAYOUT_NEW_DESCRIPTION
-import static org.bonitasoft.migration.version.to7_9_0.AddDeprecatedToLivingApplicationLayout.DEFAULT_LAYOUT_NAME
+import static org.bonitasoft.migration.version.to7_9_0.AddDeprecatedToLivingApplicationLayout.*
 
 /**
  * @author Dumitru Corini
  */
 class AddDeprecatedToLivingApplicationLayoutIT extends Specification {
+
+    private static final DEFAULT_LAYOUT_OLD_DESCRIPTION = 'This is the default layout V5 definition for a newly-created application. It was created using the UI designer, so you can export it and edit it with the UI designer. It contains a horizontal menu widget and an iframe widget. The menu structure  is defined in the application navigation. The application pages are displayed in the iframe.'
+    private static final DEFAULT_LAYOUT_OLD_DISPLAY_NAME = 'Default living application layout'
 
     @Shared
     def logger = new Logger()
@@ -39,10 +37,7 @@ class AddDeprecatedToLivingApplicationLayoutIT extends Specification {
 
     @Shared
     def dbUnitHelper = new DBUnitHelper(migrationContext)
-
     AddDeprecatedToLivingApplicationLayout migrationStep = new AddDeprecatedToLivingApplicationLayout()
-    private static final DEFAULT_LAYOUT_OLD_DESCRIPTION = 'This is the default layout V5 definition for a newly-created application. It was created using the UI designer, so you can export it and edit it with the UI designer. It contains a horizontal menu widget and an iframe widget. The menu structure  is defined in the application navigation. The application pages are displayed in the iframe.'
-    private static final DEFAULT_LAYOUT_OLD_DISPLAY_NAME = 'Default living application layout'
 
     def setup() {
         dropTestTables()
