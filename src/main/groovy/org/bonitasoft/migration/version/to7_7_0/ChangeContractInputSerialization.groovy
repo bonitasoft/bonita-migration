@@ -85,6 +85,7 @@ class ChangeContractInputSerialization extends MigrationStep {
         databaseHelper.dropColumn(table_name, "val")
         //rename column
         databaseHelper.renameColumn(table_name, "tmp_val", "val", newType)
+        context.logger.info("All the rows in the contract input table have been migrated")
     }
 
     static String normalizeType(String type, DBVendor dbVendor) {
@@ -98,15 +99,6 @@ class ChangeContractInputSerialization extends MigrationStep {
 
     private List<GroovyRowResult> getFirst5kToMigrate(Sql sql, String table_name) {
         sql.rows("SELECT tenantid, id FROM $table_name WHERE val IS NOT NULL AND tmp_val IS NULL" as String, 0, 5000)
-    }
-
-    private Object getFirstNonNullValue(Sql sql, String table_name) {
-        def row = sql.firstRow("SELECT val from $table_name WHERE val IS NOT NULL" as String)
-        if (row == null) {
-            return null
-        }
-        def firstNonNullValue = row.get("val")
-        firstNonNullValue
     }
 
     private Future<Void> updateAsync(AtomicLong counter, tenantid, id, MigrationContext context, String table_name) {
@@ -128,8 +120,8 @@ class ChangeContractInputSerialization extends MigrationStep {
                     context.logger.info("Migrated $currentCounter $table_name ...")
                 }
             } catch (Throwable t) {
-                context.logger.error("error while migrating contract input $tenantid,$id: $t.message")
-                t.printStackTrace()
+                context.logger.debug("Could not fully migrate contract inputs for tenantId,Id '$tenantid,$id': $t.message")
+                context.logger.info("Failed to migrate a batch of 500 contract inputs. Will retry...")
             }
         })
 
