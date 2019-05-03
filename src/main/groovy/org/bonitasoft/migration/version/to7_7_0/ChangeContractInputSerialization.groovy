@@ -85,6 +85,7 @@ class ChangeContractInputSerialization extends MigrationStep {
         databaseHelper.dropColumn(table_name, "val")
         //rename column
         databaseHelper.renameColumn(table_name, "tmp_val", "val", newType)
+        context.logger.info("All rows in the $tableName table have been migrated")
     }
 
     static String normalizeType(String type, DBVendor dbVendor) {
@@ -119,7 +120,8 @@ class ChangeContractInputSerialization extends MigrationStep {
                     context.logger.info("Migrated $currentCounter $table_name ...")
                 }
             } catch (Throwable t) {
-                context.logger.error("error while migrating contract input $tenantid,$id: $t.message", t)
+                context.logger.info("Unable to migrate tenantid: $tenantid id: $id. This will be retried later. Cause: ${t.message}")
+                context.logger.debug('Failure details', t)
             }
         })
 
