@@ -41,6 +41,7 @@ class MigrateTo7_9_0Test extends Specification {
                 , "AddCreationDateOnMessageInstance"
                 , "AddIndexLogicalGroupOnFlownodeInstance"
                 , "AddIndexActivityKindOnFlownodeInstance"
+                , "AddIndexOnJobParams"
         ]
 
     }
