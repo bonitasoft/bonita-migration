@@ -53,6 +53,7 @@ class MigrateTo7_9_0 extends VersionMigration {
                 , new AddCreationDateOnMessageInstance()
                 , new AddIndexLogicalGroupOnFlownodeInstance()
                 , new AddIndexActivityKindOnFlownodeInstance()
+                , new AddIndexOnJobParams()
         ]
     }
 
