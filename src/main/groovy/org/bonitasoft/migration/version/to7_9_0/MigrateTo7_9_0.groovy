@@ -31,7 +31,6 @@ class MigrateTo7_9_0 extends VersionMigration {
              "If the dependencies of these connectors are used in other connectors, the corresponding connectors will not be migrated.",
              "It means that, potentially, some of those connectors will not be migrated and will have to be updated manually after the migration tool completes",
              "If some Groovy scripts use the same dependencies as the old connectors' versions, they might be broken after migration, requiring a manual update",
-             "On a separated note, the SAP connector will not work anymore on Java 11. If you are using it, and plan to migrate to Java 11, it might be best to postpone your migration, and contact Bonita support",
              "To know more, check the documentation (http://www.bonitasoft.com/bos_redirect.php?bos_redirect_id=686&bos_redirect_product=bos&bos_redirect_major_version=7.9)."]
 
     @Override
