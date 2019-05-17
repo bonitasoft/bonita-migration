@@ -14,15 +14,17 @@
 
 package org.bonitasoft.migration.core.database
 
-import groovy.sql.GroovyRowResult
-import groovy.sql.Sql
+import static org.bonitasoft.migration.core.MigrationStep.DBVendor.*
+
 import org.bonitasoft.migration.core.Logger
 import org.bonitasoft.migration.core.MigrationStep.DBVendor
 import org.bonitasoft.migration.core.database.schema.ColumnDefinition
 import org.bonitasoft.migration.core.database.schema.ForeignKeyDefinition
 import org.bonitasoft.migration.core.database.schema.IndexDefinition
 
-import static org.bonitasoft.migration.core.MigrationStep.DBVendor.*
+import groovy.sql.GroovyRowResult
+import groovy.sql.Sql
+import groovy.transform.PackageScope
 
 /**
  * @author Baptiste Mesta
@@ -809,6 +811,36 @@ END"""
         return resourcesCount.each { it ->
             context.sql.executeInsert("INSERT INTO sequence VALUES(${it.getKey()}, ${sequenceId}, ${it.getValue()})")
         }
+    }
+
+    /**
+     * Add a real limit to the SELECT query only.<p>
+     *
+     * <b>Rationale</b><br>
+     * The Groovy rows method with pagination retrieve all data then filters which is a pain from a performance perspective
+     */
+    def rows(String query, int limit) {
+        sql.rows(buildLimitSelectQuery(query, limit))
+    }
+
+    // visible for testing
+    @PackageScope
+    String buildLimitSelectQuery(String query, int limit) {
+        String limitQuery = query
+        switch (dbVendor) {
+            case MYSQL:
+            case POSTGRES:
+                limitQuery = "$query LIMIT $limit"
+                break
+            case ORACLE:
+                limitQuery = "SELECT * FROM ( $query ) WHERE ROWNUM <= $limit"
+                break
+            case SQLSERVER:
+                // insert top right after 'select '
+                limitQuery = "SELECT TOP $limit ${query.substring('select '.length())}"
+                break
+        }
+        limitQuery
     }
 
 }
