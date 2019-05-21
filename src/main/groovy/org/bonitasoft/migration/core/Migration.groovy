@@ -30,16 +30,19 @@ class Migration {
     public static List<Version> TRANSITION_VERSIONS = ['7.7.0', '7.8.0', '7.8.1', '7.8.2'].collect {
         Version.valueOf(it)
     }
-    Logger logger = new Logger()
-    MigrationContext context
-    DisplayUtil displayUtil = new DisplayUtil()
+    private Logger logger = new Logger()
+    private MigrationContext context
+    private DisplayUtil displayUtil
 
     Migration() {
         this.context = new MigrationContext(logger: logger)
+        this.displayUtil = new DisplayUtil(logger: logger)
     }
 
-    Migration(MigrationContext context) {
+    // for testing only
+    Migration(MigrationContext context, DisplayUtil displayUtil) {
         this.context = context
+        this.displayUtil = displayUtil
     }
 
     public static void main(String[] args) {
@@ -48,7 +51,7 @@ class Migration {
 
     public void run(boolean isSp) {
         setupOutputs()
-        printMigrationBannerAndGlobalWarnings(isSp)
+        logMigrationBannerAndGlobalWarnings(isSp)
         context.loadProperties()
 
         context.openSqlConnection()
@@ -93,7 +96,7 @@ class Migration {
         def versions = getVersionsAfter(version)
         def visibleVersions = filterOutInvisibleVersions(versions)
         if (context.targetVersion == null) {
-            println "Enter the target version"
+            logger.info "Enter the target version"
             context.targetVersion = Version.valueOf(MigrationUtil.askForOptions(visibleVersions.collect {
                 it.toString()
             }))
@@ -205,9 +208,9 @@ class Migration {
     }
 
 
-    def printMigrationBannerAndGlobalWarnings(boolean isSp) {
+    def logMigrationBannerAndGlobalWarnings(boolean isSp) {
         def migrationToolVersion = getProjectProperties().getProperty("migration.tool.version", "DEV")
-        displayUtil.printInRectangle("", "Bonita migration tool ${migrationToolVersion} ${Edition.from(isSp).displayName} edition", "",
+        displayUtil.logInfoCenteredInRectangle("", "Bonita migration tool ${migrationToolVersion} ${Edition.from(isSp).displayName} edition", "",
                 "This tool will migrate your installation of Bonita.",
                 "Both database and bonita home will be modified.",
                 "Please refer to the documentation for further steps to completely migrate your production environment.",

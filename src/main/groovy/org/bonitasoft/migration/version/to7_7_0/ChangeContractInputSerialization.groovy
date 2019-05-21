@@ -119,8 +119,7 @@ class ChangeContractInputSerialization extends MigrationStep {
                     context.logger.info("Migrated $currentCounter $table_name ...")
                 }
             } catch (Throwable t) {
-                context.logger.error("error while migrating contract input $tenantid,$id: $t.message")
-                t.printStackTrace()
+                context.logger.error("error while migrating contract input $tenantid,$id: $t.message", t)
             }
         })
 

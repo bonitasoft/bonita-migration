@@ -75,4 +75,12 @@ class Logger {
         }
 
     }
+
+    void error(String message, Throwable t) {
+        if (error) {
+            println "[ERROR] " + message
+        }
+        t.printStackTrace()
+    }
+
 }

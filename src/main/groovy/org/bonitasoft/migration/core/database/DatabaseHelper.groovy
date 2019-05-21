@@ -750,7 +750,7 @@ END"""
             if (trimmed != null && !trimmed.empty) {
                 logger.info "execute statement:\n${trimmed}"
                 def count = sql.executeUpdate(trimmed)
-                println "updated $count rows"
+                logger.info "updated $count rows"
             }
         }
     }
