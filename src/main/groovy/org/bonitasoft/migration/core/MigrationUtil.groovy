@@ -212,6 +212,8 @@ class MigrationUtil {
             try {
                 def choiceNumber = Integer.valueOf(input) - 1 //index in the list is -1
                 if (choiceNumber <= options.size()) {
+                    String choice = options.get(choiceNumber)
+                    logger.info "$choiceNumber --> $choice"
                     return options.get(choiceNumber)
                 }
             } catch (Exception e) {

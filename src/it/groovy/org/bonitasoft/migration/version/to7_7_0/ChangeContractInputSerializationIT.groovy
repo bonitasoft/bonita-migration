@@ -1,14 +1,16 @@
 package org.bonitasoft.migration.version.to7_7_0
 
-import org.bonitasoft.migration.DBUnitHelper
-import org.bonitasoft.migration.core.MigrationContext
-import spock.lang.Shared
-import spock.lang.Specification
-import spock.lang.Unroll
+import static org.bonitasoft.migration.core.MigrationStep.DBVendor.ORACLE
+import static org.bonitasoft.migration.version.to7_7_0.ChangeContractInputSerialization.newColumnType
 
 import java.sql.Connection
 
-import static org.bonitasoft.migration.core.MigrationStep.DBVendor.ORACLE
+import org.bonitasoft.migration.DBUnitHelper
+import org.bonitasoft.migration.core.MigrationContext
+
+import spock.lang.Shared
+import spock.lang.Specification
+import spock.lang.Unroll
 
 class ChangeContractInputSerializationIT extends Specification {
 
@@ -124,6 +126,66 @@ values (1, 1, 1, 1, 'PROCESS', 1, 'myInput', null)
         ['NVARCHAR', 'TEXT', 'CLOB', 'LONGTEXT'].contains(migrationContext.databaseHelper.getColumnType("arch_contract_data", "val").toUpperCase())
     }
 
+    def 'should migrate when tmp_val column has been created in a previous run'() {
+        given:
+        addTmpValColumn('contract_data')
+        addTmpValColumn('arch_contract_data')
+        byte[] nonMigratedContent = serialize("myValue")
+
+        migrationContext.sql.execute("""
+insert into contract_data(tenantId , id, kind, scopeId, name, val)
+values (1, 1, 'PROCESS', 1000, 'myInput', $nonMigratedContent)
+""")
+        migrationContext.sql.execute("""
+insert into contract_data(tenantId , id, kind, scopeId, name, val)
+values (1, 2, 'PROCESS', 1001, 'myInputNull', NULL)
+""")
+        migrationContext.sql.execute("""
+insert into arch_contract_data(tenantId , sourceobjectid, archiveDate, id, kind, scopeId, name, val)
+values (1, 1, 1, 1, 'PROCESS', 1001, 'myInput', $nonMigratedContent)
+""")
+        migrationContext.sql.execute("""
+insert into arch_contract_data(tenantId , sourceobjectid, archiveDate, id, kind, scopeId, name, val)
+values (1, 2, 1, 2, 'PROCESS', 1002, 'myInput', $nonMigratedContent)
+""")
+        migrationContext.sql.execute("""
+insert into arch_contract_data(tenantId , sourceobjectid, archiveDate, id, kind, scopeId, name, val, tmp_val)
+values (1, 3, 1, 3, 'PROCESS', 1003, 'myInput', $nonMigratedContent, 'already migrated value that will not be updated')
+""")
+
+        when:
+        migrationStep.execute(migrationContext)
+
+        then:
+        migrationContext.sql.rows("SELECT tenantid,id FROM contract_data").size() == 2
+        migrationContext.sql.rows("SELECT tenantid,id FROM arch_contract_data").size() == 3
+
+        // already migrated value kept untouched
+        getMigratedValue(migrationContext.sql.firstRow("SELECT * FROM arch_contract_data WHERE tenantId=1 AND id=3").val)== 'already migrated value that will not be updated'
+    }
+
+    def 'should migrate hundreds of arch_contract_data'() {
+        given:
+        final int numberOfArchContractData = 787
+        migrationContext.sql.withTransaction { Connection connection ->
+            for (int i = 0; i < numberOfArchContractData; i++) {
+                byte[] content = i % 7 == 0 ? null: serialize("<string>some long string $i</string>")
+                migrationContext.sql.executeUpdate("""
+insert into arch_contract_data(tenantId , sourceobjectid, archiveDate, id, kind, scopeId, name, val)
+values (1, $i, 1, $i, 'PROCESS', $i, 'myInput', $content)
+""")
+            }
+        }
+        when:
+        migrationStep.execute(migrationContext)
+        then:
+        migrationContext.sql.rows("SELECT tenantid,id FROM arch_contract_data").size() == numberOfArchContractData
+    }
+
+    // =================================================================================================================
+    // UTILS
+    // =================================================================================================================
+
     private static byte[] serialize(String myValue) {
         def baos = new ByteArrayOutputStream()
         def objectOutputStream = new ObjectOutputStream(baos)
@@ -132,12 +194,16 @@ values (1, 1, 1, 1, 'PROCESS', 1, 'myInput', null)
         return baos.toByteArray()
     }
 
+    private void addTmpValColumn(String tableName) {
+        migrationContext.databaseHelper.addColumn(tableName, "tmp_val", newColumnType(migrationContext), null, null)
+    }
+
     private String getMigratedValue(def value) {
         def migratedValue = value
         if (value != null && ORACLE.equals(migrationContext.dbVendor)) {
             migratedValue = migrationContext.databaseHelper.getClobContent(value)
         }
         migratedValue
-
     }
+
 }
