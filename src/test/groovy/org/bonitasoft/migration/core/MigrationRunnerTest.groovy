@@ -25,7 +25,7 @@ import spock.lang.Unroll
 class MigrationRunnerTest extends Specification {
 
     def logger = Spy(Logger.class)
-    VersionMigration versionMigration = Mock(VersionMigration);
+    VersionMigration versionMigration = Mock(VersionMigration)
     MigrationStep migrationStep1 = Mock(MigrationStep)
     MigrationStep migrationStep2 = Mock(MigrationStep)
     List<MigrationStep> migrationStepList = [migrationStep1, migrationStep2]
@@ -95,7 +95,7 @@ class MigrationRunnerTest extends Specification {
         migrationRunner.run(false)
 
         then:
-        1 * displayUtil.printInRectangleWithTitle("Migration to version 7.5.0", [MigrateTo7_5_0.WARN_MESSAGE_JAVA_8] as String[])
+        1 * displayUtil.logWarningsInRectangleWithTitle("Migration to version 7.5.0", [MigrateTo7_5_0.WARN_MESSAGE_JAVA_8] as String[])
     }
 
      def "run check blocking pre-requisites before running migration"() {
@@ -111,7 +111,7 @@ class MigrationRunnerTest extends Specification {
         migrationRunner.run(false)
 
         then:
-        1 * displayUtil.printInRectangleWithTitle("Migration to version 7.8.0", ["Blocking Message"] as String[])
+        1 * displayUtil.logWarningsInRectangleWithTitle("Migration to version 7.8.0", ["Blocking Message"] as String[])
     }
 
     def "should gather ALL pre-requisites before asking for confirmation"() {
@@ -135,10 +135,10 @@ class MigrationRunnerTest extends Specification {
 
         // Several 'then' to verify the order of execution:
         then:
-        1 * displayUtil.printInRectangleWithTitle("Migration to version 7.4.9", ["Warning 7.4.9"] as String[])
+        1 * displayUtil.logWarningsInRectangleWithTitle("Migration to version 7.4.9", ["Warning 7.4.9"] as String[])
 
         then:
-        1 * displayUtil.printInRectangleWithTitle("Migration to version 7.5.0", ["Warning 7.5.0"] as String[])
+        1 * displayUtil.logWarningsInRectangleWithTitle("Migration to version 7.5.0", ["Warning 7.5.0"] as String[])
 
         then:
         1 * logger.info("Execute migration to version 7.4.9")

@@ -113,19 +113,17 @@ abstract class VersionMigration {
                 logger.info "Executing update for each tenant : " + tenants
                 tenantsClientDir.eachDir { tenant ->
                     logger.info "For tenant : " + tenant.name
-                    DisplayUtil.executeWrappedWithTabs {
-                        currentDir = "/conf"
-                        MigrationUtil.migrateDirectory(newClientBonitaHome.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir, true)
+                    currentDir = "/conf"
+                    MigrationUtil.migrateDirectory(newClientBonitaHome.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir, true)
 
-                        currentDir = "/work/icons/default"
-                        MigrationUtil.migrateDirectory(newClientBonitaHome.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir, true)
+                    currentDir = "/work/icons/default"
+                    MigrationUtil.migrateDirectory(newClientBonitaHome.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir, true)
 
-                        currentDir = "/work/icons/priority"
-                        MigrationUtil.migrateDirectory(newClientBonitaHome.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir, true)
+                    currentDir = "/work/icons/priority"
+                    MigrationUtil.migrateDirectory(newClientBonitaHome.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir, true)
 
-                        currentDir = "/work/icons/profiles"
-                        MigrationUtil.migrateDirectory(newClientBonitaHome.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir, true)
-                    }
+                    currentDir = "/work/icons/profiles"
+                    MigrationUtil.migrateDirectory(newClientBonitaHome.path + "/platform/tenant-template" + currentDir, tenant.path + currentDir, true)
                 }
             }
         } else {
