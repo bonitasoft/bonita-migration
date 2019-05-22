@@ -14,73 +14,33 @@
 
 package org.bonitasoft.migration.core
 
+import org.slf4j.LoggerFactory
+
 /**
  * @author Baptiste Mesta
  */
 class Logger {
 
-    boolean debug = true
-    boolean info = true
-    boolean warn = true
-    boolean error = true
+    private static final def log = LoggerFactory.getLogger(Logger.class)
 
     void debug(String message) {
-        if (debug) {
-            println "[DEBUG] " + message
-        }
+        log.debug message
     }
 
     void info(String message) {
-        if (info) {
-            println "[INFO] " + message
-        }
+        log.info message
     }
 
     void warn(String message) {
-        if (warn) {
-            println "[WARN] " + message
-        }
+        log.warn message
     }
 
     void error(String message) {
-        if (error) {
-            println "[ERROR] " + message
-        }
-    }
-
-    void setLevel(String level) {
-        debug = true
-        info = true
-        warn = true
-        error = true
-        switch (level) {
-            case "INFO":
-                debug = false
-                break
-            case "WARN":
-                debug = false
-                info = false
-                break
-            case "ERROR":
-                debug = false
-                info = false
-                warn = false
-                break
-            case "OFF":
-                debug = false
-                info = false
-                warn = false
-                error = false
-                break
-        }
-
+        log.error message
     }
 
     void error(String message, Throwable t) {
-        if (error) {
-            println "[ERROR] " + message
-        }
-        t.printStackTrace()
+        log.error message, t
     }
 
 }

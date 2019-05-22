@@ -50,9 +50,9 @@ class Migration {
     }
 
     public void run(boolean isSp) {
-        setupOutputs()
+        context.start()
         logMigrationBannerAndGlobalWarnings(isSp)
-        context.loadProperties()
+        context.loadConfiguration()
 
         context.openSqlConnection()
         def versionMigrations = getMigrationVersionsToRun()
@@ -200,13 +200,6 @@ class Migration {
         }
         return properties
     }
-
-    static def setupOutputs() {
-        def logInFile = new FileOutputStream(new File("migration-" + new Date().format("yyyy-MM-dd-HHmmss") + ".log"))
-        System.setOut(new PrintStream(new SplitPrintStream(System.out, logInFile)))
-        System.setErr(new PrintStream(new SplitPrintStream(System.err, logInFile)))
-    }
-
 
     def logMigrationBannerAndGlobalWarnings(boolean isSp) {
         def migrationToolVersion = getProjectProperties().getProperty("migration.tool.version", "DEV")
