@@ -45,7 +45,8 @@ class DBUnitHelper {
     private Logger logger
 
     DBUnitHelper(MigrationContext context) {
-        context.loadProperties()
+        context.start()
+        context.loadConfiguration()
         context.openSqlConnection()
         this.context = context
         this.logger = context.logger

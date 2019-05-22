@@ -31,6 +31,8 @@ class IOUtil {
 
     public final static String AUTO_ACCEPT = "auto.accept"
 
+    private final static Logger log = new Logger()
+
     static boolean isAutoAccept() {
         return System.getProperty(AUTO_ACCEPT) == "true"
     }
@@ -40,7 +42,7 @@ class IOUtil {
             throw new IllegalArgumentException("Can't execute migrateDirectory method with arguments : dir = " + dir)
         }
 
-        println "Deleting all content of $dir..."
+        log.info "Deleting all content of $dir..."
 
         if (!dir.deleteDir()) {
             throw new IllegalStateException("Migration failed. Unable to delete : " + dir)
@@ -141,10 +143,10 @@ class IOUtil {
 
     static void askIfWeContinue() {
         if (!isAutoAccept()) {
-            println "Continue migration? (yes/no): "
-            def String input = read()
+            log.info "Continue migration? (yes/no): "
+            String input = read()
             if (input != "yes") {
-                println "Migration cancelled"
+                log.warn "Migration cancelled"
                 System.exit(0)
             }
         }
