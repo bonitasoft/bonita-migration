@@ -40,56 +40,14 @@ class MigrationUtil {
         return System.getProperty(AUTO_ACCEPT) == "true"
     }
 
-    /**
-     * Get a single property and print it
-     * First it try to get it from system (in order to override properties)
-     * then from the given property object
-     */
-    static String getAndPrintProperty(Properties properties, String propertyName, boolean isMandatory) {
-        if (properties == null || propertyName == null || "".equals(propertyName)) {
-            throw new IllegalArgumentException("Can't execute getAndPrintProperty method with arguments : properties = " + properties + ", propertyName = " + propertyName)
-        }
-        def String property = System.getProperty(propertyName)
-        if (property != null) {
-            println "" + propertyName + " = " + property
-            return property
-        }
-        property = properties.getProperty(propertyName)
-        if (property != null) {
-            property = property.trim()
-            println "" + propertyName + " = " + property
-            return property
-        }
-        if (isMandatory) {
-            throw new NotFoundException("The property " + propertyName + " doesn't exist !!")
-        }
-    }
+    private static final Logger logger = new Logger()
 
-    /**
-     * Execute a feature migration script
-     *
-     * @param gse
-     * @param file
-     * @param scriptName
-     * @param binding
-     * @param startMigrationDate
-     * @return
-     */
-    static executeMigration(GroovyScriptEngine gse, File file, String scriptName, Binding binding, Date startMigrationDate) {
-        def startDate = new Date()
-        DisplayUtil.executeWrappedWithTabs {
-            gse.run(new File(file, scriptName).getPath(), binding)
-        }
-        printSuccessMigration(startDate, startMigrationDate)
-    }
-
-    static printSuccessMigration(Date startFeatureDate, Date startMigrationDate) {
+    static logSuccessMigration(Date startFeatureDate, Date startMigrationDate) {
         if (startFeatureDate == null || startMigrationDate == null) {
-            throw new IllegalArgumentException("Can't execute printSuccessMigration method with arguments : startFeatureDate = " + startFeatureDate + ", startMigrationDate = " + startMigrationDate)
+            throw new IllegalArgumentException("Can't execute logSuccessMigration method with arguments : startFeatureDate = " + startFeatureDate + ", startMigrationDate = " + startMigrationDate)
         }
 
         def endFeatureDate = new Date()
-        def logger = new Logger()
         logger.info("| --> Migration step success in " + TimeCategory.minus(endFeatureDate, startFeatureDate) + ". Migration started " + TimeCategory.minus(endFeatureDate, startMigrationDate) + " ago. --")
     }
 
@@ -127,7 +85,7 @@ class MigrationUtil {
                     if (toUpdate) {
                         def count = sql.executeUpdate(content)
                         if (count > 0) {
-                            println count + " row(s) updated"
+                            logger.info count + " row(s) updated"
                         }
                     } else {
                         sql.execute(content)
@@ -135,7 +93,7 @@ class MigrationUtil {
                 }
             }
         } else {
-            println "nothing to execute"
+            logger.info "nothing to execute"
         }
     }
 
@@ -225,7 +183,7 @@ class MigrationUtil {
         }
 
         if (!deleteOldDirectory) {
-            println "Adding/overwriting content in $toDir..."
+            logger.info " | Adding/overwriting content in $toDir..."
         } else {
             IOUtil.deleteDirectory(fileToDir)
         }
@@ -234,10 +192,10 @@ class MigrationUtil {
 
     static void askIfWeContinue() {
         if (!isAutoAccept()) {
-            println "Continue migration? (yes/no): "
-            def String input = read()
+            logger.info "Continue migration? (yes/no): "
+            String input = read()
             if (input != "yes") {
-                println "Migration cancelled"
+                logger.warn "Migration cancelled"
                 System.exit(0)
             }
         }
@@ -247,9 +205,9 @@ class MigrationUtil {
         def input = null
         while (true) {
             options.eachWithIndex { it, idx ->
-                println "${idx + 1} -- $it "
+                logger.info "${idx + 1} -- $it "
             }
-            println "choice: "
+            logger.info "choice: "
             input = read()
             try {
                 def choiceNumber = Integer.valueOf(input) - 1 //index in the list is -1
@@ -258,7 +216,7 @@ class MigrationUtil {
                 }
             } catch (Exception e) {
             }
-            println "Invalid choice, please enter a value between 1 and ${options.size()}"
+            logger.warn "Invalid choice, please enter a value between 1 and ${options.size()}"
         }
     }
 
@@ -267,14 +225,14 @@ class MigrationUtil {
         sql.eachRow("SELECT tenantid,nextId from sequence WHERE id = $sequenceId") { row ->
             idsByTenants.put(row[0], row[1])
         }
-        println "next id by tenants for sequence id $sequenceId: $idsByTenants"
+        logger.info "next id by tenants for sequence id $sequenceId: $idsByTenants"
         return idsByTenants
     }
 
     static updateNextIdsForTable(Sql sql, long sequenceId, Map nexIdsByTenants) {
         nexIdsByTenants.each {
-            println "update next id to $it.value for sequence id $sequenceId on tenant $it.key"
-            println sql.executeUpdate("UPDATE sequence SET nextId = $it.value WHERE tenantId = $it.key and id = $sequenceId") + " row(s) updated"
+            logger.info "update next id to $it.value for sequence id $sequenceId on tenant $it.key"
+            logger.info sql.executeUpdate("UPDATE sequence SET nextId = $it.value WHERE tenantId = $it.key and id = $sequenceId") + " row(s) updated"
         }
     }
 }

@@ -18,75 +18,52 @@ package org.bonitasoft.migration.core
  */
 class DisplayUtil {
 
-    public final static String LINE_SEPARATOR = System.getProperty("line.separator");
+    Logger logger
 
-    void printInRectangleWithTitle(String title, String... lines) {
+    void logWarningsInRectangleWithTitle(String title, String... lines) {
         def list = lines.toList()
         list.add(0, title)
         def flatten = list.collect { it.split("\n") }.flatten()
         def maxSize = getMaxSize(flatten as String[])
-        printLine(maxSize)
-        println String.format("| %1\$-${maxSize}s|", title)
-        printLine(maxSize)
+        logger.warn dashLine(maxSize)
+        logger.warn String.format("| %1\$-${maxSize}s|", title)
+        logger.warn dashLine(maxSize)
         flatten.drop(1).each {
-            println String.format("|   %1\$-${maxSize}s|", it)
+            logger.warn String.format("|   %1\$-${maxSize}s|", it)
         }
-        printLine(maxSize)
-
+        logger.warn dashLine(maxSize)
     }
 
-    void printInRectangle(String... lines) {
+    void logInfoCenteredInRectangle(String... lines) {
         def maxSize = getMaxSize(lines)
-        printLine(maxSize)
-        lines.each {
-            int spaces = maxSize - it.size()
-            print "|"
-            printSpaces((int) (spaces / 2))
-            print it
-            printSpaces(((int) (spaces / 2)) + spaces % 2)
-            print "|"
-            print LINE_SEPARATOR
-        }
-        printLine(maxSize)
+        logger.info dashLine(maxSize)
+        lines.each { logger.info centeredLineInRectangle(it, maxSize) }
+        logger.info dashLine(maxSize)
     }
 
     private int getMaxSize(String... lines) {
         lines.collect { it.split("\n").collect { it.length() }.max() }.max() + 2
     }
 
-    def printLine(int size) {
-        print '+'
-        int i = 0;
-        while (i < size) {
-            i++;
-            print '-'
-        }
-        print '+'
-        print LINE_SEPARATOR
+    String centeredLineInRectangle(String line, int innerSize) {
+        int totalSpaces = innerSize - line.size()
+        int spacesBefore = (int) (totalSpaces / 2)
+        int spacesAfter = totalSpaces - spacesBefore
+        '|' + spaces(spacesBefore) + line + spaces(spacesAfter) + '|'
     }
 
-    def printSpaces(int size) {
-        int i = 0;
-        while (i < size) {
-            i++;
-            print ' '
+    String dashLine(int size) {
+        if (size <= 0 ) {
+            return '++'
         }
+        '+' + (1..size).collect{'-'}.join('') + '+'
     }
 
-    /**
-     *
-     *  Wrap the system out with ' | ' when executing the closure
-     */
-    static void executeWrappedWithTabs(Closure closure) {
-        def stdout = System.out;
-        System.setOut(new PrintStream(stdout) {
-            @Override
-            void println(String x) {
-                stdout.print(" | ")
-                stdout.println(x)
-            }
-        })
-        closure.call()
-        System.setOut(stdout);
+    String spaces(int size) {
+        if (size <= 0 ) {
+            return ''
+        }
+        (1..size).collect{' '}.join('')
     }
+
 }

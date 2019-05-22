@@ -18,18 +18,19 @@ class MigrationTest extends Specification {
     @Rule
     TemporaryFolder temporaryFolder
 
-    def infos = []
-    def logger = [info: { String message -> infos.add(message) }] as Logger
-    def Sql sql = Mock(Sql)
-    def MigrationContext migrationContext = Mock(MigrationContext)
-    def File bonitaHome
+    private def infos = []
+    private def logger = [info: { String message -> infos.add(message) }] as Logger
+    private Sql sql = Mock(Sql)
+    private MigrationContext migrationContext = Mock(MigrationContext)
+    private DisplayUtil displayUtil = Mock(DisplayUtil)
+    private File bonitaHome
     private Migration migration
 
     def setup() {
         migrationContext.sql >> sql
         migrationContext.logger >> logger
         bonitaHome = temporaryFolder.newFolder()
-        migration = Spy(Migration, constructorArgs: [migrationContext])
+        migration = Spy(Migration, constructorArgs: [migrationContext, displayUtil])
         migration.getRunner(_ as List<VersionMigration>) >> Mock(MigrationRunner)
     }
 
@@ -40,7 +41,7 @@ class MigrationTest extends Specification {
         when:
         migration.run(false)
         then:
-        def IllegalStateException throwable = thrown()
+        IllegalStateException throwable = thrown()
         throwable.message == "Versions are not consistent, see logs"
     }
 
@@ -72,7 +73,7 @@ class MigrationTest extends Specification {
         when:
         migration.run(false)
         then:
-        def IllegalStateException throwable = thrown()
+        IllegalStateException throwable = thrown()
         throwable.message == "The property bonita.home is neither set in system property nor in the configuration file"
     }
 
@@ -84,7 +85,7 @@ class MigrationTest extends Specification {
         when:
         migration.run(false)
         then:
-        def IllegalStateException throwable = thrown()
+        IllegalStateException throwable = thrown()
         throwable.message == "Sorry the version 7.0.9 can not be migrated using this migration tool"
     }
 
@@ -95,7 +96,7 @@ class MigrationTest extends Specification {
         when:
         migration.run(false)
         then:
-        def IllegalStateException throwable = thrown()
+        IllegalStateException throwable = thrown()
         throwable.message == "7.10.10 is not yet handled by this version of the migration tool"
     }
 
@@ -107,7 +108,7 @@ class MigrationTest extends Specification {
         when:
         migration.run(false)
         then:
-        def IllegalStateException throwable = thrown()
+        IllegalStateException throwable = thrown()
         throwable.message == "Sorry, but this tool can't manage version under 7.0.0"
     }
 
@@ -118,7 +119,7 @@ class MigrationTest extends Specification {
         when:
         migration.run(false)
         then:
-        def IllegalStateException throwable = thrown()
+        IllegalStateException throwable = thrown()
         throwable.message == "The version is already in 7.3.1"
     }
 
@@ -130,7 +131,7 @@ class MigrationTest extends Specification {
         when:
         migration.run(false)
         then:
-        def IllegalStateException throwable = thrown()
+        IllegalStateException throwable = thrown()
         throwable.message == "The target version 7.2.9 can not be before source version 7.3.1"
     }
 

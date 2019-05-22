@@ -13,17 +13,17 @@
  **/
 package org.bonitasoft.migration.version.to7_7_0
 
-import groovy.sql.GroovyRowResult
-import groovy.sql.Sql
-import org.bonitasoft.migration.core.MigrationContext
-import org.bonitasoft.migration.core.MigrationStep
-import org.bonitasoft.migration.core.database.DatabaseHelper
+import static org.bonitasoft.migration.core.MigrationStep.DBVendor.*
 
 import java.util.concurrent.Callable
 import java.util.concurrent.Future
 import java.util.concurrent.atomic.AtomicLong
 
-import static org.bonitasoft.migration.core.MigrationStep.DBVendor.*
+import org.bonitasoft.migration.core.MigrationContext
+import org.bonitasoft.migration.core.MigrationStep
+import org.bonitasoft.migration.core.database.DatabaseHelper
+
+import groovy.sql.GroovyRowResult
 
 class ChangeContractInputSerialization extends MigrationStep {
 
@@ -69,12 +69,12 @@ class ChangeContractInputSerialization extends MigrationStep {
         }
         //move data
 
-        def rows = getFirst5kToMigrate(sql, table_name)
+        def rows = getFirst5kToMigrate(databaseHelper, table_name)
         while (!rows.isEmpty()) {
             rows.collect { contract_data ->
                 updateAsync(counter, contract_data.tenantid, contract_data.id, context, table_name)
             }.last().get() // we wait for the last future to finish before reading the next 5000
-            rows = getFirst5kToMigrate(sql, table_name)
+            rows = getFirst5kToMigrate(databaseHelper, table_name)
         }
         context.logger.info("Migrated in total ${counter.get()} $table_name")
         def numberOfNotMigratedRows = sql.firstRow("SELECT COUNT(*) FROM $table_name WHERE val IS NOT NULL AND tmp_val IS NULL" as String)[0]
@@ -97,10 +97,9 @@ class ChangeContractInputSerialization extends MigrationStep {
         }
     }
 
-    private List<GroovyRowResult> getFirst5kToMigrate(Sql sql, String table_name) {
-        sql.rows("SELECT tenantid, id FROM $table_name WHERE val IS NOT NULL AND tmp_val IS NULL" as String, 0, 5000)
+    private List<GroovyRowResult> getFirst5kToMigrate(DatabaseHelper databaseHelper, String table_name) {
+        databaseHelper.rows("SELECT tenantid, id FROM $table_name WHERE val IS NOT NULL AND tmp_val IS NULL" as String, 5000)
     }
-
     private Future<Void> updateAsync(AtomicLong counter, tenantid, id, MigrationContext context, String table_name) {
         context.asyncExec((Callable<Void>) {
             try {
@@ -120,7 +119,7 @@ class ChangeContractInputSerialization extends MigrationStep {
                     context.logger.info("Migrated $currentCounter $table_name ...")
                 }
             } catch (Throwable t) {
-                context.logger.debug("Could not fully migrate contract inputs for tenantId,Id '$tenantid,$id': $t.message")
+                context.logger.debug("Could not fully migrate contract inputs for tenantId,Id '$tenantid,$id': $t.message", t)
                 context.logger.info("Failed to migrate a batch of 500 contract inputs. Will retry...")
             }
         })

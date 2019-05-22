@@ -59,7 +59,7 @@ class MigrationRunner {
                     if (stepWarningMessage) {
                         warnings.put("Migration to version:${it.version} - step: ${step.description}", stepWarningMessage)
                     }
-                    MigrationUtil.printSuccessMigration(stepStartDate, migrationStartDate)
+                    MigrationUtil.logSuccessMigration(stepStartDate, migrationStartDate)
                     logger.info "---------------"
                 }
                 changePlatformVersion(context.sql, it.getVersion())
@@ -74,14 +74,13 @@ class MigrationRunner {
             if (warnings) {
                 logger.warn " However, some warnings require your attention:"
                 warnings.each { line ->
-                    displayUtil.printInRectangleWithTitle(line.key, line.value.split("\n"))
+                    displayUtil.logWarningsInRectangleWithTitle(line.key, line.value.split("\n"))
                 }
             }
         }
     }
 
     private boolean hasBlockingPrerequisites() {
-
         Map<String, String[]> beforeMigrationBlocks = [:]
         versionMigrations.each {
             VersionMigration versionMigration ->
@@ -91,9 +90,9 @@ class MigrationRunner {
                 }
         }
         if (beforeMigrationBlocks) {
-            logger.info "[SEVERE] Some migration steps cannot complete :"
+            logger.warn "Some migration steps cannot complete :"
             beforeMigrationBlocks.each { warning ->
-                displayUtil.printInRectangleWithTitle(warning.key, warning.value)
+                displayUtil.logWarningsInRectangleWithTitle(warning.key, warning.value)
             }
             return true
         }
@@ -113,7 +112,7 @@ class MigrationRunner {
         if (beforeMigrationWarnings) {
             logger.warn "Some migration steps have important pre-requisites:"
             beforeMigrationWarnings.each { warning ->
-                displayUtil.printInRectangleWithTitle(warning.key, warning.value)
+                displayUtil.logWarningsInRectangleWithTitle(warning.key, warning.value)
             }
             MigrationUtil.askIfWeContinue()
         }
