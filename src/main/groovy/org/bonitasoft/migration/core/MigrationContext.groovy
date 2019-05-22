@@ -56,6 +56,8 @@ class MigrationContext {
     DatabaseHelper databaseHelper
     ConfigurationHelper configurationHelper
 
+    private LoggingConfiguration loggingConfiguration = new LoggingConfiguration()
+
     private DataSource dataSource
     private DbConfig dbConfig
     private ExecutorService executorService
@@ -63,11 +65,16 @@ class MigrationContext {
     MigrationContext() {
     }
 
+    void start() {
+        loggingConfiguration.initializeConfiguration()
+    }
+
     /**
      * Load properties form the 'Config.properties' file inside the distribution
      * @return the properties of the migration distribution
      */
-    void loadProperties() {
+    void loadConfiguration() {
+        logger.info('Loading configuration')
         Properties properties = new Properties()
         def configFile = new File("../Config.properties")
         try {
@@ -102,10 +109,14 @@ class MigrationContext {
         if (file != null) {
             bonitaHome = new File(file)
         }
+        completeLoggingConfiguration(properties)
+
+        logger.info('Configuration loading completed')
+    }
+
+    private void completeLoggingConfiguration(Properties properties) {
         def level = getSystemPropertyOrFromConfigFile(LOGGER_LEVEL, properties, false)
-        if (level != null) {
-            logger.setLevel(level)
-        }
+        loggingConfiguration.configureMigrationLogger(level)
     }
 
     private String getSystemPropertyOrFromConfigFile(String property, Properties properties, boolean mandatory) {
@@ -195,4 +206,5 @@ class MigrationContext {
     def <T> Future<T> asyncExec(Callable<T> callable) {
         executorService.submit(callable)
     }
+
 }
