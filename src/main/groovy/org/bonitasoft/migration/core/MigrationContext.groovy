@@ -14,14 +14,23 @@
 
 package org.bonitasoft.migration.core
 
-import com.github.zafarkhaja.semver.Version
-import groovy.sql.Sql
+import static org.bonitasoft.migration.core.MigrationStep.DBVendor.ORACLE
+import static org.bonitasoft.migration.core.database.DbConfig.*
+
+import javax.sql.DataSource
+import java.util.concurrent.Callable
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+import java.util.concurrent.Future
+import java.util.concurrent.TimeUnit
+
 import org.apache.commons.dbcp2.BasicDataSource
 import org.bonitasoft.migration.core.database.ConfigurationHelper
 import org.bonitasoft.migration.core.database.DatabaseHelper
+import org.bonitasoft.migration.core.database.DbConfig
+import com.github.zafarkhaja.semver.Version
 
-import javax.sql.DataSource
-import java.util.concurrent.*
+import groovy.sql.Sql
 
 /**
  * @author Baptiste Mesta
@@ -36,28 +45,20 @@ class MigrationContext {
     public final static String TARGET_VERSION = "target.version"
 
     public final static String BONITA_HOME = "bonita.home"
-    public final static String DB_URL = "db.url"
-    public final static String DB_USER = "db.user"
-    public final static String DB_PASSWORD = "db.password"
-    public final static String DB_DRIVERCLASS = "db.driverClass"
-    public final static String DB_VENDOR = "db.vendor"
     public final static String LOGGER_LEVEL = "logger.level"
     MigrationStep.DBVendor dbVendor
 
     ThreadLocal<Sql> sql
-    DataSource dataSource
     File bonitaHome
-    String dburl
-    String dbDriverClassName
-    String dbUser
-    String dbPassword
     Version sourceVersion
     Version targetVersion
     Logger logger
     DatabaseHelper databaseHelper
     ConfigurationHelper configurationHelper
-    ExecutorService executorService
 
+    private DataSource dataSource
+    private DbConfig dbConfig
+    private ExecutorService executorService
 
     MigrationContext() {
     }
@@ -78,10 +79,22 @@ class MigrationContext {
             logger.warn "Failed to load $configFile.absolutePath"
         }
         dbVendor = MigrationStep.DBVendor.valueOf(getSystemPropertyOrFromConfigFile(DB_VENDOR, properties, true).toUpperCase())
-        dburl = getSystemPropertyOrFromConfigFile(DB_URL, properties, true)
-        dbDriverClassName = getSystemPropertyOrFromConfigFile(DB_DRIVERCLASS, properties, true)
-        dbUser = getSystemPropertyOrFromConfigFile(DB_USER, properties, true)
-        dbPassword = getSystemPropertyOrFromConfigFile(DB_PASSWORD, properties, true)
+
+        dbConfig = new DbConfig()
+        dbConfig.dburl = getSystemPropertyOrFromConfigFile(DB_URL, properties, true)
+        dbConfig.dbDriverClassName = getSystemPropertyOrFromConfigFile(DB_DRIVER_CLASS, properties, true)
+        dbConfig.dbUser = getSystemPropertyOrFromConfigFile(DB_USER, properties, true)
+        dbConfig.dbPassword = getSystemPropertyOrFromConfigFile(DB_PASSWORD, properties, true)
+
+        def dbPoolSizeInitial = getSystemPropertyOrFromConfigFileAsInteger(DB_POOL_SIZE_INITIAL, properties, false)
+        if (dbPoolSizeInitial > -1) {
+            dbConfig.dbPoolSizeInitial = dbPoolSizeInitial
+        }
+        def dbPoolSizeMax = getSystemPropertyOrFromConfigFileAsInteger(DB_POOL_SIZE_MAX, properties, false)
+        if (dbPoolSizeMax > -1) {
+            dbConfig.dbPoolSizeMax = dbPoolSizeMax
+        }
+
         //if not set it will be ask later
         targetVersion = getSystemPropertyOrFromConfigFile(TARGET_VERSION, properties, false)?.toVersion()
 
@@ -112,6 +125,19 @@ class MigrationContext {
         return null
     }
 
+    private int getSystemPropertyOrFromConfigFileAsInteger(String property, Properties properties, boolean mandatory) {
+        String string = getSystemPropertyOrFromConfigFile(property, properties, mandatory)
+        if (string != null) {
+            try {
+                return Integer.valueOf(string)
+            }
+            catch (RuntimeException e) {
+                logger.warn("Unable to convert the $property property value $string into Integer, so use default")
+            }
+        }
+        -1
+    }
+
     private String hidePasswordValue(String property, String value) {
         isPasswordProperty(property) ? "*****" : value
     }
@@ -121,7 +147,7 @@ class MigrationContext {
     }
 
     def openSqlConnection() {
-        executorService = Executors.newFixedThreadPool(10)
+        executorService = Executors.newFixedThreadPool(dbConfig.dbPoolSizeMax)
         setupDataSource()
         sql = ThreadLocal.<Sql> withInitial({ new Sql(dataSource) })
 
@@ -132,19 +158,19 @@ class MigrationContext {
     private setupDataSource() {
         def dataSource = new BasicDataSource()
         dataSource.defaultAutoCommit = true
-        dataSource.setDriverClassName(dbDriverClassName)
-        dataSource.setUrl(dburl)
-        dataSource.setUsername(dbUser)
-        dataSource.setPassword(dbPassword)
-        dataSource.setInitialSize(3)
-        dataSource.setMaxTotal(10)
+        dataSource.setDriverClassName(dbConfig.dbDriverClassName)
+        dataSource.setUrl(dbConfig.dburl)
+        dataSource.setUsername(dbConfig.dbUser)
+        dataSource.setPassword(dbConfig.dbPassword)
+        dataSource.setInitialSize(dbConfig.dbPoolSizeInitial)
+        dataSource.setMaxTotal(dbConfig.dbPoolSizeMax)
         this.dataSource = dataSource
     }
 
     def getSql() {
         def get = sql.get()
         try {
-            if (dbVendor.equals(MigrationStep.DBVendor.ORACLE)) {
+            if (dbVendor == ORACLE) {
                 get.execute("SELECT 1 FROM dual")
             } else {
                 get.execute("SELECT 1")
