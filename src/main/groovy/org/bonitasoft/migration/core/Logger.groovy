@@ -27,6 +27,10 @@ class Logger {
         log.debug message
     }
 
+    void debug(String message, Throwable t) {
+        log.debug message, t
+    }
+
     void info(String message) {
         log.info message
     }
