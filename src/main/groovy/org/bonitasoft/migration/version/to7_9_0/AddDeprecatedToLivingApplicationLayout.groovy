@@ -22,7 +22,7 @@ import org.bonitasoft.migration.core.MigrationStep
 class AddDeprecatedToLivingApplicationLayout extends MigrationStep {
 
     public static final DEFAULT_LAYOUT_NEW_DISPLAY_NAME = 'Default living application layout (deprecated)'
-    public static final DEFAULT_LAYOUT_NEW_DESCRIPTION = 'This is the default layout V5 definition for a newly-created application. It was created using the UI designer, so you can export it and edit it with the UI designer. It contains a horizontal menu widget and an iframe widget. The menu structure  is defined in the application navigation. The application pages are displayed in the iframe. This layout is deprecated. Use the Bonita Layout instead.'
+    public static final DEFAULT_LAYOUT_NEW_DESCRIPTION = 'This is the old default layout (v5). If you use IE11, continue to use this layout. For other browsers, you can benefit from Bonita Layout new features. You can export it and edit it in the UI Designer. It contains a horizontal menu widget and an iframe widget.'
     public static final DEFAULT_LAYOUT_NAME = 'custompage_defaultlayout'
 
     @Override
