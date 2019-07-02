@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2017 Bonitasoft S.A.
+ * Copyright (C) 2019 Bonitasoft S.A.
  * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
@@ -13,23 +13,23 @@
  **/
 package org.bonitasoft.migration.version.to7_7_0
 
+import org.bonitasoft.migration.core.MigrationContext
 import org.bonitasoft.migration.core.MigrationStep
-import org.bonitasoft.migration.core.VersionMigration
-import org.bonitasoft.migration.version.to7_7_5.DeleteOrphanArchContractData
 
 /**
+ * @author Emmanuel Duchastenier
  */
-class MigrateTo7_7_0 extends VersionMigration {
+class BackupArchContractDataTable extends MigrationStep {
 
     @Override
-    List<MigrationStep> getMigrationSteps() {
-        //keep one line per step to avoid false-positive merge conflict
-        return [
-                new AddNewTenantResourceColumns(),
-                new RemoveUnusedEventTriggerInstances(),
-                new ChangeContractInputSerialization(),
-                new DeleteOrphanArchContractData(),
-                new BackupArchContractDataTable()
-        ]
+    def execute(MigrationContext context) {
+        context.databaseHelper.executeScript("7.7.0", "backup_arch_contract_data", "backup")
     }
+
+    @Override
+    String getDescription() {
+        return "Backup table 'arch_contract_data' into 'arch_contract_data_backup' and recreate empty table 'arch_contract_data'"
+    }
+
+
 }

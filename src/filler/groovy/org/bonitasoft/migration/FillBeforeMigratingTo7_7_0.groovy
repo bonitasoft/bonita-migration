@@ -13,9 +13,6 @@
  **/
 package org.bonitasoft.migration
 
-import static org.assertj.core.api.Assertions.assertThat
-import static org.awaitility.Awaitility.await
-
 import groovy.sql.Sql
 import org.bonitasoft.engine.api.APIClient
 import org.bonitasoft.engine.bdm.BusinessObjectModelConverter
@@ -35,6 +32,9 @@ import org.bonitasoft.migration.filler.FillerBdmInitializer
 import org.bonitasoft.migration.filler.FillerInitializer
 import org.bonitasoft.migration.filler.FillerUtils
 import org.junit.Rule
+
+import static org.assertj.core.api.Assertions.assertThat
+import static org.awaitility.Awaitility.await
 
 /**
  * @author Laurent Leseigneur
@@ -56,6 +56,7 @@ class FillBeforeMigratingTo7_7_0 {
         def dbPassword = System.getProperty("db.password")
         Sql.newInstance(dburl, dbUser, dbPassword, dbDriverClassName)
     }
+
     @FillAction
     void 'create elements with event triggers'() {
         //process has a timer, a throw signal and a throw message
@@ -100,7 +101,6 @@ class FillBeforeMigratingTo7_7_0 {
     private Expression expr(String value) {
         new ExpressionBuilder().createConstantStringExpression(value)
     }
-
 
     @FillAction
     void 'create process with contract input'() {

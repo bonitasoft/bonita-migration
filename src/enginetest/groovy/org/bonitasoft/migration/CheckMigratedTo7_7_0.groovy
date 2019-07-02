@@ -20,11 +20,16 @@ import org.bonitasoft.engine.bdm.model.BusinessObject
 import org.bonitasoft.engine.bdm.model.BusinessObjectModel
 import org.bonitasoft.engine.bdm.model.field.FieldType
 import org.bonitasoft.engine.bdm.model.field.SimpleField
+import org.bonitasoft.engine.exception.ContractDataNotFoundException
 import org.bonitasoft.engine.search.SearchOptionsBuilder
 import org.bonitasoft.engine.tenant.TenantResource
 import org.bonitasoft.engine.tenant.TenantResourceState
 import org.junit.Rule
 import spock.lang.Specification
+
+import static groovy.test.GroovyAssert.shouldFail
+import static org.assertj.core.api.Assertions.assertThat
+import static org.awaitility.Awaitility.await
 
 /**
  * @author Laurent Leseigneur
@@ -50,16 +55,20 @@ class CheckMigratedTo7_7_0 extends Specification {
                 new SearchOptionsBuilder(0, 100).done()).count == 1
     }
 
-
-    def "should have migrated contract data to the new serialization"() {
-        given:
+    def "should contract data archiving still work"() {
         def client = new APIClient()
-        client.login("install","install")
+        client.login("install", "install")
         def processInstance = client.processAPI.searchArchivedProcessInstances(new SearchOptionsBuilder(0, 1).filter("name", "ProcessWithContract").done()).result[0]
-        when:
-        def contractDataValue = client.processAPI.getProcessInputValueAfterInitialization(processInstance.sourceObjectId, "myInput")
-        then:
-        contractDataValue == "theInputValue"
+
+        shouldFail(ContractDataNotFoundException) {
+            client.processAPI.getProcessInputValueAfterInitialization(processInstance.sourceObjectId, "myInput")
+        }
+        def processDefinitionId = client.processAPI.getProcessDefinitionId("ProcessWithContract", "1.0")
+        def newProcessInstance = client.processAPI.startProcessWithInputs(processDefinitionId, [myInput: "theInputValue"])
+        await().until({
+            client.processAPI.getFinalArchivedProcessInstance(newProcessInstance.id).endDate != null
+        })
+        assertThat(client.processAPI.getProcessInputValueAfterInitialization(newProcessInstance.id, "myInput")).isEqualTo("theInputValue")
     }
 
     def "should have migrated BDM in Tenant Resource"() {
