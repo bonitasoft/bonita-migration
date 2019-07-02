@@ -13,21 +13,19 @@
  **/
 package org.bonitasoft.migration.version.to7_7_0
 
-import static org.bonitasoft.migration.core.MigrationStep.DBVendor.*
-
-import java.util.concurrent.Callable
-import java.util.concurrent.ConcurrentSkipListSet
-import java.util.concurrent.Future
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicLong
-
+import groovy.sql.GroovyRowResult
+import groovy.transform.EqualsAndHashCode
+import groovy.transform.PackageScope
 import org.bonitasoft.migration.core.MigrationContext
 import org.bonitasoft.migration.core.MigrationStep
 import org.bonitasoft.migration.core.database.DatabaseHelper
 
-import groovy.sql.GroovyRowResult
-import groovy.transform.EqualsAndHashCode
-import groovy.transform.PackageScope
+import java.util.concurrent.Callable
+import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.concurrent.Future
+import java.util.concurrent.atomic.AtomicLong
+
+import static org.bonitasoft.migration.core.MigrationStep.DBVendor.*
 
 class ChangeContractInputSerialization extends MigrationStep {
 
@@ -36,11 +34,10 @@ class ChangeContractInputSerialization extends MigrationStep {
     private Collection<NotMigratedContractData> pendingNotMigratedContractData = newNotMigratedContractData()
 
     private static final String SYSPROP_SKIP_CONTRACT_DATA = 'bonita.migration.step.skip.770.serialization.contract_data'
-//    private static final String SYSPROP_SKIP_ARCH_CONTRACT_DATA = 'bonita.migration.step.skip.770.serialization.arch_contract_data'
 
     private static Collection<NotMigratedContractData> newNotMigratedContractData() {
         // use a concurrent implementation as error elements are added by async tasks running in parallel
-        new ConcurrentSkipListSet<>()
+        new ConcurrentLinkedQueue<NotMigratedContractData>()
     }
 
     @Override
@@ -48,16 +45,11 @@ class ChangeContractInputSerialization extends MigrationStep {
         this.context = context
         String newColumnType = newColumnType(context)
         updateSerializationOnContractDataTableIfRequested(newColumnType)
-//        updateSerializationOnArchContractDataTableIfRequested(newColumnType)
     }
 
     private void updateSerializationOnContractDataTableIfRequested(String newType) {
         updateSerializationIfRequested(SYSPROP_SKIP_CONTRACT_DATA, 'contract_data', newType)
     }
-
-//    private void updateSerializationOnArchContractDataTableIfRequested(String newType) {
-//        updateSerializationIfRequested(SYSPROP_SKIP_ARCH_CONTRACT_DATA, 'arch_contract_data', newType)
-//    }
 
     private void updateSerializationIfRequested(final String skipSysProp, final String tableName, String newType) {
         if (Boolean.getBoolean(skipSysProp)) {
@@ -91,20 +83,20 @@ class ChangeContractInputSerialization extends MigrationStep {
         context.logger.info("There are ${counter.totalToProcess} rows to process")
 
         if (!rows.isEmpty()) {
-            rows.collect { contractData ->
+            def listOfFutures = rows.collect { contractData ->
                 updateAsync(counter, contractData.tenantid, contractData.id, tableName)
-            }.last().get() // we wait for the last future to finish before managing potential errors
-            TimeUnit.MILLISECONDS.sleep(100) // give some time for the latest Future to complete
+            }
+            listOfFutures.each { it.get() } // we wait for all futures to finish before managing potential errors
 
             while (!pendingNotMigratedContractData.isEmpty()) {
                 context.logger.info("${pendingNotMigratedContractData.size()} transient errors occured, retrying the migration for the related rows")
 
                 Collection<NotMigratedContractData> notMigratedContractData = pendingNotMigratedContractData
                 pendingNotMigratedContractData = newNotMigratedContractData()
-                notMigratedContractData.collect { contractData ->
+                def listOfRetriedFutures = notMigratedContractData.collect { contractData ->
                     updateAsync(counter, contractData.tenantId, contractData.id, tableName)
-                }.last().get() // we wait for the last future to finish before managing potential errors
-                TimeUnit.MILLISECONDS.sleep(100) // give some time for the latest Future to complete
+                }
+                listOfRetriedFutures.each { it.get() } // we wait for all futures to finish
             }
         }
 
@@ -148,7 +140,6 @@ class ChangeContractInputSerialization extends MigrationStep {
         }
         type
     }
-
 
     private Future<Void> updateAsync(SerializationUpdateCounter counter, tenantId, id, String tableName) {
         context.asyncExec((Callable<Void>) {
