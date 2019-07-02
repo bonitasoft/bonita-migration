@@ -21,7 +21,7 @@ import spock.lang.Specification
 
 class DeleteOrphanArchContractDataTest extends Specification {
 
-    def 'should only done orphan deletion once'() {
+    def 'should only delete orphan ArchContractData once'() {
         given:
         def migrationStep = Spy(DeleteOrphanArchContractData)
         def migrationContext = newMigrationContext()

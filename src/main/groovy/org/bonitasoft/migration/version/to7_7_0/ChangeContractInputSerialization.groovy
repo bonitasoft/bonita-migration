@@ -36,7 +36,7 @@ class ChangeContractInputSerialization extends MigrationStep {
     private Collection<NotMigratedContractData> pendingNotMigratedContractData = newNotMigratedContractData()
 
     private static final String SYSPROP_SKIP_CONTRACT_DATA = 'bonita.migration.step.skip.770.serialization.contract_data'
-    private static final String SYSPROP_SKIP_ARCH_CONTRACT_DATA = 'bonita.migration.step.skip.770.serialization.arch_contract_data'
+//    private static final String SYSPROP_SKIP_ARCH_CONTRACT_DATA = 'bonita.migration.step.skip.770.serialization.arch_contract_data'
 
     private static Collection<NotMigratedContractData> newNotMigratedContractData() {
         // use a concurrent implementation as error elements are added by async tasks running in parallel
@@ -48,16 +48,16 @@ class ChangeContractInputSerialization extends MigrationStep {
         this.context = context
         String newColumnType = newColumnType(context)
         updateSerializationOnContractDataTableIfRequested(newColumnType)
-        updateSerializationOnArchContractDataTableIfRequested(newColumnType)
+//        updateSerializationOnArchContractDataTableIfRequested(newColumnType)
     }
 
     private void updateSerializationOnContractDataTableIfRequested(String newType) {
         updateSerializationIfRequested(SYSPROP_SKIP_CONTRACT_DATA, 'contract_data', newType)
     }
 
-    private void updateSerializationOnArchContractDataTableIfRequested(String newType) {
-        updateSerializationIfRequested(SYSPROP_SKIP_ARCH_CONTRACT_DATA, 'arch_contract_data', newType)
-    }
+//    private void updateSerializationOnArchContractDataTableIfRequested(String newType) {
+//        updateSerializationIfRequested(SYSPROP_SKIP_ARCH_CONTRACT_DATA, 'arch_contract_data', newType)
+//    }
 
     private void updateSerializationIfRequested(final String skipSysProp, final String tableName, String newType) {
         if (Boolean.getBoolean(skipSysProp)) {
@@ -90,7 +90,7 @@ class ChangeContractInputSerialization extends MigrationStep {
         counter.totalToProcess = rows.size()
         context.logger.info("There are ${counter.totalToProcess} rows to process")
 
-        if(!rows.isEmpty()) {
+        if (!rows.isEmpty()) {
             rows.collect { contractData ->
                 updateAsync(counter, contractData.tenantid, contractData.id, tableName)
             }.last().get() // we wait for the last future to finish before managing potential errors

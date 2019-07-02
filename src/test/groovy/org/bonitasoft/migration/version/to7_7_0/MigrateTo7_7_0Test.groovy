@@ -32,7 +32,10 @@ class MigrateTo7_7_0Test extends Specification {
         where:
         stepName << [
                 "AddNewTenantResourceColumns",
-                "DeleteOrphanArchContractData"
+                "RemoveUnusedEventTriggerInstances",
+                "ChangeContractInputSerialization",
+                "DeleteOrphanArchContractData",
+                "BackupArchContractDataTable"
         ]
 
     }

@@ -47,10 +47,6 @@ values (1, 1, 'PROCESS', 1000, 'myInput', $content)
 insert into contract_data(tenantId , id, kind, scopeId, name, val)
 values (1, 2, 'PROCESS', 1001, 'myInputNull', NULL)
 """)
-        migrationContext.sql.execute("""
-insert into arch_contract_data(tenantId , sourceobjectid, archiveDate, id, kind, scopeId, name, val)
-values (1, 1, 1, 1, 'PROCESS', 1000, 'myInput', $content)
-""")
         when:
         migrationStep.execute(migrationContext)
 
@@ -62,16 +58,11 @@ values (1, 1, 1, 1, 'PROCESS', 1000, 'myInput', $content)
         def null_contract_data = migrationContext.sql.firstRow("SELECT * FROM contract_data WHERE name='myInputNull'")
         getMigratedValue(null_contract_data.val) == null
 
-        and: 'archived contract data is migrated'
-        def arch_contract_data = migrationContext.sql.firstRow("SELECT * FROM  arch_contract_data")
-        getMigratedValue(arch_contract_data.val) == "myValue"
-
         when: 're execute migration'
         migrationStep.execute(migrationContext)
         then: 'nothing happens'
         getMigratedValue(migrationContext.sql.firstRow("SELECT * FROM contract_data WHERE name='myInput'").val) == "myValue"
         getMigratedValue(migrationContext.sql.firstRow("SELECT * FROM contract_data WHERE name='myInputNull'").val) == null
-        getMigratedValue(migrationContext.sql.firstRow("SELECT * FROM  arch_contract_data").val) == "myValue"
     }
 
     def "should migrate multiple contract data"() {
@@ -104,7 +95,6 @@ values (1, $i, 1, $i, 'PROCESS', $i, 'myInput', $content)
         migrationContext.sql.rows("SELECT tenantid,id FROM contract_data").size() == 0
         migrationContext.sql.rows("SELECT tenantid,id FROM arch_contract_data").size() == 0
         ['NVARCHAR', 'TEXT', 'CLOB', 'LONGTEXT'].contains(migrationContext.databaseHelper.getColumnType("contract_data", "val").toUpperCase())
-        ['NVARCHAR', 'TEXT', 'CLOB', 'LONGTEXT'].contains(migrationContext.databaseHelper.getColumnType("arch_contract_data", "val").toUpperCase())
     }
 
     def "should migrate when only null contract data is present"() {
@@ -123,7 +113,6 @@ values (1, 1, 1, 1, 'PROCESS', 1, 'myInput', null)
         migrationContext.sql.rows("SELECT tenantid,id FROM contract_data").size() == 1
         migrationContext.sql.rows("SELECT tenantid,id FROM arch_contract_data").size() == 1
         ['NVARCHAR', 'TEXT', 'CLOB', 'LONGTEXT'].contains(migrationContext.databaseHelper.getColumnType("contract_data", "val").toUpperCase())
-        ['NVARCHAR', 'TEXT', 'CLOB', 'LONGTEXT'].contains(migrationContext.databaseHelper.getColumnType("arch_contract_data", "val").toUpperCase())
     }
 
     def 'should migrate when tmp_val column has been created in a previous run'() {
@@ -159,9 +148,6 @@ values (1, 3, 1, 3, 'PROCESS', 1003, 'myInput', $nonMigratedContent, 'already mi
         then:
         migrationContext.sql.rows("SELECT tenantid,id FROM contract_data").size() == 2
         migrationContext.sql.rows("SELECT tenantid,id FROM arch_contract_data").size() == 3
-
-        // already migrated value kept untouched
-        getMigratedValue(migrationContext.sql.firstRow("SELECT * FROM arch_contract_data WHERE tenantId=1 AND id=3").val)== 'already migrated value that will not be updated'
     }
 
     def 'should migrate hundreds of arch_contract_data'() {
