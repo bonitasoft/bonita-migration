@@ -84,11 +84,11 @@ class MigrateWebserviceConnectorTest extends Specification {
         def dependencySecondProcess = utils.getDependenciesOfProcess(5924936294169136126).filename
         def dependencyThirdProcess = utils.getDependenciesOfProcess(5964546).filename
         dependencyFirstProcess == jarDependencyList
-        dependencySecondProcess == jarDependencyList
+        dependencySecondProcess == ['bonita-connector-webservice-impl-6.1.0.jar', 'jsr181-api-1.0-MR1.jar']
         dependencyThirdProcess == ['bonita-connector-custom-0.6.2.jar']
 
         utils.getContentResourcesOfProcess(5196158028417589387) == [utils.getContentOfImplFile('webservice-1.2.2.impl')]
-        utils.getContentResourcesOfProcess(5924936294169136126) == [utils.getContentOfImplFile('webservice-1.2.2.impl')]
+        utils.getContentResourcesOfProcess(5924936294169136126) == [utils.getContentOfImplFile('webservice-1.0.11.impl')]
         utils.getContentResourcesOfProcess(5964546) == [utils.getContentOfImplFile('scripting-groovy-script-impl-1.0.2.impl')]
     }
 

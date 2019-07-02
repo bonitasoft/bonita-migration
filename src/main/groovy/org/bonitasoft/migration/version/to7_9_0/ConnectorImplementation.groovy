@@ -10,6 +10,7 @@ class ConnectorImplementation {
     String fileName
     String id
     String definitionId
+    String definitionVersion
     String version
     List<String> jarDependencies
     long resourceId
@@ -20,7 +21,8 @@ class ConnectorImplementation {
         connectorImplementation.definitionId = xmlParser.definitionId.text()
         connectorImplementation.id = xmlParser.implementationId.text()
         connectorImplementation.version = xmlParser.implementationVersion.text()
-        connectorImplementation.jarDependencies = xmlParser.jarDependencies.jarDependency.collect{it.text()}
+        connectorImplementation.jarDependencies = xmlParser.jarDependencies.jarDependency.collect { it.text() }
+        connectorImplementation.definitionVersion = xmlParser.definitionVersion.text()
         connectorImplementation
     }
 
