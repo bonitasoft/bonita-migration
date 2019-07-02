@@ -42,8 +42,8 @@ scmVersion {
         //change in the readme the version
         pre 'fileUpdate', [file: 'README.md', pattern: { v, p -> /$v/ }, replacement: { v, p -> "$v" }]
         pre 'fileUpdate', [file       : 'community/migration.properties', pattern: { v, p ->
-                                /currentVersionModifier=.*/
-                            },
+            /currentVersionModifier=.*/
+        },
                            replacement: { String v, p ->
                                def parsedVersion = Version.valueOf(v)
                                if (!parsedVersion.preReleaseVersion.isEmpty()) {
@@ -90,7 +90,7 @@ scmVersion {
 
 private static Version nextPreRelease(Version currentVersion, String suffix) {
     if (currentVersion.preReleaseVersion.startsWith(suffix)) {
-        def currentPreReleaseNumber = Integer.valueOf(currentVersion.preReleaseVersion.substring(suffix.size()+1))
+        def currentPreReleaseNumber = Integer.valueOf(currentVersion.preReleaseVersion.substring(suffix.size() + 1))
         def nextNumber = String.format("%02d", currentPreReleaseNumber + 1)
         return Version.valueOf("$currentVersion.majorVersion.$currentVersion.minorVersion.$currentVersion.patchVersion-$suffix-$nextNumber")
     }
@@ -123,6 +123,8 @@ project.rootProject.allprojects {
 group 'org.bonitasoft.migration'
 
 artifacts { archives distZip }
+
+distTar.enabled = false
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
@@ -163,8 +165,8 @@ startScripts {
     // Workaround inspired of https://gist.github.com/jlmelville/2bfe9277e9e2c0ff79b6
     // and http://stackoverflow.com/questions/25227198/how-to-pass-a-reference-to-distribution-home-directory-using-gradle-application
     doLast {
-      windowsScript.text = windowsScript.text.replaceFirst('(set CLASSPATH=%APP_HOME%\\\\lib\\\\).*', '$1*')
-      unixScript.text = unixScript.text.replaceFirst('(CLASSPATH=\\$APP_HOME/lib/).*', '$1*')
+        windowsScript.text = windowsScript.text.replaceFirst('(set CLASSPATH=%APP_HOME%\\\\lib\\\\).*', '$1*')
+        unixScript.text = unixScript.text.replaceFirst('(CLASSPATH=\\$APP_HOME/lib/).*', '$1*')
     }
 }
 
@@ -182,7 +184,7 @@ task("testJar", type: Jar) {
 processResources {
     filesMatching('**/bonita-migration-info.properties') {
         expand(
-            'project_version': project.property('version'),
+                'project_version': project.property('version'),
         )
     }
 }
