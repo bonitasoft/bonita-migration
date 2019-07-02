@@ -37,6 +37,13 @@ VALUES (1,$currentId,$processDefinitionId,$implName,'CONNECTOR',$theImplFile)"""
         currentId++
     }
 
+    void insertConnectorImplementationWithContent(String implName, String implContent, long processDefinitionId) {
+        def theImplFile = implContent.bytes
+        migrationContext.sql.executeInsert(""" INSERT INTO bar_resource(TENANTID, ID, PROCESS_ID, NAME, TYPE, CONTENT) 
+VALUES (1,$currentId,$processDefinitionId,$implName,'CONNECTOR',$theImplFile)""")
+        currentId++
+    }
+
     byte[] getContentOfImplFile(String implName) {
         this.getClass().getResourceAsStream("/impl/${implName}").bytes
     }

@@ -13,10 +13,12 @@
  **/
 package org.bonitasoft.migration.version.to7_9_0
 
-import java.sql.Blob
 
 import org.bonitasoft.migration.core.MigrationContext
 import org.bonitasoft.migration.core.MigrationStep
+import org.xml.sax.SAXParseException
+
+import java.sql.Blob
 
 /**
  * @author Danila Mazour
@@ -51,7 +53,7 @@ class UpdateConnectorDefinitionsForJava11 extends MigrationStep {
         connectorMigrationReport.printGlobalReport(context.logger)
     }
 
-    private List<ProcessDefinition> getProcesses(MigrationContext context) {
+    private static List<ProcessDefinition> getProcesses(MigrationContext context) {
         context.sql.rows("SELECT tenantid,processId,name,version FROM process_definition").collect {
             new ProcessDefinition(it.tenantid, it.processId, it.name, it.version)
         }
@@ -79,7 +81,7 @@ class UpdateConnectorDefinitionsForJava11 extends MigrationStep {
         }
     }
 
-    private long longValue(def nextid) {
+    private static long longValue(def nextid) {
         long value
         if (nextid instanceof Number) {
             value = nextid.longValue()
@@ -89,14 +91,12 @@ class UpdateConnectorDefinitionsForJava11 extends MigrationStep {
         value
     }
 
-    private void migrateConnector(ProcessDefinition process, sourceRepository, MigrationContext context, connectorNamePattern, String... newImplFileNames) {
+    private void migrateConnector(ProcessDefinition process, String sourceRepository, MigrationContext context, String connectorNamePattern, String... newImplFileNames) {
         def newConnectorImplementations = newImplFileNames.collect() {
             toConnectorImplementation(it, sourceRepository)
         }
 
-        def implementationsToReplace = getConnectorImplementationMatching(context, process, connectorNamePattern).findAll {
-            it.semanticVersion < newConnectorImplementations.first().semanticVersion
-        }
+        def implementationsToReplace = getConnectorImplementationMatching(context, process, connectorNamePattern, newConnectorImplementations)
         if (implementationsToReplace.empty) {
             return
         }
@@ -105,12 +105,11 @@ class UpdateConnectorDefinitionsForJava11 extends MigrationStep {
 
         def connectorsUsingDependencies = getConnectorsThatAreUsingDependencies(context, process, implementationsToReplace, dependenciesToRemove)
         if (!connectorsUsingDependencies.empty) {
-            connectorMigrationReport.reportFailure(process, newConnectorImplementations, connectorsUsingDependencies,dependenciesToRemove)
+            connectorMigrationReport.reportFailureCausedByDependencyError(process, newConnectorImplementations, connectorsUsingDependencies, dependenciesToRemove)
             return
         }
-
-        replaceDependencies(context, process, dependenciesToRemove, dependenciesToAdd, sourceRepository)
         replaceConnectorImplementationFiles(implementationsToReplace, newConnectorImplementations, context, process, sourceRepository)
+        replaceDependencies(context, process, dependenciesToRemove, dependenciesToAdd, sourceRepository)
         connectorMigrationReport.reportSuccess(process, newConnectorImplementations, dependenciesToRemove, dependenciesToAdd)
 
     }
@@ -122,23 +121,23 @@ class UpdateConnectorDefinitionsForJava11 extends MigrationStep {
         connectorImplementation
     }
 
-    private List getDependenciesToAddAndRemove(List<ConnectorImplementation> implementationsToReplace, List<ConnectorImplementation> newConnectorImplementations, MigrationContext context, ProcessDefinition process) {
-        def newDependencies = newConnectorImplementations.first().jarDependencies
-        def oldDependencies = implementationsToReplace.collect { it.jarDependencies }.flatten().toSet().toList()
+    private static List<List<String>> getDependenciesToAddAndRemove(List<ConnectorImplementation> implementationsToReplace, List<ConnectorImplementation> newConnectorImplementations, MigrationContext context, ProcessDefinition process) {
+        List<String> newDependencies = newConnectorImplementations.first().jarDependencies
+        List<String> oldDependencies = implementationsToReplace.collect { it.jarDependencies }.flatten().toSet().toList()
 
-        List dependenciesToRemove = oldDependencies.findAll { !newDependencies.contains(it) }
-        List dependenciesToAdd = newDependencies.findAll { !oldDependencies.contains(it) }
+        List<String> dependenciesToRemove = oldDependencies.findAll { !newDependencies.contains(it) }
+        List<String> dependenciesToAdd = newDependencies.findAll { !oldDependencies.contains(it) }
         dependenciesToAdd.removeAll(getAllDependenciesOfProcess(context, process.tenantId, process.id))
         [dependenciesToRemove, dependenciesToAdd]
     }
 
-    private List<ConnectorImplementation> getConnectorsThatAreUsingDependencies(MigrationContext context, ProcessDefinition process, implementationsToReplace, dependenciesToRemove) {
+    private static List<ConnectorImplementation> getConnectorsThatAreUsingDependencies(MigrationContext context, ProcessDefinition process, implementationsToReplace, dependenciesToRemove) {
         def otherImplementations = getConnectorImplementations(context, process).findAll {
             !implementationsToReplace.id.contains(it.id)
         }
 
         otherImplementations.findAll { connector ->
-            connector.jarDependencies.any { dep -> dependenciesToRemove.contains(dep)}
+            connector.jarDependencies.any { dep -> dependenciesToRemove.contains(dep) }
         }
     }
 
@@ -154,7 +153,12 @@ class UpdateConnectorDefinitionsForJava11 extends MigrationStep {
     private List<ConnectorImplementation> replaceConnectorImplementationFiles(List<ConnectorImplementation> implementationsToReplace, List<ConnectorImplementation> newConnectorImplementations, MigrationContext context, process, sourceRepository) {
         implementationsToReplace.each { implementationToReplace ->
             Object newConnectorImplementation = getNewImplementationOf(implementationToReplace, newConnectorImplementations)
-            replaceConnectorImplementation(context, process.tenantId, implementationToReplace.resourceId, process.id, implementationToReplace.fileName, getResource(sourceRepository, newConnectorImplementation.fileName), newConnectorImplementation.fileName)
+            if (newConnectorImplementation != null) {
+                replaceConnectorImplementation(context, process.tenantId, implementationToReplace.resourceId, process.id, implementationToReplace.fileName, getResource(sourceRepository, newConnectorImplementation.fileName), newConnectorImplementation.fileName)
+            } else {
+                context.logger.error("There was no matching implementation found for the connector " + implementationToReplace.fileName + ". Aborting the migration. This should never happen.")
+                throw new RuntimeException()
+            }
         }
     }
 
@@ -165,21 +169,33 @@ class UpdateConnectorDefinitionsForJava11 extends MigrationStep {
         newConnectorImplementation
     }
 
-    private List<ConnectorImplementation> getConnectorImplementationMatching(MigrationContext context, ProcessDefinition process, connectorNamePattern) {
-        context.sql.rows(""" SELECT id, name, type, content FROM bar_resource b WHERE b.tenantid = ${
-            process.tenantId
-        } AND b.process_id = ${process.id} AND b.type = 'CONNECTOR' AND name LIKE '%${
-            connectorNamePattern
-        }%' """.toString())
+    private List<ConnectorImplementation> getConnectorImplementationMatching(MigrationContext context, ProcessDefinition process, connectorNamePattern, List<ConnectorImplementation> newConnectorImplementations) {
+        def newDefinitionIds = newConnectorImplementations.collect { it.definitionId }
+        context.sql.rows(""" SELECT id, name, type, content FROM bar_resource b WHERE b.tenantid = ${process.tenantId}
+ AND b.process_id = ${process.id} AND b.type = 'CONNECTOR' AND name LIKE '%${connectorNamePattern}%' """.toString())
                 .collect {
-            def implementation = ConnectorImplementation.parseConnectorXml(getText(it.content))
-            implementation.fileName = it.name
-            implementation.resourceId = it.id
-            implementation
-        }
+                    try {
+                        def implementation = ConnectorImplementation.parseConnectorXml(getText(it.content))
+                        implementation.fileName = it.name
+                        implementation.resourceId = it.id
+                        implementation
+                    } catch (SAXParseException ignored) {
+                        context.logger.error("Cannot parse the implementation of connector ${it.name}. Ignoring. You may want to migrate the connector manually, or remove it from the database.")
+                        new ConnectorImplementation()
+                    }
+                }.findAll { newDefinitionIds.contains(it.definitionId) }
+                .findAll { it.definitionVersion == newConnectorImplementations.first().definitionVersion }
+                .findAll {
+                    if (it.semanticVersion < newConnectorImplementations.first().semanticVersion) {
+                        return true
+                    } else {
+                        connectorMigrationReport.reportGenericFailure(process, it, "Version of connector $it.definitionId is already up-to-date.")
+                        return false
+                    }
+                }
     }
 
-    private String getText(def content) {
+    private static String getText(def content) {
         if (content instanceof Blob) {
             return new String(content.binaryStream.text)
         }
@@ -212,8 +228,7 @@ class UpdateConnectorDefinitionsForJava11 extends MigrationStep {
         return nextId
     }
 
-    private List<String> removeDependenciesOfConnectorImplementation(MigrationContext context, processId, tenantId, List<String> dependencies) {
-
+    private static List<String> removeDependenciesOfConnectorImplementation(MigrationContext context, processId, tenantId, List<String> dependencies) {
         dependencies.each { dependencyFileName ->
             List<Long> dependencyIds = context.sql.rows("""SELECT de.id 
         FROM dependency de, dependencymapping dm 
@@ -227,24 +242,22 @@ class UpdateConnectorDefinitionsForJava11 extends MigrationStep {
                 def dependencyId = dependencyIds.first()
                 context.sql.execute("DELETE FROM dependency where tenantId = $tenantId AND id = $dependencyId")
             }
-
         }
-
     }
 
-    private void replaceConnectorImplementation(MigrationContext context, tenantId, id, processId, String implFileName, byte[] newImplFile, String newImplFileName) {
+    private static void replaceConnectorImplementation(MigrationContext context, tenantId, id, processId, String implFileName, byte[] newImplFile, String newImplFileName) {
         context.sql.execute("""DELETE FROM bar_resource WHERE tenantId = $tenantId AND id = $id AND process_Id = $processId AND name = $implFileName  """)
         context.sql.executeInsert("""INSERT INTO bar_resource(TENANTID, ID, PROCESS_ID, NAME, TYPE, CONTENT) VALUES ($tenantId,$id,$processId,$newImplFileName,'CONNECTOR',$newImplFile)""")
     }
 
-    private List<ConnectorImplementation> getConnectorImplementations(MigrationContext context, ProcessDefinition process) {
+    private static List<ConnectorImplementation> getConnectorImplementations(MigrationContext context, ProcessDefinition process) {
         return context.sql.rows(""" SELECT name,content FROM bar_resource b 
 WHERE b.tenantid = ${process.tenantId} AND b.process_id = ${process.id} AND b.type = 'CONNECTOR'""").collect {
             ConnectorImplementation.parseConnectorXml(getText(it.content))
         }
     }
 
-    private List<String> getAllDependenciesOfProcess(MigrationContext context, long tenantId, long processId) {
+    private static List<String> getAllDependenciesOfProcess(MigrationContext context, long tenantId, long processId) {
         context.sql.rows("""
 SELECT d.fileName FROM dependency d, dependencymapping dm 
 WHERE dm.artifactid = $processId AND dm.artifactType = 'PROCESS' AND d.tenantid = $tenantId  AND d.id = dm.dependencyid AND dm.tenantid = $tenantId""").fileName
@@ -257,6 +270,6 @@ WHERE dm.artifactid = $processId AND dm.artifactType = 'PROCESS' AND d.tenantid 
 
     @Override
     String getWarning() {
-        return connectorMigrationReport.hasFailure() ? connectorMigrationReport.getFailureReport() : null
+        connectorMigrationReport.hasFailure() ? connectorMigrationReport.getFailureReport() : null
     }
 }

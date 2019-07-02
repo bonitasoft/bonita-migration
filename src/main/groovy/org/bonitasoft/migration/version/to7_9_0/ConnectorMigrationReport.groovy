@@ -13,6 +13,8 @@ class ConnectorMigrationReport {
     }
 
     private class FailedConnectorMigrationReport {
+        boolean dependencyError = false
+        String error
         List<String> connectorIds = []
         String newVersion
         Map<String, List<String>> usedBy = [:]
@@ -29,10 +31,11 @@ class ConnectorMigrationReport {
     Set<String> processesWithFailedConnectorMigration = new LinkedHashSet<>()
 
 
-    def reportFailure(ProcessDefinition processDefinition, List<ConnectorImplementation> newImplementations,
-                      List<ConnectorImplementation> connectorsUsingDependencies, List<String> dependenciesToRemove) {
+    def reportFailureCausedByDependencyError(ProcessDefinition processDefinition, List<ConnectorImplementation> newImplementations,
+                                             List<ConnectorImplementation> connectorsUsingDependencies, List<String> dependenciesToRemove) {
         processes.computeIfAbsent(processDefinition, { p -> new ConnectorMigrationReportOfProcess() })
         def report = new FailedConnectorMigrationReport()
+        report.dependencyError = true
         report.connectorIds = newImplementations.id
         report.newVersion = newImplementations.first().version
         def usedDependencies = dependenciesToRemove.findAll { connectorsUsingDependencies.jarDependencies.flatten().contains(it) }
@@ -40,6 +43,14 @@ class ConnectorMigrationReport {
             report.usedBy.put(it, connectorsUsingDependencies.findAll {c-> c.jarDependencies.contains(it)}.collect {c->"$c.id in version $c.version".toString()})
         }
         processes.get(processDefinition).koConnectors.add(report)
+    }
+
+    void reportGenericFailure(ProcessDefinition processDefinition, ConnectorImplementation koImpl, String error){
+        processes.computeIfAbsent(processDefinition, { p -> new ConnectorMigrationReportOfProcess() })
+        def failedConnectorReport = new FailedConnectorMigrationReport()
+        failedConnectorReport.connectorIds.add(koImpl.id)
+        failedConnectorReport.error = error
+        processes.get(processDefinition).koConnectors.add(failedConnectorReport)
     }
 
     void reportSuccess(ProcessDefinition processDefinition, List<ConnectorImplementation> newImplementations,
@@ -91,15 +102,20 @@ class ConnectorMigrationReport {
             }
             if (!report.koConnectors.empty) {
                 processesWithFailedConnectorMigration.add(process.name + " (${process.version})")
-                report.koConnectors.each { koConnector ->
-                    logger.warn("  Unable to migrate connector(s) $koConnector.connectorIds to version $koConnector.newVersion:")
-                    koConnector.usedBy.each { entry ->
-                        logger.warn("    dependency $entry.key is already used by:")
-                        entry.value.each {
-                            logger.warn("    - $it")
+                report.koConnectors.findAll { it -> it.dependencyError }
+                        .each { koConnector ->
+                            logger.warn("  Unable to migrate connector(s) $koConnector.connectorIds to version $koConnector.newVersion:")
+                            koConnector.usedBy.each { entry ->
+                                logger.warn("    dependency $entry.key is already used by:")
+                                entry.value.each {
+                                    logger.warn("    - $it")
+                                }
+                            }
                         }
-                    }
-                }
+                report.koConnectors.findAll { it -> !it.dependencyError }
+                        .each { koConnector ->
+                            logger.warn("  Unable to migrate connector(s) $koConnector.connectorIds . The reason is $koConnector.error")
+                        }
             }
 
         }
