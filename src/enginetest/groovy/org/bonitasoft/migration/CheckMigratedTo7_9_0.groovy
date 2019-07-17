@@ -1,12 +1,54 @@
 package org.bonitasoft.migration
 
 import groovy.sql.Sql
+import org.bonitasoft.engine.BonitaDatabaseConfiguration
+import org.bonitasoft.engine.api.APIClient
+import org.bonitasoft.engine.api.TenantAPIAccessor
+import org.bonitasoft.engine.test.TestEngine
+import org.bonitasoft.engine.test.TestEngineImpl
+import org.bonitasoft.engine.test.junit.BonitaEngineRule
+import org.junit.BeforeClass
 import org.junit.Rule
 import spock.lang.Specification
 
 class CheckMigratedTo7_9_0 extends Specification {
-    @Rule
-    public After7_2_0Initializer initializer = new After7_2_0Initializer()
+    private static instance = TestEngineImpl.getInstance()
+
+    @BeforeClass
+    static startEngine() {
+        CheckerUtils.initializeEngineSystemProperties()
+        instance.setBonitaDatabaseProperties(new BonitaDatabaseConfiguration(
+                dbVendor: System.getProperty("db.vendor"),
+                url: System.getProperty("db.url"),
+                driverClassName: System.getProperty("db.driverClass"),
+                user: System.getProperty("db.user"),
+                password: System.getProperty("db.password")
+        ))
+        instance.dropOnStart = false
+        instance.dropOnStop = false
+        instance.start()
+    }
+
+    static stopEngine() {
+        instance.stop()
+    }
+
+    def "verify we can login with the tenant admin"() {
+        given:
+        def client = new APIClient()
+
+        when:
+        client.login("install", "install")
+
+        then:
+        client.session != null
+    }
+
+    def "verify we can login with user 'john'"() {
+        expect:
+        TenantAPIAccessor.getLoginAPI().login("john", "bpm")
+    }
+
 
     def "should not have the CleanInvalidSessionsJob anymore"() {
         given:

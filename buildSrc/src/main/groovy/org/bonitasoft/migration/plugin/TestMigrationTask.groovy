@@ -63,9 +63,10 @@ class TestMigrationTask extends Test {
         inputs.property("dbvendor", project.extensions.database.dbvendor)
         inputs.property("dburl", project.extensions.database.dburl)
 
-        if (Version.valueOf(bonitaVersion) < Version.valueOf("7.2.0")) {
+        def bonitaSemVer = Version.valueOf(bonitaVersion)
+        if (bonitaSemVer < Version.valueOf("7.2.0")) {
             include "**/*Before7_2_0DefaultTest*"
-        } else {
+        } else if(bonitaSemVer != Version.valueOf("7.9.0")) { // 7.9.0 has a but on test api, rule does not work
             include "**/*After7_2_0DefaultTest*"
         }
         include "**/*To" + underscored(bonitaVersion) + (isSP ? "SP" : "") + "*"
