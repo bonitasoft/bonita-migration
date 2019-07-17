@@ -78,21 +78,24 @@ class PrepareMigrationTestTask extends JavaExec {
 
     def getFillersToRun() {
         def fillers = []
-        if (isSP) {
-            if (semver(targetVersion) < Version.valueOf("7.2.1")) {
-                fillers.add("${'com'}.bonitasoft.migration.InitializerBefore7_2_1SP")
-            } else if (semver(targetVersion) <= Version.valueOf("7.3.3")) {
-                fillers.add("${'com'}.bonitasoft.migration.InitializerBefore7_3_3SP")
+        if (semver(targetVersion) != semver("7.9.1")) {
+            //special case, there is a bug in test api 7.9.0, the bonita engine rule does not work properly
+            if (isSP) {
+                if (semver(targetVersion) < Version.valueOf("7.2.1")) {
+                    fillers.add("com.bonitasoft.migration.InitializerBefore7_2_1SP")
+                } else if (semver(targetVersion) <= Version.valueOf("7.3.3")) {
+                    fillers.add("com.bonitasoft.migration.InitializerBefore7_3_3SP")
+                } else {
+                    fillers.add("com.bonitasoft.migration.InitializerAfter7_3_3SP")
+                }
             } else {
-                fillers.add("com.bonitasoft.migration.InitializerAfter7_3_3SP")
-            }
-        } else {
-            if (semver(targetVersion) < Version.valueOf("7.2.1")) {
-                fillers.add("${'org'}.bonitasoft.migration.InitializerBefore7_2_1")
-            } else if (!isSP && semver(targetVersion) <= Version.valueOf("7.3.0")) {
-                fillers.add("org.bonitasoft.migration.InitializerBefore7_3_0")
-            } else {
-                fillers.add("org.bonitasoft.migration.InitializerAfter7_3_0")
+                if (semver(targetVersion) < Version.valueOf("7.2.1")) {
+                    fillers.add("org.bonitasoft.migration.InitializerBefore7_2_1")
+                } else if (!isSP && semver(targetVersion) <= Version.valueOf("7.3.0")) {
+                    fillers.add("org.bonitasoft.migration.InitializerBefore7_3_0")
+                } else {
+                    fillers.add("org.bonitasoft.migration.InitializerAfter7_3_0")
+                }
             }
         }
         fillers.add("${isSP ? 'com' : 'org'}.bonitasoft.migration.FillBeforeMigratingTo${isSP ? 'SP' : ''}" +
