@@ -1,1 +1,3 @@
 rootProject.name = 'bonita-migration-distrib'
+
+include ':live-migration'

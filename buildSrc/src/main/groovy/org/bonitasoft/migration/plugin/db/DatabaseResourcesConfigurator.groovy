@@ -3,6 +3,7 @@ package org.bonitasoft.migration.plugin.db
 import static org.bonitasoft.migration.plugin.VersionUtils.getVersionList
 import static org.bonitasoft.migration.plugin.VersionUtils.underscored
 
+import org.bonitasoft.migration.plugin.MigrationPlugin
 import org.bonitasoft.migration.plugin.MigrationPluginExtension
 import org.gradle.api.Project
 
@@ -15,6 +16,7 @@ class DatabaseResourcesConfigurator {
         DatabasePluginExtension extension = project.extensions.getByType(DatabasePluginExtension.class)
         extension.dbvendor = dbVendor
         if (shouldUseDockerDb()) {
+            project.logger.quiet("no system property db.url set, using docker to test on $dbVendor")
             DockerDatabaseContainerTasksCreator.createTasks(project)
             extension.isDockerDb = true
         }
@@ -56,10 +58,12 @@ class DatabaseResourcesConfigurator {
             removeVendorContainer.mustRunAfter(integrationTestTask)
 
             // Migration tests
-            getVersionsToMigrate(project).each {
-                String underscoredVersion = underscored(it)
-                project.tasks.findByName("cleandb_" + underscoredVersion).dependsOn(vendorConfigurationTask)
-                removeVendorContainer.mustRunAfter(project.tasks.findByName("testMigration_" + underscoredVersion))
+            if (project.plugins.hasPlugin(MigrationPlugin)) {
+                getVersionsToMigrate(project).each {
+                    String underscoredVersion = underscored(it)
+                    project.tasks.findByName("cleandb_" + underscoredVersion).dependsOn(vendorConfigurationTask)
+                    removeVendorContainer.mustRunAfter(project.tasks.findByName("testMigration_" + underscoredVersion))
+                }
             }
         }
         else {
