@@ -59,7 +59,7 @@ class MigrationContext {
     private LoggingConfiguration loggingConfiguration = new LoggingConfiguration()
 
     private DataSource dataSource
-    private DbConfig dbConfig
+    DbConfig dbConfig
     private ExecutorService executorService
 
     MigrationContext() {
