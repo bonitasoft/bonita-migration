@@ -45,21 +45,33 @@ class Migration {
         this.displayUtil = displayUtil
     }
 
-    public static void main(String[] args) {
-        new Migration().run(false)
+    static void main(String[] args) {
+        try {
+            new Migration().run(false)
+        } catch (Throwable t) {
+            // logs managed in the run method
+            System.exit(-1)
+        }
     }
 
-    public void run(boolean isSp) {
-        context.start()
-        logMigrationBannerAndGlobalWarnings(isSp)
-        context.loadConfiguration()
+    void run(boolean isSp) {
+        try {
+            context.start()
+            logMigrationBannerAndGlobalWarnings(isSp)
+            logJvmInformation()
+            context.loadConfiguration()
+            logJdbcDriverInformation()
 
-        context.openSqlConnection()
-        def versionMigrations = getMigrationVersionsToRun()
+            connectToDatabase()
+            def versionMigrations = getMigrationVersionsToRun()
 
-        def runner = getRunner(versionMigrations)
-        runner.run(isSp)
-        context.closeSqlConnection()
+            def runner = getRunner(versionMigrations)
+            runner.run(isSp)
+            context.closeSqlConnection()
+        } catch (Throwable t) {
+            logger.error('Unexpected error occurs', t)
+            throw t
+        }
     }
 
     protected MigrationRunner getRunner(List<VersionMigration> versionMigrations) {
@@ -69,7 +81,7 @@ class Migration {
     /**
      * get a version as string and return the class of the migration step
      */
-    def Closure toVersionMigrationInstance = { Version it ->
+    Closure toVersionMigrationInstance = { Version it ->
         def versionUnderscored = it.toString().replace(".", "_")
         def versionMigrationClass
         def className = "com.bonitasoft.migration.version.to${versionUnderscored}.MigrateTo$versionUnderscored"
@@ -84,8 +96,19 @@ class Migration {
         return versionMigrationClass.newInstance(version: it, logger: logger)
     }
 
+    private void connectToDatabase() {
+        def dbVendor = context.dbVendor
+        logger.info "Gathering Database Information"
+        context.openSqlConnection()
 
-    def List<VersionMigration> getMigrationVersionsToRun() {
+        List<String> databaseInformation = MigrationUtil.getDatabaseInformation(context.sql, dbVendor)
+        if (!databaseInformation.empty) {
+            logger.info 'Database Information'
+            databaseInformation.each { logger.info "  ${it}" }
+        }
+    }
+
+    List<VersionMigration> getMigrationVersionsToRun() {
         def version = Version.valueOf(getPlatformVersion().normalVersion)
         verifyPlatformIsValid(version)
         logger.info("Detected version in database: " + version)
@@ -134,7 +157,7 @@ class Migration {
         if (context.bonitaHome == null) {
             throw new IllegalStateException("The property bonita.home is neither set in system property nor in the configuration file")
         }
-        def File versionFile = context.bonitaHome.toPath().resolve("engine-server/work/platform/VERSION").toFile()
+        File versionFile = context.bonitaHome.toPath().resolve("engine-server/work/platform/VERSION").toFile()
         if (!versionFile.exists()) {
             throw new IllegalStateException("The bonita home does not exists or is not consistent, the file $versionFile.path does not exists")
         }
@@ -213,4 +236,34 @@ class Migration {
                 "If you have a custom Look & Feel, test and update it, if it's necessary when the migration is finished.",
                 "If you have customized the configuration of your bonita home, reapply the customizations when the migration is finished.", "")
     }
+
+    private logJvmInformation() {
+        def sysProps = System.getProperties()
+        logger.info "JVM Information"
+        logger.info "  java.version ${sysProps['java.version']}"
+        logger.info "  java.runtime.version ${sysProps['java.runtime.version']}"
+        logger.info "  java.vendor ${sysProps['java.vendor']}"
+        logger.info "  java.vm.name ${sysProps['java.vm.name']}"
+        logger.info "  java.vm.vendor ${sysProps['java.vm.vendor']}"
+        logger.info "  os.name ${sysProps['os.name']}"
+        logger.info "  os.arch ${sysProps['os.arch']}"
+    }
+
+    private logJdbcDriverInformation() {
+        String driverClassName = context.dbConfig?.dbDriverClassName
+        if (!driverClassName) {
+            // not provided, mainly in tests, so skip
+            return
+        }
+        logger.info "Jdbc Driver Information"
+        logger.info "  driver ${driverClassName}"
+        def version = Class.forName(driverClassName).getPackage().implementationVersion
+        if (!version) {
+            // MSSQL Server case
+            // We may read the Bundle-Version attribute in the Manifest
+            version = 'N/A'
+        }
+        logger.info "  implementation-version ${version}"
+    }
+
 }

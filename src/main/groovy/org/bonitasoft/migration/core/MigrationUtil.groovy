@@ -13,12 +13,18 @@
  **/
 package org.bonitasoft.migration.core
 
-import com.github.zafarkhaja.semver.Version
-import groovy.sql.Sql
-import groovy.time.TimeCategory
-import org.bonitasoft.migration.core.exception.NotFoundException
+import static org.bonitasoft.migration.core.MigrationStep.DBVendor.MYSQL
+import static org.bonitasoft.migration.core.MigrationStep.DBVendor.ORACLE
+import static org.bonitasoft.migration.core.MigrationStep.DBVendor.POSTGRES
+import static org.bonitasoft.migration.core.MigrationStep.DBVendor.SQLSERVER
 
 import java.sql.ResultSet
+
+import org.bonitasoft.migration.core.MigrationStep.DBVendor
+import com.github.zafarkhaja.semver.Version
+
+import groovy.sql.Sql
+import groovy.time.TimeCategory
 
 /**
  *
@@ -237,5 +243,45 @@ class MigrationUtil {
             logger.info sql.executeUpdate("UPDATE sequence SET nextId = $it.value WHERE tenantId = $it.key and id = $sequenceId") + " row(s) updated"
         }
     }
+
+    static List<String> getDatabaseInformation(Sql sql, DBVendor dbVendor) {
+        def info = []
+
+        try {
+            switch (dbVendor) {
+                case MYSQL:
+                    sql.eachRow('SHOW VARIABLES LIKE "%version%"') { row ->
+                        info << "${row[0]} ${row[1]}"
+                    }
+                    break
+                case ORACLE:
+                    sql.eachRow('SELECT * FROM v$version') { row ->
+                        info << row[0]
+                    }
+                    break
+                case POSTGRES:
+                    sql.eachRow('SELECT version()') { row ->
+                        info << row[0]
+                    }
+                    break
+                case SQLSERVER:
+                    def columnNames = ['ProductVersion', 'ProductLevel', 'ProductUpdateReference', 'Edition', 'EngineEdition', 'Collation', 'SqlCharSetName']
+                    String queryElements = columnNames.collect{ "SERVERPROPERTY('${it}') ${it}" }.join(', ')
+                    String query = "select ${queryElements}"
+
+                    sql.eachRow(query) { row ->
+                        columnNames.each {
+                            info << "${it} ${row[it]}"
+                        }
+                    }
+                    break
+            }
+        } catch (Exception e) {
+            logger.info("Unable to get database information: ${e.getMessage()}")
+            logger.debug('Details', e)
+        }
+        return info
+    }
+
 }
 
