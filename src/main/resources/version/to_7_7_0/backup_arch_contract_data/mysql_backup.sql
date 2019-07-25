@@ -1,7 +1,3 @@
--- drop unnecessary constraints:
-alter table arch_contract_data drop PRIMARY KEY;
-alter table arch_contract_data drop INDEX uc_acd_scope_name;
-alter table arch_contract_data drop index idx_acd_scope_name;
 -- rename table:
 alter table arch_contract_data rename to arch_contract_data_backup;
 -- recreate empty table...

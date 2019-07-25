@@ -23,13 +23,29 @@ class BackupArchContractDataTable extends MigrationStep {
 
     @Override
     def execute(MigrationContext context) {
+        // drop unnecessary constraints:
+        context.databaseHelper.dropPrimaryKey("arch_contract_data");
+        context.databaseHelper.dropUniqueKey("arch_contract_data","uc_acd_scope_name");
+        //Sometimes in oracle index linked to primary key was not deleted so we add a check after
+        if (DBVendor.ORACLE == context.dbVendor) {
+            context.databaseHelper.dropIndexIfExists("arch_contract_data","pk_arch_contract_data")
+        }
+
+        if (DBVendor.ORACLE != context.dbVendor) {
+            context.databaseHelper.dropIndexIfExists('arch_contract_data',"idx_acd_scope_name")
+        }
+
+
         context.databaseHelper.executeScript("7.7.0", "backup_arch_contract_data", "backup")
+
     }
 
     @Override
     String getDescription() {
         return "Backup table 'arch_contract_data' into 'arch_contract_data_backup' and recreate empty table 'arch_contract_data'"
     }
+
+
 
 
 }
