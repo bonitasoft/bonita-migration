@@ -1,10 +1,3 @@
--- drop unnecessary constraints:
-alter table arch_contract_data drop CONSTRAINT pk_arch_contract_data
-GO
-alter table arch_contract_data drop CONSTRAINT uc_acd_scope_name
-GO
-drop INDEX idx_acd_scope_name ON arch_contract_data
-GO
 -- rename table:
 EXEC sp_rename 'arch_contract_data', 'arch_contract_data_backup'
 GO
