@@ -55,7 +55,7 @@ class MigrateTo7_5_0Test extends Specification {
         def warnings = migrateTo750.getPreMigrationWarnings(context)
 
         then:
-        warnings.size() == 1
+        warnings.size() > 0
         warnings[0].contains("Java 1.8")
     }
 }
