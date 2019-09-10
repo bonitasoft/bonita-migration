@@ -36,7 +36,7 @@ class RemoveDefaultGroovyScriptsAndUpdateTheirConfiguration extends MigrationSte
                              "TaskPermissionRule.groovy"                      : "291162d21ef9a6ab9d7892b0dd00d2199fde44fe",
                              "UserPermissionRule.groovy"                      : "92d283255edced2a4e63313b8975b6cad1767cf8"]
 
-    private String warnings = ''
+    private Set<String> modifiedScripts = []
 
     @Override
     execute(MigrationContext context) {
@@ -99,8 +99,7 @@ class RemoveDefaultGroovyScriptsAndUpdateTheirConfiguration extends MigrationSte
                         contentIsUpdated = true
                     } else {
                         if (!isCustomGroovyScript(groovyScriptName)) {
-                            warns.add """Warning, groovy script $groovyScriptName (from tenant $tenantId) is provided by Bonitasoft but has been
- modified since installation.${LINE_SEPARATOR}"""
+                            modifiedScripts.add("$groovyScriptName of tenant $tenantId")
                         }
                         // else, leave the line as is:
                         newContent.add(line)
@@ -114,7 +113,6 @@ class RemoveDefaultGroovyScriptsAndUpdateTheirConfiguration extends MigrationSte
                 context.configurationHelper.updateConfigurationFileContent("dynamic-permissions-checks-custom.properties", tenantId, contentType, newContent.join("\n").bytes)
             }
         }
-        warns.forEach { warnings += it }
     }
 
     private purgeUnmodifiedScriptsFromDatabase(tenantId, List unmodifiedDefaultRules, MigrationContext context, String contentType) {
@@ -154,12 +152,21 @@ class RemoveDefaultGroovyScriptsAndUpdateTheirConfiguration extends MigrationSte
 
     @Override
     String getWarning() {
-        if (warnings) {
-            warnings += """For these files, you will not benefit from the potential fixes in the future.
+        if (modifiedScripts) {
+            def fileList = ""
+            modifiedScripts.each {
+                fileList += it + LINE_SEPARATOR
+            }
+            return """Default dynamic permission script were updated in 7.6.0.
+The migration tool updated them but some of these files seems to be different from the original ones and were not updated.
+If you have not activated the dynamic permissions checks, you can ignore this message.
+The following files were not updated:
+$fileList
+For these files, you will not benefit from the potential fixes in the future.
 ${LINE_SEPARATOR}You are advised to customize your scripts by creating new ones in separate files.
 ${LINE_SEPARATOR}See https://documentation.bonitasoft.com/bonita/7.6/rest-api-authorization for more details."""
         }
-        warnings
+        return null
     }
 
 }
