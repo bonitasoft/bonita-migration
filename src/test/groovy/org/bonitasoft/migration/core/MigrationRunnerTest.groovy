@@ -16,9 +16,9 @@ package org.bonitasoft.migration.core
 
 import groovy.sql.Sql
 import org.bonitasoft.migration.core.database.DatabaseHelper
-import org.bonitasoft.migration.version.to7_5_0.MigrateTo7_5_0
 import spock.lang.Specification
 import spock.lang.Unroll
+
 /**
  * @author Baptiste Mesta
  */
@@ -37,9 +37,9 @@ class MigrationRunnerTest extends Specification {
 
     def setup() {
         versionMigration.getMigrationSteps() >> migrationStepList
-        migrationContext.sql = ThreadLocal.<Sql>withInitial({sql})
+        migrationContext.sql = ThreadLocal.<Sql> withInitial({ sql })
         migrationContext.databaseHelper = databaseHelper
-        migrationRunner = new MigrationRunner(versionMigrations: [versionMigration], context: migrationContext, logger: logger, displayUtil: displayUtil)
+        migrationRunner = new MigrationRunner(migrationVersions: [versionMigration], context: migrationContext, logger: logger, displayUtil: displayUtil)
     }
 
     @Unroll
@@ -83,29 +83,29 @@ class MigrationRunnerTest extends Specification {
         setup:
         def versionMigration_7_5_0 = Mock(VersionMigration)
         versionMigration_7_5_0.version >> "7.5.0"
-        versionMigration_7_5_0.getPreMigrationWarnings(migrationContext) >> [MigrateTo7_5_0.WARN_MESSAGE_JAVA_8]
+        versionMigration_7_5_0.getPreMigrationWarnings(migrationContext) >> ["some message1", "some message2"]
         versionMigration_7_5_0.getMigrationSteps() >> []
 
         // so that we don't get asked for confirmation:
         System.setProperty("auto.accept", "true")
 
-        MigrationRunner migrationRunner = new MigrationRunner(versionMigrations: [versionMigration_7_5_0], context: migrationContext, logger: logger, displayUtil: displayUtil)
+        MigrationRunner migrationRunner = new MigrationRunner(migrationVersions: [versionMigration_7_5_0], context: migrationContext, logger: logger, displayUtil: displayUtil)
 
         when:
         migrationRunner.run(false)
 
         then:
-        1 * displayUtil.logWarningsInRectangleWithTitle("Migration to version 7.5.0", [MigrateTo7_5_0.WARN_MESSAGE_JAVA_8] as String[])
+        1 * displayUtil.logWarningsInRectangleWithTitle("Migration to version 7.5.0", "some message1", "some message2")
     }
 
-     def "run check blocking pre-requisites before running migration"() {
+    def "run check blocking pre-requisites before running migration"() {
         setup:
         def versionMigration_7_8_0 = Mock(VersionMigration)
         versionMigration_7_8_0.version >> "7.8.0"
         versionMigration_7_8_0.getPreMigrationBlockingMessages(migrationContext) >> ["Blocking Message"]
         versionMigration_7_8_0.getMigrationSteps() >> []
 
-        MigrationRunner migrationRunner = new MigrationRunner(versionMigrations: [versionMigration_7_8_0], context: migrationContext, logger: logger, displayUtil: displayUtil)
+        MigrationRunner migrationRunner = new MigrationRunner(migrationVersions: [versionMigration_7_8_0], context: migrationContext, logger: logger, displayUtil: displayUtil)
 
         when:
         migrationRunner.run(false)
@@ -128,7 +128,7 @@ class MigrationRunnerTest extends Specification {
         // so that we don't get asked for confirmation:
         System.setProperty("auto.accept", "true")
 
-        MigrationRunner migrationRunner1 = new MigrationRunner(versionMigrations: [versionMigration_7_4_9, versionMigration_7_5_0], context: migrationContext, logger: logger, displayUtil: displayUtil)
+        MigrationRunner migrationRunner1 = new MigrationRunner(migrationVersions: [versionMigration_7_4_9, versionMigration_7_5_0], context: migrationContext, logger: logger, displayUtil: displayUtil)
 
         when:
         migrationRunner1.run(false)

@@ -1,0 +1,1 @@
+bonita-migration-distrib.bat --verify

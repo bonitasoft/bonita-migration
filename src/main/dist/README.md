@@ -59,3 +59,16 @@ example (Unix):
 
 example (Windows):
 >    bonita-migration-distrib.bat
+
+# Verify the migration can be executed
+
+The migration script already checks before running that the migration can be executed. However if you
+only want to verify the migration can be executed without actually executing it, you can use the scipt
+called `check-migration-dryrun`. It will only run the checks. You can also run the normal script with the `--verify`
+option to achieve the same goal.
+
+example (Unix):
+>    ./check-migration-dryrun
+
+example (Windows):
+>    check-migration-dryrun.bat
