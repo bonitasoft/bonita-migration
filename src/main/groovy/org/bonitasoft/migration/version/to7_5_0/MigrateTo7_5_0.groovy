@@ -30,8 +30,8 @@ class MigrateTo7_5_0 extends VersionMigration {
 
     String version = "7.5.0"
 
-    public static final String WARN_MESSAGE_JAVA_8 = """Warning: Bonita versions 7.5.0 and later only run on Java 1.8 environments.
-If your JRE or JDK is older than 1.8, you need to update your target environment before starting your migrated Bonita platform."""
+    public static final List<String> WARN_MESSAGE_JAVA_8 = ["Warning: Bonita versions 7.5.0 and later only run on Java 1.8 environments.",
+"If your JRE or JDK is older than 1.8, you need to update your target environment before starting your migrated Bonita platform."]
 
     @Override
     List<MigrationStep> getMigrationSteps() {
@@ -49,6 +49,6 @@ If your JRE or JDK is older than 1.8, you need to update your target environment
 
     @Override
     String[] getPreMigrationWarnings(MigrationContext context) {
-        [WARN_MESSAGE_JAVA_8]
+        WARN_MESSAGE_JAVA_8
     }
 }

@@ -21,26 +21,27 @@ import groovy.time.TimeCategory
 /**
  * @author Baptiste Mesta
  */
-class MigrationRunner {
+class MigrationRunner implements MigrationAction {
 
     public static final String VERSION_OVERRIDDEN = "version.overridden"
     public static final String VERSION_OVERRIDE_BY = "version.override.by"
-    List<VersionMigration> versionMigrations
+    List<VersionMigration> migrationVersions
     MigrationContext context
     Logger logger
     DisplayUtil displayUtil
     def overriddenVersion
     def overrideByVersion
 
-    def run(boolean isSp) {
+    @Override
+    void run(boolean isSp) {
 
         if (!hasBlockingPrerequisites()) {
-            checkPreWarningRequisites()
+            getWarningPrerequisites()
 
             Date migrationStartDate = new Date()
             String lastVersion
             def warnings = [:]
-            versionMigrations.each {
+            migrationVersions.each {
                 logger.info "Execute migration to version " + it.getVersion()
                 def bonitaHomeDir = null
                 it.context = context
@@ -57,7 +58,7 @@ class MigrationRunner {
                     step.execute(context)
                     def stepWarningMessage = step.warning
                     if (stepWarningMessage) {
-                        warnings.put("Migration to version:${it.version} - step: ${step.description}", stepWarningMessage)
+                        warnings.put("Migration to version:${it.version} - step: ${step.description}" as String, stepWarningMessage)
                     }
                     MigrationUtil.logSuccessMigration(stepStartDate, migrationStartDate)
                     logger.info "---------------"
@@ -80,9 +81,27 @@ class MigrationRunner {
         }
     }
 
+    @Override
+    List<String> getBannerAndGlobalWarnings() {
+        return [
+        "This tool will migrate your installation of Bonita.",
+        "Both database and bonita home will be modified.",
+        "Please refer to the documentation for further steps to completely migrate your production environment.",
+        "",
+        "Warning:",
+        "Back up the database AND the bonita home before migrating",
+        "If you have a custom Look & Feel, test and update it, if it's necessary when the migration is finished.",
+        "If you have customized the configuration of your bonita home, reapply the customizations when the migration is finished.", ""]
+    }
+
+    @Override
+    String getDescription() {
+        return "DATABASE WILL BE MIGRATED (use --verify to run only checks)"
+    }
+
     private boolean hasBlockingPrerequisites() {
         Map<String, String[]> beforeMigrationBlocks = [:]
-        versionMigrations.each {
+        migrationVersions.each {
             VersionMigration versionMigration ->
                 String[] preVersionBlockings = versionMigration.getPreMigrationBlockingMessages(context)
                 if (preVersionBlockings) {
@@ -99,10 +118,10 @@ class MigrationRunner {
         return false
     }
 
-    private void checkPreWarningRequisites() {
+    private void getWarningPrerequisites() {
         checkOverrideValidity()
         Map<String, String[]> beforeMigrationWarnings = [:]
-        versionMigrations.each {
+        migrationVersions.each {
             // Warn before running ANY migration step if there are pre-migration warnings:
             String[] preVersionWarnings = it.getPreMigrationWarnings(context)
             if (preVersionWarnings) {
@@ -117,6 +136,7 @@ class MigrationRunner {
             MigrationUtil.askIfWeContinue()
         }
     }
+
 
     def checkOverrideValidity() {
         overriddenVersion = System.getProperty(VERSION_OVERRIDDEN)

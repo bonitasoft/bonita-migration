@@ -30,14 +30,9 @@ class Migration {
     public static List<Version> TRANSITION_VERSIONS = ['7.7.0', '7.8.0', '7.8.1', '7.8.2'].collect {
         Version.valueOf(it)
     }
-    private Logger logger = new Logger()
+    private static final Logger logger = new Logger()
     private MigrationContext context
     private DisplayUtil displayUtil
-
-    Migration() {
-        this.context = new MigrationContext(logger: logger)
-        this.displayUtil = new DisplayUtil(logger: logger)
-    }
 
     // for testing only
     Migration(MigrationContext context, DisplayUtil displayUtil) {
@@ -46,26 +41,51 @@ class Migration {
     }
 
     static void main(String[] args) {
+        startApplication(args, false)
+    }
+
+    static void startApplication(String[] args, boolean isSp) {
+        def arguments = parseArguments(args)
         try {
-            new Migration().run(false)
-        } catch (Throwable t) {
+            def migrationContext = new MigrationContext(logger: logger)
+            migrationContext.verifyOnly = arguments.verify
+            new Migration(
+                    migrationContext,
+                    new DisplayUtil(logger: logger)
+            ).run(isSp)
+        } catch (Throwable ignored) {
             // logs managed in the run method
+            System.exit(-1)
+        }
+    }
+
+    private static MigrationArguments parseArguments(String[] args) {
+        try {
+            MigrationArguments arguments = MigrationArguments.parse(args)
+            if (arguments.printHelp) {
+                MigrationArguments.printHelp()
+                System.exit(-1)
+            }
+            return arguments
+        } catch (Exception e) {
+            logger.error("Invalid command line: " + e.getMessage())
+            MigrationArguments.printHelp()
             System.exit(-1)
         }
     }
 
     void run(boolean isSp) {
         try {
+            def runner = createRunner()
             context.start()
-            logMigrationBannerAndGlobalWarnings(isSp)
+            logMigrationBannerAndGlobalWarnings(isSp, runner)
             logJvmInformation()
             context.loadConfiguration()
             logJdbcDriverInformation()
 
             connectToDatabase()
-            def versionMigrations = getMigrationVersionsToRun()
-
-            def runner = getRunner(versionMigrations)
+            def versionMigrations = getMigrationVersionsToRun(runner)
+            runner.migrationVersions = versionMigrations
             runner.run(isSp)
             context.closeSqlConnection()
         } catch (Throwable t) {
@@ -74,8 +94,11 @@ class Migration {
         }
     }
 
-    protected MigrationRunner getRunner(List<VersionMigration> versionMigrations) {
-        new MigrationRunner(versionMigrations: versionMigrations, context: context, logger: logger, displayUtil: displayUtil)
+    protected MigrationAction createRunner() {
+        if (context.verifyOnly) {
+            return new MigrationVerifier(context: context, logger: logger, displayUtil: displayUtil)
+        }
+        return new MigrationRunner(context: context, logger: logger, displayUtil: displayUtil)
     }
 
     /**
@@ -108,7 +131,7 @@ class Migration {
         }
     }
 
-    List<VersionMigration> getMigrationVersionsToRun() {
+    List<VersionMigration> getMigrationVersionsToRun(MigrationAction runner) {
         def version = Version.valueOf(getPlatformVersion().normalVersion)
         verifyPlatformIsValid(version)
         logger.info("Detected version in database: " + version)
@@ -118,6 +141,7 @@ class Migration {
         context.sourceVersion = version
         def versions = getVersionsAfter(version)
         def visibleVersions = filterOutInvisibleVersions(versions)
+        logger.info(runner.getDescription())
         if (context.targetVersion == null) {
             logger.info "Enter the target version"
             context.targetVersion = Version.valueOf(MigrationUtil.askForOptions(visibleVersions.collect {
@@ -224,17 +248,11 @@ class Migration {
         return properties
     }
 
-    def logMigrationBannerAndGlobalWarnings(boolean isSp) {
+    def logMigrationBannerAndGlobalWarnings(boolean isSp, MigrationAction runner) {
         def migrationToolVersion = getProjectProperties().getProperty("migration.tool.version", "DEV")
-        displayUtil.logInfoCenteredInRectangle("", "Bonita migration tool ${migrationToolVersion} ${Edition.from(isSp).displayName} edition", "",
-                "This tool will migrate your installation of Bonita.",
-                "Both database and bonita home will be modified.",
-                "Please refer to the documentation for further steps to completely migrate your production environment.",
-                "",
-                "Warning:",
-                "Back up the database AND the bonita home before migrating",
-                "If you have a custom Look & Feel, test and update it, if it's necessary when the migration is finished.",
-                "If you have customized the configuration of your bonita home, reapply the customizations when the migration is finished.", "")
+        def banner = (["", "Bonita migration tool ${migrationToolVersion} ${Edition.from(isSp).displayName} edition", ""] +
+                runner.getBannerAndGlobalWarnings() + [""]) as String[]
+        displayUtil.logInfoCenteredInRectangle(banner)
     }
 
     private logJvmInformation() {

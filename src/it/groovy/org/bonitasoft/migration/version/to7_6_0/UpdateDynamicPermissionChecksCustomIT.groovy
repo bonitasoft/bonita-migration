@@ -78,9 +78,7 @@ class UpdateDynamicPermissionChecksCustomIT extends Specification {
         0 == countConfigFiles(1L, 'TENANT_SECURITY_SCRIPTS')
         0 == countConfigFiles(0L, 'TENANT_TEMPLATE_SECURITY_SCRIPTS')
 
-        !migrationStep.warnings.contains('groovy script ActorMemberPermissionRule.groovy (from tenant 0)')
-        !migrationStep.warnings.contains('groovy script ActorMemberPermissionRule.groovy (from tenant 1)')
-        !migrationStep.getWarning().contains('you will not benefit from the potential fixes')
+        migrationStep.getWarning() == null
     }
 
     private int countConfigFiles(Long tenantId, String type) {
@@ -118,9 +116,7 @@ class UpdateDynamicPermissionChecksCustomIT extends Specification {
         0 == countConfigFiles(1L, 'TENANT_SECURITY_SCRIPTS')
         0 == countConfigFiles(0L, 'TENANT_TEMPLATE_SECURITY_SCRIPTS')
 
-        !migrationStep.warnings.contains('groovy script ActorMemberPermissionRule.groovy (from tenant 0)')
-        !migrationStep.warnings.contains('groovy script ActorMemberPermissionRule.groovy (from tenant 1)')
-        !migrationStep.getWarning().contains('you will not benefit from the potential fixes')
+        migrationStep.getWarning() == null
     }
 
     def "should not update dynamic permissions with new package for MODIFIED default rules"() {
@@ -157,9 +153,10 @@ class UpdateDynamicPermissionChecksCustomIT extends Specification {
         1 == countConfigFiles(1L, 'TENANT_SECURITY_SCRIPTS')
         1 == countConfigFiles(0L, 'TENANT_TEMPLATE_SECURITY_SCRIPTS')
 
-        migrationStep.warnings.contains('groovy script ActorMemberPermissionRule.groovy (from tenant 0)')
-        migrationStep.warnings.contains('groovy script ActorMemberPermissionRule.groovy (from tenant 1)')
-        migrationStep.getWarning().contains('you will not benefit from the potential fixes')
+        def warning = migrationStep.getWarning()
+        warning.contains('ActorMemberPermissionRule.groovy of tenant 1')
+        warning.contains('ActorMemberPermissionRule.groovy of tenant 0')
+        warning.contains('you will not benefit from the potential fixes')
     }
 
     def "should not warn twice for the same MODIFIED default rule"() {
@@ -173,14 +170,12 @@ PUT|bpm/case=[profile|User, check|ActorMemberPermissionRule]
         migrationContext.sql.executeInsert("insert into configuration(tenant_id, content_type, resource_name, resource_content) values (?,?,?,?)",
                 1L, "TENANT_SECURITY_SCRIPTS", 'ActorMemberPermissionRule.groovy', 'Default file name but with modified content'.bytes)
 
-        def searchedWarning = 'groovy script ActorMemberPermissionRule.groovy (from tenant 1)'
-
         when:
         migrationStep.execute(migrationContext)
 
         then:
         // check that the warning for a given (script + tenant) only occurs once:
-        1 == migrationStep.warnings.count(searchedWarning)
+        1 == migrationStep.getWarning().findAll('ActorMemberPermissionRule.groovy of tenant 1').size()
     }
 
 }

@@ -16,14 +16,16 @@ class WarnAboutNoEventWhenDeletingArchive extends MigrationStep {
 
     @Override
     String getWarning() {
-        return """Because archived process instances are now deleted in batch,
-some events related to deletion of archived elements are not thrown anymore: 
-* Delete archived flow node instance: ARCHIVED_FLOWNODE_INSTANCE_DELETED
-* Delete archived data instance: DATA_INSTANCE_DELETED
-* Delete archived connector instance: CONNECTOR_INSTANCE_DELETED
-* Delete archived document mapping: SADocumentMapping_DELETED
-* Delete document (when deleting archived document mapping): SDocument_DELETED
-* Delete archived process instance: PROCESSINSTANCE_DELETED
+        return """Starting from 7.7.5, when you delete archived process instances, they will be deleted more efficiently in batch.
+If you have custom event handlers configured that are using the following events, they will not be called anymore.
+You can ignore this warning if you have no custom event handlers configured.
+Events not thrown anymore are:
+* ARCHIVED_FLOWNODE_INSTANCE_DELETED
+* DATA_INSTANCE_DELETED
+* CONNECTOR_INSTANCE_DELETED
+* SADocumentMapping_DELETED
+* SDocument_DELETED
+* PROCESSINSTANCE_DELETED
 """
     }
 }
