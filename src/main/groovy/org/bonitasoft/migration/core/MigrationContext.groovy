@@ -61,6 +61,7 @@ class MigrationContext {
     private DataSource dataSource
     DbConfig dbConfig
     private ExecutorService executorService
+    boolean verifyOnly
 
     MigrationContext() {
     }
