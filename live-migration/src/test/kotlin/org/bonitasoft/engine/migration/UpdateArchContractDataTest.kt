@@ -100,6 +100,19 @@ class UpdateArchContractDataTest {
         assertThat(TestLoggerAppender.allLogs()).anyMatch { it.message.contains("Table arch_contract_data_backup does not exists. Everything should be migrated already") }
     }
 
+    @Test
+    fun `it should just log when archContratTtable is  missing`() {
+        transaction {
+            SchemaUtils.drop(ArchContractDataTable)
+        }
+        TestLoggerAppender.clear()
+
+        updateArchContractData.execute()
+
+
+        assertThat(TestLoggerAppender.allLogs()).anyMatch { it.message.contains("Table arch_contract_data does not exists. Table should be present on a normal Bonita installation.") }
+    }
+
     val toList = fun(it: ResultRow): List<String?> {
         return listOf(
                 it[ArchContractDataTable.tenantId].toString(),

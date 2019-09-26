@@ -63,13 +63,24 @@ class UpdateArchContractData(
         logger.info("All settings can be changed in application.properties file")
         logger.info("Starting migration....")
 
-        val tableExists = transaction {
+        val archContractDataBackupTableExists = transaction {
             ArchContractDataPre7_0Table.exists()
         }
-        if (!tableExists) {
+
+        val archContractDataTableExists = transaction {
+            ArchContractDataTable.exists()
+        }
+
+        if (!archContractDataBackupTableExists) {
             logger.info("Table arch_contract_data_backup does not exists. Everything should be migrated already.")
             return
         }
+
+        if (!archContractDataTableExists) {
+            logger.error("Table arch_contract_data does not exists. Table should be present on a normal Bonita installation.")
+           return
+        }
+
 
         val throughput = Throughput(Duration.ofSeconds(10), total =
         transaction {
