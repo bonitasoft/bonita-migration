@@ -25,13 +25,14 @@ class MigrationTest extends Specification {
     private DisplayUtil displayUtil = Mock(DisplayUtil)
     private File bonitaHome
     private Migration migration
+    private MigrationRunner runner = Mock(MigrationRunner)
 
     def setup() {
         migrationContext.sql >> sql
         migrationContext.logger >> logger
         bonitaHome = temporaryFolder.newFolder()
         migration = Spy(Migration, constructorArgs: [migrationContext, displayUtil])
-        migration.getRunner(_ as List<VersionMigration>) >> Mock(MigrationRunner)
+        migration.createRunner() >> runner
     }
 
     def "migrate with different version in bonita home and database should throw exception"() {
@@ -136,7 +137,7 @@ class MigrationTest extends Specification {
     }
 
     @Unroll
-    def "should migration from #source to #target execute steps #versionMigrations"() {
+    def "should migration from #source to #target execute steps #migrationVersions"() {
         given:
         versionInDatabase(source)
         versionInBonitaHome(source)
@@ -144,12 +145,12 @@ class MigrationTest extends Specification {
         when:
         migration.run(false)
         then:
-        1 * migration.getRunner({
-            it.collect { it.class.name.split('\\.').last() } == versionMigrations
-        }) >> Mock(MigrationRunner)
+        1 * runner.setProperty('migrationVersions', ({
+            it.collect { it.class.name.split('\\.').last() } == migrationVersions
+        }))
 
         where:
-        source  | target  || versionMigrations
+        source  | target  || migrationVersions
         "7.3.0" | "7.3.1" || ["MigrateTo7_3_1"]
         "7.2.9" | "7.3.1" || ["MigrateTo7_3_0", "MigrateTo7_3_1"]
         "7.2.2" | "7.3.0" || ["MigrateTo7_2_9", "MigrateTo7_3_0"]
