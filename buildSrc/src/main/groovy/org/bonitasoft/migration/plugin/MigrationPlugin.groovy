@@ -139,6 +139,7 @@ class MigrationPlugin implements Plugin<Project> {
         List<String> versions = allVersions.subList(1, allVersions.size())
 
         def allMigrationTests = project.task("allMigrationTests", description: "Run all migration tests", group: "migration")
+        def lastMigrationTests = project.task("lastMigrationTests", description: "Run migration tests of only last step", group: "migration")
 
         def currentVersion = allVersions.last()
         versions.each {
@@ -153,6 +154,9 @@ class MigrationPlugin implements Plugin<Project> {
             runMigrationTask.dependsOn(prepareTestTask)
             migrationTestTask.dependsOn(runMigrationTask)
             allMigrationTests.dependsOn(migrationTestTask)
+            if (it == currentVersion) {
+                lastMigrationTests.dependsOn(migrationTestTask)
+            }
         }
         getDependencies(project, "fillerCompileOnly").add(getEngineDependency(project, migrationPluginExtension,
                 currentVersion, allVersions))
