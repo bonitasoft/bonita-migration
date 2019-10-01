@@ -72,3 +72,15 @@ example (Unix):
 
 example (Windows):
 >    check-migration-dryrun.bat
+
+
+# Extra tools
+
+In the `tools` folder, you will find extra tools.
+
+## Live migration
+
+If you migrated through version 7.7.0 of bonita using the migration tool version 2.41.1 or greater, the table `arch_contract_data`
+was backed up to avoid long running migration. You will need to run this tool after the migration was done in order to reintegrate
+data from the `arch_contract_data_backup` table.
+Follow instructions in the README.md of this tool.
