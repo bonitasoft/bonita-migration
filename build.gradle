@@ -33,6 +33,11 @@ apply plugin: 'application'
 apply plugin: 'migration-dist'
 apply plugin: 'migration'
 
+
+configurations {
+    inDistrib
+}
+
 scmVersion {
     tag { // Resulting tag will by x.y.z
         prefix = ''
@@ -158,6 +163,7 @@ dependencies {
     enginetestCompile "org.codehaus.groovy:groovy-all:2.4.11"
     // TODO should be enginetestRuntime (require changed in tasks)
     enginetestCompile "ch.qos.logback:logback-classic:$logbackVersion"
+    inDistrib project(path: ":live-migration", configuration: "distributionZip")
 }
 
 startScripts {
@@ -189,3 +195,24 @@ processResources {
         )
     }
 }
+
+
+distributions {
+    main {
+        contents {
+            includeEmptyDirs = false
+            configurations.inDistrib.resolvedConfiguration.resolvedArtifacts.each {
+                from(zipTree(it.file)) {
+                    include '**'
+                    eachFile { fcp ->
+                        //unzip each artifact and put them in subfolder 'tools'
+                        fcp.path = fcp.path.replaceAll("([^/]*)/([^/]*)-${project.version}/", "\$1/tools/\$2/")
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+tasks.distZip.dependsOn configurations.inDistrib

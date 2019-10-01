@@ -16,9 +16,12 @@ tasks.withType<KotlinCompile> {
 
 group = "org.bonitasoft.migration"
 
+configurations {
+    create("distributionZip")
+}
+
 application {
     mainClassName = "org.bonitasoft.engine.migration.ApplicationKt"
-
 }
 springBoot {
     distributions.getByName("boot") {
@@ -27,8 +30,14 @@ springBoot {
                 include("application.properties")
             }
         }
+        baseName = project.name
     }
+}
+tasks["distZip"].enabled = false
+tasks["distTar"].enabled = false
 
+artifacts {
+    add("distributionZip", tasks["bootDistZip"])
 }
 
 val startScripts: CreateBootStartScripts = project.tasks.getByName("bootStartScripts") as CreateBootStartScripts
