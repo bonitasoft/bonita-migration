@@ -72,6 +72,10 @@ class MigrationRunner implements MigrationAction {
                 }
             }
             logSuccessfullyCompleted(migrationStartDate, lastVersion)
+            String postMigrationWarnings = this.postMigrationWarnings()
+            if (postMigrationWarnings) {
+                warnings.put("Global post-migration warning", postMigrationWarnings)
+            }
             if (warnings) {
                 logger.warn " However, some warnings require your attention:"
                 warnings.each { line ->
@@ -81,24 +85,37 @@ class MigrationRunner implements MigrationAction {
         }
     }
 
+
+    private String postMigrationWarnings() {
+        if (context.databaseHelper.hasTable("arch_contract_data_backup")) {
+            return "Archive contract data table backup had been created (\"arch_contract_data_backup\") as its model migration is time consuming.\n" +
+                    "All this information is not required by Bonita to work and does not affect user experience,\n" +
+                    "but it keeps the information of all contracts sent to execute tasks or instantiate processes.\n" +
+                    "Based on your needs, this information can be migrated into the original table using the tool\n" +
+                    "(please run live-migration script located in tools/live-migration directory) while bonita platform is up & running\n" +
+                    "or dropped to reduce disk space"
+        }
+        return null
+
+    }
+
     @Override
     List<String> getBannerAndGlobalWarnings() {
         return [
-        "This tool will migrate your installation of Bonita.",
-        "Both database and bonita home will be modified.",
-        "Please refer to the documentation for further steps to completely migrate your production environment.",
-        "",
-        "Warning:",
-        "Back up the database AND the bonita home before migrating",
-        "If you have a custom Look & Feel, test and update it, if it's necessary when the migration is finished.",
-        "If you have customized the configuration of your bonita home, reapply the customizations when the migration is finished.", ""]
+                "This tool will migrate your installation of Bonita.",
+                "Both database and bonita home will be modified.",
+                "Please refer to the documentation for further steps to completely migrate your production environment.",
+                "",
+                "Warning:",
+                "Back up the database AND the bonita home before migrating",
+                "If you have a custom Look & Feel, test and update it, if it's necessary when the migration is finished.",
+                "If you have customized the configuration of your bonita home, reapply the customizations when the migration is finished.", ""]
     }
 
     @Override
     String getDescription() {
         return "DATABASE WILL BE MIGRATED (use --verify to run only checks)"
     }
-
     private boolean hasBlockingPrerequisites() {
         Map<String, String[]> beforeMigrationBlocks = [:]
         migrationVersions.each {

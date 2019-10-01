@@ -22,7 +22,7 @@ class EnsureDroppedArchTransitionInstIT extends Specification {
         new EnsureDroppedArchTransitionInst().execute(migrationContext)
 
         then:
-        dbUnitHelper.hasTable("arch_transition_instance") == false
+        !migrationContext.databaseHelper.hasTable("arch_transition_instance")
 
         //clean up
         dbUnitHelper.dropTables("tenant")
@@ -34,7 +34,7 @@ class EnsureDroppedArchTransitionInstIT extends Specification {
         new EnsureDroppedArchTransitionInst().execute(migrationContext)
 
         then:
-        dbUnitHelper.hasTable("arch_transition_instance") == false
+        !migrationContext.databaseHelper.hasTable("arch_transition_instance")
 
     }
 }

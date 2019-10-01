@@ -197,4 +197,36 @@ class MigrationRunnerTest extends Specification {
         1 * logger.info("Platform version in database is now 7.5.3")
     }
 
+    public static final List<String> GLOBAL_POST_MIGRATION_WARNINGS = ['Archive contract data table backup had been created ("arch_contract_data_backup") as its model migration is time consuming.',
+                                                                       'All this information is not required by Bonita to work and does not affect user experience,',
+                                                                       'but it keeps the information of all contracts sent to execute tasks or instantiate processes.',
+                                                                       'Based on your needs, this information can be migrated into the original table using the tool',
+                                                                       '(please run live-migration script located in tools/live-migration directory) while bonita platform is up & running',
+                                                                       'or dropped to reduce disk space']
+
+    def "should log warning message if arch_contract_data_backup table exists"() {
+        given:
+        versionMigration.getVersion() >> "7.9.0"
+        databaseHelper.hasTable("arch_contract_data_backup") >> true
+
+        when:
+        migrationRunner.run(false)
+
+        then:
+        1 * displayUtil.logWarningsInRectangleWithTitle("Global post-migration warning", GLOBAL_POST_MIGRATION_WARNINGS)
+    }
+
+    def "should NOT log warning message if arch_contract_data_backup table does not exist"() {
+        given:
+        versionMigration.getVersion() >> "7.9.0"
+        databaseHelper.hasTable("arch_contract_data_backup") >> false
+
+        when:
+        migrationRunner.run(false)
+
+        then:
+        0 * displayUtil.logWarningsInRectangleWithTitle("Global post-migration warning", GLOBAL_POST_MIGRATION_WARNINGS)
+    }
+
 }
+
