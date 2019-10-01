@@ -16,9 +16,6 @@
  */
 package org.bonitasoft.migration
 
-import java.sql.DriverManager
-import java.sql.SQLException
-
 import groovy.xml.StreamingMarkupBuilder
 import org.bonitasoft.migration.core.Logger
 import org.bonitasoft.migration.core.MigrationContext
@@ -29,6 +26,9 @@ import org.dbunit.database.IDatabaseConnection
 import org.dbunit.dataset.ReplacementDataSet
 import org.dbunit.dataset.xml.FlatXmlDataSet
 import org.dbunit.ext.oracle.OracleConnection
+
+import java.sql.DriverManager
+import java.sql.SQLException
 
 /**
  * @author Baptiste Mesta
@@ -100,47 +100,6 @@ class DBUnitHelper {
         executeScript(INSTANCE.class.getClassLoader().getResource("sql/v${folder}/${context.dbVendor.name().toLowerCase()}.sql"))
     }
 
-    boolean hasTable(String tableName) {
-        def query
-        switch (context.dbVendor) {
-            case MigrationStep.DBVendor.POSTGRES:
-                query = """
-                    SELECT *
-                     FROM information_schema.tables
-                     WHERE table_schema='public'
-                       AND table_type='BASE TABLE'
-                       AND UPPER(table_name) = UPPER($tableName)
-                    """
-                break
-
-            case MigrationStep.DBVendor.ORACLE:
-                query = """
-                    SELECT *
-                    FROM user_tables
-                    WHERE UPPER(table_name) = UPPER($tableName)
-                    """
-                break
-
-            case MigrationStep.DBVendor.MYSQL:
-                query = """
-                    SELECT *
-                    FROM information_schema.tables
-                    WHERE UPPER(table_name) = UPPER($tableName)
-                    AND table_schema = DATABASE()
-                    """
-                break
-
-            case MigrationStep.DBVendor.SQLSERVER:
-                query = """
-                    SELECT * FROM information_schema.tables
-                    WHERE UPPER(TABLE_NAME) = UPPER($tableName)
-                    """
-                break
-        }
-        def firstRow = context.sql.firstRow(query)
-        return firstRow != null
-    }
-
     boolean hasIndexOnTable(String tableName, String indexName) {
         context.databaseHelper.hasIndexOnTable(tableName, indexName)
     }
@@ -196,7 +155,7 @@ class DBUnitHelper {
         tables.each {
             //add .toString to avoid the error bellow. Is there a better way to do that?
             //Failed to execute: DROP TABLE ? because: ERROR: syntax error at or near "$1"
-            if (hasTable(it)) {
+            if (context.databaseHelper.hasTable(it)) {
                 def statement = "DROP TABLE $it".toString()
                 logger.info("DROP TABLE [$it]".toString())
                 try {

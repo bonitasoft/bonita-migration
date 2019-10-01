@@ -14,17 +14,16 @@
 
 package org.bonitasoft.migration.core.database
 
-import static org.bonitasoft.migration.core.MigrationStep.DBVendor.*
-
+import groovy.sql.GroovyRowResult
+import groovy.sql.Sql
+import groovy.transform.PackageScope
 import org.bonitasoft.migration.core.Logger
 import org.bonitasoft.migration.core.MigrationStep.DBVendor
 import org.bonitasoft.migration.core.database.schema.ColumnDefinition
 import org.bonitasoft.migration.core.database.schema.ForeignKeyDefinition
 import org.bonitasoft.migration.core.database.schema.IndexDefinition
 
-import groovy.sql.GroovyRowResult
-import groovy.sql.Sql
-import groovy.transform.PackageScope
+import static org.bonitasoft.migration.core.MigrationStep.DBVendor.*
 
 /**
  * @author Baptiste Mesta
@@ -193,6 +192,48 @@ END"""
 
         }
     }
+
+    boolean hasTable(String tableName) {
+        def query
+        switch (dbVendor) {
+            case POSTGRES:
+                query = """
+                    SELECT *
+                     FROM information_schema.tables
+                     WHERE table_schema='public'
+                       AND table_type='BASE TABLE'
+                       AND UPPER(table_name) = UPPER($tableName)
+                    """
+                break
+
+            case ORACLE:
+                query = """
+                    SELECT *
+                    FROM user_tables
+                    WHERE UPPER(table_name) = UPPER($tableName)
+                    """
+                break
+
+            case MYSQL:
+                query = """
+                    SELECT *
+                    FROM information_schema.tables
+                    WHERE UPPER(table_name) = UPPER($tableName)
+                    AND table_schema = DATABASE()
+                    """
+                break
+
+            case SQLSERVER:
+                query = """
+                    SELECT * FROM information_schema.tables
+                    WHERE UPPER(TABLE_NAME) = UPPER($tableName)
+                    """
+                break
+        }
+        def firstRow = sql.firstRow(query)
+        return firstRow != null
+    }
+
 
     String concat(String... argsToConcat){
         // If called from a GString, calling a toString at the end might be necessary
