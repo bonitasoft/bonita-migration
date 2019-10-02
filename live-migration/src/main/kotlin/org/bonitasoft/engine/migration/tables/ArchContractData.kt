@@ -15,8 +15,8 @@ object ArchContractDataPre7_0Table : Table("arch_contract_data_backup") {
 
 }
 object ArchContractDataTable : Table("arch_contract_data") {
-    val tenantId = long("tenantid")
-    val id = long("id")
+    val tenantId = long("tenantid").primaryKey()
+    val id = long("id").primaryKey()
     val kind = varchar("kind", 20)
     val scopeId = long("scopeid")
     val name = varchar("name", 50)
