@@ -9,6 +9,9 @@
 
     <appender name="UNIT_TEST" class="org.bonitasoft.engine.migration.TestLoggerAppender"/>
 
+
+    <logger name="org.bonitasoft" level="DEBUG"/>
+
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="UNIT_TEST"/>

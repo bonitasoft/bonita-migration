@@ -1,12 +1,10 @@
 package org.bonitasoft.engine.migration
 
-import com.microsoft.sqlserver.jdbc.SQLServerException
 import org.bonitasoft.engine.migration.tables.ArchContractDataPre7_0Table
 import org.bonitasoft.engine.migration.tables.ArchContractDataTable
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.postgresql.util.PSQLException
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.jdbc.core.JdbcTemplate
@@ -16,7 +14,9 @@ import reactor.core.scheduler.Scheduler
 import reactor.core.scheduler.Schedulers
 import java.io.ObjectInputStream
 import java.lang.Exception
+import java.lang.RuntimeException
 import java.sql.Blob
+import java.sql.SQLException
 import java.sql.SQLIntegrityConstraintViolationException
 import java.time.Duration
 import java.util.stream.Collectors
@@ -78,7 +78,7 @@ class UpdateArchContractData(
 
         if (!archContractDataTableExists) {
             logger.error("Table arch_contract_data does not exists. Table should be present on a normal Bonita installation.")
-           return
+            return
         }
 
 
@@ -167,17 +167,19 @@ class UpdateArchContractData(
                                         new[sourceObjectId] = old[ArchContractDataPre7_0Table.sourceObjectId]
                                     }
                                 } catch (e: ExposedSQLException) {
-                                         if (e.cause !is SQLIntegrityConstraintViolationException  && e.cause !is SQLServerException && e.cause !is PSQLException) {
-                                             throw e
-                                         } else {
-                                             logger.debug("Row already migrated ${old[ArchContractDataPre7_0Table.tenantId]} ${old[ArchContractDataPre7_0Table.id]}")
-                                         }
+                                    if (isConstraintViolationException(e)) {
+                                        logger.debug("Row already migrated ${old[ArchContractDataPre7_0Table.tenantId]} ${old[ArchContractDataPre7_0Table.id]}")
+                                    } else {
+                                        throw   e
+                                    }
                                 }
 
                             }
                         }
                         return@map element
-                    }.sequential()
+                    }
+
+                    .sequential()
                     .publishOn(parallelScheduler)
                     .groupBy { it.first }
                     .map { groupByTenantId ->
@@ -196,6 +198,8 @@ class UpdateArchContractData(
                         }
                     }.flatMap { it }
                     .collect(Collectors.summingInt { it })
+
+
             var migratedCount: Int?
             try {
                 migratedCount = count
@@ -215,14 +219,22 @@ class UpdateArchContractData(
             }
             logger.info("Migration completed")
         } else {
-            logger.info("Migration cancelled 2")
+            logger.info("Migration cancelled")
         }
 
     }
 
+    private fun isConstraintViolationException(e: ExposedSQLException): Boolean {
+        return when (e.cause) {
+            is SQLIntegrityConstraintViolationException -> true
+            is SQLException -> e.sqlState?.substring(0, 2) == "23"
+            else -> false
+        }
+    }
+
     private fun logOnError(t: Throwable) {
         if (!running) {
-            logger.warn("Migration cancelled")
+            logger.info("Migration cancelled")
         } else {
             logger.error("Error happened during the migration ${t.message}. Please relaunch the migration tool to finish this migration")
         }

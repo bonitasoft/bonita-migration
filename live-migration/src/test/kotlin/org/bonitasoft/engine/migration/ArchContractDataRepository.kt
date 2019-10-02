@@ -41,8 +41,8 @@ class ArchContractDataRepository {
         it[ArchContractDataTable.sourceObjectId] = record.get(7).toLong()
     }
 
-    fun getValuesOf_arch_contract_data_after_migration(): List<List<String>> {
-        return read("arch_contract_data_after_migration.csv").map { record ->
+    fun getValuesOf_arch_contract_data_after_migration(fileName:String): List<List<String>> {
+        return read(fileName).map { record ->
             listOf(record.get(0),
                     record.get(1),
                     record.get(2),
@@ -63,20 +63,23 @@ class ArchContractDataRepository {
         return SerialBlob(baos.toByteArray())
     }
 
-    fun insert_arch_contract_data_backup_before_migration() {
-        read("arch_contract_data_backup_before_migration.csv").forEach { entry ->
+    fun insert_arch_contract_data_backup_before_migration(fileName: String) {
+        read(fileName).forEach { entry ->
             ArchContractDataPre7_0Table.insert {
                 createArchContractDataPre7_0(it, entry)
             }
         }
     }
 
-    fun insert_arch_contract_data_before_migration() {
-        read("arch_contract_data_before_migration.csv").forEach { entry ->
+
+
+    fun insert_arch_contract_data_before_migration(fileName: String) {
+        read(fileName).forEach { entry ->
             ArchContractDataTable.insert {
                 createArchContractData(it, entry)
             }
         }
     }
+
 
 }
