@@ -27,7 +27,7 @@ springBoot {
     distributions.getByName("boot") {
         contents {
             from("distrib/") {
-                include("application.properties")
+                include("*")
             }
         }
         baseName = project.name
