@@ -13,6 +13,7 @@
  **/
 package org.bonitasoft.migration.version.to7_9_0
 
+import com.github.zafarkhaja.semver.Version
 import org.bonitasoft.migration.core.MigrationContext
 import org.bonitasoft.migration.core.MigrationStep
 import org.bonitasoft.migration.core.VersionMigration
@@ -36,6 +37,26 @@ class MigrateTo7_9_0 extends VersionMigration {
     @Override
     String[] getPreMigrationWarnings(MigrationContext context) {
         return CONNECTOR_MIGRATION_MESSAGE
+    }
+
+    @Override
+    String[] getPreMigrationBlockingMessages(MigrationContext context) {
+        if (context.dbVendor == MigrationStep.DBVendor.ORACLE) {
+            def oracleVersion = context.sql.rows("SELECT * FROM PRODUCT_COMPONENT_VERSION")
+                    .find { row -> (row.PRODUCT as String).toLowerCase().contains("database") }
+                    .VERSION
+                    .with {
+                        def rawVersion = it as String
+                        def major = Integer.valueOf(rawVersion.substring(0, rawVersion.indexOf('.')))
+                        def startFromMinor = rawVersion.substring(rawVersion.indexOf('.') + 1)
+                        def minor = Integer.valueOf(startFromMinor.substring(0, startFromMinor.indexOf('.')))
+                        Version.forIntegers(major, minor)
+                    }
+            if (oracleVersion.majorVersion < 12 || (oracleVersion.majorVersion == 12 && oracleVersion.minorVersion < 2)) {
+                return ["version 7.9.0+ is not compatible with Oracle version lower than 12.2 (detected version $oracleVersion). Please upgrade Oracle before migrating."]
+            }
+        }
+        return []
     }
 
     @Override
