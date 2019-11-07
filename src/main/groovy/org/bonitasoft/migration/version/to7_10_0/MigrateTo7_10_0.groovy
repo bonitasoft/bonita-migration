@@ -21,7 +21,9 @@ class MigrateTo7_10_0 extends VersionMigration {
     @Override
     List<MigrationStep> getMigrationSteps() {
         // keep one line per step to avoid false-positive merge conflict:
-        return []
+        return [
+                new ReplaceIndexMysqlUTF8MB4Compatibility()
+        ]
     }
 
 }
