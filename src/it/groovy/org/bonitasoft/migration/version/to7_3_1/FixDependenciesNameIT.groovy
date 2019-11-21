@@ -33,7 +33,7 @@ class FixDependenciesNameIT extends Specification {
     }
 
     private String[] dropTables() {
-        dbUnitHelper.dropTables(["dependency"] as String[])
+        dbUnitHelper.dropTables(["dependency", "dependencymapping"] as String[])
     }
 
     def "should replace slashes in the dependency name and filename"() {
@@ -48,6 +48,24 @@ class FixDependenciesNameIT extends Specification {
             [key.toString().toLowerCase(), value]
         } == [name: '5335973144527898509_providedscripts.jar', filename: 'providedscripts.jar']
         assert (migrationContext.sql.firstRow("SELECT name, filename FROM dependency WHERE id = ${306L}") as Map).collectEntries { key, value ->
+            [key.toString().toLowerCase(), value]
+        } == [name: '5335973144527898509_ojdbc6.jar', filename: 'ojdbc6.jar']
+    }
+
+    def "should remove previous dependency if there are both a dependency with slash and without slash"() {
+        given:
+        def byte[] content = [1, 2]
+        migrationContext.sql.execute("INSERT INTO dependency (tenantid, id, name, description, filename, value_) VALUES (${1L},${302L}, ${'5335973144527898509_providedscripts.jar'}, ${null},${'providedscripts.jar'},${content})")
+        migrationContext.sql.execute("INSERT INTO dependency (tenantid, id, name, description, filename, value_) VALUES (${2L},${306L}, ${'5335973144527898509_ojdbc6.jar'}, ${null},${'ojdbc6.jar'},${content})")
+        migrationContext.sql.execute("INSERT INTO dependency (tenantid, id, name, description, filename, value_) VALUES (${2L},${307L}, ${'5335973144527898509_/ojdbc6.jar'}, ${null},${'/ojdbc6.jar'},${content})")
+        when:
+        new FixDependenciesName().execute(migrationContext)
+        then:
+        assert (migrationContext.sql.firstRow("SELECT name, filename FROM dependency WHERE id = ${302L}") as Map).collectEntries { key, value ->
+            [key.toString().toLowerCase(), value]
+        } == [name: '5335973144527898509_providedscripts.jar', filename: 'providedscripts.jar']
+        assert (migrationContext.sql.rows("SELECT name, filename FROM dependency WHERE id = ${306L}")).isEmpty()
+        assert (migrationContext.sql.firstRow("SELECT name, filename FROM dependency WHERE id = ${307L}") as Map).collectEntries { key, value ->
             [key.toString().toLowerCase(), value]
         } == [name: '5335973144527898509_ojdbc6.jar', filename: 'ojdbc6.jar']
     }

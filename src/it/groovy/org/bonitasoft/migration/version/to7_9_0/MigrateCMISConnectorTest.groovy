@@ -25,6 +25,7 @@ class MigrateCMISConnectorTest extends Specification {
     UpdateConnectorDefinitionsForJava11 migrationStep = new UpdateConnectorDefinitionsForJava11()
 
     def setup() {
+        dropTestTables()
         dbUnitHelper.createTables("7_9_0/connectors")
         migrationContext.sql.executeInsert("""INSERT INTO sequence (tenantid,id,nextid) VALUES (1,10,1)""")
         migrationContext.sql.executeInsert("""INSERT INTO sequence (tenantid,id,nextid) VALUES (1,11,1)""")
