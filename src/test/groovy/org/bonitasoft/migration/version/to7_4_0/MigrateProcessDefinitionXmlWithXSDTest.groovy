@@ -71,8 +71,9 @@ class MigrateProcessDefinitionXmlWithXSDTest extends Specification {
                     "BBPMC-452/process-design5.xml",
                     "BBPMC-452/process-design6.xml",
                     "bdm_multiple.xml",
-                    "process-design-BS-18338_multi-iteration_send_and_receive_tasks.xml"
-                    , "extra-flowNodes-elements.xml"
+                    "process-design-BS-18338_multi-iteration_send_and_receive_tasks.xml",
+                    "extra-flowNodes-elements.xml",
+                    "processDefinition733-with-gateways.xml"
         ]
     }
 

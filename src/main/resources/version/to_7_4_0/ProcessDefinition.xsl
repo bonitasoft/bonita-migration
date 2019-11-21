@@ -178,6 +178,23 @@
         </xsl:element>
     </xsl:template>
 
+    <xsl:template match="gateway">
+        <xsl:element name="{name()}">
+
+            <xsl:apply-templates select="@*" />
+
+            <xsl:apply-templates select="incomingTransition" />
+            <xsl:apply-templates select="outgoingTransition" />
+            <xsl:apply-templates select="connector" />
+            <xsl:apply-templates select="description" />
+            <xsl:apply-templates select="displayDescription" />
+            <xsl:apply-templates select="displayName" />
+            <xsl:apply-templates select="displayDescriptionAfterCompletion" />
+            <xsl:apply-templates select="defaultTransition" />
+
+        </xsl:element>
+    </xsl:template>
+
     <xsl:template match="actors">
         <xsl:param name="initiatorId" />
 
