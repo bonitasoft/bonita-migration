@@ -9,3 +9,12 @@ CREATE TABLE dependency (
   PRIMARY KEY (tenantid, id)
 );
 CREATE INDEX idx_dependency_name ON dependency (name);
+CREATE TABLE dependencymapping (
+  tenantid NUMBER(19, 0) NOT NULL,
+  id NUMBER(19, 0) NOT NULL,
+  artifactid NUMBER(19, 0) NOT NULL,
+  artifacttype VARCHAR2(50 CHAR) NOT NULL,
+  dependencyid NUMBER(19, 0) NOT NULL,
+  CONSTRAINT UK_Dependency_Mapping UNIQUE (tenantid, dependencyid, artifactid, artifacttype),
+  PRIMARY KEY (tenantid, id)
+);

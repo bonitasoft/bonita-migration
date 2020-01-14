@@ -14,6 +14,7 @@
 
 package org.bonitasoft.migration.version.to7_8_0
 
+import com.github.zafarkhaja.semver.Version
 import groovy.sql.GroovyRowResult
 import org.bonitasoft.migration.core.MigrationContext
 import org.bonitasoft.migration.core.MigrationStep
@@ -51,10 +52,52 @@ class MigrateTo7_8_0 extends VersionMigration {
     @Override
     String[] getPreMigrationBlockingMessages(MigrationContext context) {
         List<String> blockingMessage = []
+        List<GroovyRowResult> v6forms = getActiveV6Forms(context)
+        if (v6forms.size() != 0) {
+            blockingMessage.addAll(V6_FORMS_IN_ACTIVE_INSTANCES_OR_ENABLED_PROCESSES_PRESENT_MESSAGE)
+            for (GroovyRowResult v6form in v6forms) {
+                blockingMessage.add('* ' + normalizeNamed(v6form[0] as String))
+            }
+        }
+        return blockingMessage
+    }
+
+    private List<GroovyRowResult> getActiveV6Forms(MigrationContext context) {
+
         // Check if a process with active instances has either v6 instantiation forms or task forms, ignoring overviews
         // UNION
         // Check if an enabled process who has either v6 instantiation forms or task forms
-        def v6forms = context.sql.rows("""SELECT DISTINCT KEY_
+
+        def v6forms
+        if (context.sourceVersion < Version.valueOf("7.1.0")) {
+            //In that case form mapping do not have a target field, we need to check page_mappings
+            //pageMapping.urladapter != null && !pageMapping.urladapter.isEmpty()
+            def query = """SELECT DISTINCT KEY_
+FROM process_instance pi, form_mapping f, page_mapping p
+WHERE pi.processdefinitionid = f.process
+AND f.TYPE <> 2
+AND p.ID = f.page_mapping_id
+AND p.tenantid = f.page_mapping_tenant_id
+AND p.urladapter IS NOT NULL
+AND LENGTH(p.urladapter) > 0
+UNION
+SELECT DISTINCT KEY_
+FROM process_definition pd, form_mapping f, page_mapping p
+WHERE pd.PROCESSID = f.PROCESS
+AND f.TYPE <> 2
+AND pd.ACTIVATIONSTATE = 'ENABLED'
+AND p.ID = f.page_mapping_id
+AND p.tenantid = f.page_mapping_tenant_id
+AND p.urladapter IS NOT NULL
+AND LENGTH(p.urladapter) > 0
+"""
+            if (context.dbVendor == MigrationStep.DBVendor.SQLSERVER) {
+                //LENGTH is supported on all except SQLSERVER
+                query = query.replace("LENGTH(", "LEN(")
+            }
+            v6forms = context.sql.rows(query)
+        } else {
+            v6forms = context.sql.rows("""SELECT DISTINCT KEY_
 FROM process_instance pi, form_mapping f, page_mapping p
 WHERE pi.processdefinitionid = f.process
 AND f.target = 'LEGACY'
@@ -71,14 +114,8 @@ AND pd.ACTIVATIONSTATE = 'ENABLED'
 AND p.ID = f.page_mapping_id
 AND p.tenantid = f.page_mapping_tenant_id
 """)
-        if (v6forms.size() != 0) {
-            blockingMessage.addAll(V6_FORMS_IN_ACTIVE_INSTANCES_OR_ENABLED_PROCESSES_PRESENT_MESSAGE)
-            for (GroovyRowResult v6form in v6forms) {
-                blockingMessage.add('* ' + normalizeNamed(v6form[0] as String))
-            }
         }
-
-        return blockingMessage
+        v6forms
     }
 
     static String normalizeNamed(String name) {

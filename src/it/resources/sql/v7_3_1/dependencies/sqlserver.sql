@@ -11,3 +11,13 @@ CREATE TABLE dependency (
 GO
 CREATE INDEX idx_dependency_name ON dependency (name, id)
 GO
+CREATE TABLE dependencymapping (
+  tenantid NUMERIC(19, 0) NOT NULL,
+  id NUMERIC(19, 0) NOT NULL,
+  artifactid NUMERIC(19, 0) NOT NULL,
+  artifacttype NVARCHAR(50) NOT NULL,
+  dependencyid NUMERIC(19, 0) NOT NULL,
+  UNIQUE (tenantid, dependencyid, artifactid, artifacttype),
+  PRIMARY KEY (tenantid, id)
+)
+GO

@@ -9,3 +9,12 @@ CREATE TABLE dependency (
   PRIMARY KEY (tenantid, id)
 ) ENGINE = INNODB;
 CREATE INDEX idx_dependency_name ON dependency (name);
+CREATE TABLE dependencymapping (
+  tenantid BIGINT NOT NULL,
+  id BIGINT NOT NULL,
+  artifactid BIGINT NOT NULL,
+  artifacttype VARCHAR(50) NOT NULL,
+  dependencyid BIGINT NOT NULL,
+  UNIQUE (tenantid, dependencyid, artifactid, artifacttype),
+  PRIMARY KEY (tenantid, id)
+) ENGINE = INNODB;
