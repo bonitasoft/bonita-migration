@@ -21,7 +21,7 @@ class MigrateTo7_11_0 extends VersionMigration {
     @Override
     List<MigrationStep> getMigrationSteps() {
         // keep one line per step and comma (,) at start of line to avoid false-positive merge conflict:
-        return []
+        return [new AddIndexOnArchFlownodeInstance()]
     }
 
 }
