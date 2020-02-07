@@ -283,13 +283,20 @@ class MigrationPlugin implements Plugin<Project> {
         String name
         if (migrationPluginExtension.isSP) {
             // test modules changed in 7.7.0
-            if (Version.valueOf(getRawVersion(version)) >= Version.valueOf("7.7.0")) {
+            if (Version.valueOf(getRawVersion(version)) >= Version.valueOf("7.11.0")) {
+                name = "com.bonitasoft.engine:bonita-test-api-sp:${version}"
+            } else if (Version.valueOf(getRawVersion(version)) >= Version.valueOf("7.7.0")) {
                 name = "com.bonitasoft.engine.test:bonita-integration-tests-client-sp:${version}"
             } else {
                 name = "com.bonitasoft.engine.test:bonita-integration-tests-local-sp:${version}:tests"
             }
         } else {
-            name = "org.bonitasoft.engine.test:bonita-server-test-utils:${version}"
+
+            if (Version.valueOf(getRawVersion(version)) >= Version.valueOf("7.11.0")) {
+                name = "org.bonitasoft.engine:bonita-test-api:${version}"
+            } else {
+                name = "org.bonitasoft.engine.test:bonita-server-test-utils:${version}"
+            }
         }
         name
     }
