@@ -22,6 +22,8 @@ import org.bonitasoft.migration.core.MigrationStep
  */
 class MigrateV6Forms extends MigrationStep {
 
+    private static final String GET_TENANTS_IDS_ON_PLATFORM = """SELECT id FROM tenant"""
+
     private static final String FIND_ELEMENTS_TO_UPDATE = """SELECT DISTINCT pd.processid, f.page_mapping_tenant_id, f.page_mapping_id, f.tenantid, f.id
 FROM process_definition pd, form_mapping f
 WHERE pd.PROCESSID = f.PROCESS
@@ -43,10 +45,11 @@ AND activationstate = 'DISABLED'
 AND processid = ?"""
 
     private static final String UPDATE_CASE_OVERVIEW_PAGE_MAPPINGS = """UPDATE page_mapping
-SET pageid = (SELECT id FROM page WHERE NAME = 'custompage_caseoverview'),
+SET pageid = (SELECT id FROM page WHERE NAME = 'custompage_caseoverview' AND tenantid = ?),
     urladapter = null,
     page_authoriz_rules = 'IS_ADMIN,IS_PROCESS_OWNER,IS_PROCESS_INITIATOR,IS_TASK_PERFORMER,IS_INVOLVED_IN_PROCESS_INSTANCE,'
 WHERE urladapter = 'legacy'
+AND tenantid = ?
 AND key_ like 'processInstance/%'""" // KEY_ like 'processInstance/%' means 'case overview'
 
     private static final String UPDATE_CASE_OVERVIEW_FORM_MAPPINGS = """UPDATE form_mapping SET target = 'INTERNAL' WHERE type = 2 AND target = 'LEGACY'"""
@@ -82,7 +85,10 @@ AND key_ like 'processInstance/%'""" // KEY_ like 'processInstance/%' means 'cas
     }
 
     private static setAllCaseOverviewToV7(MigrationContext context) {
-        context.sql.executeUpdate(UPDATE_CASE_OVERVIEW_PAGE_MAPPINGS)
+        context.sql.eachRow(GET_TENANTS_IDS_ON_PLATFORM) { row ->
+            def tenantId = row.id as long
+            context.sql.executeUpdate(UPDATE_CASE_OVERVIEW_PAGE_MAPPINGS, [tenantId, tenantId])
+        }
         context.sql.executeUpdate(UPDATE_CASE_OVERVIEW_FORM_MAPPINGS)
     }
 
