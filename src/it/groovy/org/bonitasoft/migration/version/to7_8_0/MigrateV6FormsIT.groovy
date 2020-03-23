@@ -13,7 +13,6 @@
  **/
 package org.bonitasoft.migration.version.to7_8_0
 
-
 import org.bonitasoft.migration.DBUnitHelper
 import org.bonitasoft.migration.core.Logger
 import org.bonitasoft.migration.core.MigrationContext
@@ -33,7 +32,6 @@ class MigrateV6FormsIT extends Specification {
 
     @Shared
     DBUnitHelper dbUnitHelper = new DBUnitHelper(migrationContext)
-
     MigrateV6Forms migrationStep = new MigrateV6Forms()
 
     def setup() {

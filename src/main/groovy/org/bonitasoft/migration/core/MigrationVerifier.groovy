@@ -77,6 +77,6 @@ class MigrationVerifier implements MigrationAction {
 
     @Override
     String getDescription() {
-        return  "NO CHANGES WILL BE MADE."
+        return "NO CHANGES WILL BE MADE."
     }
 }
