@@ -14,23 +14,18 @@
 
 package org.bonitasoft.migration.core
 
-import static org.bonitasoft.migration.core.MigrationStep.DBVendor.ORACLE
-import static org.bonitasoft.migration.core.database.DbConfig.*
-
-import javax.sql.DataSource
-import java.util.concurrent.Callable
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
-import java.util.concurrent.Future
-import java.util.concurrent.TimeUnit
-
+import com.github.zafarkhaja.semver.Version
+import groovy.sql.Sql
 import org.apache.commons.dbcp2.BasicDataSource
 import org.bonitasoft.migration.core.database.ConfigurationHelper
 import org.bonitasoft.migration.core.database.DatabaseHelper
 import org.bonitasoft.migration.core.database.DbConfig
-import com.github.zafarkhaja.semver.Version
 
-import groovy.sql.Sql
+import javax.sql.DataSource
+import java.util.concurrent.*
+
+import static org.bonitasoft.migration.core.MigrationStep.DBVendor.ORACLE
+import static org.bonitasoft.migration.core.database.DbConfig.*
 
 /**
  * @author Baptiste Mesta
@@ -62,6 +57,8 @@ class MigrationContext {
     DbConfig dbConfig
     private ExecutorService executorService
     boolean verifyOnly
+    boolean updateCaseOverview
+    String processToUpdate
 
     MigrationContext() {
     }
