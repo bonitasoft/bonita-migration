@@ -49,6 +49,8 @@ class Migration {
         try {
             def migrationContext = new MigrationContext(logger: logger)
             migrationContext.verifyOnly = arguments.verify
+            migrationContext.updateCaseOverview = arguments.updateCaseOverview
+            migrationContext.processToUpdate = arguments.processToUpdate
             new Migration(
                     migrationContext,
                     new DisplayUtil(logger: logger)
@@ -84,8 +86,10 @@ class Migration {
             logJdbcDriverInformation()
 
             connectToDatabase()
-            def versionMigrations = getMigrationVersionsToRun(runner)
-            runner.migrationVersions = versionMigrations
+            if (!(runner instanceof UpdateV6CaseOverview)) {
+                def versionMigrations = getMigrationVersionsToRun(runner)
+                runner.migrationVersions = versionMigrations
+            }
             runner.run(isSp)
             context.closeSqlConnection()
         } catch (Throwable t) {
@@ -97,8 +101,11 @@ class Migration {
     protected MigrationAction createRunner() {
         if (context.verifyOnly) {
             return new MigrationVerifier(context: context, logger: logger, displayUtil: displayUtil)
+        } else if (context.updateCaseOverview) {
+            return new UpdateV6CaseOverview(context: context, logger: logger, displayUtil: displayUtil, processDefinition: new Long(context.processToUpdate))
+        } else {
+            return new MigrationRunner(context: context, logger: logger, displayUtil: displayUtil)
         }
-        return new MigrationRunner(context: context, logger: logger, displayUtil: displayUtil)
     }
 
     /**
