@@ -116,6 +116,7 @@ class MigrationRunner implements MigrationAction {
     String getDescription() {
         return "DATABASE WILL BE MIGRATED (use --verify to run only checks)"
     }
+
     private boolean hasBlockingPrerequisites() {
         Map<String, String[]> beforeMigrationBlocks = [:]
         migrationVersions.each {
