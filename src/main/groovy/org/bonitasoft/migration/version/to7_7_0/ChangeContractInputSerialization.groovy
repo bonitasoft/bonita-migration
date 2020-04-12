@@ -105,7 +105,7 @@ class ChangeContractInputSerialization extends MigrationStep {
 
         context.logger.info('Finalizing val column migration')
         context.logger.info('Dropping the original val column')
-        databaseHelper.dropColumn(tableName, "val")
+        databaseHelper.dropColumnIfExists(tableName, "val")
         context.logger.info('Renaming the tmp_val column into val')
         databaseHelper.renameColumn(tableName, "tmp_val", "val", newType)
         context.logger.info("val column migration done for the $tableName table")

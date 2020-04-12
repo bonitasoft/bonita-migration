@@ -47,7 +47,7 @@ class UpdateV6CaseOverviewIT extends Specification {
     }
 
     private String[] dropTestTables() {
-        dbUnitHelper.dropTables(["page", "form_mapping", "page_mapping", "process_definition", "process_instance", "bar_resource", "process_definition"] as String[])
+        dbUnitHelper.dropTables(["page", "form_mapping", "page_mapping", "process_definition", "process_instance", "bar_resource", "process_definition", "tenant"] as String[])
     }
 
 

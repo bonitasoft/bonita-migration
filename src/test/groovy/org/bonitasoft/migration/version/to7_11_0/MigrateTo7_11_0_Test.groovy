@@ -1,7 +1,6 @@
-package org.bonitasoft.migration.version.to7_10_0
+package org.bonitasoft.migration.version.to7_11_0
 
-import org.bonitasoft.migration.version.to7_11_0.MigrateTo7_11_0
-import org.bonitasoft.migration.version.to7_9_0.MigrateTo7_9_0
+
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -21,6 +20,7 @@ class MigrateTo7_11_0Test extends Specification {
         where:
         stepName << [
                 "AddIndexOnArchFlownodeInstance"
+                , "RefactorPlatformColumns"
         ]
 
     }

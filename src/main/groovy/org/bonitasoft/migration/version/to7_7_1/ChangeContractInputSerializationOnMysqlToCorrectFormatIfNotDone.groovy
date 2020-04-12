@@ -66,7 +66,7 @@ class ChangeContractInputSerializationOnMysqlToCorrectFormatIfNotDone extends Mi
         }
 
         // drop original column
-        databaseHelper.dropColumn(table_name, "val")
+        databaseHelper.dropColumnIfExists(table_name, "val")
         //rename column
         databaseHelper.renameColumn(table_name, "tmp_val", "val", valColumnTargetType)
     }

@@ -5,7 +5,7 @@ import static pl.allegro.tech.build.axion.release.domain.PredefinedVersionIncrem
 buildscript {
     repositories {
         mavenLocal()
-        maven { url 'http://repositories.rd.lan/maven/all' }
+        maven { url 'http://artifacts.rd.lan/maven/all' }
         // fallback solution in case the Bonitasoft internal repository is not available
         mavenCentral()
     }
@@ -23,7 +23,7 @@ plugins {
 }
 repositories {
     mavenLocal()
-    maven { url 'http://repositories.rd.lan/maven/all' }
+    maven { url 'http://artifacts.rd.lan/maven/all' }
     // fallback solution in case the Bonitasoft internal repository is not available
     mavenCentral()
 }

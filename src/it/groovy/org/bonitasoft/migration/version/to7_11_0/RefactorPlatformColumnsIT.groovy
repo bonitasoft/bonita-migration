@@ -9,7 +9,7 @@ import spock.lang.Specification
 /**
  * @author Danila Mazour
  */
-class AddIndexOnArchFlownodeInstanceIT extends Specification {
+class RefactorPlatformColumnsIT extends Specification {
 
     @Shared
     def logger = new Logger()
@@ -19,13 +19,12 @@ class AddIndexOnArchFlownodeInstanceIT extends Specification {
 
     @Shared
     def dbUnitHelper = new DBUnitHelper(migrationContext)
-    AddIndexOnArchFlownodeInstance migrationStep = new AddIndexOnArchFlownodeInstance()
-
+    RefactorPlatformColumns migrationStep = new RefactorPlatformColumns()
 
     def setup() {
         dropTestTables()
         migrationContext.setVersion("7.11.0")
-        dbUnitHelper.createTables("7_11_0/arch_flownode_instance")
+        dbUnitHelper.createTables("7_11_0/platform")
     }
 
     def cleanup() {
@@ -33,17 +32,21 @@ class AddIndexOnArchFlownodeInstanceIT extends Specification {
     }
 
     private String[] dropTestTables() {
-        dbUnitHelper.dropTables(["arch_flownode_instance"] as String[])
+        dbUnitHelper.dropTables(["platform"] as String[])
     }
 
-    def "should have added the index during the migration"() {
-        given:
-
+    def "should migrate all 3 columns from 'platform' table"() {
         when:
         migrationStep.execute(migrationContext)
 
         then:
-        dbUnitHelper.hasIndexOnTable("arch_flownode_instance", "idx_afi_kind_lg4")
+
+        dbUnitHelper.hasColumnOnTable("platform", "version")
+        dbUnitHelper.hasColumnOnTable("platform", "initial_bonita_version")
+        dbUnitHelper.hasColumnOnTable("platform", "created_by")
+
+        !dbUnitHelper.hasColumnOnTable("platform", "initialVersion")
+        !dbUnitHelper.hasColumnOnTable("platform", "previousVersion")
     }
 
 }

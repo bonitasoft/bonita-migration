@@ -4,7 +4,6 @@ import com.github.zafarkhaja.semver.Version
 import org.bonitasoft.migration.DBUnitHelper
 import org.bonitasoft.migration.core.Logger
 import org.bonitasoft.migration.core.MigrationContext
-import org.bonitasoft.migration.core.MigrationUtil
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -46,7 +45,7 @@ class MigrateTo7_8_0IT extends Specification {
         given:
         //mimic pre 7.1.0, remove 'target' column of form mapping and set source version to be before 7.1.0
         migrationContext.sourceVersion = Version.valueOf("7.0.2")
-        migrationContext.databaseHelper.dropColumn("form_mapping", "target")
+        migrationContext.databaseHelper.dropColumnIfExists("form_mapping", "target")
         migrationContext.sql.execute("""
 INSERT INTO page_mapping
 (TENANTID, ID, KEY_, PAGEID, URL, URLADAPTER, PAGE_AUTHORIZ_RULES, LASTUPDATEDATE, LASTUPDATEDBY)
@@ -92,7 +91,7 @@ VALUES(1, 3, 4837119744348201769, 'Pre710_process', '1.0', '', 1538483484523, 4,
         given:
         //mimic pre 7.1.0, remove 'target' column of form mapping and set source version to be before 7.1.0
         migrationContext.sourceVersion = Version.valueOf("7.0.2")
-        migrationContext.databaseHelper.dropColumn("form_mapping", "target")
+        migrationContext.databaseHelper.dropColumnIfExists("form_mapping", "target")
         //URLADAPTER is null, no legacy v6 forms
         migrationContext.sql.execute("""
 INSERT INTO page_mapping

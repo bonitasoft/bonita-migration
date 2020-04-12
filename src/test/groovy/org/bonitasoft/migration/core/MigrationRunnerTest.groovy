@@ -75,8 +75,7 @@ class MigrationRunnerTest extends Specification {
         when:
         migrationRunner.run(true)
         then:
-        1 * sql.executeUpdate("UPDATE platform SET previousVersion = version")
-        1 * sql.executeUpdate("UPDATE platform SET version = ${"7.3.1"}")
+        1 * sql.executeUpdate("UPDATE platform SET previousVersion = version, version = ${"7.3.1"}")
     }
 
     def "run check pre-requisites before running migration"() {
