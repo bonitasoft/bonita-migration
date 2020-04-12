@@ -235,7 +235,7 @@ END"""
     }
 
 
-    String concat(String... argsToConcat){
+    String concat(String... argsToConcat) {
         // If called from a GString, calling a toString at the end might be necessary
         def result
         if (argsToConcat.size() > 2) {
@@ -287,12 +287,10 @@ END"""
         }
     }
 
-    def dropColumn(String table, String column) {
+    def dropColumnIfExists(String table, String column) {
         if (hasColumnOnTable(table, column)) {
             switch (dbVendor) {
                 case ORACLE:
-                    execute("ALTER TABLE $table DROP COLUMN $column")
-                    break;
                 case SQLSERVER:
                     execute("ALTER TABLE $table DROP COLUMN $column")
                     break;

@@ -32,7 +32,7 @@ class AddHiddenFieldToPagesIT extends Specification {
     }
 
     private String[] dropTestTables() {
-        dbUnitHelper.dropTables(["page", "form_mapping", "page_mapping", "process_definition", "process_instance", "bar_resource"] as String[])
+        dbUnitHelper.dropTables(["page", "form_mapping", "page_mapping", "process_definition", "process_instance", "bar_resource", "tenant"] as String[])
     }
 
     def "should add a hidden field defaulting to false"() {

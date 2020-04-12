@@ -176,15 +176,20 @@ class MigrationRunner implements MigrationAction {
     }
 
     def changePlatformVersion(Sql sql, String version) {
-        if (overriddenVersion && overrideByVersion && overriddenVersion == version) {
-            logger.info("Overriding version $version by $overrideByVersion")
-            version = overrideByVersion
+        def targetVersion = Version.valueOf(version)
+        if (targetVersion < Version.valueOf("7.11.0")) {
+            if (overriddenVersion && overrideByVersion && overriddenVersion == version) {
+                logger.info("Overriding version $version by $overrideByVersion")
+                version = overrideByVersion
+            }
+            logger.info("Updating platform version in the database ...")
+            sql.executeUpdate("UPDATE platform SET previousVersion = version, version = $version")
+            logger.info("Platform version in database is now $version")
+        } else {
+            String dbVersion = "${targetVersion.majorVersion}.${targetVersion.minorVersion}"
+            logger.info("Updating Bonita database schema version to $dbVersion")
+            sql.executeUpdate("UPDATE platform SET version = $dbVersion")
         }
-        logger.info("Updating platform version in the database ...")
-        sql.executeUpdate("UPDATE platform SET previousVersion = version")
-        sql.executeUpdate("UPDATE platform SET version = $version")
-        logger.info("Platform version in database is now $version")
     }
-
 
 }

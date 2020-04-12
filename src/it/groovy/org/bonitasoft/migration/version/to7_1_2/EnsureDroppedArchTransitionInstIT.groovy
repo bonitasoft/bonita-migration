@@ -24,7 +24,7 @@ class EnsureDroppedArchTransitionInstIT extends Specification {
         then:
         !migrationContext.databaseHelper.hasTable("arch_transition_instance")
 
-        //clean up
+        cleanup:
         dbUnitHelper.dropTables("tenant")
 
     }

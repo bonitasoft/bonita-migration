@@ -86,23 +86,23 @@ class Migration {
             logJdbcDriverInformation()
 
             connectToDatabase()
-                    try {
-                        if (runner instanceof UpdateV6CaseOverview) {
-                            if (Version.valueOf(getPlatformVersion().normalVersion) >= Version.valueOf('7.8.0')) {
-                                throw new IllegalStateException("'updateCaseOverview' mode is designed to migrate V6 case overviews to V7 auto-generated case overviews. It is not necessary for versions >= 7.8.0 as no V6 forms may be present in them.")
-                            }
-                        } else {
-                            def versionMigrations = getMigrationVersionsToRun(runner)
-                            runner.migrationVersions = versionMigrations
-                        }
-                        runner.run(isSp)
+            try {
+                if (runner instanceof UpdateV6CaseOverview) {
+                    if (Version.valueOf(getPlatformVersion().normalVersion) >= Version.valueOf('7.8.0')) {
+                        throw new IllegalStateException("'updateCaseOverview' mode is designed to migrate V6 case overviews to V7 auto-generated case overviews. It is not necessary for versions >= 7.8.0 as no V6 forms may be present in them.")
                     }
-                    finally {
-                        context.closeSqlConnection()
-                    }
+                } else {
+                    def versionMigrations = getMigrationVersionsToRun(runner)
+                    runner.migrationVersions = versionMigrations
+                }
+                runner.run(isSp)
+            }
+            finally {
+                context.closeSqlConnection()
+            }
         } catch (Throwable t) {
             logger.error(t.getMessage())
-                logger.debug('', t)
+            logger.debug('', t)
             throw t
         }
     }
