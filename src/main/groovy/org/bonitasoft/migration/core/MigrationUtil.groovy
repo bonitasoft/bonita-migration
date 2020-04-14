@@ -139,6 +139,19 @@ class MigrationUtil {
         }
     }
 
+    static String getDisplayVersion(def normalVersion) {
+        Version semVer
+        if (normalVersion instanceof Version) {
+            semVer = normalVersion
+        } else {
+            semVer = Version.valueOf(normalVersion)
+        }
+        if (semVer >= Version.valueOf("7.11.0")) {
+            return semVer.majorVersion + '.' + semVer.minorVersion
+        }
+        return normalVersion
+    }
+
     static Object getId(File feature, String dbVendor, String fileExtension, Object it, Sql sql) {
         if (it == null || sql == null) {
             throw new IllegalArgumentException("Can't execute getId method with arguments : it = " + it + ", sql = " + sql)
@@ -217,16 +230,17 @@ class MigrationUtil {
         def input = null
         while (true) {
             options.eachWithIndex { it, idx ->
-                logger.info "${idx + 1} -- $it "
+                logger.info "${idx + 1} -- ${MigrationUtil.getDisplayVersion(it)} "
             }
             logger.info "choice: "
             input = read()
             try {
-                def choiceNumber = Integer.valueOf(input) - 1 //index in the list is -1
+                def choiceNumber = Integer.valueOf(input)
                 if (choiceNumber <= options.size()) {
-                    String choice = options.get(choiceNumber)
-                    logger.info "$choiceNumber --> $choice"
-                    return options.get(choiceNumber)
+                    //index in the list is -1, as arrays start at index 0:
+                    String choice = options.get(choiceNumber - 1)
+                    logger.info "$choiceNumber --> ${MigrationUtil.getDisplayVersion(choice)}"
+                    return choice
                 }
             } catch (Exception e) {
             }

@@ -42,7 +42,7 @@ class MigrationRunner implements MigrationAction {
             String lastVersion
             def warnings = [:]
             migrationVersions.each {
-                logger.info "Execute migration to version " + it.getVersion()
+                logger.info "Execute migration to version " + MigrationUtil.getDisplayVersion(it.getVersion())
                 def bonitaHomeDir = null
                 it.context = context
                 it.logger = logger
@@ -58,7 +58,7 @@ class MigrationRunner implements MigrationAction {
                     step.execute(context)
                     def stepWarningMessage = step.warning
                     if (stepWarningMessage) {
-                        warnings.put("Migration to version:${it.version} - step: ${step.description}" as String, stepWarningMessage)
+                        warnings.put("Migration to version:${MigrationUtil.getDisplayVersion(it.version)} - step: ${step.description}" as String, stepWarningMessage)
                     }
                     MigrationUtil.logSuccessMigration(stepStartDate, migrationStartDate)
                     logger.info "---------------"
@@ -123,7 +123,7 @@ class MigrationRunner implements MigrationAction {
             VersionMigration versionMigration ->
                 String[] preVersionBlockings = versionMigration.getPreMigrationBlockingMessages(context)
                 if (preVersionBlockings) {
-                    beforeMigrationBlocks.put("Migration to version ${versionMigration.getVersion()}", preVersionBlockings)
+                    beforeMigrationBlocks.put("Migration to version ${MigrationUtil.getDisplayVersion(versionMigration.getVersion())}", preVersionBlockings)
                 }
         }
         if (beforeMigrationBlocks) {
@@ -143,7 +143,7 @@ class MigrationRunner implements MigrationAction {
             // Warn before running ANY migration step if there are pre-migration warnings:
             String[] preVersionWarnings = it.getPreMigrationWarnings(context)
             if (preVersionWarnings) {
-                beforeMigrationWarnings.put("Migration to version ${it.getVersion()}", preVersionWarnings)
+                beforeMigrationWarnings.put("Migration to version ${MigrationUtil.getDisplayVersion(it.getVersion())}", preVersionWarnings)
             }
         }
         if (beforeMigrationWarnings) {
@@ -168,7 +168,11 @@ class MigrationRunner implements MigrationAction {
         def end = new Date()
         logger.info("--------------------------------------------------------------------------------------")
         logger.info(" Migration successfully completed, in " + TimeCategory.minus(end, migrationStartDate))
-        logger.info(" The version of your Bonita installation is now: $lastVersion")
+        if (Version.valueOf(lastVersion) < Version.valueOf("7.11.0")) {
+            logger.info(" The version of your Bonita installation is now: $lastVersion")
+        } else {
+            logger.info(" The version of your Bonita database schema is now: ${MigrationUtil.getDisplayVersion(lastVersion)}")
+        }
         if (Version.valueOf(lastVersion) < Version.valueOf("7.3.0")) {
             logger.info(" Now, you must reapply the customizations of your bonita home.")
         }

@@ -206,10 +206,10 @@ class Migration {
 
     def verifyTargetVersionIsValid(List<Version> possibleTarget) {
         if (context.targetVersion < context.sourceVersion) {
-            throw new IllegalStateException("The target version $context.targetVersion can not be before source version $context.sourceVersion")
+            throw new IllegalStateException("The target version $context.targetVersion can not be before source version ${MigrationUtil.getDisplayVersion(context.sourceVersion)}")
         }
         if (context.targetVersion == context.sourceVersion) {
-            throw new IllegalStateException("The version is already in $context.sourceVersion")
+            throw new IllegalStateException("The version is already in ${MigrationUtil.getDisplayVersion(context.sourceVersion)}")
         }
         if (!possibleTarget?.contains(context.targetVersion)) {
             if (TRANSITION_VERSIONS.contains(context.targetVersion)) {
