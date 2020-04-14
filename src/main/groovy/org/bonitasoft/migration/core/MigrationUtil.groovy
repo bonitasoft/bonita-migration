@@ -13,18 +13,14 @@
  **/
 package org.bonitasoft.migration.core
 
-import static org.bonitasoft.migration.core.MigrationStep.DBVendor.MYSQL
-import static org.bonitasoft.migration.core.MigrationStep.DBVendor.ORACLE
-import static org.bonitasoft.migration.core.MigrationStep.DBVendor.POSTGRES
-import static org.bonitasoft.migration.core.MigrationStep.DBVendor.SQLSERVER
+import com.github.zafarkhaja.semver.Version
+import groovy.sql.Sql
+import groovy.time.TimeCategory
+import org.bonitasoft.migration.core.MigrationStep.DBVendor
 
 import java.sql.ResultSet
 
-import org.bonitasoft.migration.core.MigrationStep.DBVendor
-import com.github.zafarkhaja.semver.Version
-
-import groovy.sql.Sql
-import groovy.time.TimeCategory
+import static org.bonitasoft.migration.core.MigrationStep.DBVendor.*
 
 /**
  *
@@ -130,7 +126,17 @@ class MigrationUtil {
     }
 
     static Version getPlatformVersion(Sql sql) {
-        return Version.valueOf(sql.firstRow("SELECT version FROM platform")[0] as String)
+        def row = sql.firstRow("SELECT version FROM platform")
+        def versionAsString = row[0] as String
+
+        // check if the version follows the 7.11+ version pattern in database:
+        def matcher = (versionAsString =~ /(\d+)\.(\d+)/)
+        if (matcher.matches()) {
+            // Only need the first 2 digits, as default patch number is already '0':
+            return Version.forIntegers(matcher[0][1] as int, matcher[0][2] as int)
+        } else {
+            return Version.valueOf(versionAsString)
+        }
     }
 
     static Object getId(File feature, String dbVendor, String fileExtension, Object it, Sql sql) {
@@ -266,7 +272,7 @@ class MigrationUtil {
                     break
                 case SQLSERVER:
                     def columnNames = ['ProductVersion', 'ProductLevel', 'ProductUpdateReference', 'Edition', 'EngineEdition', 'Collation', 'SqlCharSetName']
-                    String queryElements = columnNames.collect{ "SERVERPROPERTY('${it}') ${it}" }.join(', ')
+                    String queryElements = columnNames.collect { "SERVERPROPERTY('${it}') ${it}" }.join(', ')
                     String query = "select ${queryElements}"
 
                     sql.eachRow(query) { row ->
