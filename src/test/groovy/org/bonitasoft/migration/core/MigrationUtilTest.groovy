@@ -43,4 +43,18 @@ class MigrationUtilTest extends Specification {
         "8.0"             || "8.0.0"
     }
 
+    @Unroll
+    def "getDisplayVersion(#original) must return #result"() {
+        when:
+        def interpretedVersion = MigrationUtil.getDisplayVersion(original)
+        then:
+        interpretedVersion == result
+        where:
+        original          || result
+        "7.11.0"          || "7.11"
+        "7.10.4"          || "7.10.4"
+        "7.10.4-SNAPSHOT" || "7.10.4-SNAPSHOT"
+        "7.12.0"          || "7.12"
+        "8.0.0"           || "8.0"
+    }
 }
