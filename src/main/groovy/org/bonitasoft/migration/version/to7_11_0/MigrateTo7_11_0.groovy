@@ -24,6 +24,7 @@ class MigrateTo7_11_0 extends VersionMigration {
         return [
                 new AddIndexOnArchFlownodeInstance()
                 , new RefactorPlatformColumns()
+                , new MigrateBOM()
         ]
     }
 

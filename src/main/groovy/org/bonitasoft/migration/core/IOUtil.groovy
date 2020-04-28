@@ -14,7 +14,9 @@
 package org.bonitasoft.migration.core
 
 import java.util.zip.ZipEntry
+import java.util.zip.ZipFile
 import java.util.zip.ZipInputStream
+import java.util.zip.ZipOutputStream
 
 /**
  *
@@ -175,6 +177,37 @@ class IOUtil {
                 }
             }
         }
+    }
+
+    static Map<String, byte[]> unzip(byte[] zip) {
+        Map<String, byte[]> result = [:]
+        def zipStream = new ZipInputStream(new ByteArrayInputStream(zip))
+        ZipEntry entry
+        while ((entry = zipStream.getNextEntry()) != null) {
+            final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            int bytesRead;
+            final byte[] buffer = new byte[1024];
+            while ((bytesRead = zipStream.read(buffer)) > -1) {
+                byteArrayOutputStream.write(buffer, 0, bytesRead);
+            }
+            result.put(entry.getName(), byteArrayOutputStream.toByteArray())
+        }
+        result
+    }
+
+    static byte[] zip(Map<String, byte[]> content) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream()
+        new ZipOutputStream(out).withStream { zip ->
+            content.each { entry->
+                zip.with {
+                    putNextEntry(new ZipEntry(entry.key))
+                    write(entry.value)
+                    flush()
+                    closeEntry()
+                }
+            }
+        }
+        return out.toByteArray()
     }
 
 }
