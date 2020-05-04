@@ -24,7 +24,7 @@ class CheckMigratedTo7_11_0 extends Specification {
     @Rule
     public After7_2_0Initializer initializer = new After7_2_0Initializer()
 
-    def "should correctly migrate pages"() {
+    def "should add namespace to BDM's bom.xml"() {
         given:
         def client = new APIClient()
         client.login("install", "install")
