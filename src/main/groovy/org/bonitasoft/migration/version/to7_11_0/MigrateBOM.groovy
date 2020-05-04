@@ -16,20 +16,31 @@ class MigrateBOM extends MigrationStep {
         context.sql.eachRow("SELECT * FROM tenant_resource WHERE type = 'BDM' and name = 'client-bdm.zip'") { clientBdmZipRow ->
             long tenantId = clientBdmZipRow.tenantId
             long id = clientBdmZipRow.id
-            def clientBdmZip = unzip(context.databaseHelper.getBlobContentAsBytes(clientBdmZipRow.content))
-            def bomZip = unzip(clientBdmZip."bom.zip")
-            def bomXml = new String(bomZip."bom.xml")
-            def migratedBomXml = migrateBomXml(bomXml)
-            bomZip."bom.xml" = migratedBomXml.bytes
-            clientBdmZip."bom.zip" = zip(bomZip)
-            def clientBdmZipContentMigrated = zip(clientBdmZip)
+            def zip = context.databaseHelper.getBlobContentAsBytes(clientBdmZipRow.content)
+            def clientBdmZipContentMigrated = migrateBOM(zip, context, id, tenantId)
+            if (clientBdmZipContentMigrated != null) {
+                context.sql.executeUpdate("UPDATE tenant_resource SET content = $clientBdmZipContentMigrated where id = $id and tenantId = $tenantId")
+            }
+        }
+    }
 
-            context.logger.info("Adding namespace to BDM descriptor file $clientBdmZipRow.name with id $id of tenant $tenantId")
+    private byte[] migrateBOM(byte[] clientBdmZip, MigrationContext context, long id, long tenantId) {
+        def clientBdmZipAsMap = unzip(clientBdmZip)
+        def bomZip = unzip(clientBdmZipAsMap."bom.zip")
+        def bomXml = new String(bomZip."bom.xml")
+        def clientBdmZipContentMigrated
+        if (!bomXml.contains(BDM_NAMESPACE)) {
+            def migratedBomXml = addNamespace(bomXml)
+            bomZip."bom.xml" = migratedBomXml.bytes
+            clientBdmZipAsMap."bom.zip" = zip(bomZip)
+            clientBdmZipContentMigrated = zip(clientBdmZipAsMap)
+            context.logger.info("Adding namespace to BDM descriptor file client-bdm.zip with id $id of tenant $tenantId")
             context.logger.debug("Bom was: $bomXml")
             context.logger.debug("Bom is now: $migratedBomXml")
-
-            context.sql.executeUpdate("UPDATE tenant_resource SET content = $clientBdmZipContentMigrated where id = $id and tenantId = $tenantId")
+        } else {
+            context.logger.info("BDM descriptor file client-bdm.zip with id $id of tenant $tenantId already have the correct namespace... nothing to do.")
         }
+        return clientBdmZipContentMigrated
     }
 
     @Override
@@ -37,7 +48,7 @@ class MigrateBOM extends MigrationStep {
         "Add the namespace to the BDM xml descriptor for (bom.xml)"
     }
 
-    def String migrateBomXml(String xml) {
+    String addNamespace(String xml) {
         return xml.replace(tagToFind, "$tagToFind xmlns=\"$BDM_NAMESPACE\"")
     }
 }
