@@ -21,6 +21,8 @@ class MigrateTo7_11_0Test extends Specification {
         stepName << [
                 "AddIndexOnArchFlownodeInstance"
                 , "RefactorPlatformColumns"
+                , "MigrateBOM"
+                , "AddIndexOnProcessComments"
         ]
 
     }
