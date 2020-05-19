@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2019 Bonitasoft S.A.
+ * Copyright (C) 2020 Bonitasoft S.A.
  * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
@@ -13,20 +13,18 @@
  **/
 package org.bonitasoft.migration.version.to7_11_0
 
+import org.bonitasoft.migration.core.MigrationContext
 import org.bonitasoft.migration.core.MigrationStep
-import org.bonitasoft.migration.core.VersionMigration
 
-class MigrateTo7_11_0 extends VersionMigration {
+class AddIndexOnProcessComments extends MigrationStep {
 
     @Override
-    List<MigrationStep> getMigrationSteps() {
-        // keep one line per step and comma (,) at start of line to avoid false-positive merge conflict:
-        return [
-                new AddIndexOnArchFlownodeInstance()
-                , new RefactorPlatformColumns()
-                , new MigrateBOM()
-                , new AddIndexOnProcessComments()
-        ]
+    def execute(MigrationContext context) {
+        context.getDatabaseHelper().addOrReplaceIndex("process_comment", "idx1_process_comment", "processInstanceId", "tenantid")
     }
 
+    @Override
+    String getDescription() {
+        return "Add new index 'idx1_process_comment' on 'process_comment' table"
+    }
 }
