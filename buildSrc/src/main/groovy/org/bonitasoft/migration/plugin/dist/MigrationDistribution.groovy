@@ -116,6 +116,14 @@ class MigrationDistribution implements Plugin<Project> {
             runtime JdbcDriverDependencies.mysql8
             runtime JdbcDriverDependencies.postgres
             runtime JdbcDriverDependencies.sqlserver
+            runtime(JdbcDriverDependencies.oracle) {
+                exclude(module: "ons")
+                exclude(module: "oraclepki")
+                exclude(module: "osdt_cert")
+                exclude(module: "osdt_core")
+                exclude(module: "ucp")
+                exclude(module: "simplefan")
+            }
         }
     }
 

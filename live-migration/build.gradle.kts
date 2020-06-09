@@ -27,7 +27,7 @@ springBoot {
     distributions.getByName("boot") {
         contents {
             from("distrib/") {
-                include("*")
+                include("**/*")
             }
         }
         baseName = project.name
@@ -65,15 +65,20 @@ dependencies {
     implementation("mysql:mysql-connector-java:8.0.14")
     implementation("org.postgresql:postgresql:42.2.5")
     implementation("com.microsoft.sqlserver:mssql-jdbc:7.2.1.jre8")
-
+    implementation("com.oracle.database.jdbc:ojdbc8:19.3.0.0") {
+        exclude(module = "ons")
+        exclude(module = "oraclepki")
+        exclude(module = "osdt_cert")
+        exclude(module = "osdt_core")
+        exclude(module = "ucp")
+        exclude(module = "simplefan")
+    }
 
     testImplementation("org.springframework.boot", "spring-boot-starter-test")
     testImplementation("org.apache.commons", "commons-csv", "1.6")
     testImplementation(kotlin("test-junit5"))
     testImplementation("org.junit.jupiter:junit-jupiter:5.5.0")
     testImplementation("org.assertj:assertj-core:3.11.1")
-
-    testRuntimeOnly("com.oracle:ojdbc:8.12.2.0.1")
 
 }
 tasks.withType<Test> {
