@@ -5,7 +5,7 @@ Live migration tool
 
 # Pre-requisites
 
-This tool can be run on a bonita runtime in version greater than or equal to 7.7.0.
+This tool can be run on a bonita runtime in a version greater than or equal to 7.7.0.
 The runtime can be shutdown or running.
 
 # Configuration

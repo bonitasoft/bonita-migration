@@ -217,13 +217,8 @@ class CleanDbTask extends DefaultTask {
     end;
   end loop;
 
-  -- for oracle 12c
-  for cur_banner in ( select v.banner from v\$version v ) loop
-    if cur_banner.banner LIKE 'Oracle Database 12c%'
-    then
-      execute immediate 'alter session set "_ORACLE_SCRIPT"=true';
-    end if;
-  end loop;
+  -- to allow the deletion of users:
+  execute immediate 'alter session set "_ORACLE_SCRIPT"=true';
 
   -- drop user if exists
   FOR i IN 1 .. v_max_retries LOOP
@@ -240,7 +235,7 @@ class CleanDbTask extends DefaultTask {
       then
         RAISE;
       end if;
-      dbms_lock.sleep( seconds => 5 ); -- Try to prevent ORA-01940: cannot drop a user that is currently connected
+      DBMS_SESSION.sleep(5); -- Try to prevent ORA-01940: cannot drop a user that is currently connected
     END;
    END LOOP;
         """
