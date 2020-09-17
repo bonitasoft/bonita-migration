@@ -2,7 +2,6 @@ package org.bonitasoft.migration
 
 import org.bonitasoft.engine.api.PlatformAPIAccessor
 import org.bonitasoft.engine.api.TenantAPIAccessor
-import org.bonitasoft.engine.test.PlatformTestUtil
 import org.bonitasoft.migration.filler.FillAction
 import org.bonitasoft.migration.filler.FillerInitializer
 import org.bonitasoft.migration.filler.FillerShutdown
@@ -32,6 +31,7 @@ class InitializerBefore7_2_1 {
 
     @FillerShutdown
     public void shutdown() {
-        new PlatformTestUtil().stopPlatformAndTenant(PlatformAPIAccessor.getPlatformAPI(new PlatformTestUtil().loginOnPlatform()), true)
+        def testUtil = Class.forName("org.bonitasoft.engine.test.PlatformTestUtil")
+        testUtil.stopPlatformAndTenant(PlatformAPIAccessor.getPlatformAPI(testUtil.loginOnPlatform()), true)
     }
 }
