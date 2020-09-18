@@ -14,7 +14,6 @@
 
 package org.bonitasoft.migration
 
-import org.bonitasoft.engine.test.PlatformTestUtil
 import org.junit.rules.MethodRule
 import org.junit.runners.model.FrameworkMethod
 import org.junit.runners.model.Statement
@@ -48,7 +47,7 @@ class Before7_2_0Initializer implements MethodRule {
         def initializer = Class.forName("org.bonitasoft.engine.LocalServerTestsInitializer")
         def instance = initializer.metaClass.getProperty(initializer, "instance")
         instance.metaClass.invokeMethod(instance, "prepareEnvironment", null)
-        def platformTestUtil = new PlatformTestUtil()
+        def platformTestUtil = Class.forName("org.bonitasoft.engine.test.PlatformTestUtil")
         def platform = platformTestUtil.loginOnPlatform()
         def platformApi = platformTestUtil.getPlatformAPI(platform)
         platformApi.startNode()
