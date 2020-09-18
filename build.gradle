@@ -154,8 +154,10 @@ dependencies {
     fillerCompile 'junit:junit:4.11'
     fillerCompile "org.codehaus.groovy:groovy-all:2.4.11"
     fillerCompile 'org.awaitility:awaitility:3.0.0'
+    fillerCompile 'org.assertj:assertj-core:3.12.2'
 
     enginetestCompile 'org.awaitility:awaitility:3.0.0'
+    enginetestCompile 'org.assertj:assertj-core:3.12.2'
     enginetestCompile group: 'junit', name: 'junit', version: '4.11'
     enginetestCompile("org.spockframework:spock-core:1.0-groovy-2.4") {
         exclude module: "groovy-all"
