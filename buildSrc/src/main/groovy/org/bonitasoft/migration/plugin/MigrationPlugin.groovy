@@ -29,7 +29,6 @@ import org.gradle.api.tasks.testing.Test
 
 import static org.bonitasoft.migration.plugin.PropertiesUtils.loadProperties
 import static org.bonitasoft.migration.plugin.VersionUtils.*
-
 /**
  * @author Baptiste Mesta
  */
@@ -195,9 +194,7 @@ class MigrationPlugin implements Plugin<Project> {
         }
         PrepareMigrationTestTask prepareTestTask = project.tasks.create(name: "prepareTestFor_" + underscored(targetVersion), type:
                 PrepareMigrationTestTask)
-        prepareTestTask.configureBonita(project, underscored(previousVersion),
-                underscored(targetVersion),
-                isSP)
+        prepareTestTask.configureBonita(project, underscored(previousVersion), underscored(targetVersion), isSP)
         DatabasePluginExtension properties = project.extensions.getByType(DatabasePluginExtension.class)
         if (properties.dbvendor == 'sqlserver') {
             defineXaRecoveryConfiguration(project)
@@ -214,12 +211,9 @@ class MigrationPlugin implements Plugin<Project> {
         }
         if (Version.valueOf(previousVersion) < Version.valueOf("7.3.0")) {
             def unpackBonitaHome = project.task("unpackBonitaHomeFor_" + targetVersion, type: Copy) {
-                from {
-                    def conf = project.configurations.getByName(underscored(previousVersion))
-                    project.zipTree(conf.files.find { it.name.contains("bonita-home") }.getAbsolutePath())
-                }
+                from project.zipTree(project.projectDir.toPath().resolve('src').resolve('main').resolve('resources').resolve('homes')
+                        .resolve("bonita-home${isSP ? '-sp' : ''}-${previousVersion}.zip").toAbsolutePath())
                 into new File(project.buildDir, "bonita-home-" + targetVersion)
-
             }
             prepareTestTask.dependsOn unpackBonitaHome
         }
@@ -228,22 +222,10 @@ class MigrationPlugin implements Plugin<Project> {
 
     Configuration createConfigurationForBonitaVersion(Project project, String bonitaVersion, MigrationPluginExtension extension, List<String> versionList) {
         Configuration configuration = project.configurations.create(underscored(bonitaVersion))
-        if (Version.valueOf(bonitaVersion) < Version.valueOf("7.3.0")) {
-            configuration.dependencies.add(project.dependencies.create(getBonitaHomeDependency(extension, versionList,
-                    bonitaVersion)))
-        }
         configuration.dependencies.add(getEngineDependency(project, extension, bonitaVersion, versionList))
-        configuration.dependencies.add(getTestEngineDependency(project, extension,
-                bonitaVersion, versionList))
+        configuration.dependencies.add(getTestEngineDependency(project, extension, bonitaVersion, versionList))
         return configuration
     }
-
-    def getBonitaHomeDependency(MigrationPluginExtension migrationPluginExtension, List<String> versionList, String
-            bonitaVersion) {
-        def version = getVersion(versionList, bonitaVersion, migrationPluginExtension)
-        return "org.bonitasoft.console:bonita-home${migrationPluginExtension.isSP ? '-sp' : ''}:${version}:${migrationPluginExtension.isSP ? '' : 'full'}@zip"
-    }
-
 
     def getEngineDependency(Project project, MigrationPluginExtension migrationPluginExtension, String bonitaVersion, List<String> versionList) {
         def version = getVersion(versionList, bonitaVersion, migrationPluginExtension)

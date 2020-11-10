@@ -31,7 +31,7 @@ class InitializerBefore7_2_1 {
 
     @FillerShutdown
     public void shutdown() {
-        def testUtil = Class.forName("org.bonitasoft.engine.test.PlatformTestUtil")
+        def testUtil = Class.forName("org.bonitasoft.engine.test.PlatformTestUtil").newInstance()
         testUtil.stopPlatformAndTenant(PlatformAPIAccessor.getPlatformAPI(testUtil.loginOnPlatform()), true)
     }
 }
