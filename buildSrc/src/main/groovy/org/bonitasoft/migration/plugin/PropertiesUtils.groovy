@@ -24,4 +24,11 @@ class PropertiesUtils {
         return props
     }
 
+    static Properties loadProperties(InputStream stream) {
+        new Properties().with { p ->
+            stream.withStream { load(it) }
+            return p
+        }
+    }
+
 }
