@@ -29,6 +29,7 @@ import org.gradle.api.tasks.testing.Test
 
 import static org.bonitasoft.migration.plugin.PropertiesUtils.loadProperties
 import static org.bonitasoft.migration.plugin.VersionUtils.*
+
 /**
  * @author Baptiste Mesta
  */
@@ -273,7 +274,6 @@ class MigrationPlugin implements Plugin<Project> {
                 name = "com.bonitasoft.engine.test:bonita-integration-tests-local-sp:${version}:tests"
             }
         } else {
-
             if (Version.valueOf(getRawVersion(version)) >= Version.valueOf("7.11.0")) {
                 name = "org.bonitasoft.engine:bonita-test-api:${version}"
             } else {
