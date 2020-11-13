@@ -48,15 +48,7 @@ abstract class VersionMigration {
         if (isSp) {
             return "/homes/bonita-home-sp-${version}.zip"
         } else {
-            return "/homes/bonita-home-${version}-full.zip"
-        }
-    }
-
-    private GString getBonitaHomeSnapshotPath(boolean isSp) {
-        if (isSp) {
-            return "/homes/bonita-home-sp-${version}-SNAPSHOT.zip"
-        } else {
-            return "/homes/bonita-home-${version}-SNAPSHOT-full.zip"
+            return "/homes/bonita-home-${version}.zip"
         }
     }
 

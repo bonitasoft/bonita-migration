@@ -12,4 +12,3 @@ build
 migration*.log
 bonita-migration-distrib/Config.properties
 bonita-migration-distrib/src/main/resources/bonita-versions.properties
-bonita-migration-distrib/src/main/resources/homes/*
