@@ -1,6 +1,5 @@
 package org.bonitasoft.migration.version.to7_12_0
 
-import org.bonitasoft.migration.version.to7_10_0.MigrateTo7_10_0
 import spock.lang.Specification
 import spock.lang.Unroll;
 
@@ -8,6 +7,7 @@ import spock.lang.Unroll;
  * @author Danila Mazour
  */
 class MigrateTo7_12_0Test extends Specification {
+
     @Unroll
     def "should migration to 7.12.0 include step '#stepName'"(def stepName) {
         given:
@@ -21,6 +21,7 @@ class MigrateTo7_12_0Test extends Specification {
 
         where:
         stepName << [
+                "ChangeProfileEntryForInstallExportOrganization",
                 "AddIndexLG4LG2OnArchFlownodeInstance"
         ]
 
