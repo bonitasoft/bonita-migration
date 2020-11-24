@@ -1,10 +1,8 @@
 package org.bonitasoft.migration.plugin
 
 import com.github.zafarkhaja.semver.Version
-import org.gradle.api.Project
 
 import static org.bonitasoft.migration.plugin.PropertiesUtils.loadProperties
-
 /**
  * @author Baptiste Mesta.
  */
@@ -39,11 +37,6 @@ class VersionUtils {
         // use normalize to ensure the file content has only LF eol which is then used to split the lines (ex: manage
         // Windows CRLF checkout)
         project.file(configuration.versionListFile).text.normalize().split("\n").toList()
-    }
-
-    static String getVersion(Project project, MigrationPluginExtension configuration, String version) {
-        def versionList = getVersionList(project, configuration)
-        return getVersion(versionList, version, configuration)
     }
 
     static String getVersion(List<String> versions, String version, MigrationPluginExtension configuration) {

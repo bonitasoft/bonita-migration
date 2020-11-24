@@ -66,7 +66,9 @@ class TestMigrationTask extends Test {
         def bonitaSemVer = Version.valueOf(bonitaVersion)
         if (bonitaSemVer < Version.valueOf("7.2.0")) {
             include "**/*Before7_2_0DefaultTest*"
-        } else if(bonitaSemVer != Version.valueOf("7.9.0")) { // 7.9.0 has a but on test api, rule does not work
+        } else if(bonitaSemVer >= Version.valueOf("7.11.0")) {
+            include "**/*After7_11_0DefaultTest*"
+        } else if(bonitaSemVer != Version.valueOf("7.9.0")) { // 7.9.0 has a bug on test api, rule does not work
             include "**/*After7_2_0DefaultTest*"
         }
         include "**/*To" + underscored(bonitaVersion) + (isSP ? "SP" : "") + "*"

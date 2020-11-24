@@ -70,16 +70,16 @@ class DockerDatabaseContainerTasksCreator {
         vendors.each { vendor ->
             def uniqueName = "${vendor.name.capitalize()}"
             def pullImage = project.tasks.create("pull${uniqueName}Image", DockerPullImage) {
-                description "Pull docker image for $uniqueName db vendor"
-                group null // do not show task when running `gradle tasks`
+                description = "Pull docker image for $uniqueName db vendor"
+                group = null // do not show task when running `gradle tasks`
 
                 repository = vendor.repository
                 tag = vendor.tag
             }
 
             def createContainer = project.tasks.create("create${uniqueName}Container", DockerCreateContainer) {
-                description "Create a docker container for $uniqueName db vendor"
-                group null // do not show task when running `gradle tasks`
+                description = "Create a docker container for $uniqueName db vendor"
+                group = null // do not show task when running `gradle tasks`
 
                 dependsOn pullImage
                 portBindings = [":$vendor.portBinding"]
@@ -91,16 +91,16 @@ class DockerDatabaseContainerTasksCreator {
             }
 
             def startContainer = project.tasks.create("start${uniqueName}Container", DockerStartContainer) {
-                description "Start a docker container for $uniqueName db vendor"
-                group "docker"
+                description = "Start a docker container for $uniqueName db vendor"
+                group = 'docker'
 
                 dependsOn createContainer
                 targetContainerId { createContainer.getContainerId() }
             }
 
             def waitForContainerStartup = project.tasks.create("waitFor${uniqueName}ContainerStartup", DockerWaitHealthyContainer) {
-                description "Wait for a started docker container for $vendor.name db vendor to be healthy"
-                group null // do not show task when running `gradle tasks`
+                description = "Wait for a started docker container for $vendor.name db vendor to be healthy"
+                group = null // do not show task when running `gradle tasks`
 
                 dependsOn startContainer
                 targetContainerId { startContainer.getContainerId() }
@@ -108,18 +108,18 @@ class DockerDatabaseContainerTasksCreator {
             }
 
             def inspectContainer = project.tasks.create("inspect${uniqueName}ContainerUrl", DockerInspectContainer) {
-                description "Get url of a docker container for $uniqueName db vendor"
-                group null // do not show task when running `gradle tasks`
+                description = "Get url of a docker container for $uniqueName db vendor"
+                group = null // do not show task when running `gradle tasks`
 
                 dependsOn waitForContainerStartup
                 targetContainerId { startContainer.getContainerId() }
 
-                onNext {
+                onNext = {
                     it.networkSettings.ports.getBindings().each { exposedPort, bindingArr ->
                         if (exposedPort.port == vendor.portBinding) {
                             int portBinding = bindingArr.first().hostPortSpec as int
                             def dockerHost = getDockerHost()
-                            def url = format(vendor.uriTemplate, dockerHost, portBinding)
+                            def url = format(vendor.uriTemplate as String, dockerHost, portBinding)
                             project.logger.info "Container url: ${url}"
                             project.tasks["${uniqueName}Configuration"].doFirst {
                                 DatabasePluginExtension extension = project.extensions.getByType(DatabasePluginExtension)
@@ -135,8 +135,8 @@ class DockerDatabaseContainerTasksCreator {
             }
 
             def removeContainer = project.tasks.create("remove${uniqueName}Container", DockerRemoveContainer) {
-                description "Remove a docker container for $uniqueName db vendor"
-                group "docker"
+                description = "Remove a docker container for $uniqueName db vendor"
+                group = 'docker'
 
                 force = true
                 removeVolumes = true
@@ -144,8 +144,8 @@ class DockerDatabaseContainerTasksCreator {
             }
 
             project.tasks.create("${uniqueName}Configuration") {
-                description "Setup database connection parameter for $uniqueName"
-                group 'docker'
+                description = "Setup database connection parameter for $uniqueName"
+                group = 'docker'
                 dependsOn inspectContainer
 
                 doFirst {
