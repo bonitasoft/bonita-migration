@@ -1,11 +1,11 @@
 package org.bonitasoft.migration.plugin.db
 
-import static org.bonitasoft.migration.plugin.VersionUtils.getVersionList
-import static org.bonitasoft.migration.plugin.VersionUtils.underscored
-
 import org.bonitasoft.migration.plugin.MigrationPlugin
 import org.bonitasoft.migration.plugin.MigrationPluginExtension
 import org.gradle.api.Project
+
+import static org.bonitasoft.migration.plugin.VersionUtils.underscored
+import static org.bonitasoft.migration.plugin.VersionUtils.getTestableVersionList
 
 class DatabaseResourcesConfigurator {
 
@@ -88,7 +88,7 @@ class DatabaseResourcesConfigurator {
 
     private static List<String> getVersionsToMigrate(Project project) {
         MigrationPluginExtension migrationPluginExtension = project.extensions.getByType(MigrationPluginExtension.class)
-        def allVersions = getVersionList(project, migrationPluginExtension)
+        def allVersions = getTestableVersionList(project, migrationPluginExtension)
         allVersions.subList(1, allVersions.size())
     }
 

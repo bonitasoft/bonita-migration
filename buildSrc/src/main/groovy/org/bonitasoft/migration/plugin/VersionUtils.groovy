@@ -39,6 +39,11 @@ class VersionUtils {
         project.file(configuration.versionListFile).text.normalize().split("\n").toList()
     }
 
+    static List<String> getTestableVersionList(project, configuration) {
+        List<String> allVersions = getVersionList(project, configuration)
+        return allVersions.subList(allVersions.indexOf('7.3.0'), allVersions.size())
+    }
+
     static String getVersion(List<String> versions, String version, MigrationPluginExtension configuration) {
         def isLastVersion = (versions.last() == version)
         version = convertVersionForTests(version)
