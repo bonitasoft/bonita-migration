@@ -9,7 +9,7 @@ import org.junit.Rule
 /**
  * @author Baptiste Mesta.
  */
-class InitializerAfter7_3_0 {
+class InitializerBefore7_11_0 {
 
     @Rule
     public BonitaEngineRule bonitaEngineRule = BonitaEngineRule.create().keepPlatformOnShutdown()

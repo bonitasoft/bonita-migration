@@ -30,8 +30,8 @@ class FillBeforeMigratingTo7_1_0 {
 
     @FillAction
     public void migrateFormMapping() {
-        def session = TenantAPIAccessor.getLoginAPI().login("install", "install");
-        TenantAPIAccessor.getCustomPageAPI(session).createPage("globalPage.zip", TestUtil.createTestPageContent("custompage_globalpage", "Global page", "a global page"));
+        def session = TenantAPIAccessor.getLoginAPI().login("install", "install")
+        TenantAPIAccessor.getCustomPageAPI(session).createPage("globalPage.zip", TestUtil.createTestPageContent("custompage_globalpage", "Global page", "a global page"))
 
         def builder = new ProcessDefinitionBuilder().createNewInstance("processWithFormMapping", "1.0")
         builder.addActor("john")
@@ -43,10 +43,10 @@ class FillBeforeMigratingTo7_1_0 {
         def barBuilder = new BusinessArchiveBuilder().createNewBusinessArchive()
         def formMappingModelBuilder = new FormMappingModelBuilder()
         formMappingModelBuilder.addProcessOverviewForm("theExternalUrl", FormMappingTarget.URL)
-        formMappingModelBuilder.addTaskForm("unexisting_custom_page", FormMappingTarget.INTERNAL, "step1");
-        formMappingModelBuilder.addTaskForm("custompage_globalpage", FormMappingTarget.INTERNAL, "step2");
-        formMappingModelBuilder.addTaskForm(null, FormMappingTarget.LEGACY, "step3");
-        formMappingModelBuilder.addTaskForm("theExternalUrlForStep4", FormMappingTarget.URL, "step4");
+        formMappingModelBuilder.addTaskForm("unexisting_custom_page", FormMappingTarget.INTERNAL, "step1")
+        formMappingModelBuilder.addTaskForm("custompage_globalpage", FormMappingTarget.INTERNAL, "step2")
+        formMappingModelBuilder.addTaskForm(null, FormMappingTarget.LEGACY, "step3")
+        formMappingModelBuilder.addTaskForm("theExternalUrlForStep4", FormMappingTarget.URL, "step4")
         barBuilder.setProcessDefinition(builder.done())
         barBuilder.setFormMappings(formMappingModelBuilder.build())
 

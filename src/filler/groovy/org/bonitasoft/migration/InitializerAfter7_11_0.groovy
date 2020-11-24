@@ -13,21 +13,25 @@
  **/
 package org.bonitasoft.migration
 
-
 import org.bonitasoft.engine.api.APIClient
+import org.bonitasoft.engine.api.TenantAPIAccessor
 import org.bonitasoft.engine.bdm.BusinessObjectModelConverter
 import org.bonitasoft.engine.bdm.model.BusinessObject
 import org.bonitasoft.engine.bdm.model.BusinessObjectModel
 import org.bonitasoft.engine.bdm.model.field.FieldType
 import org.bonitasoft.engine.bdm.model.field.SimpleField
+import org.bonitasoft.engine.bpm.bar.BusinessArchiveBuilder
+import org.bonitasoft.engine.bpm.bar.actorMapping.Actor
+import org.bonitasoft.engine.bpm.bar.actorMapping.ActorMapping
+import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder
+import org.bonitasoft.engine.expression.ExpressionBuilder
 import org.bonitasoft.engine.test.junit.BonitaEngineRule
 import org.bonitasoft.migration.filler.FillAction
 import org.bonitasoft.migration.filler.FillerInitializer
 import org.bonitasoft.migration.filler.FillerUtils
 import org.junit.Rule
 
-class FillBeforeMigratingTo7_11_0 {
-
+class InitializerAfter7_11_0 {
 
     @Rule
     public BonitaEngineRule bonitaEngineRule = BonitaEngineRule.create().keepPlatformOnShutdown()
@@ -38,26 +42,50 @@ class FillBeforeMigratingTo7_11_0 {
     }
 
     @FillAction
-    void 'create and install BDM'() {
+    public void fillOneUserWithTechnicalUser() {
+        def session = TenantAPIAccessor.getLoginAPI().login("install", "install");
+        def identityAPI = TenantAPIAccessor.getIdentityAPI(session)
+        identityAPI.createUser("john", "bpm")
+        TenantAPIAccessor.getLoginAPI().logout(session)
+    }
+
+    @FillAction
+    void 'create and install a BDM and a process with Business Data'() {
         def client = new APIClient()
         client.login("install", "install")
         client.tenantAdministrationAPI.pause()
 
-        final BusinessObjectModelConverter converter = new BusinessObjectModelConverter();
-        def bOM = buildCustomBOM()
-        final byte[] zip = converter.zip(bOM);
-        client.tenantAdministrationAPI.installBusinessDataModel(zip)
+        client.tenantAdministrationAPI.installBusinessDataModel(new BusinessObjectModelConverter().zip(buildCustomBOM()))
         client.tenantAdministrationAPI.resume()
+
+        def identityAPI = client.getIdentityAPI()
+        def user = identityAPI.createUser("userToDeployAndStartProcess", "bpm")
+        client.login("userToDeployAndStartProcess", "bpm")
+
+        def processBuilder = new ProcessDefinitionBuilder().createNewInstance("ProcessWithBusinessData", "11.0")
+        processBuilder.setActorInitiator("myActorInitiator")
+        processBuilder.addBusinessData("myBO", "com.compagny.BO", new ExpressionBuilder().createGroovyScriptExpression("createBusinessData",
+                "new com.compagny.BO()", "com.compagny.BO"))
+        def businessArchiveBuilder = new BusinessArchiveBuilder().createNewBusinessArchive()
+        def actorInit = new Actor("myActorInitiator")
+        actorInit.addUser(user.getUserName())
+        def actorMapping = new ActorMapping()
+        actorMapping.addActor(actorInit)
+        def businessArchive = businessArchiveBuilder
+                .setActorMapping(actorMapping)
+                .setProcessDefinition(processBuilder.getProcess()).done()
+
+        client.getProcessAPI().deployAndEnableProcess(businessArchive)
     }
 
 
-    BusinessObjectModel buildCustomBOM() {
+    static BusinessObjectModel buildCustomBOM() {
         return new BusinessObjectModel().with {
             modelVersion = "1.0"
-            productVersion = "7.10.0"
+            productVersion = "7.11.3"
             addBusinessObject(new BusinessObject().with {
                 qualifiedName = "com.compagny.BO"
-                addField( new SimpleField().with {
+                addField(new SimpleField().with {
                     name = "name"
                     type = FieldType.TEXT
                     length = 10

@@ -85,16 +85,20 @@ class PrepareMigrationTestTask extends JavaExec {
                     fillers.add("com.bonitasoft.migration.InitializerBefore7_2_1SP")
                 } else if (semver(targetVersion) <= Version.valueOf("7.3.3")) {
                     fillers.add("com.bonitasoft.migration.InitializerBefore7_3_3SP")
+                } else if (semver(targetVersion) < Version.valueOf("7.11.0")) {
+                    fillers.add("com.bonitasoft.migration.InitializerBefore7_11_0SP")
                 } else {
-                    fillers.add("com.bonitasoft.migration.InitializerAfter7_3_3SP")
+                    fillers.add("com.bonitasoft.migration.InitializerAfter7_11_0SP")
                 }
             } else {
                 if (semver(targetVersion) < Version.valueOf("7.2.1")) {
                     fillers.add("org.bonitasoft.migration.InitializerBefore7_2_1")
-                } else if (!isSP && semver(targetVersion) <= Version.valueOf("7.3.0")) {
+                } else if (semver(targetVersion) <= Version.valueOf("7.3.0")) {
                     fillers.add("org.bonitasoft.migration.InitializerBefore7_3_0")
+                } else if (semver(targetVersion) < Version.valueOf("7.11.0")) {
+                    fillers.add("org.bonitasoft.migration.InitializerBefore7_11_0")
                 } else {
-                    fillers.add("org.bonitasoft.migration.InitializerAfter7_3_0")
+                    fillers.add("org.bonitasoft.migration.InitializerAfter7_11_0")
                 }
             }
         }
