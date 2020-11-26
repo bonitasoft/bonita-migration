@@ -63,7 +63,7 @@ class MigrationPlugin implements Plugin<Project> {
         project.afterEvaluate {
             DatabaseResourcesConfigurator.configureDatabaseResources(project)
 
-            allVersions = getVersionList(project, migrationPluginExtension)
+            allVersions = getTestableVersionList(project, migrationPluginExtension)
             defineAllJdbcDriversConfigurations(project)
 
             createMigrationTestsTasks(project, migrationPluginExtension)

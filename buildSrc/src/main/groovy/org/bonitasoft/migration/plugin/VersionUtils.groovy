@@ -1,10 +1,8 @@
 package org.bonitasoft.migration.plugin
 
 import com.github.zafarkhaja.semver.Version
-import org.gradle.api.Project
 
 import static org.bonitasoft.migration.plugin.PropertiesUtils.loadProperties
-
 /**
  * @author Baptiste Mesta.
  */
@@ -41,9 +39,9 @@ class VersionUtils {
         project.file(configuration.versionListFile).text.normalize().split("\n").toList()
     }
 
-    static String getVersion(Project project, MigrationPluginExtension configuration, String version) {
-        def versionList = getVersionList(project, configuration)
-        return getVersion(versionList, version, configuration)
+    static List<String> getTestableVersionList(project, configuration) {
+        List<String> allVersions = getVersionList(project, configuration)
+        return allVersions.subList(allVersions.indexOf('7.3.0'), allVersions.size())
     }
 
     static String getVersion(List<String> versions, String version, MigrationPluginExtension configuration) {

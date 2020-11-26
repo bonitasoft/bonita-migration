@@ -20,16 +20,23 @@ package org.bonitasoft.migration.filler
 class FillerUtils {
 
     /**
-     * Initialize system properties to run the engine using properties from the Config.properties (migration properties)
+     * Initialize system properties to run the engine using properties
      */
-    public static void initializeEngineSystemProperties() {
-        System.setProperty("sysprop.bonita.db.vendor", System.getProperty("db.vendor"));
-        System.setProperty("sysprop.bonita.bdm.db.vendor", System.getProperty("db.vendor"));
-        System.setProperty("db.url", System.getProperty("db.url"));
-        System.setProperty("db.user", System.getProperty("db.user"));
-        System.setProperty("db.password", System.getProperty("db.password"));
+    static void initializeEngineSystemProperties() {
+        def dbVendor = System.getProperty("db.vendor")
+        System.setProperty("sysprop.bonita.db.vendor", dbVendor)
         def split = System.getProperty("db.url").split("/")
         def databaseName = split[split.length - 1]
-        System.setProperty("db.database.name", databaseName);
+        System.setProperty("db.database.name", databaseName)
+
+        System.setProperty("sysprop.bonita.bdm.db.vendor", dbVendor) // same as Bonita
+        System.setProperty("bdm.db.user", "business_data")
+        System.setProperty("bdm.db.password", System.getProperty("bdm.db.password", System.getProperty("db.password"))) // Should be the same as Bonita for our tests²²
+        System.setProperty("bdm.db.url", System.getProperty("db.url").replace("/bonita", "/business_data")) // For all except Oracle
+        if (dbVendor == 'oracle') {
+            System.setProperty("bdm.db.database.name", System.getProperty("db.database.name"))
+        } else {
+            System.setProperty("bdm.db.database.name", "business_data")
+        }
     }
 }
