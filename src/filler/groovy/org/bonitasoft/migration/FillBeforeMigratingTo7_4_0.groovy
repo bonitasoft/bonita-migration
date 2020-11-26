@@ -180,13 +180,13 @@ return testEntity
                 .done()
 
         def processAPI = TenantAPIAccessor.getProcessAPI(session)
-        def processDefition = processAPI.deploy(businessArchive)
+        def processDefinition = processAPI.deploy(businessArchive)
 
-        processAPI.getProcessResolutionProblems(processDefition.id).each {
+        processAPI.getProcessResolutionProblems(processDefinition.id).each {
             println it.description
         }
-        processAPI.enableProcess(processDefition.id)
-        processAPI.startProcessWithInputs(processDefition.id, [isOk: [true], request: [name: 'theName', value: 1]])
+        processAPI.enableProcess(processDefinition.id)
+        processAPI.startProcessWithInputs(processDefinition.id, [isOk: [true], request: [name: 'theName', value: 1]])
 
         def HumanTaskInstance[] instances
         def timeout = System.currentTimeMillis() + 3000
