@@ -26,13 +26,13 @@ class DockerDatabaseContainerTasksCreator {
              rootPassword   : 'Oradoc_db1'
             ],
             [name           : 'postgres',
-             repository     : 'registry.rd.lan/bonitasoft/postgres-11',
-             tag            : '0.0.2',
+             repository     : 'bonitasoft/bonita-postgres',
+             tag            : '11.9',
              portBinding    : 5432,
              uriTemplate    : 'jdbc:postgresql://%s:%s/bonita',
              driverClassName: 'org.postgresql.Driver',
              rootUser       : 'postgres',
-             rootPassword   : 'postgres',
+             rootPassword   : 'DEFAULT_BONITA_ROOT_PSSWD',
              databaseName   : 'bonita'
             ],
             [name           : 'mysql',
@@ -45,8 +45,8 @@ class DockerDatabaseContainerTasksCreator {
              rootPassword   : 'root'
             ],
             [name           : 'sqlserver',
-             repository     : 'registry.rd.lan/bonitasoft/sqlserver-2017',
-             tag            : 'CU16-1.0.0',
+             repository     : 'bonitasoft/bonita-sqlserver',
+             tag            : '2017-CU22',
              portBinding    : 1433,
              uriTemplate    : 'jdbc:sqlserver://%s:%s;database=bonita',
              driverClassName: 'com.microsoft.sqlserver.jdbc.SQLServerDriver',
