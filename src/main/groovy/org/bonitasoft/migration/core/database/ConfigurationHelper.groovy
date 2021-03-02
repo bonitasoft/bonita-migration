@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2017 Bonitasoft S.A.
+ * Copyright (C) 2017-2021 Bonitasoft S.A.
  * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
@@ -31,7 +31,6 @@ class ConfigurationHelper {
         sql.executeInsert("INSERT INTO configuration(tenant_id,content_type,resource_name,resource_content) VALUES (${tenantId}, ${type}, ${fileName}, ${ensureContentNeverEmpty(content)})")
     }
 
-
     def updateConfigurationFileContent(String fileName, long tenantId, String type, byte[] content) {
         logger.debug(String.format("update configuration file | tenant id: %3d | type: %-25s | file name: %s", tenantId, type, fileName))
         sql.execute("UPDATE configuration SET resource_content = ${ensureContentNeverEmpty(content)} WHERE tenant_id = ${tenantId} AND content_type = ${type} AND resource_name = ${fileName}")
@@ -41,12 +40,16 @@ class ConfigurationHelper {
         return content.length == 0 ? System.lineSeparator().bytes : content
     }
 
-
     def deleteConfigurationFile(String fileName, long tenantId, String type) {
         logger.debug(String.format("removing configuration file | tenant id: %3d | type: %-25s | file name: %s", tenantId, type, fileName))
         sql.execute("DELETE FROM configuration WHERE tenant_id = ${tenantId} AND content_type = ${type} AND resource_name = ${fileName}")
     }
 
+    def deleteConfigurationFileOnAnyTenantAndOfAnyType(String fileName) {
+        logger.debug(String.format("removing all configuration files with name: %s", fileName))
+        def nbRowsDeleted = sql.execute("DELETE FROM configuration WHERE resource_name = ${fileName}")
+        logger.debug(String.format("deleted %s rows", nbRowsDeleted))
+    }
 
     def appendToAllConfigurationFilesWithName(String filename, String toAppend) {
         def count = sql.firstRow("SELECT count(*) FROM configuration WHERE resource_name = ${filename}")
