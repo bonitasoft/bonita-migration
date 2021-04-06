@@ -20,7 +20,7 @@ class DockerDatabaseContainerTasksCreator {
              repository     : 'registry.rd.lan/bonitasoft/oracle-19c-ee',
              tag            : '0.0.2',
              portBinding    : 1521,
-             uriTemplate    : 'jdbc:oracle:thin:@//%s:%s/ORCLPDB1',
+             uriTemplate    : 'jdbc:oracle:thin:@//%s:%s/ORCLPDB1?oracle.net.disableOob=true',
              driverClassName: 'oracle.jdbc.OracleDriver',
              rootUser       : 'sys as sysdba',
              rootPassword   : 'Oradoc_db1'

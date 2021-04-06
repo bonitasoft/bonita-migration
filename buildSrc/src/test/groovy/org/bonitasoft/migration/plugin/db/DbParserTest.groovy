@@ -30,7 +30,7 @@ class DbParserTest extends Specification {
         where:
         dbUrl                                                       | dbConnectionSettings
         'jdbc:mysql://localhost:3306/bonita?allowMultiQueries=true' | new DbParser.DbConnectionSettings(dbUrl:'jdbc:mysql://localhost:3306/bonita?allowMultiQueries=true', serverName:'localhost', portNumber:'3306', databaseName:'bonita', genericUrl:'jdbc:mysql://localhost:3306/')
-        'jdbc:oracle:thin:@//localhost:1521/ORCLPDB1.localdomain'   | new DbParser.DbConnectionSettings(dbUrl:'jdbc:oracle:thin:@//localhost:1521/ORCLPDB1.localdomain', serverName: 'localhost', portNumber: '1521', databaseName: 'ORCLPDB1.localdomain', genericUrl: 'jdbc:oracle:thin:@//localhost:1521/ORCLPDB1.localdomain')
+        'jdbc:oracle:thin:@//localhost:1521/ORCLPDB1.localdomain?oracle.net.disableOob=true'   | new DbParser.DbConnectionSettings(dbUrl:'jdbc:oracle:thin:@//localhost:1521/ORCLPDB1.localdomain?oracle.net.disableOob=true', serverName: 'localhost', portNumber: '1521', databaseName: 'ORCLPDB1.localdomain', genericUrl: 'jdbc:oracle:thin:@//localhost:1521/ORCLPDB1.localdomain?oracle.net.disableOob=true')
         'jdbc:postgresql://hostdb:3615/bonita'                      | new DbParser.DbConnectionSettings(dbUrl:'jdbc:postgresql://hostdb:3615/bonita', serverName:'hostdb', portNumber:'3615', databaseName:'bonita', genericUrl:'jdbc:postgresql://hostdb:3615/')
         'jdbc:sqlserver://myhost:1433;database=migration'           | new DbParser.DbConnectionSettings(dbUrl:'jdbc:sqlserver://myhost:1433;database=migration', serverName:'myhost', portNumber:'1433', databaseName:'migration', genericUrl:'jdbc:sqlserver://myhost:1433')
     }

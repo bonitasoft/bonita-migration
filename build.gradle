@@ -140,6 +140,7 @@ dependencies {
     compile group: 'org.apache.commons', name: 'commons-dbcp2', version: '2.5.0'
     compile "ch.qos.logback:logback-classic:$logbackVersion"
     compile "commons-cli:commons-cli:1.4"
+    compile "com.sun.activation:jakarta.activation:1.2.2"
     runtime 'javax.activation:activation:1.1'
 
     testRuntime "cglib:cglib-nodep:2.2"
