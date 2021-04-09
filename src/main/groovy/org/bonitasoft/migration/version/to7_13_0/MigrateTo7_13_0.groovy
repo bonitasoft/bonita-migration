@@ -25,7 +25,8 @@ class MigrateTo7_13_0 extends VersionMigration {
     List<MigrationStep> getMigrationSteps() {
         // keep one line per step and comma (,) at start of line to avoid false-positive merge conflict:
         return [
-                new RemoveUselessV6formsConfiguration()
+                new RemoveUselessV6formsConfiguration(),
+                new AddMimeTypeContentTypeColumnInApplication()
         ]
     }
 
