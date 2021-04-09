@@ -14,7 +14,11 @@
 
 package org.bonitasoft.migration.plugin
 
+import org.gradle.api.Project
+
 class PropertiesUtils {
+
+    public static final String JAVA_8_BIN = "JAVA_8_BIN"
 
     static def loadProperties(File propertiesFile) {
         def props = new Properties()
@@ -28,6 +32,16 @@ class PropertiesUtils {
         new Properties().with { p ->
             stream.withStream { load(it) }
             return p
+        }
+    }
+
+    static String getJava8Binary(Project project, String taskName) {
+        if (project.hasProperty(JAVA_8_BIN)) {
+            def java8 = project.property(JAVA_8_BIN)
+            project.logger.info("Running task ${taskName} with JVM '$java8'")
+            return java8
+        } else {
+            throw new IllegalStateException("Task ${taskName} must be run with Java 8, run the build with property '-P$JAVA_8_BIN=<path to java 8 binary>'")
         }
     }
 
