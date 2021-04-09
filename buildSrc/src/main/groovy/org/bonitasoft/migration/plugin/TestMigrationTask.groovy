@@ -2,6 +2,7 @@ package org.bonitasoft.migration.plugin
 
 import com.github.zafarkhaja.semver.Version
 import org.bonitasoft.migration.plugin.db.DatabaseResourcesConfigurator
+import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.tasks.testing.Test
 
@@ -29,6 +30,10 @@ class TestMigrationTask extends Test {
                     "bonita-home-" + dotted(bonitaVersion) + File.separator + "bonita-home-to-migrate"))
         }
         setSystemProperties testValues
+
+        if (Version.valueOf(bonitaVersion) < Version.valueOf("7.13.0")) {
+            executable = PropertiesUtils.getJava8Binary(project, this.name)
+        }
 
         def property = project.property('org.gradle.jvmargs')
         if (property) {

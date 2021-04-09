@@ -37,6 +37,10 @@ class PrepareMigrationTestTask extends JavaExec {
         }
         args getFillersToRun()
 
+        if (semver(previousVersion) < semver("7.13.0")) {
+            executable = PropertiesUtils.getJava8Binary(project, this.name)
+        }
+
         def property = project.property('org.gradle.jvmargs')
         if (property) {
             println "Using extra property 'org.gradle.jvmargs=$property'"
