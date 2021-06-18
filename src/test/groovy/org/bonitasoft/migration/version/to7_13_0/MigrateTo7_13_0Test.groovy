@@ -22,7 +22,7 @@ class MigrateTo7_13_0Test extends Specification {
         where:
         stepName << [
                 "RemoveUselessV6formsConfiguration",
-                "AddMimeTypeContentTypeColumnInApplication",
+                "UpdateApplicationSchema",
         ]
 
     }

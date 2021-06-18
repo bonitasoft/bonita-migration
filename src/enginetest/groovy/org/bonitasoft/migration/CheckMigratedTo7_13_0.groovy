@@ -30,6 +30,8 @@ class CheckMigratedTo7_13_0 extends Specification {
         given:
         def client = new APIClient()
         client.login("install", "install")
+        client.customPageAPI.createPage("theme.zip",
+                TestUtil.createTestPageContent("custompage_themeBonita", "defaultTheme", "The default theme"))
 
         when:
         def application = client.applicationAPI.createApplication(new ApplicationCreator("myapp1", "My application", "1.0").with {
