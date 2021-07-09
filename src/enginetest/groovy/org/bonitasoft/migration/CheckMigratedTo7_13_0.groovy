@@ -62,4 +62,19 @@ class CheckMigratedTo7_13_0 extends Specification {
         icon.content == "theContent".bytes
     }
 
+     def "should have new columns available in page objects"() {
+        given:
+        def client = new APIClient()
+        client.login("install", "install")
+
+        when:
+        def page = client.customPageAPI.createPage("page-after-7.13.zip",
+                TestUtil.createTestPageContent("custompage_PageAfter713", "PageAfter713", "A page created in 7.13.0"))
+        def pageCreatedBefore713 = client.customPageAPI.getPageByName("custompage_PageBefore713")
+        then:
+        page.removable
+        page.editable
+        pageCreatedBefore713.removable
+        pageCreatedBefore713.editable
+    }
 }

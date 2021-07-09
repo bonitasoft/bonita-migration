@@ -35,7 +35,10 @@ class CheckerUtils {
         System.setProperty("sysprop.bonita.bdm.db.vendor", dbVendor) // same as Bonita
         System.setProperty("bdm.db.user", "business_data")
         System.setProperty("bdm.db.password", System.getProperty("bdm.db.password", System.getProperty("db.password"))) // Should be the same as Bonita for our tests²²
-        System.setProperty("bdm.db.url", System.getProperty("db.url").replace("/bonita", "/business_data")) // For all except Oracle
+        System.setProperty("bdm.db.url", System.getProperty("db.url")
+                .replace("/bonita", "/business_data") // postgres + mysql
+                .replace("=bonita", "=business_data") // sqlserver
+        ) // For all except Oracle
         if (dbVendor == 'oracle') {
             System.setProperty("bdm.db.database.name", System.getProperty("db.database.name"))
         } else {
