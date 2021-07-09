@@ -23,6 +23,7 @@ class MigrateTo7_13_0Test extends Specification {
         stepName << [
                 "RemoveUselessV6formsConfiguration",
                 "UpdateApplicationSchema",
+                "UpdatePageSchema"
         ]
 
     }

@@ -830,6 +830,10 @@ END"""
         }
     }
 
+    String booleanValue(boolean value) {
+        return dbVendor == ORACLE || dbVendor == SQLSERVER ? (value ? "1" : "0") : (value ? "true" : "false")
+    }
+
     def addSequenceOnAllTenants(int sequenceKey) {
         getAllTenants().each {
             tenant -> sql.execute("INSERT INTO sequence (tenantid, id, nextid) VALUES(${tenant.id}, $sequenceKey, 1)")
@@ -882,4 +886,36 @@ END"""
         limitQuery
     }
 
+    String BOOLEAN(){
+        switch (dbVendor){
+            case ORACLE:
+                return "NUMBER(1)"
+            case SQLSERVER:
+                return "BIT"
+            default:
+                return "BOOLEAN"
+        }
+    }
+    String BLOB(){
+        switch (dbVendor){
+            case ORACLE:
+                return "BLOB"
+            case SQLSERVER:
+                return "VARBINARY(MAX)"
+            case MYSQL:
+                return "LONGBLOB"
+            default:
+                return "BYTEA"
+        }
+    }
+    String VARCHAR(int size){
+        switch (dbVendor){
+            case ORACLE:
+                return "VARCHAR2($size CHAR)"
+            case SQLSERVER:
+                return "NVARCHAR($size)"
+            default:
+                return "VARCHAR($size)"
+        }
+    }
 }

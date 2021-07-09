@@ -39,6 +39,13 @@ class FillBeforeMigratingTo7_13_0 {
             return it
         })
     }
+    @FillAction
+    void "create page before migration"() {
+        def client = new APIClient()
+        client.login("install", "install")
+        client.customPageAPI.createPage("page-before-7.13.zip",
+                createTestPageContent("custompage_PageBefore713", "PageBefore713", "A page created before 7.13"))
+    }
 
 }
 
