@@ -28,6 +28,7 @@ class MigrateTo7_13_0 extends VersionMigration {
                 new RemoveUselessV6formsConfiguration(),
                 new UpdateApplicationSchema(),
                 new UpdatePageSchema()
+                , new UpdateExistingFinalPages()
         ]
     }
 

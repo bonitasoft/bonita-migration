@@ -11,7 +11,7 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
-package org.bonitasoft.migration.version.to7_12_0
+package org.bonitasoft.migration.version.to7_13_0
 
 import org.bonitasoft.migration.DBUnitHelper
 import org.bonitasoft.migration.core.MigrationContext

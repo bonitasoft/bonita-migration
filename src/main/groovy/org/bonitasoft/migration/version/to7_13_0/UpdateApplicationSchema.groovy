@@ -19,6 +19,6 @@ class UpdateApplicationSchema extends MigrationStep {
 
     @Override
     String getDescription() {
-        return "add `iconId` column in `business_app` table"
+        return "add new columns in `business_app` table"
     }
 }
