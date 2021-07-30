@@ -24,6 +24,7 @@ class MigrateTo7_13_0Test extends Specification {
                 "RemoveUselessV6formsConfiguration",
                 "UpdateApplicationSchema",
                 "UpdatePageSchema"
+                , "UpdateExistingFinalPages"
         ]
 
     }
