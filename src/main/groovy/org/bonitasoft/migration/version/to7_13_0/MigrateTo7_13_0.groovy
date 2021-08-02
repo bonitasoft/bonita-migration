@@ -26,8 +26,9 @@ class MigrateTo7_13_0 extends VersionMigration {
         // keep one line per step and comma (,) at start of line to avoid false-positive merge conflict:
         return [
                 new RemoveUselessV6formsConfiguration(),
-                new UpdateApplicationSchema(),
-                new UpdatePageSchema()
+                new UpdateApplicationSchema()
+                , new CreateNewRemovablePages()
+                , new UpdatePageSchema()
                 , new UpdateExistingFinalPages()
         ]
     }

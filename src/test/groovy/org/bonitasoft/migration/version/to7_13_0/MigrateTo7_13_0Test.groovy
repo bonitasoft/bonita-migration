@@ -25,6 +25,7 @@ class MigrateTo7_13_0Test extends Specification {
                 "UpdateApplicationSchema",
                 "UpdatePageSchema"
                 , "UpdateExistingFinalPages"
+                , "CreateNewRemovablePages"
         ]
 
     }
