@@ -13,13 +13,17 @@
  **/
 package org.bonitasoft.migration
 
-
+import groovy.sql.Sql
 import org.bonitasoft.engine.api.APIClient
+import org.bonitasoft.engine.business.application.Application
 import org.bonitasoft.engine.business.application.ApplicationCreator
 import org.bonitasoft.engine.business.application.ApplicationUpdater
+import org.bonitasoft.engine.profile.Profile
 import org.bonitasoft.engine.search.SearchOptionsBuilder
 import org.junit.Rule
 import spock.lang.Specification
+
+import java.sql.SQLException
 
 class CheckMigratedTo7_13_0 extends Specification {
 
@@ -30,8 +34,6 @@ class CheckMigratedTo7_13_0 extends Specification {
         given:
         def client = new APIClient()
         client.login("install", "install")
-        client.customPageAPI.createPage("theme.zip",
-                TestUtil.createTestPageContent("custompage_themeBonita", "defaultTheme", "The default theme"))
 
         when:
         def application = client.applicationAPI.createApplication(new ApplicationCreator("myapp1", "My application", "1.0").with {
@@ -76,5 +78,32 @@ class CheckMigratedTo7_13_0 extends Specification {
         page.editable
         pageCreatedBefore713.removable
         pageCreatedBefore713.editable
+    }
+
+    def "profileEntry table should not exist anymore"() {
+        given:
+        def dburl = System.getProperty("db.url")
+        def dbDriverClassName = System.getProperty("db.driverClass")
+        def dbUser = System.getProperty("db.user")
+        def dbPassword = System.getProperty("db.password")
+        def sql = Sql.newInstance(dburl, dbUser, dbPassword, dbDriverClassName)
+
+        when:
+        sql.firstRow("SELECT * FROM profileentry")
+
+        then:
+        thrown(SQLException)
+    }
+
+    def "sequenceID for profileentry should not exist anymore"() {
+        given:
+        def dburl = System.getProperty("db.url")
+        def dbDriverClassName = System.getProperty("db.driverClass")
+        def dbUser = System.getProperty("db.user")
+        def dbPassword = System.getProperty("db.password")
+        def sql = Sql.newInstance(dburl, dbUser, dbPassword, dbDriverClassName)
+
+        expect:
+        sql.firstRow("SELECT count(*) FROM sequence WHERE id = ${9991}")[0] == 0
     }
 }

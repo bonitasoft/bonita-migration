@@ -21,11 +21,11 @@ class MigrateTo7_13_0Test extends Specification {
 
         where:
         stepName << [
-                "RemoveUselessV6formsConfiguration",
-                "UpdateApplicationSchema",
-                "UpdatePageSchema"
-                , "UpdateExistingFinalPages"
-                , "CreateNewRemovablePages"
+                "RemoveUselessV6formsConfiguration"
+                , "UpdateApplicationSchema"
+                , "UpdatePageSchema"
+                , "CreateNewPages"
+                , "MigrateProfileMenuToApplications"
         ]
 
     }

@@ -27,9 +27,9 @@ class MigrateTo7_13_0 extends VersionMigration {
         return [
                 new RemoveUselessV6formsConfiguration(),
                 new UpdateApplicationSchema()
-                , new CreateNewRemovablePages()
                 , new UpdatePageSchema()
-                , new UpdateExistingFinalPages()
+                , new CreateNewPages()
+                , new MigrateProfileMenuToApplications()
         ]
     }
 
