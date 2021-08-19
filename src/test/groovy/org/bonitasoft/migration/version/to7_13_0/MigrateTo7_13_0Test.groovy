@@ -26,6 +26,7 @@ class MigrateTo7_13_0Test extends Specification {
                 , "UpdatePageSchema"
                 , "CreateNewPages"
                 , "MigrateProfileMenuToApplications"
+                , "RemoveThemes"
         ]
 
     }

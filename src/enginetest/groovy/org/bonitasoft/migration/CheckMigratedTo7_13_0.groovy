@@ -21,6 +21,7 @@ import org.bonitasoft.engine.business.application.ApplicationUpdater
 import org.bonitasoft.engine.profile.Profile
 import org.bonitasoft.engine.search.SearchOptionsBuilder
 import org.junit.Rule
+import spock.lang.Shared
 import spock.lang.Specification
 
 import java.sql.SQLException
@@ -95,15 +96,23 @@ class CheckMigratedTo7_13_0 extends Specification {
         thrown(SQLException)
     }
 
-    def "sequenceID for profileentry should not exist anymore"() {
-        given:
-        def dburl = System.getProperty("db.url")
-        def dbDriverClassName = System.getProperty("db.driverClass")
-        def dbUser = System.getProperty("db.user")
-        def dbPassword = System.getProperty("db.password")
-        def sql = Sql.newInstance(dburl, dbUser, dbPassword, dbDriverClassName)
-
+    def "table profileentry should not exist anymore"() {
         expect:
-        sql.firstRow("SELECT count(*) FROM sequence WHERE id = ${9991}")[0] == 0
+        !TestUtil.hasTable("profileentry")
     }
+
+    def "table theme should not exist anymore"() {
+        expect:
+        !TestUtil.hasTable("theme")
+    }
+    def "sequenceID for profileentry should not exist anymore"() {
+        expect:
+        TestUtil.sql.firstRow("SELECT count(*) FROM sequence WHERE id = ${9991}")[0] == 0
+    }
+
+    def "sequenceID for theme should not exist anymore"() {
+        expect:
+        TestUtil.sql.firstRow("SELECT count(*) FROM sequence WHERE id = ${9890}")[0] == 0
+    }
+
 }

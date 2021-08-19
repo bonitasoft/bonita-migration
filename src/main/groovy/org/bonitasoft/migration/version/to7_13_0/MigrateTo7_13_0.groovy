@@ -13,6 +13,7 @@
  **/
 package org.bonitasoft.migration.version.to7_13_0
 
+import org.bonitasoft.migration.core.MigrationContext
 import org.bonitasoft.migration.core.MigrationStep
 import org.bonitasoft.migration.core.VersionMigration
 
@@ -30,6 +31,7 @@ class MigrateTo7_13_0 extends VersionMigration {
                 , new UpdatePageSchema()
                 , new CreateNewPages()
                 , new MigrateProfileMenuToApplications()
+                , new RemoveThemes()
         ]
     }
 
