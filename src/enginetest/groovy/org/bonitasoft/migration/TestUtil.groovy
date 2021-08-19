@@ -16,10 +16,14 @@ package org.bonitasoft.migration
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
+import groovy.sql.Sql
+
 /**
  * @author Baptiste Mesta
  */
 class TestUtil {
+
+    static Sql connection
 
     static byte[] createTestPageContent(String pageName, String displayName, String description) throws Exception {
         ByteArrayOutputStream e = new ByteArrayOutputStream();
@@ -40,5 +44,62 @@ class TestUtil {
         zos.write(stringBuilder.toString().getBytes());
         zos.closeEntry();
         return e.toByteArray();
+    }
+
+
+    static getSql() {
+        if (!connection) {
+            def dburl = System.getProperty("db.url")
+            def dbDriverClassName = System.getProperty("db.driverClass")
+            def dbUser = System.getProperty("db.user")
+            def dbPassword = System.getProperty("db.password")
+            connection = Sql.newInstance(dburl, dbUser, dbPassword, dbDriverClassName)
+        }
+        connection
+    }
+
+    static boolean hasTable(String tableName) {
+        def query
+
+        def dbVendor = System.getProperty("db.vendor")
+        switch (dbVendor) {
+            case "postgres":
+                query = """
+                    SELECT *
+                     FROM information_schema.tables
+                     WHERE table_schema='public'
+                       AND table_type='BASE TABLE'
+                       AND UPPER(table_name) = UPPER($tableName)
+                    """
+                break
+
+            case "oracle":
+                query = """
+                    SELECT *
+                    FROM user_tables
+                    WHERE UPPER(table_name) = UPPER($tableName)
+                    """
+                break
+
+            case "mysql":
+                query = """
+                    SELECT *
+                    FROM information_schema.tables
+                    WHERE UPPER(table_name) = UPPER($tableName)
+                    AND table_schema = DATABASE()
+                    """
+                break
+
+            case "sqlserver":
+                query = """
+                    SELECT * FROM information_schema.tables
+                    WHERE UPPER(TABLE_NAME) = UPPER($tableName)
+                    """
+                break
+            default:
+                throw new IllegalStateException("db vendor invalid: $dbVendor")
+        }
+        def firstRow = sql.firstRow(query)
+        return firstRow != null
     }
 }
