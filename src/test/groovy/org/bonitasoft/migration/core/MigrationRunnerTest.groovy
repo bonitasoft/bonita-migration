@@ -123,11 +123,15 @@ class MigrationRunnerTest extends Specification {
         versionMigration_7_5_0.version >> "7.5.0"
         versionMigration_7_5_0.getPreMigrationWarnings(migrationContext) >> ["Warning 7.5.0"]
         versionMigration_7_5_0.getMigrationSteps() >> []
+        def versionMigration_7_13_0 = Mock(VersionMigration)
+        versionMigration_7_13_0.version >> "7.13.0"
+        versionMigration_7_13_0.getPreMigrationWarnings(migrationContext) >> ["Warning 7.13.0"]
+        versionMigration_7_13_0.getMigrationSteps() >> []
 
         // so that we don't get asked for confirmation:
         System.setProperty("auto.accept", "true")
 
-        MigrationRunner migrationRunner1 = new MigrationRunner(migrationVersions: [versionMigration_7_4_9, versionMigration_7_5_0], context: migrationContext, logger: logger, displayUtil: displayUtil)
+        MigrationRunner migrationRunner1 = new MigrationRunner(migrationVersions: [versionMigration_7_4_9, versionMigration_7_5_0, versionMigration_7_13_0], context: migrationContext, logger: logger, displayUtil: displayUtil)
 
         when:
         migrationRunner1.run(false)
@@ -140,8 +144,13 @@ class MigrationRunnerTest extends Specification {
         1 * displayUtil.logWarningsInRectangleWithTitle("Migration to version 7.5.0", ["Warning 7.5.0"] as String[])
 
         then:
+        1 * displayUtil.logWarningsInRectangleWithTitle("Migration to version 7.13", ["Warning 7.13.0"] as String[])
+
+        then:
         1 * logger.info("Execute migration to version 7.4.9")
         1 * logger.info("Execute migration to version 7.5.0")
+        1 * logger.info("Execute migration to version 7.13")
+
     }
 
     def "should warn when VERSION_OVERRIDDEN defined and not VERSION_OVERRIDE_BY"() {
@@ -155,6 +164,7 @@ class MigrationRunnerTest extends Specification {
         then:
         1 * logger.warn("System properties '$MigrationRunner.VERSION_OVERRIDDEN' and '$MigrationRunner.VERSION_OVERRIDE_BY' must be set together")
     }
+
 
     def "should warn when VERSION_OVERRIDE_BY defined and not VERSION_OVERRIDDEN"() {
         setup:

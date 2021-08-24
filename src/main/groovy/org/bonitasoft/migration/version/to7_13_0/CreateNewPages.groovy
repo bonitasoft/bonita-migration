@@ -83,7 +83,7 @@ class CreateNewPages extends MigrationStep {
     void insertPageIfMissing(MigrationContext migrationContext, long currentTimeMillis, String pageName, boolean editable, boolean removable, long tenantId) {
         migrationContext.with {
             if(sql.firstRow("SELECT count(id) FROM page WHERE tenantId = $tenantId AND name = $pageName")[0] > 0){
-                logger.info("A page name $pageName already exists for tenant $tenantId, it will not be replaced by the one provided by the platform.")
+                logger.info("A page named '$pageName' already exists for tenant $tenantId, it will not be replaced by the one provided by the platform.")
                 sql.executeUpdate("UPDATE page SET removable = $removable, editable = $editable WHERE name = $pageName AND tenantId = $tenantId")
                 return
             }
