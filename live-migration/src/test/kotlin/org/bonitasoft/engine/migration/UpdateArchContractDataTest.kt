@@ -4,22 +4,18 @@ import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.bonitasoft.engine.migration.tables.ArchContractDataPre7_0Table
 import org.bonitasoft.engine.migration.tables.ArchContractDataTable
-import org.h2.bnf.context.DbContextRule.COLUMN
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.exists
 import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.statements.StatementType
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.jdbc.core.JdbcTemplate
 import kotlin.test.BeforeTest
-import kotlin.test.expect
 
 @SpringBootTest
 class UpdateArchContractDataTest {
