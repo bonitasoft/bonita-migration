@@ -30,4 +30,11 @@ class MigrateTo7_13_0Test extends Specification {
         ]
 
     }
+
+    def "should not display pre migration warning before start migration'"() {
+        given:
+        def migrateTo = new MigrateTo7_13_0()
+        expect:
+        !migrateTo.getPreMigrationWarnings(null)
+    }
 }

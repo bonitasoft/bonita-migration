@@ -12,6 +12,12 @@ import org.bonitasoft.migration.core.MigrationStep
  */
 class MigrateProfileMenuToApplications extends MigrationStep {
 
+    private Set<String> postMigrationWarnings = []
+
+    @Override
+    String getWarning() {
+        return postMigrationWarnings ? postMigrationWarnings.join('\n') : null
+    }
     private static final Map<String, String> PROVIDED_LEGACY_PAGES_TO_APP_PAGES = [
             "licensemonitoringadmin"  : "custompage_adminLicenseBonita",
             "tasklistinguser"         : "custompage_tasklist",
@@ -35,20 +41,20 @@ class MigrateProfileMenuToApplications extends MigrationStep {
             "bdm"                     : "custompage_adminBDMBonita"]
 
     private static final Map<String, List<String>> PAGE_LINK_MAPPING = [
-            "custompage_adminApplicationListBonita"          : ["custompage_adminApplicationDetailsBonita"],
-            "custompage_adminCaseDetailsBonita"              : ["custompage_adminTaskListBonita"],
-            "custompage_adminCaseListBonita"                 : ["custompage_adminCaseDetailsBonita", "custompage_adminCaseVisuBonita"],
-            "custompage_adminGroupListBonita"                : ["custompage_adminUserDetailsBonita"],
-            "custompage_adminMonitoringBonita"               : ["custompage_adminProcessDetailsBonita", "custompage_adminCaseVisuBonita", "custompage_adminCaseListBonita"],
-            "custompage_adminProcessDetailsBonita"           : ["custompage_adminCaseListBonita", "custompage_adminProcessVisuBonita"],
-            "custompage_adminProcessListBonita"              : ["custompage_adminProcessDetailsBonita"],
-            "custompage_adminTaskListBonita"                 : ["custompage_adminTaskDetailsBonita"],
-            "custompage_adminUserListBonita"                 : ["custompage_adminUserDetailsBonita"],
-            "custompage_error403Bonita"                      : ["custompage_applicationDirectoryBonita"],
-            "custompage_error404Bonita"                      : ["custompage_applicationDirectoryBonita"],
-            "custompage_error500Bonita"                      : ["custompage_applicationDirectoryBonita"],
-            "custompage_userCaseDetailsBonita"               : ["custompage_tasklist"],
-            "custompage_userCaseListBonita"                  : ["custompage_userCaseDetailsBonita"]]
+            "custompage_adminApplicationListBonita": ["custompage_adminApplicationDetailsBonita"],
+            "custompage_adminCaseDetailsBonita"    : ["custompage_adminTaskListBonita"],
+            "custompage_adminCaseListBonita"       : ["custompage_adminCaseDetailsBonita", "custompage_adminCaseVisuBonita"],
+            "custompage_adminGroupListBonita"      : ["custompage_adminUserDetailsBonita"],
+            "custompage_adminMonitoringBonita"     : ["custompage_adminProcessDetailsBonita", "custompage_adminCaseVisuBonita", "custompage_adminCaseListBonita"],
+            "custompage_adminProcessDetailsBonita" : ["custompage_adminCaseListBonita", "custompage_adminProcessVisuBonita"],
+            "custompage_adminProcessListBonita"    : ["custompage_adminProcessDetailsBonita"],
+            "custompage_adminTaskListBonita"       : ["custompage_adminTaskDetailsBonita"],
+            "custompage_adminUserListBonita"       : ["custompage_adminUserDetailsBonita"],
+            "custompage_error403Bonita"            : ["custompage_applicationDirectoryBonita"],
+            "custompage_error404Bonita"            : ["custompage_applicationDirectoryBonita"],
+            "custompage_error500Bonita"            : ["custompage_applicationDirectoryBonita"],
+            "custompage_userCaseDetailsBonita"     : ["custompage_tasklist"],
+            "custompage_userCaseListBonita"        : ["custompage_userCaseDetailsBonita"]]
 
     @Canonical
     private static class Profile {
@@ -120,8 +126,8 @@ class MigrateProfileMenuToApplications extends MigrationStep {
             if (applicationWithTokenExists(sql, profile, appToken)) {
                 appToken = findAvailableToken(sql, appToken, profile)
             }
-            def layoutId = sql.firstRow("SELECT id from page WHERE tenantId=${profile.tenantId} AND name = ${'custompage_layoutBonita'}") [0]
-            def themeId = sql.firstRow("SELECT id from page WHERE tenantId=${profile.tenantId} AND name = ${'custompage_themeBonita'}") [0]
+            def layoutId = sql.firstRow("SELECT id from page WHERE tenantId=${profile.tenantId} AND name = ${'custompage_layoutBonita'}")[0]
+            def themeId = sql.firstRow("SELECT id from page WHERE tenantId=${profile.tenantId} AND name = ${'custompage_themeBonita'}")[0]
             logger.info("Generating application with token \"${appToken}\" for profile \"${profile.name}\"")
             sql.executeInsert(""" INSERT INTO business_app(tenantId, id, token, version, description, 
 iconPath, creationDate, createdBy, lastUpdateDate, updatedBy, state, homePageId, profileId, layoutId, themeId, 
@@ -157,7 +163,9 @@ ${null},${null},${appName},${true},${null})""")
         migrationContext.with {
             def newPageToken = PROVIDED_LEGACY_PAGES_TO_APP_PAGES.getOrDefault(entry.page, entry.page)
             if (newPageToken.isEmpty()) {
-                logger.info("Portal page \"${entry.page}\" cannot be converted to an application page because there is no replacement page.")
+                def warnMdg = """Portal page "${entry.page}" cannot be converted to an application page because there is no replacement page."""
+                logger.warn(warnMdg)
+                postMigrationWarnings.add(warnMdg)
                 return
             }
             def applicationPageNextId = createApplicationPage(migrationContext, profile, applicationNextId, newPageToken)
@@ -172,7 +180,9 @@ ${null},${null},${appName},${true},${null})""")
         migrationContext.with {
             def page = sql.firstRow("""SELECT id FROM page WHERE tenantId = ${profile.tenantId} AND name = ${newPageToken}""")
             if (page == null) {
-                logger.info("Page \"${newPageToken}\" does not exist. It will not be present in the application associated with profile \"${profile.name}\"")
+                def warnMdg = """Page "${newPageToken}" does not exist. It will not be present in the application associated with profile "${profile.name}" """
+                logger.warn(warnMdg)
+                postMigrationWarnings.add(warnMdg)
                 return null
             }
 
@@ -207,18 +217,18 @@ ${applicationPageNextId},${parentApplicationMenuId},${index + 1})""")
 
     private void setApplicationHomePage(MigrationContext migrationContext, Profile profile, long applicationNextId) {
         migrationContext.with {
-            def homepageId = sql.firstRow("SELECT applicationPageId FROM business_app_menu WHERE tenantId = ${profile.tenantId} AND applicationId = $applicationNextId AND parentId IS NULL ORDER BY index_ ASC") [0]
+            def homepageId = sql.firstRow("SELECT applicationPageId FROM business_app_menu WHERE tenantId = ${profile.tenantId} AND applicationId = $applicationNextId AND parentId IS NULL ORDER BY index_ ASC")[0]
             sql.executeUpdate("UPDATE business_app SET homepageId = $homepageId WHERE tenantId = ${profile.tenantId} AND id = $applicationNextId")
         }
     }
 
 
-    private void createOrphanPages(MigrationContext migrationContext, Profile profile, long applicationNextId ) {
+    private void createOrphanPages(MigrationContext migrationContext, Profile profile, long applicationNextId) {
         migrationContext.with {
             Set<String> pageNames = sql.rows("SELECT p.name FROM business_app_page a, page p WHERE p.tenantId = ${profile.tenantId} AND a.tenantId = ${profile.tenantId} AND a.applicationId = ${applicationNextId} AND a.pageId = p.id").name
             Set<String> orphanPagesToAdd = []
 
-            pageNames.each {pageName ->
+            pageNames.each { pageName ->
                 addOrphanPagesRecursively(pageName, orphanPagesToAdd)
             }
 
