@@ -22,6 +22,10 @@ import org.bonitasoft.migration.core.VersionMigration
  */
 class MigrateTo7_13_0 extends VersionMigration {
 
+    public static final List<String> WARN_MESSAGE_JAVA_11 =
+            ["Warning: Bonita versions 7.13.0 / 2021.2 and later only run on Java 11 environments.",
+             "If your JRE or JDK is older than 11, you need to update your target environment before starting your migrated Bonita platform."]
+
     @Override
     List<MigrationStep> getMigrationSteps() {
         // keep one line per step and comma (,) at start of line to avoid false-positive merge conflict:
@@ -35,4 +39,8 @@ class MigrateTo7_13_0 extends VersionMigration {
         ]
     }
 
+    @Override
+    String[] getPreMigrationWarnings(MigrationContext context) {
+        WARN_MESSAGE_JAVA_11
+    }
 }
