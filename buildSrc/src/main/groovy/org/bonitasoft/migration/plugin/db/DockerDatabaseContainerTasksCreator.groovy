@@ -1,5 +1,7 @@
 package org.bonitasoft.migration.plugin.db
 
+import java.time.Duration
+
 import com.bmuschko.gradle.docker.tasks.container.DockerCreateContainer
 import com.bmuschko.gradle.docker.tasks.container.DockerInspectContainer
 import com.bmuschko.gradle.docker.tasks.container.DockerRemoveContainer
@@ -83,7 +85,7 @@ class DockerDatabaseContainerTasksCreator {
 
                 dependsOn pullImage
                 portBindings = [":$vendor.portBinding"]
-                targetImageId { pullImage.getImageId() }
+                targetImageId pullImage.getImageId()
                 if (vendor.name == 'oracle') {
                     // 1Go
                     shmSize = 1099511627776
@@ -95,7 +97,7 @@ class DockerDatabaseContainerTasksCreator {
                 group = 'docker'
 
                 dependsOn createContainer
-                targetContainerId { createContainer.getContainerId() }
+                targetContainerId createContainer.getContainerId()
             }
 
             def waitForContainerStartup = project.tasks.create("waitFor${uniqueName}ContainerStartup", DockerWaitHealthyContainer) {
@@ -103,8 +105,8 @@ class DockerDatabaseContainerTasksCreator {
                 group = null // do not show task when running `gradle tasks`
 
                 dependsOn startContainer
-                targetContainerId { startContainer.getContainerId() }
-                timeout = 420
+                targetContainerId startContainer.getContainerId()
+                timeout = Duration.ofSeconds(420)
             }
 
             def inspectContainer = project.tasks.create("inspect${uniqueName}ContainerUrl", DockerInspectContainer) {
@@ -112,9 +114,9 @@ class DockerDatabaseContainerTasksCreator {
                 group = null // do not show task when running `gradle tasks`
 
                 dependsOn waitForContainerStartup
-                targetContainerId { startContainer.getContainerId() }
+                targetContainerId startContainer.getContainerId()
 
-                onNext = {
+                onNext {
                     it.networkSettings.ports.getBindings().each { exposedPort, bindingArr ->
                         if (exposedPort.port == vendor.portBinding) {
                             int portBinding = bindingArr.first().hostPortSpec as int
@@ -140,7 +142,7 @@ class DockerDatabaseContainerTasksCreator {
 
                 force = true
                 removeVolumes = true
-                targetContainerId { createContainer.getContainerId() }
+                targetContainerId createContainer.getContainerId()
             }
 
             project.tasks.create("${uniqueName}Configuration") {

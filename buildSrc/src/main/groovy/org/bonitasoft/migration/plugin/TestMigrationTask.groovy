@@ -4,6 +4,7 @@ import com.github.zafarkhaja.semver.Version
 import org.bonitasoft.migration.plugin.db.DatabaseResourcesConfigurator
 import org.gradle.api.GradleException
 import org.gradle.api.Project
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.testing.Test
 
 import static org.bonitasoft.migration.plugin.MigrationPlugin.getDatabaseDriverConfiguration
@@ -17,6 +18,11 @@ class TestMigrationTask extends Test {
 
     private String bonitaVersion
     private boolean isSP
+
+    @Input
+    private String dbvendor
+    @Input
+    private String dburl
 
     @Override
     void executeTests() {
@@ -65,8 +71,8 @@ class TestMigrationTask extends Test {
                 getDatabaseDriverConfiguration(project, bonitaVersion)
         )
         //add as input the database configuration, tests must  be relaunched when database configuration change
-        inputs.property("dbvendor", project.extensions.database.dbvendor)
-        inputs.property("dburl", project.extensions.database.dburl)
+        dbvendor = project.extensions.database.dbvendor
+        dburl = project.extensions.database.dburl
 
         def bonitaSemVer = Version.valueOf(bonitaVersion)
         if (bonitaSemVer < Version.valueOf("7.2.0")) {
