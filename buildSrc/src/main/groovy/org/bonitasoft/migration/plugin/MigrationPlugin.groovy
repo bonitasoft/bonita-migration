@@ -94,7 +94,7 @@ class MigrationPlugin implements Plugin<Project> {
         String dbVendor = project.extensions.database.dbvendor
         allVersions.each { version ->
             Configuration configuration = project.configurations.create(getDatabaseDriverConfigurationName(dbVendor, version))
-            configuration.dependencies.add(getDatabaseDriverDependency(project, dbVendor, version))
+            project.dependencies.add(configuration.name, getDatabaseDriverDependency(project, dbVendor, version))
             project.logger.info "Creating database configuration: $configuration"
         }
     }
@@ -126,7 +126,7 @@ class MigrationPlugin implements Plugin<Project> {
             default:
                 dep = JdbcDriverDependencies.postgres
         }
-        return createDependencyWithoutGroovy(project, dep)
+        return dep
     }
 
     // =================================================================================================================
@@ -158,18 +158,13 @@ class MigrationPlugin implements Plugin<Project> {
                 lastMigrationTests.dependsOn(migrationTestTask)
             }
         }
-        getDependencies(project, "fillerCompileOnly").add(getEngineDependency(project, migrationPluginExtension,
-                currentVersion, allVersions))
-        getDependencies(project, "fillerCompileOnly").add(getTestEngineDependency(project,
-                migrationPluginExtension, currentVersion, allVersions))
-        getDependencies(project, "enginetestCompileOnly").add(getEngineDependency(project,
-                migrationPluginExtension, currentVersion, allVersions))
-        getDependencies(project, "enginetestCompileOnly").add(getTestEngineDependency(project,
-                migrationPluginExtension, currentVersion, allVersions))
-    }
-
-    def getDependencies(Project project, String configurationName) {
-        project.configurations.getByName(configurationName).dependencies
+        def versionWithModifier = getVersion(allVersions, currentVersion, migrationPluginExtension)
+        project.dependencies.add("fillerCompileOnly", getBonitaClientEngineDependency(migrationPluginExtension, versionWithModifier), defaultExclude())
+        project.dependencies.add("fillerCompileOnly", getBonitaServerEngineDependency(migrationPluginExtension, versionWithModifier), defaultExclude())
+        project.dependencies.add("fillerCompileOnly", getTestEngineDependencyName(migrationPluginExtension, versionWithModifier), defaultExclude())
+        project.dependencies.add("enginetestCompileOnly", getBonitaClientEngineDependency(migrationPluginExtension, versionWithModifier), defaultExclude())
+        project.dependencies.add("enginetestCompileOnly", getBonitaServerEngineDependency(migrationPluginExtension, versionWithModifier), defaultExclude())
+        project.dependencies.add("enginetestCompileOnly", getTestEngineDependencyName(migrationPluginExtension, versionWithModifier), defaultExclude())
     }
 
     def createTestMigrationTask(Project project, String version, boolean isSP) {
@@ -223,20 +218,19 @@ class MigrationPlugin implements Plugin<Project> {
 
     Configuration createConfigurationForBonitaVersion(Project project, String bonitaVersion, MigrationPluginExtension extension, List<String> versionList) {
         Configuration configuration = project.configurations.create(underscored(bonitaVersion))
-        configuration.dependencies.add(getEngineDependency(project, extension, bonitaVersion, versionList))
-        configuration.dependencies.add(getTestEngineDependency(project, extension, bonitaVersion, versionList))
+        def version = getVersion(versionList, bonitaVersion, extension)
+        project.dependencies.add(configuration.name, getBonitaClientEngineDependency(extension, version), defaultExclude())
+        project.dependencies.add(configuration.name, getBonitaServerEngineDependency(extension, version), defaultExclude())
+        project.dependencies.add(configuration.name, getTestEngineDependencyName(extension, version), defaultExclude())
         return configuration
     }
 
-    def getEngineDependency(Project project, MigrationPluginExtension migrationPluginExtension, String bonitaVersion, List<String> versionList) {
-        def version = getVersion(versionList, bonitaVersion, migrationPluginExtension)
-        String name = getEngineDependencyName(migrationPluginExtension, version)
-        return createDependencyWithoutGroovy(project, name)
-    }
-
-    static createDependencyWithoutGroovy(Project project, String name) {
-        project.dependencies.create(name) {
-            exclude module: "groovy-all"
+    /**
+     * exclude existing drivers and existing groovy version to avoid conflicts
+     */
+    static Closure defaultExclude() {
+        return {
+            exclude group: "org.codehaus.groovy" //exclude groovy-all and other groovy deps to avoid having multiple versions. The migration tool declare the dependency itself
             exclude module: "sqlserver"
             exclude module: "postgresql"
             exclude module: "mysql-connector-java"
@@ -244,25 +238,16 @@ class MigrationPlugin implements Plugin<Project> {
         }
     }
 
-    def getEngineDependencyName(MigrationPluginExtension migrationPluginExtension, version) {
-        String name
-        if (migrationPluginExtension.isSP) {
-            name = "com.bonitasoft.engine:bonita-client-sp:${version}"
-        } else {
-            name = "org.bonitasoft.engine:bonita-client:${version}"
-        }
-        name
+    static def getBonitaClientEngineDependency(MigrationPluginExtension migrationPluginExtension, version) {
+        migrationPluginExtension.isSP?"com.bonitasoft.engine:bonita-client-sp:${version}": "org.bonitasoft.engine:bonita-client:${version}"
     }
 
 
-    def getTestEngineDependency(Project project, MigrationPluginExtension migrationPluginExtension, String bonitaVersion, List<String> versionList) {
-        String name
-        def version = getVersion(versionList, bonitaVersion, migrationPluginExtension)
-        name = getTestEngineDependencyName(migrationPluginExtension, version)
-        return createDependencyWithoutGroovy(project, name)
+    static def getBonitaServerEngineDependency(MigrationPluginExtension migrationPluginExtension, version) {
+        migrationPluginExtension.isSP ?  "com.bonitasoft.engine:bonita-server-sp:${version}" : "org.bonitasoft.engine:bonita-server:${version}"
     }
 
-    def getTestEngineDependencyName(MigrationPluginExtension migrationPluginExtension, String version) {
+    static def getTestEngineDependencyName(MigrationPluginExtension migrationPluginExtension, String version) {
         String name
         if (migrationPluginExtension.isSP) {
             // test modules changed in 7.7.0
