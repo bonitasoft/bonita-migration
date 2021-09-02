@@ -217,7 +217,7 @@ ${applicationPageNextId},${parentApplicationMenuId},${index + 1})""")
 
     private void setApplicationHomePage(MigrationContext migrationContext, Profile profile, long applicationNextId) {
         migrationContext.with {
-            def homepageId = sql.firstRow("SELECT applicationPageId FROM business_app_menu WHERE tenantId = ${profile.tenantId} AND applicationId = $applicationNextId AND parentId IS NULL ORDER BY index_ ASC")[0]
+            def homepageId = sql.firstRow("SELECT applicationPageId FROM business_app_menu WHERE tenantId = ${profile.tenantId} AND applicationId = $applicationNextId AND applicationPageId IS NOT NULL ORDER BY id ASC")[0]
             sql.executeUpdate("UPDATE business_app SET homepageId = $homepageId WHERE tenantId = ${profile.tenantId} AND id = $applicationNextId")
         }
     }
