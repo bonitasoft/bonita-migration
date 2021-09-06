@@ -146,9 +146,6 @@ class MigrationPlugin implements Plugin<Project> {
             createConfigurationForBonitaVersion(project, it, migrationPluginExtension, allVersions)
             PrepareMigrationTestTask prepareTestTask = createPrepareTestTask(project, it, previousVersions,
                     migrationPluginExtension.isSP)
-            if (migrationPluginExtension.isSP) {
-                prepareTestTask.dependsOn("getLicenses")
-            }
             Task runMigrationTask = createRunMigrationTask(project, it, migrationPluginExtension.isSP)
             Task migrationTestTask = createTestMigrationTask(project, it, migrationPluginExtension.isSP)
             runMigrationTask.dependsOn(prepareTestTask)
@@ -299,9 +296,6 @@ class MigrationPlugin implements Plugin<Project> {
     }
 
     private void defineIntegrationTestTask(Project project) {
-        def setSystemPropertiesForIntegrationTest = {
-            systemProperties = DatabaseResourcesConfigurator.getDatabaseConnectionSystemProperties(project)
-        }
 
         project.task('integrationTest', type: Test) {
             group = 'Verification'
@@ -310,7 +304,9 @@ class MigrationPlugin implements Plugin<Project> {
             classpath = project.sourceSets.integrationTest.runtimeClasspath
             reports.html.destination = project.file("${project.buildDir}/reports/integrationTests")
 
-            doFirst setSystemPropertiesForIntegrationTest
+            doFirst {
+                systemProperties DatabaseResourcesConfigurator.getDatabaseConnectionSystemProperties(project)
+            }
         }
 
     }
