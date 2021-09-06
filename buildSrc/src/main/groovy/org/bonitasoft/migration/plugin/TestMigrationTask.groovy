@@ -26,15 +26,11 @@ class TestMigrationTask extends Test {
     @Override
     void executeTests() {
         def testValues = DatabaseResourcesConfigurator.getDatabaseConnectionSystemProperties(project)
-        if (isSP) {
-            // From 7.3.0, 'bonita.client.home' is the default key used by EngineStarterSP to retrieve licenses:
-            testValues.put("bonita.client.home", String.valueOf(project.buildDir) + "/licenses")
-        }
         if (Version.valueOf(bonitaVersion) <= Version.valueOf("7.3.0")) {
             testValues.put("bonita.home", String.valueOf(project.buildDir.absolutePath + File.separator +
                     "bonita-home-" + dotted(bonitaVersion) + File.separator + "bonita-home-to-migrate"))
         }
-        setSystemProperties testValues
+        systemProperties testValues
 
         def property = project.property('org.gradle.jvmargs')
         if (property) {

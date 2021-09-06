@@ -28,7 +28,7 @@ class RunMigrationTask extends JavaExec {
             systemProps.put("bonita.home", String.valueOf(project.buildDir.absolutePath + File.separator +
                     "bonita-home-" + dotted(bonitaVersion) + File.separator + "bonita-home-to-migrate"))
         }
-        setSystemProperties systemProps
+        systemProperties systemProps
         logger.info "execute migration with properties $systemProperties"
         setMain "${isSP ? 'com' : 'org'}.bonitasoft.migration.core.Migration"
         logger.info "using classpath:"
