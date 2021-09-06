@@ -23,9 +23,6 @@ class PrepareMigrationTestTask extends JavaExec {
     @Override
     void exec() {
         def testValues = DatabaseResourcesConfigurator.getDatabaseConnectionSystemProperties(project)
-        if (isSP) {
-            testValues.put("bonita.client.home", String.valueOf(project.buildDir) + "/licenses")
-        }
         if (semver(previousVersion) < semver("7.3.0")) {
             def bonitaHomeFolder = String.valueOf(project.buildDir.absolutePath + File.separator +
                     "bonita-home-" + dotted(targetVersion))
@@ -48,7 +45,7 @@ class PrepareMigrationTestTask extends JavaExec {
             jvmArgs sysProperty.split(" ")
         }
 
-        setSystemProperties testValues
+        systemProperties testValues
         setDescription "Setup the engine in order to run migration tests on it."
         setMain "org.bonitasoft.migration.filler.FillerRunner"
         setDebug System.getProperty("filler.debug") != null
