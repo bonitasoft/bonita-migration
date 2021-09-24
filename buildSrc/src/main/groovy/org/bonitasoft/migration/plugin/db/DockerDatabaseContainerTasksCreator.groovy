@@ -29,7 +29,7 @@ class DockerDatabaseContainerTasksCreator {
             ],
             [name           : 'postgres',
              repository     : 'bonitasoft/bonita-postgres',
-             tag            : '11.9',
+             tag            : '12.6',
              portBinding    : 5432,
              uriTemplate    : 'jdbc:postgresql://%s:%s/bonita',
              driverClassName: 'org.postgresql.Driver',
