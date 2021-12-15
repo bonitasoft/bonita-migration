@@ -87,6 +87,7 @@ class MigrateProfileMenuToApplications extends MigrationStep {
     def execute(MigrationContext context) {
         if (!context.databaseHelper.hasTable("profileentry")) {
             context.logger.info("Migration step will not be executed, table 'profileentry' does not exist. It may have been executed already.")
+            return
         }
         def profiles = retrieveAllProfiles(context)
         profiles.each { profile ->
@@ -94,6 +95,11 @@ class MigrateProfileMenuToApplications extends MigrationStep {
                 if (profile.entries.size() == 0) {
                     logger.info("The profile \"${profile.name}\" does not have any profile entry. No application will be generated.")
                     return
+                }
+                if (!canAnyPageOfProfileBeMigrated(context, profile.entries)) {
+                    logger.info("The profile \"${profile.name} contains only pages that don't exist in the new version. The application home page will be the only one that is associated to the application.")
+                    profile.entries = []
+                    profile.entries.add(new ProfileEntry(-1L, "Application home page", "custompage_home", []))
                 }
                 def applicationNextId = createApplication(context, profile)
 
@@ -281,6 +287,18 @@ ${applicationPageNextId},${parentApplicationMenuId},${index + 1})""")
                 entry.children.add(toProfileEntry(context, profile, childEntryRow))
             }
             return entry
+        }
+    }
+
+    private boolean canAnyPageOfProfileBeMigrated(MigrationContext context, List<ProfileEntry> profileEntries) {
+        return context.with {
+            return profileEntries.any {entry ->
+                if (entry.children.empty) {
+                    return PROVIDED_LEGACY_PAGES_TO_APP_PAGES.getOrDefault(entry.page, entry.page) != ""
+                } else {
+                    return canAnyPageOfProfileBeMigrated(context, entry.children)
+                }
+            }
         }
     }
 
