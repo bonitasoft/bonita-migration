@@ -48,7 +48,7 @@ class DockerDatabaseContainerTasksCreator {
             ],
             [name           : 'sqlserver',
              repository     : 'bonitasoft/bonita-sqlserver',
-             tag            : '2017-CU22',
+             tag            : '2019-CU14',
              portBinding    : 1433,
              uriTemplate    : 'jdbc:sqlserver://%s:%s;database=bonita',
              driverClassName: 'com.microsoft.sqlserver.jdbc.SQLServerDriver',
