@@ -21,7 +21,8 @@ class MigrateTo7_14_0Test extends Specification {
 
         where:
         stepName << [
-                "RemoveHiddenFieldFromPages"
+                "RemoveHiddenFieldFromPages",
+                "RemoveReportingTables"
         ]
 
     }
