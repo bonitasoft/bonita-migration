@@ -15,19 +15,19 @@ package org.bonitasoft.migration.version.to7_14_0
 
 import org.bonitasoft.migration.core.MigrationContext
 import org.bonitasoft.migration.core.MigrationStep
-import org.bonitasoft.migration.core.VersionMigration
 
-/**
- * @author Dumitru Corini
- */
-class MigrateTo7_14_0 extends VersionMigration {
+class RemoveReportingTables extends MigrationStep {
 
     @Override
-    List<MigrationStep> getMigrationSteps() {
-        // keep one line per step and comma (,) at start of line to avoid false-positive merge conflict:
-        return [
-                new RemoveHiddenFieldFromPages()
-                , new RemoveReportingTables()
-        ]
+    def execute(MigrationContext context) {
+        context.logger.info("Dropping table report...")
+        context.databaseHelper.dropTableIfExists("report");
+        context.logger.info("Removing sequence of table report...")
+        context.sql.execute("DELETE FROM sequence WHERE id = ${500}")
+    }
+
+    @Override
+    String getDescription() {
+        return "Remove reporting table"
     }
 }

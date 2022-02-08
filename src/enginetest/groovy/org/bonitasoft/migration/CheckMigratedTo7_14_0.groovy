@@ -1,6 +1,6 @@
 /**
  * Copyright (C) 2021 Bonitasoft S.A.
- * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
+ * Bonitasoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
  * version 2.1 of the License.
@@ -11,23 +11,26 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
-package org.bonitasoft.migration.version.to7_14_0
+package org.bonitasoft.migration
 
-import org.bonitasoft.migration.core.MigrationContext
-import org.bonitasoft.migration.core.MigrationStep
-import org.bonitasoft.migration.core.VersionMigration
 
-/**
- * @author Dumitru Corini
- */
-class MigrateTo7_14_0 extends VersionMigration {
+import org.junit.Rule
+import spock.lang.Specification
 
-    @Override
-    List<MigrationStep> getMigrationSteps() {
-        // keep one line per step and comma (,) at start of line to avoid false-positive merge conflict:
-        return [
-                new RemoveHiddenFieldFromPages()
-                , new RemoveReportingTables()
-        ]
+class CheckMigratedTo7_14_0 extends Specification {
+
+    @Rule
+    public After7_2_0Initializer initializer = new After7_2_0Initializer()
+
+
+    def "table report should not exist anymore"() {
+        expect:
+        !TestUtil.hasTable("report")
     }
+
+    def "sequenceID for report should not exist anymore"() {
+        expect:
+        TestUtil.sql.firstRow("SELECT count(*) FROM sequence WHERE id = ${500}")[0] == 0
+    }
+
 }
