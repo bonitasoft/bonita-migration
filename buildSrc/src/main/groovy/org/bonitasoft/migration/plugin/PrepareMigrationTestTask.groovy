@@ -23,15 +23,6 @@ class PrepareMigrationTestTask extends JavaExec {
     @Override
     void exec() {
         def testValues = DatabaseResourcesConfigurator.getDatabaseConnectionSystemProperties(project)
-        if (semver(previousVersion) < semver("7.3.0")) {
-            def bonitaHomeFolder = String.valueOf(project.buildDir.absolutePath + File.separator +
-                    "bonita-home-" + dotted(targetVersion))
-            def blankBonitaHomeInPreviousVersion = new File(bonitaHomeFolder + File.separator + "bonita-home")
-            def bonitaHomeToMigrate = new File(bonitaHomeFolder + File.separator + "bonita-home-to-migrate")
-            delete(bonitaHomeToMigrate)
-            copyDir(blankBonitaHomeInPreviousVersion, bonitaHomeToMigrate)
-            testValues.put("bonita.home", bonitaHomeToMigrate)
-        }
         args getFillersToRun()
 
         if (semver(previousVersion) < semver("7.13.0")) {
@@ -54,10 +45,7 @@ class PrepareMigrationTestTask extends JavaExec {
         setMain "org.bonitasoft.migration.filler.FillerRunner"
         setDebug System.getProperty("filler.debug") != null
 
-        // From version 7.9.1+, use Java 11 to prepare migration tests:
-        if (Version.valueOf(targetVersion.replaceAll("_", ".")) >= Version.valueOf("7.9.1")) {
-            AlternateJVMRunner.useAlternateJVMRunnerIfRequired(project, this)
-        }
+        AlternateJVMRunner.useAlternateJVMRunnerIfRequired(project, this)
 
         super.exec()
     }
@@ -82,21 +70,13 @@ class PrepareMigrationTestTask extends JavaExec {
         if (semver(targetVersion) != semver("7.9.1")) {
             //special case, there is a bug in test api 7.9.0, the bonita engine rule does not work properly
             if (isSP) {
-                if (semver(targetVersion) < Version.valueOf("7.2.1")) {
-                    fillers.add("com.bonitasoft.migration.InitializerBefore7_2_1SP")
-                } else if (semver(targetVersion) <= Version.valueOf("7.3.3")) {
-                    fillers.add("com.bonitasoft.migration.InitializerBefore7_3_3SP")
-                } else if (semver(targetVersion) < Version.valueOf("7.11.0")) {
+                if (semver(targetVersion) < Version.valueOf("7.11.0")) {
                     fillers.add("com.bonitasoft.migration.InitializerBefore7_11_0SP")
                 } else {
                     fillers.add("com.bonitasoft.migration.InitializerAfter7_11_0SP")
                 }
             } else {
-                if (semver(targetVersion) < Version.valueOf("7.2.1")) {
-                    fillers.add("org.bonitasoft.migration.InitializerBefore7_2_1")
-                } else if (semver(targetVersion) <= Version.valueOf("7.3.0")) {
-                    fillers.add("org.bonitasoft.migration.InitializerBefore7_3_0")
-                } else if (semver(targetVersion) < Version.valueOf("7.11.0")) {
+               if (semver(targetVersion) < Version.valueOf("7.11.0")) {
                     fillers.add("org.bonitasoft.migration.InitializerBefore7_11_0")
                 } else {
                     fillers.add("org.bonitasoft.migration.InitializerAfter7_11_0")

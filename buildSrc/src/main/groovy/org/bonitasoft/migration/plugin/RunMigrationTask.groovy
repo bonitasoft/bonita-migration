@@ -24,10 +24,6 @@ class RunMigrationTask extends JavaExec {
         systemProps.put("ignore.invalid.target.version", "true") // value is not important
 
         systemProps.put("target.version", String.valueOf(bonitaVersion))
-        if (semver(bonitaVersion) <= Version.valueOf("7.3.0")) {
-            systemProps.put("bonita.home", String.valueOf(project.buildDir.absolutePath + File.separator +
-                    "bonita-home-" + dotted(bonitaVersion) + File.separator + "bonita-home-to-migrate"))
-        }
         systemProperties systemProps
         logger.info "execute migration with properties $systemProperties"
         setMain "${isSP ? 'com' : 'org'}.bonitasoft.migration.core.Migration"

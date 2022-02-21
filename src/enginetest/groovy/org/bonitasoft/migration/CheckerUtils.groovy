@@ -46,24 +46,4 @@ class CheckerUtils {
         }
     }
 
-    static byte[] createTestPageContent(String pageName, String displayName, String description) throws Exception {
-        ByteArrayOutputStream e = new ByteArrayOutputStream()
-        ZipOutputStream zos = new ZipOutputStream(e)
-        zos.putNextEntry(new ZipEntry("Index.groovy"))
-        zos.write("return \"\";".getBytes())
-        zos.putNextEntry(new ZipEntry("page.properties"))
-        StringBuilder stringBuilder = new StringBuilder()
-        stringBuilder.append("name=")
-        stringBuilder.append(pageName)
-        stringBuilder.append("\n")
-        stringBuilder.append("displayName=")
-        stringBuilder.append(displayName)
-        stringBuilder.append("\n")
-        stringBuilder.append("description=")
-        stringBuilder.append(description)
-        stringBuilder.append("\n")
-        zos.write(stringBuilder.toString().getBytes())
-        zos.closeEntry()
-        return e.toByteArray()
-    }
 }

@@ -130,12 +130,14 @@ class MigrationUtil {
         def versionAsString = row[0] as String
 
         // check if the version follows the 7.11+ version pattern in database:
-        def matcher = (versionAsString =~ /(\d+)\.(\d+)/)
-        if (matcher.matches()) {
+        def matcherFor711plus = (versionAsString =~ /(\d+)\.(\d+)/)
+        if (matcherFor711plus.matches()) {
             // Only need the first 2 digits, as default patch number is already '0':
-            return Version.forIntegers(matcher[0][1] as int, matcher[0][2] as int)
+            return Version.forIntegers(matcherFor711plus[0][1] as int, matcherFor711plus[0][2] as int)
         } else {
-            return Version.valueOf(versionAsString)
+            def fullVersion = Version.valueOf(versionAsString)
+            //Ignore last digit because we don't migrate maintenance versions of 7.10.x anymore, we directly go to 7.11
+            return Version.forIntegers(fullVersion.majorVersion, fullVersion.minorVersion)
         }
     }
 
@@ -146,10 +148,7 @@ class MigrationUtil {
         } else {
             semVer = Version.valueOf(normalVersion)
         }
-        if (semVer >= Version.valueOf("7.11.0")) {
-            return semVer.majorVersion + '.' + semVer.minorVersion
-        }
-        return normalVersion
+        return semVer.majorVersion + '.' + semVer.minorVersion
     }
 
     static Object getId(File feature, String dbVendor, String fileExtension, Object it, Sql sql) {
