@@ -43,13 +43,9 @@ class MigrationRunner implements MigrationAction {
             def warnings = [:]
             migrationVersions.each {
                 logger.info "Execute migration to version " + MigrationUtil.getDisplayVersion(it.getVersion())
-                def bonitaHomeDir = null
                 it.context = context
                 it.logger = logger
                 context.setVersion(it.getVersion())
-                if (Version.valueOf(it.getVersion()) < Version.valueOf("7.3.0")) {
-                    bonitaHomeDir = it.migrateBonitaHome(isSp)
-                }
 
                 it.getMigrationSteps().each { step ->
                     logger.info "---------------"
@@ -65,11 +61,6 @@ class MigrationRunner implements MigrationAction {
                 }
                 changePlatformVersion(context.sql, it.getVersion())
                 lastVersion = it.getVersion()
-
-                if (bonitaHomeDir) {
-                    logger.debug("Removing entire content of bonita-home folder $bonitaHomeDir")
-                    bonitaHomeDir.deleteDir()
-                }
             }
             logSuccessfullyCompleted(migrationStartDate, lastVersion)
             String postMigrationWarnings = this.postMigrationWarnings()
@@ -102,14 +93,11 @@ class MigrationRunner implements MigrationAction {
     @Override
     List<String> getBannerAndGlobalWarnings() {
         return [
-                "This tool will migrate your installation of Bonita.",
-                "Both database and bonita home will be modified.",
+                "This tool will migrate the database of your installation of Bonita.",
                 "Please refer to the documentation for further steps to completely migrate your production environment.",
                 "",
                 "Warning:",
-                "Back up the database AND the bonita home before migrating",
-                "If you have a custom Look & Feel, test and update it, if it's necessary when the migration is finished.",
-                "If you have customized the configuration of your bonita home, reapply the customizations when the migration is finished.", ""]
+                "Back up the database before migrating", ""]
     }
 
     @Override

@@ -202,14 +202,6 @@ class MigrationPlugin implements Plugin<Project> {
         } else {
             prepareTestTask.dependsOn cleandb
         }
-        if (Version.valueOf(previousVersion) < Version.valueOf("7.3.0")) {
-            def unpackBonitaHome = project.task("unpackBonitaHomeFor_" + targetVersion, type: Copy) {
-                from project.zipTree(project.projectDir.toPath().resolve('src').resolve('main').resolve('resources').resolve('homes')
-                        .resolve("bonita-home${isSP ? '-sp' : ''}-${previousVersion}.zip").toAbsolutePath())
-                into new File(project.buildDir, "bonita-home-" + targetVersion)
-            }
-            prepareTestTask.dependsOn unpackBonitaHome
-        }
         prepareTestTask
     }
 
@@ -250,10 +242,8 @@ class MigrationPlugin implements Plugin<Project> {
             // test modules changed in 7.7.0
             if (Version.valueOf(getRawVersion(version)) >= Version.valueOf("7.11.0")) {
                 name = "com.bonitasoft.engine:bonita-test-api-sp:${version}"
-            } else if (Version.valueOf(getRawVersion(version)) >= Version.valueOf("7.7.0")) {
-                name = "com.bonitasoft.engine.test:bonita-integration-tests-client-sp:${version}"
             } else {
-                name = "com.bonitasoft.engine.test:bonita-integration-tests-local-sp:${version}:tests"
+                name = "com.bonitasoft.engine.test:bonita-integration-tests-client-sp:${version}"
             }
         } else {
             if (Version.valueOf(getRawVersion(version)) >= Version.valueOf("7.11.0")) {

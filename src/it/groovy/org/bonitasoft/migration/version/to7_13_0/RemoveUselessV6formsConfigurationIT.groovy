@@ -33,8 +33,7 @@ class RemoveUselessV6formsConfigurationIT extends Specification {
 
     def setup() {
         dropTestTables()
-        // Schema is the same, so reusing 7.4.2 SQL resource files:
-        dbUnitHelper.createTables("7_4_2", "configuration")
+        dbUnitHelper.createTables("7_13_0/configuration")
     }
 
     def cleanup() {

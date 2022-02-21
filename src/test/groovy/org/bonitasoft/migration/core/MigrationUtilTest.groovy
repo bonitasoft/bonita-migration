@@ -37,8 +37,7 @@ class MigrationUtilTest extends Specification {
         where:
         versionInDatabase || resultVersion
         "7.11"            || "7.11.0"
-        "7.10.4"          || "7.10.4"
-        "7.10.4-SNAPSHOT" || "7.10.4-SNAPSHOT"
+        "7.10.4"          || "7.10.0"
         "7.12"            || "7.12.0"
         "8.0"             || "8.0.0"
     }
@@ -52,8 +51,7 @@ class MigrationUtilTest extends Specification {
         where:
         original          || result
         "7.11.0"          || "7.11"
-        "7.10.4"          || "7.10.4"
-        "7.10.4-SNAPSHOT" || "7.10.4-SNAPSHOT"
+        "7.10.4"          || "7.10"
         "7.12.0"          || "7.12"
         "8.0.0"           || "8.0"
     }

@@ -31,7 +31,6 @@ Eg.
 ## Accepted parameters
 
 ### Mandatory parameters
->     bonita.home <path to the existing bonita-home folder>, required for pre-7.3.0 versions only
 >     db.vendor <the kind of your database>, can be [mysql,postgres,sqlserver,oracle]
 >     db.url <the url of the database>
 >     db.driverclass <the class of the jdbc driver>

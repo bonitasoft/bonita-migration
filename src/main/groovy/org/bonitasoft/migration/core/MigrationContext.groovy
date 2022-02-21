@@ -39,12 +39,10 @@ class MigrationContext {
 
     public final static String TARGET_VERSION = "target.version"
 
-    public final static String BONITA_HOME = "bonita.home"
     public final static String LOGGER_LEVEL = "logger.level"
     MigrationStep.DBVendor dbVendor
 
     ThreadLocal<Sql> sql
-    File bonitaHome
     Version sourceVersion
     Version targetVersion
     Logger logger
@@ -57,8 +55,6 @@ class MigrationContext {
     DbConfig dbConfig
     private ExecutorService executorService
     boolean verifyOnly
-    boolean updateCaseOverview
-    String processToUpdate
 
     MigrationContext() {
     }
@@ -103,10 +99,6 @@ class MigrationContext {
         //if not set it will be ask later
         targetVersion = getSystemPropertyOrFromConfigFile(TARGET_VERSION, properties, false)?.toVersion()
 
-        def file = getSystemPropertyOrFromConfigFile(BONITA_HOME, properties, false)
-        if (file != null) {
-            bonitaHome = new File(file)
-        }
         completeLoggingConfiguration(properties)
 
         logger.info('Configuration loading completed')

@@ -40,8 +40,7 @@ class VersionUtils {
     }
 
     static List<String> getTestableVersionList(project, configuration) {
-        List<String> allVersions = getVersionList(project, configuration)
-        return allVersions.subList(allVersions.indexOf('7.3.0'), allVersions.size())
+        return getVersionList(project, configuration)
     }
 
     static String getVersion(List<String> versions, String version, MigrationPluginExtension configuration) {
