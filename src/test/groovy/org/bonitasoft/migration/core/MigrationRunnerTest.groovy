@@ -17,8 +17,6 @@ package org.bonitasoft.migration.core
 import groovy.sql.Sql
 import org.bonitasoft.migration.core.database.DatabaseHelper
 import spock.lang.Specification
-import spock.lang.Unroll
-
 /**
  * @author Baptiste Mesta
  */
@@ -194,7 +192,7 @@ class MigrationRunnerTest extends Specification {
                                                                        'All this information is not required by Bonita to work and does not affect user experience,',
                                                                        'but it keeps the information of all contracts sent to execute tasks or instantiate processes.',
                                                                        'Based on your needs, this information can be migrated into the original table using the tool',
-                                                                       '(please run live-migration script located in tools/live-migration directory) while bonita platform is up & running',
+                                                                       '(please run live-migration tool availablle on Bonitasoft Customer Portal) while bonita platform is up & running',
                                                                        'or dropped to reduce disk space']
 
     def "should log warning message if arch_contract_data_backup table exists"() {
