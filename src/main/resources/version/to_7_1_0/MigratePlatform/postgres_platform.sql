@@ -1,1 +1,0 @@
-ALTER TABLE platform add information TEXT;
