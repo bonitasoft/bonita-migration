@@ -83,7 +83,7 @@ class MigrationRunner implements MigrationAction {
                     "All this information is not required by Bonita to work and does not affect user experience,\n" +
                     "but it keeps the information of all contracts sent to execute tasks or instantiate processes.\n" +
                     "Based on your needs, this information can be migrated into the original table using the tool\n" +
-                    "(please run live-migration script located in tools/live-migration directory) while bonita platform is up & running\n" +
+                    "(please run live-migration tool availablle on Bonitasoft Customer Portal) while bonita platform is up & running\n" +
                     "or dropped to reduce disk space"
         }
         return null

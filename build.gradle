@@ -161,7 +161,6 @@ dependencies {
     enginetestCompile "org.codehaus.groovy:groovy-all:2.4.11"
     // TODO should be enginetestRuntime (require changed in tasks)
     enginetestCompile "ch.qos.logback:logback-classic:$logbackVersion"
-    inDistrib project(path: ":live-migration", configuration: "distributionZip")
 }
 
 startScripts {
