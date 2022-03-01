@@ -16,6 +16,8 @@ package org.bonitasoft.update.core
 
 import com.github.zafarkhaja.semver.Version
 
+import static org.bonitasoft.update.core.UpdateUtil.getDisplayVersion
+
 /**
  *
  * Get all versions and steps to execute and launch the update runner with it
@@ -139,8 +141,8 @@ class Update {
 
     List<VersionUpdate> getVersionUpdatesToRun(UpdateAction runner) {
         def version = Version.valueOf(getPlatformVersion().normalVersion)
+        logger.info("Detected version in database: ${getDisplayVersion(version)}")
         verifyPlatformIsValid(version)
-        logger.info("Detected version in database: " + version)
         context.sourceVersion = version
         def versions = getVersionsAfter(version)
         def visibleVersions = filterOutInvisibleVersions(versions)
@@ -173,10 +175,10 @@ class Update {
 
     def verifyTargetVersionIsValid(List<Version> possibleTarget) {
         if (context.targetVersion < context.sourceVersion) {
-            throw new IllegalStateException("The target version $context.targetVersion can not be before source version ${UpdateUtil.getDisplayVersion(context.sourceVersion)}")
+            throw new IllegalStateException("The target version $context.targetVersion can not be before source version ${getDisplayVersion(context.sourceVersion)}")
         }
         if (context.targetVersion == context.sourceVersion) {
-            throw new IllegalStateException("The version is already in ${UpdateUtil.getDisplayVersion(context.sourceVersion)}")
+            throw new IllegalStateException("The version is already in ${getDisplayVersion(context.sourceVersion)}")
         }
         if (!possibleTarget?.contains(context.targetVersion)) {
             if (TRANSITION_VERSIONS.contains(context.targetVersion)) {
