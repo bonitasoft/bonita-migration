@@ -1,12 +1,12 @@
-bonita-migration
+Bonita Update Tool
 =================
 
 What it does?
 -------------
-This project migrates an installed Bonita community instance from one version to another.
+This project updates an installed Bonita community instance from one version to another.
 
 
-Build migration
+Build Update Tool
 ---------------
 ```
 ./gradlew build
@@ -15,37 +15,37 @@ Build migration
 
 Integration tests
 -----------------
-These tests need a database to run. They ensure that migration database operations are performed correctly.
+These tests need a database to run. They ensure that update database operations are performed correctly.
 
 ```
 ./gradlew integrationTest
 ```
 
 
-Migration tests
+Update tests
 ---------------
-These tests involve preloaded data, migration and ensure that the Bonita Engine works correctly after migration.
+These tests involve preloaded data, update and ensure that the Bonita Engine works correctly after update.
 
 For each supported version, the following is performed
 * initialized an empty Bonita database for version n-1
 * run a Bonita Engine in version n-1 and use to it fill data (using filler classes)
-* stop the engine and run the migration process to version n
+* stop the engine and run the update process to version n
 * run a Bonita Engine in version n and run dedicated tests for this version n (using enginetest classes)
 
 ### Run all tests
 
 ```
-./gradlew allMigrationTests
+./gradlew allUpdateTests
 ```
 
 ### Test a specific version
 
 ```
-./gradlew testMigration_X_Y_Z
+./gradlew testUpdate_X_Y_Z
 ```
 
 
-Customize database to use for integration and migration tests when running with Gradle
+Customize database to use for integration and update tests when running with Gradle
 --------------------------------------------------------------------------------------
 
 Tests can be run on all supported databases. To select the database type, pass the `db.vendor` value as System Property
@@ -54,9 +54,9 @@ to the gradle command. By default the database used is `postgres`.
 ### Rely on external database
 
 You have to pass several System Properties to the Gradle command as described in the example below. Default values for the
-properties are set in the [DatabaseResourcesConfigurator](buildSrc/src/main/groovy/org/bonitasoft/migration/plugin/db/DatabaseResourcesConfigurator.groovy)
+properties are set in the [DatabaseResourcesConfigurator](buildSrc/src/main/groovy/org/bonitasoft/update/plugin/db/DatabaseResourcesConfigurator.groovy)
 source file.
-Some other settings are also available in [DockerDatabaseContainerTasksCreator](buildSrc/src/main/groovy/org/bonitasoft/migration/plugin/db/DockerDatabaseContainerTasksCreator.groovy)
+Some other settings are also available in [DockerDatabaseContainerTasksCreator](buildSrc/src/main/groovy/org/bonitasoft/update/plugin/db/DockerDatabaseContainerTasksCreator.groovy)
 
 **Important**:
 * the build will remove the database and user after the tests complete, so all previous data stored in the
@@ -67,15 +67,15 @@ this by yourself. Only the root user must exist and should be able to connect to
  syntax as it is parsed to be able to create the targeted database
 
 
-Example: run test migration 7.6.0 on Sqlserver:
+Example: run test update 7.6.0 on Sqlserver:
 ```
-./gradlew testMigration_7_6_0 \
+./gradlew testUpdate_7_6_0 \
 -Ddb.vendor=sqlserver \
--Ddb.url=jdbc:sqlserver://myhost:1433;database=migration \
+-Ddb.url=jdbc:sqlserver://myhost:1433;database=update_db \
 -Ddb.root.user=sa \
 -Ddb.root.password=StrongPassword \
--Ddb.user=migration_ci \
--Ddb.password=migration_ci \
+-Ddb.user=DB_USER_NAME \
+-Ddb.password=DB_PASSWORD \
 -Ddb.driverClass=com.microsoft.sqlserver.jdbc.SQLServerDriver
 ```
 
@@ -93,7 +93,7 @@ Example: run integration tests on Postgresql:
 
 Example: run all tests on Oracle:
 ```
-./gradlew clean integrationTest allMigrationTests --info --stacktrace \
+./gradlew clean integrationTest allUpdateTests --info --stacktrace \
 -Ddb.vendor=oracle \
 -Ddb.url=jdbc:oracle:thin:@//localhost:1521/ORCLPDB1.localdomain \
 -Ddb.root.user="sys as sysdba" \
@@ -105,7 +105,7 @@ Example: run all tests on Oracle:
 
 Example: run all tests on Mysql:
 ```
-./gradlew clean integrationTest allMigrationTests --info --stacktrace \
+./gradlew clean integrationTest allUpdateTests --info --stacktrace \
 -Ddb.vendor=mysql \
 -Ddb.url=jdbc:mysql://localhost:3306/bonita?allowMultiQueries=true \
 -Ddb.root.user=root \
@@ -121,9 +121,9 @@ Example: run all tests on Mysql:
 The build can start the related database container for you. To do so, only pass the `db.vendor` System Property.
 If you provide a `db.url` System Property in addition, the build won't start the database container and will expect you to run an external database.
 
-Example: run all integration and migration tests on Oracle:
+Example: run all integration and update tests on Oracle:
 ```
-./gradlew clean integrationTest allMigrationTests -Ddb.vendor=oracle
+./gradlew clean integrationTest allUpdateTests -Ddb.vendor=oracle
 ```
 
 
@@ -139,7 +139,7 @@ Debug
 When activating one of the following settings, the process is started suspended and listening on port 5005. Attach a remote
 debugging system to resume and debug the process
 * use `-Dfiller.debug` to debug the filler phase of database filler
-* use `-Dmigration.debug` to debug the migration
+* use `-Dupdate.debug` to debug the update
 * use `--debug-jvm` to debug the tests
 * use `export GRADLE_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"` before launching the build in order to debug the build script itself
 
