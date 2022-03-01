@@ -1,0 +1,1 @@
+bonita-update-tool.bat --verify

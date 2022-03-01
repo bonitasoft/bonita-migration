@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+./bonita-update-tool --verify
