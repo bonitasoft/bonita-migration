@@ -13,6 +13,8 @@
  **/
 package org.bonitasoft.update.core
 
+import java.text.SimpleDateFormat
+
 import static java.util.Optional.ofNullable
 
 import org.slf4j.LoggerFactory
@@ -79,7 +81,7 @@ class LoggingConfiguration {
             filePatternLayoutEncoder.start()
             FileAppender<ILoggingEvent> fileAppender = new FileAppender<ILoggingEvent>()
             fileAppender.setName(appenderName)
-            fileAppender.setFile(new File("bonita-update-" + new Date().format("yyyy-MM-dd-HHmmss") + ".log").getAbsolutePath())
+            fileAppender.setFile(new File("bonita-update-" + new SimpleDateFormat("yyyy-MM-dd-HHmmss").format(new Date()) + ".log").getAbsolutePath())
             fileAppender.setEncoder(filePatternLayoutEncoder)
             fileAppender.setContext(loggerContext)
             fileAppender.start()

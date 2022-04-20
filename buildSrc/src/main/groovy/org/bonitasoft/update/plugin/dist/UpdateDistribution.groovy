@@ -73,10 +73,10 @@ class UpdateDistribution implements Plugin<Project> {
 
             // We can always include this version because mysql8 non-xa driver class
             // inherits from the pre-8 version of the non-xa driver:
-            runtime JdbcDriverDependencies.mysql8
-            runtime JdbcDriverDependencies.postgres
-            runtime JdbcDriverDependencies.sqlserver
-            runtime(JdbcDriverDependencies.oracle) {
+            runtimeOnly JdbcDriverDependencies.mysql8
+            runtimeOnly JdbcDriverDependencies.postgres
+            runtimeOnly JdbcDriverDependencies.sqlserver
+            runtimeOnly(JdbcDriverDependencies.oracle) {
                 exclude(module: "ons")
                 exclude(module: "oraclepki")
                 exclude(module: "osdt_cert")

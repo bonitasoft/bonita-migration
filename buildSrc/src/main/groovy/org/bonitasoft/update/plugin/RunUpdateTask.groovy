@@ -2,7 +2,10 @@ package org.bonitasoft.update.plugin
 
 
 import org.bonitasoft.update.plugin.db.DatabaseResourcesConfigurator
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.JavaExec
+
+import javax.inject.Inject
 
 import static UpdatePlugin.getDatabaseDriverConfiguration
 
@@ -10,9 +13,17 @@ import static UpdatePlugin.getDatabaseDriverConfiguration
  * @author Baptiste Mesta.
  */
 class RunUpdateTask extends JavaExec {
-
+    @Input
     String bonitaVersion
+    @Input
     boolean isSP
+
+    @Inject
+    RunUpdateTask(boolean isSP) {
+        this.isSP = isSP
+        mainClass = "${isSP ? 'com' : 'org'}.bonitasoft.update.core.Update"
+        setDebug System.getProperty("update.debug") != null
+    }
 
     @Override
     void exec() {
@@ -24,22 +35,19 @@ class RunUpdateTask extends JavaExec {
         systemProps.put("target.version", String.valueOf(bonitaVersion))
         systemProperties systemProps
         logger.info "execute update with properties $systemProperties"
-        setMain "${isSP ? 'com' : 'org'}.bonitasoft.update.core.Update"
         logger.info "using classpath:"
         classpath(
                 project.sourceSets.main.output,
                 project.sourceSets.main.runtimeClasspath,
                 getDatabaseDriverConfiguration(project, bonitaVersion)
         )
-        setDebug System.getProperty("update.debug") != null
 
         AlternateJVMRunner.useAlternateJVMRunnerIfRequired(project, this)
 
         super.exec()
     }
 
-    def configureBonita(String bonitaVersion, boolean isSP) {
-        this.isSP = isSP
+    def configureBonita(String bonitaVersion) {
         this.bonitaVersion = bonitaVersion
     }
 

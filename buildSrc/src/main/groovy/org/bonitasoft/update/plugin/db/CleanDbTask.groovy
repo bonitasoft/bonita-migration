@@ -15,23 +15,32 @@ package org.bonitasoft.update.plugin.db
 
 import groovy.sql.Sql
 import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 
 import static org.bonitasoft.update.plugin.UpdatePlugin.getDatabaseDriverConfiguration
-
 /**
  * @author Baptiste Mesta
  */
 class CleanDbTask extends DefaultTask {
 
+    @Input
     String bonitaVersion = "7.8.4"
+
+    @Input
     private boolean dropOnly = false
 
     void setDropOnly(boolean dropOnly) {
         this.dropOnly = dropOnly
     }
 
+    boolean getDropOnly() {
+        return dropOnly
+    }
+
     @Override
+    @Internal
     String getDescription() {
         return "Drop and recreate the database in order to launch test in a clean one."
     }

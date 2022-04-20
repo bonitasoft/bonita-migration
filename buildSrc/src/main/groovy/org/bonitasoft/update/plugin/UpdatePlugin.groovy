@@ -38,20 +38,22 @@ class UpdatePlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
 
-        project.sourceSets {
-            filler {
-            }
-            enginetest {
-            }
-            integrationTest {
-                groovy.srcDir project.file('src/it/groovy')
-                resources.srcDir project.file('src/it/resources')
-            }
-        }
+
+        def itSourceSet = project.sourceSets.create('integrationTest')
+        project.sourceSets.create('filler')
+        project.sourceSets.create('enginetest')
+
+        //integrationTest extends the "test" configuration
+        project.configurations[itSourceSet.implementationConfigurationName].extendsFrom(project.configurations.testImplementation)
+        project.configurations[itSourceSet.runtimeOnlyConfigurationName].extendsFrom(project.configurations.testRuntimeOnly)
 
         project.configurations {
             drivers
             xarecovery
+        }
+        project.dependencies {
+            //make integration tests depends on the project main classes
+            integrationTestImplementation project
         }
 
         def updatePluginExtension = project.extensions.create("update", UpdatePluginExtension.class)
@@ -166,14 +168,15 @@ class UpdatePlugin implements Plugin<Project> {
         TestUpdateTask updateTestTask = project.tasks.create(name: "testUpdate_" + underscored(version), type:
                 TestUpdateTask, description: "test Bonita after updating to version $version", group: "update")
         updateTestTask.configureBonita(project, version, isSP)
-        updateTestTask.dependsOn project.tasks.getByName("testClasses")//bug? need to have the test compiled in
+        updateTestTask.dependsOn project.tasks.getByName("testClasses") //bug? need to have the test compiled in
         updateTestTask
     }
 
     def createRunUpdateTask(Project project, String version, boolean isSP) {
         RunUpdateTask runUpdateTask = project.tasks.create(name: "update_" + underscored(version), type:
-                RunUpdateTask, description: "Run the update step to version $version", group: 'RunUpdate')
-        runUpdateTask.configureBonita(version, isSP)
+                RunUpdateTask, description: "Run the update step to version $version", group: 'RunUpdate',
+                constructorArgs: [isSP])
+        runUpdateTask.configureBonita(version)
         runUpdateTask.dependsOn project.tasks.getByName("distZip")
         runUpdateTask
     }
@@ -189,13 +192,14 @@ class UpdatePlugin implements Plugin<Project> {
         DatabasePluginExtension properties = project.extensions.getByType(DatabasePluginExtension.class)
         if (properties.dbvendor == 'sqlserver') {
             defineXaRecoveryConfiguration(project)
-            def xaRecoveryTask
+            RunMsSqlserverXARecoveryTask xaRecoveryTask
             try {
                 xaRecoveryTask = project.tasks.getByName('xarecovery') // create it only once
             } catch (UnknownTaskException ignored) {
                 xaRecoveryTask = project.tasks.create(name: "xarecovery", type: RunMsSqlserverXARecoveryTask)
                 xaRecoveryTask.dependsOn cleandb
             }
+            xaRecoveryTask.setMain("com.bonitasoft.tools.sqlserver.XARecovery")
             prepareTestTask.dependsOn xaRecoveryTask
         } else {
             prepareTestTask.dependsOn cleandb
@@ -222,6 +226,7 @@ class UpdatePlugin implements Plugin<Project> {
             exclude module: "postgresql"
             exclude module: "mysql-connector-java"
             exclude module: "ojdbc"
+            exclude module: "pull-parser" // to not pull a wrong XML parser
         }
     }
 
@@ -275,11 +280,11 @@ class UpdatePlugin implements Plugin<Project> {
 
     private defineIntegrationTestDependencies(Project project) {
         project.dependencies {
-            integrationTestCompile project.sourceSets.main.output
-            integrationTestCompile project.configurations.testCompile
-            integrationTestCompile project.sourceSets.test.output
-            integrationTestCompile project.configurations.drivers
-            integrationTestRuntime project.configurations.testRuntime
+            integrationTestCompileOnly project.sourceSets.main.output
+            integrationTestCompileOnly project.configurations.testImplementation
+            integrationTestCompileOnly project.sourceSets.test.output
+            integrationTestCompileOnly project.configurations.drivers
+            integrationTestRuntimeOnly project.configurations.testRuntimeOnly
         }
     }
 
@@ -288,13 +293,16 @@ class UpdatePlugin implements Plugin<Project> {
         project.task('integrationTest', type: Test) {
             group = 'Verification'
             description = 'Run integration tests.'
+
             testClassesDirs = project.sourceSets.integrationTest.output.classesDirs
-            classpath = project.sourceSets.integrationTest.runtimeClasspath
+            classpath = project.configurations[project.sourceSets.integrationTest.runtimeClasspathConfigurationName] + project.sourceSets.integrationTest.output
             reports.html.destination = project.file("${project.buildDir}/reports/integrationTests")
 
             doFirst {
                 systemProperties DatabaseResourcesConfigurator.getDatabaseConnectionSystemProperties(project)
             }
+            //use junit 5 (provided by spock 2+)
+            useJUnitPlatform()
         }
 
     }
