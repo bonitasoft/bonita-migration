@@ -16,6 +16,7 @@ package org.bonitasoft.update.plugin.dist
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 
@@ -30,6 +31,7 @@ class AddVersionsToTheDistributionTask extends DefaultTask {
     File propertiesFile
 
     @Override
+    @Internal
     String getDescription() {
         return "Add available versions in the configuration file of the distribution"
     }

@@ -97,12 +97,12 @@ class UpdateTest extends Specification {
         when:
         update.run(false)
         then:
-        1 * runner.setProperty('versionUpdates', ({
+        1 * runner.setVersionUpdates({
             it.collect { it.class.name.split('\\.').last() } == versionUpdates
-        }))
+        })
 
         where:
-        source  | target  || versionUpdates
+        source   | target   || versionUpdates
         "7.10.0" | "7.11.0" || ["UpdateTo7_11_0"]
         "7.10.2" | "7.12.0" || ["UpdateTo7_11_0", "UpdateTo7_12_0"]
         "7.10.3" | "7.13.0" || ["UpdateTo7_11_0", "UpdateTo7_12_0", "UpdateTo7_13_0"]

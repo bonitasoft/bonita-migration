@@ -3,29 +3,46 @@ package org.bonitasoft.update.plugin
 import com.github.zafarkhaja.semver.Version
 import org.bonitasoft.update.plugin.db.DatabaseResourcesConfigurator
 import org.gradle.api.Project
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.JavaExec
 
+import static UpdatePlugin.getDatabaseDriverConfiguration
 import static groovy.io.FileType.DIRECTORIES
 import static groovy.io.FileType.FILES
-import static UpdatePlugin.getDatabaseDriverConfiguration
 import static org.bonitasoft.update.plugin.VersionUtils.semver
 /**
  * @author Baptiste Mesta.
  */
 class PrepareUpdateTestTask extends JavaExec {
-
+    @Internal
     String targetVersion
+    @Internal
     boolean isSP
+
+    String getTargetVersion() {
+        return targetVersion
+    }
+
+    boolean getIsSP() {
+        return isSP
+    }
+
+    String getPreviousVersion() {
+        return previousVersion
+    }
+    @Internal
     private String previousVersion
+
+    PrepareUpdateTestTask() {
+        setDescription "Setup the engine in order to run update tests on it."
+        mainClass = 'org.bonitasoft.update.filler.FillerRunner'
+        setDebug System.getProperty("filler.debug") != null
+    }
 
     @Override
     void exec() {
         def testValues = DatabaseResourcesConfigurator.getDatabaseConnectionSystemProperties(project)
         args getFillersToRun()
-
-        if (semver(previousVersion) < semver("7.13.0")) {
-            executable = PropertiesUtils.getJava8Binary(project, this.name)
-        }
 
         def property = project.property('org.gradle.jvmargs')
         if (property) {
@@ -39,9 +56,6 @@ class PrepareUpdateTestTask extends JavaExec {
         }
 
         systemProperties testValues
-        setDescription "Setup the engine in order to run update tests on it."
-        setMain "org.bonitasoft.update.filler.FillerRunner"
-        setDebug System.getProperty("filler.debug") != null
 
         AlternateJVMRunner.useAlternateJVMRunnerIfRequired(project, this)
 
@@ -63,6 +77,7 @@ class PrepareUpdateTestTask extends JavaExec {
         dirFrom.eachFile(DIRECTORIES) { File source -> copyDir(source, new File(dirTo, source.getName())) }
     }
 
+    @Internal
     def getFillersToRun() {
         def fillers = []
         if (semver(targetVersion) != semver("7.9.1")) {

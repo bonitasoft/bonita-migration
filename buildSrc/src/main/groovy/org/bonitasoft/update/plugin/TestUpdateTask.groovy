@@ -4,6 +4,7 @@ import com.github.zafarkhaja.semver.Version
 import org.bonitasoft.update.plugin.db.DatabaseResourcesConfigurator
 import org.gradle.api.Project
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.testing.Test
 
 import static UpdatePlugin.getDatabaseDriverConfiguration
@@ -13,23 +14,29 @@ import static org.bonitasoft.update.plugin.VersionUtils.underscored
  * @author Baptiste Mesta.
  */
 class TestUpdateTask extends Test {
-
+    @Internal
     private String bonitaVersion
+    @Internal
     private boolean isSP
-
     @Input
     private String dbvendor
-    @Input
-    private String dburl
+
+    String getBonitaVersion() {
+        return bonitaVersion
+    }
+
+    boolean getIsSP() {
+        return isSP
+    }
+
+    String getDbvendor() {
+        return dbvendor
+    }
 
     @Override
     void executeTests() {
         def testValues = DatabaseResourcesConfigurator.getDatabaseConnectionSystemProperties(project)
         systemProperties testValues
-
-        if (Version.valueOf(bonitaVersion) < Version.valueOf("7.13.0")) {
-            executable = PropertiesUtils.getJava8Binary(project, this.name)
-        }
 
         def property = project.property('org.gradle.jvmargs')
         if (property) {
@@ -58,7 +65,6 @@ class TestUpdateTask extends Test {
         )
         //add as input the database configuration, tests must  be relaunched when database configuration change
         dbvendor = project.extensions.database.dbvendor
-        dburl = project.extensions.database.dburl
 
         def bonitaSemVer = Version.valueOf(bonitaVersion)
         if (bonitaSemVer < Version.valueOf("7.2.0")) {
@@ -69,6 +75,7 @@ class TestUpdateTask extends Test {
             include "**/*After7_2_0DefaultTest*"
         }
         include "**/*To" + underscored(bonitaVersion) + (isSP ? "SP" : "") + "*"
+        useJUnitPlatform()
     }
 
 }

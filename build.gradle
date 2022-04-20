@@ -126,41 +126,41 @@ artifacts { archives distZip }
 
 distTar.enabled = false
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+sourceCompatibility = 11
+targetCompatibility = 11
 
 dependencies {
-    compile "org.codehaus.groovy:groovy-all:2.4.16"
-    compile "com.github.zafarkhaja:java-semver:0.9.0"
-    compile group: 'org.apache.commons', name: 'commons-dbcp2', version: '2.5.0'
-    compile "ch.qos.logback:logback-classic:$logbackVersion"
-    compile "commons-cli:commons-cli:1.4"
-    compile "com.sun.activation:jakarta.activation:1.2.2"
-    runtime 'javax.activation:activation:1.1'
+    implementation "org.codehaus.groovy:groovy-all:3.0.9"
+    implementation "com.github.zafarkhaja:java-semver:0.9.0"
+    implementation group: 'org.apache.commons', name: 'commons-dbcp2', version: '2.5.0'
+    implementation "ch.qos.logback:logback-classic:$logbackVersion"
+    implementation "commons-cli:commons-cli:1.4"
+    implementation "com.sun.activation:jakarta.activation:1.2.2"
+    runtimeOnly 'javax.activation:activation:1.1'
 
-    testRuntime "cglib:cglib-nodep:2.2"
-    testRuntime 'org.objenesis:objenesis:1.2'
-    testCompile 'org.assertj:assertj-core:3.12.2'
-    testCompile('org.dbunit:dbunit:2.5.1')
-    testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
-    testCompile 'xmlunit:xmlunit:1.5'
+    testRuntimeOnly "cglib:cglib-nodep:2.2"
+    testRuntimeOnly 'org.objenesis:objenesis:1.2'
+    testImplementation 'org.assertj:assertj-core:3.12.2'
+    testImplementation('org.dbunit:dbunit:2.5.1')
+    testImplementation "org.spockframework:spock-core:2.1-groovy-3.0"
+    testImplementation 'xmlunit:xmlunit:1.5'
 
     // TODO should be fillerRuntime (require changed in tasks)
-    fillerCompile "ch.qos.logback:logback-classic:$logbackVersion"
-    fillerCompile 'junit:junit:4.11'
-    fillerCompile "org.codehaus.groovy:groovy-all:2.4.11"
-    fillerCompile 'org.awaitility:awaitility:3.0.0'
-    fillerCompile 'org.assertj:assertj-core:3.12.2'
+    fillerImplementation "ch.qos.logback:logback-classic:$logbackVersion"
+    fillerImplementation 'junit:junit:4.11'
+    fillerImplementation "org.codehaus.groovy:groovy-all:3.0.9"
+    fillerImplementation 'org.awaitility:awaitility:3.0.0'
+    fillerImplementation 'org.assertj:assertj-core:3.12.2'
 
-    enginetestCompile 'org.awaitility:awaitility:3.0.0'
-    enginetestCompile 'org.assertj:assertj-core:3.12.2'
-    enginetestCompile group: 'junit', name: 'junit', version: '4.11'
-    enginetestCompile("org.spockframework:spock-core:1.0-groovy-2.4") {
-        exclude module: "groovy-all"
-    }
-    enginetestCompile "org.codehaus.groovy:groovy-all:2.4.11"
+    enginetestImplementation 'org.awaitility:awaitility:3.0.0'
+    enginetestImplementation 'org.assertj:assertj-core:3.12.2'
+    enginetestImplementation("org.spockframework:spock-junit4:2.1-groovy-3.0")
+    enginetestImplementation("org.spockframework:spock-core:2.1-groovy-3.0")
+    enginetestImplementation "org.codehaus.groovy:groovy-all:3.0.9"
+    enginetestImplementation 'javax.xml.bind:jaxb-api:2.3.1'
+    enginetestImplementation 'org.glassfish.jaxb:jaxb-runtime:2.3.1'
     // TODO should be enginetestRuntime (require changed in tasks)
-    enginetestCompile "ch.qos.logback:logback-classic:$logbackVersion"
+    enginetestImplementation "ch.qos.logback:logback-classic:$logbackVersion"
 }
 
 startScripts {
@@ -179,7 +179,9 @@ sourceSets {
         compileClasspath += sourceSets.test.compileClasspath
     }
 }
-
+test {
+    useJUnitPlatform()
+}
 task("testJar", type: Jar) {
     classifier = 'tests'
     from sourceSets.test.output + sourceSets.intTest.output
