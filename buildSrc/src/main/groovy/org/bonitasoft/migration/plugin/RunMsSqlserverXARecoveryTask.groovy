@@ -21,7 +21,6 @@ class RunMsSqlserverXARecoveryTask extends JavaExec {
 
         systemProperties toolSystemProperties
         logger.info "Calling MS SQL Server XARecovery tool (to initialize MSDTC module) using system properties $systemProperties"
-        setMain 'com.bonitasoft.tools.sqlserver.XARecovery'
         logger.debug "using classpath:"
         classpath(project.getConfigurations().getByName("xarecovery"))
         super.exec()

@@ -5,6 +5,7 @@ import org.bonitasoft.migration.plugin.db.DatabaseResourcesConfigurator
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.testing.Test
 
 import static org.bonitasoft.migration.plugin.MigrationPlugin.getDatabaseDriverConfiguration
@@ -16,13 +17,31 @@ import static org.bonitasoft.migration.plugin.VersionUtils.underscored
  */
 class TestMigrationTask extends Test {
 
+    @Internal
     private String bonitaVersion
+    @Internal
     private boolean isSP
 
     @Input
     private String dbvendor
     @Input
     private String dburl
+
+    String getDbvendor() {
+        return dbvendor
+    }
+
+    String getDburl() {
+        return dburl
+    }
+
+    String getBonitaVersion() {
+        return bonitaVersion
+    }
+
+    boolean getIsSP() {
+        return isSP
+    }
 
     @Override
     void executeTests() {
@@ -31,11 +50,9 @@ class TestMigrationTask extends Test {
             testValues.put("bonita.home", String.valueOf(project.buildDir.absolutePath + File.separator +
                     "bonita-home-" + dotted(bonitaVersion) + File.separator + "bonita-home-to-migrate"))
         }
+        //avoid issue with `unrecognized feature http://javax.xml.XMLConstants/feature/secure-processing`
+        testValues.put("javax.xml.parsers.SAXParserFactory", "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl")
         systemProperties testValues
-
-        if (Version.valueOf(bonitaVersion) < Version.valueOf("7.13.0")) {
-            executable = PropertiesUtils.getJava8Binary(project, this.name)
-        }
 
         def property = project.property('org.gradle.jvmargs')
         if (property) {
@@ -68,7 +85,7 @@ class TestMigrationTask extends Test {
         )
         //add as input the database configuration, tests must  be relaunched when database configuration change
         dbvendor = project.extensions.database.dbvendor
-        dburl = project.extensions.database.dburl
+        dburl = project.extensions.database.dburl ?: "none"
 
         def bonitaSemVer = Version.valueOf(bonitaVersion)
         if (bonitaSemVer < Version.valueOf("7.2.0")) {

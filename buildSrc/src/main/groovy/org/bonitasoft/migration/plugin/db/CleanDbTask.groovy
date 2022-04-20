@@ -15,6 +15,7 @@ package org.bonitasoft.migration.plugin.db
 
 import groovy.sql.Sql
 import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 
 import static org.bonitasoft.migration.plugin.MigrationPlugin.getDatabaseDriverConfiguration
@@ -24,6 +25,7 @@ import static org.bonitasoft.migration.plugin.MigrationPlugin.getDatabaseDriverC
  */
 class CleanDbTask extends DefaultTask {
 
+    @Internal
     String bonitaVersion = "7.8.4"
     private boolean dropOnly = false
 
@@ -32,6 +34,7 @@ class CleanDbTask extends DefaultTask {
     }
 
     @Override
+    @Internal
     String getDescription() {
         return "Drop and recreate the database in order to launch test in a clean one."
     }

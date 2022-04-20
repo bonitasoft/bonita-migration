@@ -174,7 +174,8 @@ class MigrationPlugin implements Plugin<Project> {
 
     def createRunMigrationTask(Project project, String version, boolean isSP) {
         RunMigrationTask runMigrationTask = project.tasks.create(name: "migration_" + underscored(version), type:
-                RunMigrationTask, description: "Run the migration step to version $version", group: 'RunMigration')
+                RunMigrationTask, description: "Run the migration step to version $version", group: 'RunMigration',
+                constructorArgs: [isSP])
         runMigrationTask.configureBonita(version, isSP)
         runMigrationTask.dependsOn project.tasks.getByName("distZip")
         runMigrationTask
@@ -191,13 +192,14 @@ class MigrationPlugin implements Plugin<Project> {
         DatabasePluginExtension properties = project.extensions.getByType(DatabasePluginExtension.class)
         if (properties.dbvendor == 'sqlserver') {
             defineXaRecoveryConfiguration(project)
-            def xaRecoveryTask
+            RunMsSqlserverXARecoveryTask xaRecoveryTask
             try {
                 xaRecoveryTask = project.tasks.getByName('xarecovery') // create it only once
             } catch (UnknownTaskException ignored) {
                 xaRecoveryTask = project.tasks.create(name: "xarecovery", type: RunMsSqlserverXARecoveryTask)
                 xaRecoveryTask.dependsOn cleandb
             }
+            xaRecoveryTask.setMain("com.bonitasoft.tools.sqlserver.XARecovery")
             prepareTestTask.dependsOn xaRecoveryTask
         } else {
             prepareTestTask.dependsOn cleandb

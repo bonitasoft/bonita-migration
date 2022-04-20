@@ -3,6 +3,7 @@ package org.bonitasoft.migration.plugin
 import com.github.zafarkhaja.semver.Version
 import org.bonitasoft.migration.plugin.db.DatabaseResourcesConfigurator
 import org.gradle.api.Project
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.JavaExec
 
 import static groovy.io.FileType.DIRECTORIES
@@ -16,9 +17,17 @@ import static org.bonitasoft.migration.plugin.VersionUtils.semver
  */
 class PrepareMigrationTestTask extends JavaExec {
 
+    @Internal
     String targetVersion
+    @Internal
     boolean isSP
     private String previousVersion
+
+    PrepareMigrationTestTask() {
+        setDescription "Setup the engine in order to run update tests on it."
+        setMain('org.bonitasoft.migration.filler.FillerRunner')
+        setDebug System.getProperty("filler.debug") != null
+    }
 
     @Override
     void exec() {
@@ -34,10 +43,6 @@ class PrepareMigrationTestTask extends JavaExec {
         }
         args getFillersToRun()
 
-        if (semver(previousVersion) < semver("7.13.0")) {
-            executable = PropertiesUtils.getJava8Binary(project, this.name)
-        }
-
         def property = project.property('org.gradle.jvmargs')
         if (property) {
             println "Using extra property 'org.gradle.jvmargs=$property'"
@@ -50,9 +55,6 @@ class PrepareMigrationTestTask extends JavaExec {
         }
 
         systemProperties testValues
-        setDescription "Setup the engine in order to run migration tests on it."
-        setMain "org.bonitasoft.migration.filler.FillerRunner"
-        setDebug System.getProperty("filler.debug") != null
 
         // From version 7.9.1+, use Java 11 to prepare migration tests:
         if (Version.valueOf(targetVersion.replaceAll("_", ".")) >= Version.valueOf("7.9.1")) {
@@ -76,7 +78,7 @@ class PrepareMigrationTestTask extends JavaExec {
         dirFrom.eachFile(FILES) { File source -> new File(dirTo, source.getName()).bytes = source.bytes }
         dirFrom.eachFile(DIRECTORIES) { File source -> copyDir(source, new File(dirTo, source.getName())) }
     }
-
+    @Internal
     def getFillersToRun() {
         def fillers = []
         if (semver(targetVersion) != semver("7.9.1")) {

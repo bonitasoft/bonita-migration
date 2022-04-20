@@ -1,7 +1,11 @@
 package org.bonitasoft.migration.plugin
 
+import javax.inject.Inject
+
 import com.github.zafarkhaja.semver.Version
 import org.bonitasoft.migration.plugin.db.DatabaseResourcesConfigurator
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.JavaExec
 
 import static org.bonitasoft.migration.plugin.MigrationPlugin.getDatabaseDriverConfiguration
@@ -12,10 +16,17 @@ import static org.bonitasoft.migration.plugin.VersionUtils.semver
  * @author Baptiste Mesta.
  */
 class RunMigrationTask extends JavaExec {
-
+    @Input
     String bonitaVersion
+    @Input
     boolean isSP
 
+    @Inject
+    RunMigrationTask(boolean isSP) {
+        this.isSP = isSP
+        setMain("${isSP ? 'com' : 'org'}.bonitasoft.migration.core.Migration")
+        setDebug System.getProperty("update.debug") != null
+    }
     @Override
     void exec() {
         def systemProps = DatabaseResourcesConfigurator.getDatabaseConnectionSystemProperties(project)
@@ -30,14 +41,12 @@ class RunMigrationTask extends JavaExec {
         }
         systemProperties systemProps
         logger.info "execute migration with properties $systemProperties"
-        setMain "${isSP ? 'com' : 'org'}.bonitasoft.migration.core.Migration"
         logger.info "using classpath:"
         classpath(
                 project.sourceSets.main.output,
                 project.sourceSets.main.runtimeClasspath,
                 getDatabaseDriverConfiguration(project, bonitaVersion)
         )
-        setDebug System.getProperty("migration.debug") != null
 
         AlternateJVMRunner.useAlternateJVMRunnerIfRequired(project, this)
 
