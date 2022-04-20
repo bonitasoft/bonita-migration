@@ -90,7 +90,7 @@ class CreateNewPages extends UpdateStep {
             sql.executeInsert("""INSERT INTO page(tenantId , id, name, displayName, description, installationDate, 
 installedBy, provided, lastModificationDate, lastUpdatedBy, contentName, content, contentType, processDefinitionId, hidden, editable, removable)
 VALUES ($tenantId, ${databaseHelper.getAndUpdateNextSequenceId(10120L, tenantId)}, $pageName, 'will be updated', '', $currentTimeMillis, 
--1, ${true/* This is the provided flag that MUST be true in order to let pages be updated at engine startup*/}, $currentTimeMillis, -1, ${pageName + '.zip'}, ${''.getBytes()}, '', 0, ${false}, $editable, $removable)""")
+-1, ${true/* This is the provided flag that MUST be true in order to let pages be updated at engine startup*/}, $currentTimeMillis, -1, ${pageName + '.zip'}, ${'will be updated'.getBytes()}, '', 0, ${false}, $editable, $removable)""")
         }
     }
 }
