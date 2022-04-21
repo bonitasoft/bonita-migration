@@ -65,7 +65,7 @@ class CreateNewPagesIT extends Specification {
 
         then:
         // all but one lines should have been updated:
-        def rows = migrationContext.sql.rows("""SELECT tenantId, name
+        def rows = migrationContext.sql.rows("""SELECT tenantId, name, content
             FROM page 
             WHERE name IN ('custompage_userCaseDetailsBonita', 'custompage_userCaseListBonita')
             AND provided = ${true}
@@ -74,13 +74,18 @@ class CreateNewPagesIT extends Specification {
 
         rows[0].tenantId == 8L
         rows[0].name == 'custompage_userCaseDetailsBonita'
+        migrationContext.databaseHelper.getBlobContentAsString(rows[0].content) == 'will be updated'
+
         rows[1].tenantId == 8L
         rows[1].name == 'custompage_userCaseListBonita'
+        migrationContext.databaseHelper.getBlobContentAsString(rows[1].content) == 'will be updated'
 
         rows[2].tenantId == 10L
         rows[2].name == 'custompage_userCaseDetailsBonita'
+        migrationContext.databaseHelper.getBlobContentAsString(rows[2].content) == 'will be updated'
         rows[3].tenantId == 10L
         rows[3].name == 'custompage_userCaseListBonita'
+        migrationContext.databaseHelper.getBlobContentAsString(rows[3].content) == 'will be updated'
     }
 
 
