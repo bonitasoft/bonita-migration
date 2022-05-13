@@ -19,7 +19,7 @@ class DockerDatabaseContainerTasksCreator {
 
     def static vendors = [
             [name           : 'oracle',
-             repository     : 'registry.rd.lan/bonitasoft/oracle-19c-ee',
+             repository     : 'bonitasoft.jfrog.io/docker-releases/bonita-oracle-19c-ee',
              tag            : '0.0.2',
              portBinding    : 1521,
              uriTemplate    : 'jdbc:oracle:thin:@//%s:%s/ORCLPDB1?oracle.net.disableOob=true',
