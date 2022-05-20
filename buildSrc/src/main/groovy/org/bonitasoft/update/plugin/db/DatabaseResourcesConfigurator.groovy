@@ -17,7 +17,7 @@ class DatabaseResourcesConfigurator {
         extension.dbvendor = dbVendor
         if (shouldUseDockerDb()) {
             project.logger.quiet("no system property db.url set, using docker to test on $dbVendor")
-            DockerDatabaseContainerTasksCreator.createTasks(project)
+            DockerDatabaseContainerTasksCreator.createTasks(project, dbVendor)
             extension.isDockerDb = true
         }
         else {
