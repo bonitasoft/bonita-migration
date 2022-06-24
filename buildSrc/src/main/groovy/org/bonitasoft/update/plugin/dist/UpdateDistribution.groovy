@@ -73,7 +73,9 @@ class UpdateDistribution implements Plugin<Project> {
 
             // We can always include this version because mysql8 non-xa driver class
             // inherits from the pre-8 version of the non-xa driver:
-            runtimeOnly JdbcDriverDependencies.mysql8
+            runtimeOnly(JdbcDriverDependencies.mysql8) {
+                exclude(module: 'protobuf-java')
+            }
             runtimeOnly JdbcDriverDependencies.postgres
             runtimeOnly JdbcDriverDependencies.sqlserver
             runtimeOnly(JdbcDriverDependencies.oracle) {
