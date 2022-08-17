@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2018 Bonitasoft S.A.
+ * Copyright (C) 2022 Bonitasoft S.A.
  * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
@@ -11,14 +11,24 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
+package org.bonitasoft.update.version.to7_15_0
 
-package org.bonitasoft.update.plugin.db
 
-public class JdbcDriverDependencies {
+import org.bonitasoft.update.core.UpdateStep
+import org.bonitasoft.update.core.VersionUpdate
+import org.bonitasoft.update.version.to7_14_0.RemoveHiddenFieldFromPages
+import org.bonitasoft.update.version.to7_14_0.RemoveReportingTables
 
-    public final static String mysql8 = 'mysql:mysql-connector-java:8.0.28'
-    public final static String oracle = 'com.oracle.database.jdbc:ojdbc8:19.3.0.0'
-    public final static String postgres = 'org.postgresql:postgresql:42.3.3'
-    public final static String sqlserver = 'com.microsoft.sqlserver:mssql-jdbc:8.4.1.jre8'
+/**
+ * @author Dumitru Corini
+ */
+class UpdateTo7_15_0 extends VersionUpdate {
 
+    @Override
+    List<UpdateStep> getUpdateSteps() {
+        // keep one line per step and comma (,) at start of line to avoid false-positive merge conflict:
+        return [
+                new MakeAdminPagesEditableAndRemovable()
+        ]
+    }
 }

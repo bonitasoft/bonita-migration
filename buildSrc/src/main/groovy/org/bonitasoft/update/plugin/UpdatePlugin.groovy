@@ -28,6 +28,7 @@ import org.gradle.api.tasks.testing.Test
 
 import static org.bonitasoft.update.plugin.PropertiesUtils.loadProperties
 import static org.bonitasoft.update.plugin.VersionUtils.*
+
 /**
  * @author Baptiste Mesta
  */
@@ -84,7 +85,7 @@ class UpdatePlugin implements Plugin<Project> {
         // TODO: remove this:
         project.dependencies {
             // the following jdbc drivers are available for integration tests:
-            drivers JdbcDriverDependencies.mysql
+            drivers JdbcDriverDependencies.mysql8
             drivers JdbcDriverDependencies.oracle
             drivers JdbcDriverDependencies.postgres
             drivers JdbcDriverDependencies.sqlserver
@@ -94,7 +95,7 @@ class UpdatePlugin implements Plugin<Project> {
         String dbVendor = project.extensions.database.dbvendor
         allVersions.each { version ->
             Configuration configuration = project.configurations.create(getDatabaseDriverConfigurationName(dbVendor, version))
-            project.dependencies.add(configuration.name, getDatabaseDriverDependency(project, dbVendor, version))
+            project.dependencies.add(configuration.name, getDatabaseDriverDependency(dbVendor))
             project.logger.info "Creating database configuration: $configuration"
         }
     }
@@ -107,15 +108,11 @@ class UpdatePlugin implements Plugin<Project> {
         return project.getConfigurations().getByName(getDatabaseDriverConfigurationName(project.extensions.database.dbvendor, bonitaVersion))
     }
 
-    def static getDatabaseDriverDependency(Project project, String dbVendor, String bonitaVersion) {
+    def static getDatabaseDriverDependency(String dbVendor) {
         String dep
         switch (dbVendor) {
             case 'mysql':
-                if (Version.valueOf(bonitaVersion) < Version.valueOf("7.9.0")) {
-                    dep = JdbcDriverDependencies.mysql
-                } else {
-                    dep = JdbcDriverDependencies.mysql8
-                }
+                dep = JdbcDriverDependencies.mysql8
                 break
             case 'oracle':
                 dep = JdbcDriverDependencies.oracle
@@ -158,10 +155,10 @@ class UpdatePlugin implements Plugin<Project> {
         def versionWithModifier = getVersion(allVersions, currentVersion, updatePluginExtension)
         project.dependencies.add("fillerCompileOnly", getBonitaClientEngineDependency(updatePluginExtension, versionWithModifier), defaultExclude())
         project.dependencies.add("fillerCompileOnly", getBonitaServerEngineDependency(updatePluginExtension, versionWithModifier), defaultExclude())
-        project.dependencies.add("fillerCompileOnly", getTestEngineDependencyName(updatePluginExtension, versionWithModifier), defaultExclude())
+        project.dependencies.add("fillerCompileOnly", getTestEngineDependencyName(updatePluginExtension, versionWithModifier, getRawVersion(currentVersion)), defaultExclude())
         project.dependencies.add("enginetestCompileOnly", getBonitaClientEngineDependency(updatePluginExtension, versionWithModifier), defaultExclude())
         project.dependencies.add("enginetestCompileOnly", getBonitaServerEngineDependency(updatePluginExtension, versionWithModifier), defaultExclude())
-        project.dependencies.add("enginetestCompileOnly", getTestEngineDependencyName(updatePluginExtension, versionWithModifier), defaultExclude())
+        project.dependencies.add("enginetestCompileOnly", getTestEngineDependencyName(updatePluginExtension, versionWithModifier, getRawVersion(currentVersion)), defaultExclude())
     }
 
     def createTestUpdateTask(Project project, String version, boolean isSP) {
@@ -209,10 +206,10 @@ class UpdatePlugin implements Plugin<Project> {
 
     Configuration createConfigurationForBonitaVersion(Project project, String bonitaVersion, UpdatePluginExtension extension, List<String> versionList) {
         Configuration configuration = project.configurations.create(underscored(bonitaVersion))
-        def version = getVersion(versionList, bonitaVersion, extension)
-        project.dependencies.add(configuration.name, getBonitaClientEngineDependency(extension, version), defaultExclude())
-        project.dependencies.add(configuration.name, getBonitaServerEngineDependency(extension, version), defaultExclude())
-        project.dependencies.add(configuration.name, getTestEngineDependencyName(extension, version), defaultExclude())
+        def versionWithModifier = getVersion(versionList, bonitaVersion, extension)
+        project.dependencies.add(configuration.name, getBonitaClientEngineDependency(extension, versionWithModifier), defaultExclude())
+        project.dependencies.add(configuration.name, getBonitaServerEngineDependency(extension, versionWithModifier), defaultExclude())
+        project.dependencies.add(configuration.name, getTestEngineDependencyName(extension, versionWithModifier, getRawVersion(bonitaVersion)), defaultExclude())
         return configuration
     }
 
@@ -231,25 +228,25 @@ class UpdatePlugin implements Plugin<Project> {
     }
 
     static def getBonitaClientEngineDependency(UpdatePluginExtension updatePluginExtension, version) {
-        updatePluginExtension.isSP?"com.bonitasoft.engine:bonita-client-sp:${version}": "org.bonitasoft.engine:bonita-client:${version}"
+        updatePluginExtension.isSP ? "com.bonitasoft.engine:bonita-client-sp:${version}" : "org.bonitasoft.engine:bonita-client:${version}"
     }
 
 
     static def getBonitaServerEngineDependency(UpdatePluginExtension updatePluginExtension, version) {
-        updatePluginExtension.isSP ?  "com.bonitasoft.engine:bonita-server-sp:${version}" : "org.bonitasoft.engine:bonita-server:${version}"
+        updatePluginExtension.isSP ? "com.bonitasoft.engine:bonita-server-sp:${version}" : "org.bonitasoft.engine:bonita-server:${version}"
     }
 
-    static def getTestEngineDependencyName(UpdatePluginExtension updatePluginExtension, String version) {
+    static def getTestEngineDependencyName(UpdatePluginExtension updatePluginExtension, String version, String rawVersion) {
         String name
         if (updatePluginExtension.isSP) {
             // test modules changed in 7.7.0
-            if (Version.valueOf(getRawVersion(version)) >= Version.valueOf("7.11.0")) {
+            if (Version.valueOf(rawVersion) >= Version.valueOf("7.11.0")) {
                 name = "com.bonitasoft.engine:bonita-test-api-sp:${version}"
             } else {
                 name = "com.bonitasoft.engine.test:bonita-integration-tests-client-sp:${version}"
             }
         } else {
-            if (Version.valueOf(getRawVersion(version)) >= Version.valueOf("7.11.0")) {
+            if (Version.valueOf(rawVersion) >= Version.valueOf("7.11.0")) {
                 name = "org.bonitasoft.engine:bonita-test-api:${version}"
             } else {
                 name = "org.bonitasoft.engine.test:bonita-server-test-utils:${version}"
@@ -258,7 +255,7 @@ class UpdatePlugin implements Plugin<Project> {
         name
     }
 
-    // Bonita alpha, beta and weekly does not follow semantic versioning, so only keep 1st digits
+    // Bonita alpha, beta and weekly versions do not follow semantic versioning, so only keep 1st digits
     // Versions look like 7.7.0.alpha-07, semver compliant would be 7.7.0-alpha-07.
     // So without this extra step, we get the following error
     // "Unexpected character 'DOT(.)' at position '5', expecting '[HYPHEN, PLUS, EOI]'"
