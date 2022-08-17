@@ -21,10 +21,6 @@ class VersionUtils {
      */
     static Properties testProperties = loadProperties(VersionUtils.class.getResourceAsStream('/bonita.test.versions') as InputStream)
 
-    static String dotted(String version) {
-        return version.replace('_', '.')
-    }
-
     static String underscored(String version) {
         return version.replace('.', '_')
     }
@@ -49,7 +45,8 @@ class VersionUtils {
         if (isLastVersion) {
             if (configuration.currentVersionModifier != "NONE") {
                 if (configuration.currentVersionModifier == "SNAPSHOT") {
-                    return version + "-SNAPSHOT"
+                    // now, snapshot versions are 2-digits only:
+                    return removeThirdDigit(version) + "-SNAPSHOT"
                 } else {
                     //alpha, beta, rc tags have a dot here
                     return version + "." + configuration.currentVersionModifier
@@ -57,6 +54,10 @@ class VersionUtils {
             }
         }
         return version
+    }
+
+    static String removeThirdDigit(String version) {
+        version.substring(0, version.lastIndexOf('.'))
     }
 
     static String convertVersionForTests(version) { testProperties.get(version, version) }
