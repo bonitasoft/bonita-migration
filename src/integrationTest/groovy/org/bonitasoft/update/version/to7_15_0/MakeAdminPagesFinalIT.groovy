@@ -22,14 +22,14 @@ import spock.lang.Specification
 /**
  * @author Dumitru Corini
  */
-class MakeAdminPagesEditableAndRemovableIT extends Specification {
+class MakeAdminPagesFinalIT extends Specification {
 
     @Shared
     DBUnitHelper dbUnitHelper = DBUnitHelper.getInstance()
     @Shared
     UpdateContext updateContext = dbUnitHelper.context
 
-    private MakeAdminPagesEditableAndRemovable updateStep = new MakeAdminPagesEditableAndRemovable()
+    private MakeAdminPagesFinal updateStep = new MakeAdminPagesFinal()
 
     def setup() {
         dropTestTables()
@@ -45,7 +45,7 @@ class MakeAdminPagesEditableAndRemovableIT extends Specification {
     }
 
 
-    def "should set removable and editable field to true"() {
+    def "should set removable and editable field to false"() {
         given:
         assert updateContext.databaseHelper.hasColumnOnTable("page", "editable")
         assert updateContext.databaseHelper.hasColumnOnTable("page", "removable")
@@ -55,32 +55,32 @@ class MakeAdminPagesEditableAndRemovableIT extends Specification {
         updateStep.execute(updateContext)
 
         then:
-        updateContext.sql.rows("""SELECT page.removable, page.editable FROM page WHERE page.name = 'custompage_adminCaseDetailsBonita' """).get(0).get("removable")
-        updateContext.sql.rows("""SELECT page.removable, page.editable FROM page WHERE page.name = 'custompage_adminCaseDetailsBonita' """).get(0).get("editable")
+        !updateContext.sql.rows("""SELECT page.removable, page.editable FROM page WHERE page.name = 'custompage_adminCaseDetailsBonita' """).get(0).get("removable")
+        !updateContext.sql.rows("""SELECT page.removable, page.editable FROM page WHERE page.name = 'custompage_adminCaseDetailsBonita' """).get(0).get("editable")
 
-        updateContext.sql.rows("""SELECT page.removable, page.editable FROM page WHERE page.name = 'custompage_adminCaseListBonita' """).get(0).get("removable")
-        updateContext.sql.rows("""SELECT page.removable, page.editable FROM page WHERE page.name = 'custompage_adminCaseListBonita' """).get(0).get("editable")
+        !updateContext.sql.rows("""SELECT page.removable, page.editable FROM page WHERE page.name = 'custompage_adminCaseListBonita' """).get(0).get("removable")
+        !updateContext.sql.rows("""SELECT page.removable, page.editable FROM page WHERE page.name = 'custompage_adminCaseListBonita' """).get(0).get("editable")
 
-        updateContext.sql.rows("""SELECT page.removable, page.editable FROM page WHERE page.name = 'custompage_adminCaseVisuBonita' """).get(0).get("removable")
-        updateContext.sql.rows("""SELECT page.removable, page.editable FROM page WHERE page.name = 'custompage_adminCaseVisuBonita' """).get(0).get("editable")
+        !updateContext.sql.rows("""SELECT page.removable, page.editable FROM page WHERE page.name = 'custompage_adminCaseVisuBonita' """).get(0).get("removable")
+        !updateContext.sql.rows("""SELECT page.removable, page.editable FROM page WHERE page.name = 'custompage_adminCaseVisuBonita' """).get(0).get("editable")
 
-        updateContext.sql.rows("""SELECT page.removable, page.editable FROM page WHERE page.name = 'custompage_adminMonitoringBonita' """).get(0).get("removable")
-        updateContext.sql.rows("""SELECT page.removable, page.editable FROM page WHERE page.name = 'custompage_adminMonitoringBonita' """).get(0).get("editable")
+        !updateContext.sql.rows("""SELECT page.removable, page.editable FROM page WHERE page.name = 'custompage_adminMonitoringBonita' """).get(0).get("removable")
+        !updateContext.sql.rows("""SELECT page.removable, page.editable FROM page WHERE page.name = 'custompage_adminMonitoringBonita' """).get(0).get("editable")
 
-        updateContext.sql.rows("""SELECT page.removable, page.editable FROM page WHERE page.name = 'custompage_adminProcessDetailsBonita' """).get(0).get("removable")
-        updateContext.sql.rows("""SELECT page.removable, page.editable FROM page WHERE page.name = 'custompage_adminProcessDetailsBonita' """).get(0).get("editable")
+        !updateContext.sql.rows("""SELECT page.removable, page.editable FROM page WHERE page.name = 'custompage_adminProcessDetailsBonita' """).get(0).get("removable")
+        !updateContext.sql.rows("""SELECT page.removable, page.editable FROM page WHERE page.name = 'custompage_adminProcessDetailsBonita' """).get(0).get("editable")
 
-        updateContext.sql.rows("""SELECT page.removable, page.editable FROM page WHERE page.name = 'custompage_adminProcessListBonita' """).get(0).get("removable")
-        updateContext.sql.rows("""SELECT page.removable, page.editable FROM page WHERE page.name = 'custompage_adminProcessListBonita' """).get(0).get("editable")
+        !updateContext.sql.rows("""SELECT page.removable, page.editable FROM page WHERE page.name = 'custompage_adminProcessListBonita' """).get(0).get("removable")
+        !updateContext.sql.rows("""SELECT page.removable, page.editable FROM page WHERE page.name = 'custompage_adminProcessListBonita' """).get(0).get("editable")
 
-        updateContext.sql.rows("""SELECT page.removable, page.editable FROM page WHERE page.name = 'custompage_adminProcessVisuBonita' """).get(0).get("removable")
-        updateContext.sql.rows("""SELECT page.removable, page.editable FROM page WHERE page.name = 'custompage_adminProcessVisuBonita' """).get(0).get("editable")
+        !updateContext.sql.rows("""SELECT page.removable, page.editable FROM page WHERE page.name = 'custompage_adminProcessVisuBonita' """).get(0).get("removable")
+        !updateContext.sql.rows("""SELECT page.removable, page.editable FROM page WHERE page.name = 'custompage_adminProcessVisuBonita' """).get(0).get("editable")
 
-        updateContext.sql.rows("""SELECT page.removable, page.editable FROM page WHERE page.name = 'custompage_adminTaskDetailsBonita' """).get(0).get("removable")
-        updateContext.sql.rows("""SELECT page.removable, page.editable FROM page WHERE page.name = 'custompage_adminTaskDetailsBonita' """).get(0).get("editable")
+        !updateContext.sql.rows("""SELECT page.removable, page.editable FROM page WHERE page.name = 'custompage_adminTaskDetailsBonita' """).get(0).get("removable")
+        !updateContext.sql.rows("""SELECT page.removable, page.editable FROM page WHERE page.name = 'custompage_adminTaskDetailsBonita' """).get(0).get("editable")
 
-        updateContext.sql.rows("""SELECT page.removable, page.editable FROM page WHERE page.name = 'custompage_adminTaskListBonita' """).get(0).get("removable")
-        updateContext.sql.rows("""SELECT page.removable, page.editable FROM page WHERE page.name = 'custompage_adminTaskListBonita' """).get(0).get("editable")
+        !updateContext.sql.rows("""SELECT page.removable, page.editable FROM page WHERE page.name = 'custompage_adminTaskListBonita' """).get(0).get("removable")
+        !updateContext.sql.rows("""SELECT page.removable, page.editable FROM page WHERE page.name = 'custompage_adminTaskListBonita' """).get(0).get("editable")
     }
 
     private void insertPages() {

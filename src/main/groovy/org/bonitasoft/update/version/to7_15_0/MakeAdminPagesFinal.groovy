@@ -3,7 +3,7 @@ package org.bonitasoft.update.version.to7_15_0
 import org.bonitasoft.update.core.UpdateContext
 import org.bonitasoft.update.core.UpdateStep
 
-class MakeAdminPagesEditableAndRemovable extends UpdateStep {
+class MakeAdminPagesFinal extends UpdateStep {
 
     @Override
     def execute(UpdateContext context) {
@@ -20,24 +20,24 @@ class MakeAdminPagesEditableAndRemovable extends UpdateStep {
 
     @Override
     String getDescription() {
-        return "Make admin pages editable & removable"
+        return "Make pages from Admin App not editable and not removable"
     }
 
     def makePageEditableAndRemovable(UpdateContext context, String pageName) {
         if (context.dbVendor == DBVendor.ORACLE) {
             context.sql.executeUpdate(
                     """UPDATE page
-                        SET editable = 1, removable = 1
+                        SET editable = 0, removable = 0
                         WHERE name = ${pageName}""")
         } else if (context.dbVendor == DBVendor.SQLSERVER) {
             context.sql.executeUpdate(
                     """UPDATE page
-                        SET editable = 'true', removable = 'true'
+                        SET editable = 'false', removable = 'false'
                         WHERE name = ${pageName}""")
         } else {
             context.sql.executeUpdate(
                     """UPDATE page
-                        SET editable = true, removable = true
+                        SET editable = false, removable = false
                         WHERE name = ${pageName}""")
         }
     }
