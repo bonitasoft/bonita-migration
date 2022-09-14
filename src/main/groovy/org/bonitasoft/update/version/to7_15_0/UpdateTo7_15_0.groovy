@@ -16,8 +16,6 @@ package org.bonitasoft.update.version.to7_15_0
 
 import org.bonitasoft.update.core.UpdateStep
 import org.bonitasoft.update.core.VersionUpdate
-import org.bonitasoft.update.version.to7_14_0.RemoveHiddenFieldFromPages
-import org.bonitasoft.update.version.to7_14_0.RemoveReportingTables
 
 /**
  * @author Dumitru Corini
@@ -28,7 +26,7 @@ class UpdateTo7_15_0 extends VersionUpdate {
     List<UpdateStep> getUpdateSteps() {
         // keep one line per step and comma (,) at start of line to avoid false-positive merge conflict:
         return [
-                new MakeAdminPagesEditableAndRemovable()
+                new MakeAdminPagesFinal()
         ]
     }
 }

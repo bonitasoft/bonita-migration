@@ -22,7 +22,7 @@ class UpdateTo7_15_0Test extends Specification {
 
         where:
         stepName << [
-                "MakeAdminPagesEditableAndRemovable"
+                "MakeAdminPagesFinal"
         ]
 
     }
