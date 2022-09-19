@@ -16,6 +16,7 @@ package org.bonitasoft.update.version.to7_14_0
 
 import org.bonitasoft.update.core.UpdateStep
 import org.bonitasoft.update.core.VersionUpdate
+
 /**
  * @author Dumitru Corini
  */
@@ -25,8 +26,9 @@ class UpdateTo7_14_0 extends VersionUpdate {
     List<UpdateStep> getUpdateSteps() {
         // keep one line per step and comma (,) at start of line to avoid false-positive merge conflict:
         return [
-                new RemoveHiddenFieldFromPages()
-                , new RemoveReportingTables()
+                new RemoveHiddenFieldFromPages(),
+                new RemoveReportingTables(),
+                new MakeAdminPagesFinal()
         ]
     }
 }
