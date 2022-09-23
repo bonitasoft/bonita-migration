@@ -22,7 +22,8 @@ class UpdateTo7_14_0Test extends Specification {
         where:
         stepName << [
                 "RemoveHiddenFieldFromPages",
-                "RemoveReportingTables"
+                "RemoveReportingTables",
+                "MakeAdminPagesFinal"
         ]
 
     }
