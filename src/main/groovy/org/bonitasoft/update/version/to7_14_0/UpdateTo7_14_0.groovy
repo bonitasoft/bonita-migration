@@ -16,6 +16,7 @@ package org.bonitasoft.update.version.to7_14_0
 
 import org.bonitasoft.update.core.UpdateStep
 import org.bonitasoft.update.core.VersionUpdate
+import org.bonitasoft.update.version.to7_15_0.MakeAdminPagesFinal
 
 /**
  * @author Dumitru Corini
