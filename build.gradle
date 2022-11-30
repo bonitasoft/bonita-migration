@@ -7,7 +7,7 @@ buildscript {
         mavenCentral()
     }
     ext {
-        logbackVersion = '1.2.8'
+        logbackVersion = '1.2.11'
     }
 }
 plugins {
