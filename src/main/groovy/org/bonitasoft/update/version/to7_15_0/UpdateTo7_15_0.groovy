@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2021 Bonitasoft S.A.
+ * Copyright (C) 2022 Bonitasoft S.A.
  * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
@@ -11,24 +11,21 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
-package org.bonitasoft.update.version.to7_14_0
+package org.bonitasoft.update.version.to7_15_0
 
 
 import org.bonitasoft.update.core.UpdateStep
 import org.bonitasoft.update.core.VersionUpdate
-import org.bonitasoft.update.version.to7_15_0.MakeAdminPagesFinal
 
 /**
  * @author Dumitru Corini
  */
-class UpdateTo7_14_0 extends VersionUpdate {
+class UpdateTo7_15_0 extends VersionUpdate {
 
     @Override
     List<UpdateStep> getUpdateSteps() {
         // keep one line per step and comma (,) at start of line to avoid false-positive merge conflict:
         return [
-                new RemoveHiddenFieldFromPages(),
-                new RemoveReportingTables(),
                 new MakeAdminPagesFinal()
         ]
     }

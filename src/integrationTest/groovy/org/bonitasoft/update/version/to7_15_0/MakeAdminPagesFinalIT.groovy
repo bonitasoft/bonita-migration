@@ -11,12 +11,11 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
-package org.bonitasoft.update.version.to7_14_0
+package org.bonitasoft.update.version.to7_15_0
 
 import org.bonitasoft.update.DBUnitHelper
 import org.bonitasoft.update.core.UpdateContext
 import org.bonitasoft.update.core.UpdateStep
-import org.bonitasoft.update.version.to7_14_0.MakeAdminPagesFinal
 import spock.lang.Shared
 import spock.lang.Specification
 
