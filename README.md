@@ -92,6 +92,7 @@ Example: run integration tests on Postgresql:
 ```
 
 Example: run all tests on Oracle:
+
 ```
 ./gradlew clean integrationTest allUpdateTests --info --stacktrace \
 -Ddb.vendor=oracle \
@@ -126,6 +127,8 @@ Example: run all integration and update tests on Oracle:
 ./gradlew clean integrationTest allUpdateTests -Ddb.vendor=oracle
 ```
 
+NB: If the docker image needs to be pulled from some non-dockerhub place (like the example above), you need to specify the registry in your sys-env for the command line to work:
+```export DOCKER_BONITASOFT_REGISTRY=bonitasoft.jfrog.io REGISTRY_USERNAME=bonita-ci REGISTRY_TOKEN=<JFrog API key token>```
 
 Customize database to use for integration tests in IDE
 ------------------------------------------------------

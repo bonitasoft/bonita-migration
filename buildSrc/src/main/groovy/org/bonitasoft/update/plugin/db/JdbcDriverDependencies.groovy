@@ -16,7 +16,6 @@ package org.bonitasoft.update.plugin.db
 
 public class JdbcDriverDependencies {
 
-    public final static String mysql = 'mysql:mysql-connector-java:5.1.49'
     public final static String mysql8 = 'mysql:mysql-connector-java:8.0.28'
     public final static String oracle = 'com.oracle.database.jdbc:ojdbc8:19.3.0.0'
     public final static String postgres = 'org.postgresql:postgresql:42.3.3'

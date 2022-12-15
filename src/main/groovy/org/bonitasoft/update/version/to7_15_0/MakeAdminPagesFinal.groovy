@@ -1,4 +1,4 @@
-package org.bonitasoft.update.version.to7_14_0
+package org.bonitasoft.update.version.to7_15_0
 
 import org.bonitasoft.update.core.UpdateContext
 import org.bonitasoft.update.core.UpdateStep
