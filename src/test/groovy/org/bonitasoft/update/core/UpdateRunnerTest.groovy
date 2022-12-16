@@ -17,10 +17,14 @@ package org.bonitasoft.update.core
 import groovy.sql.Sql
 import org.bonitasoft.update.core.database.DatabaseHelper
 import spock.lang.Specification
+
 /**
  * @author Baptiste Mesta
  */
 class UpdateRunnerTest extends Specification {
+
+    private static final DEFAULT_TWO_DIGIT_VERSION = "1.2"
+    private static final DEFAULT_THREE_DIGIT_VERSION = "${DEFAULT_TWO_DIGIT_VERSION}.3"
 
     def logger = Spy(Logger.class)
     VersionUpdate versionUpdate = Mock(VersionUpdate)
@@ -35,14 +39,13 @@ class UpdateRunnerTest extends Specification {
 
     def setup() {
         versionUpdate.getUpdateSteps() >> updateStepList
+        versionUpdate.version >> DEFAULT_THREE_DIGIT_VERSION
         updateContext.sql = ThreadLocal.<Sql> withInitial({ sql })
         updateContext.databaseHelper = databaseHelper
         updateRunner = new UpdateRunner(versionUpdates: [versionUpdate], context: updateContext, logger: logger, displayUtil: displayUtil)
     }
 
     def "run should execute update steps in order"() {
-        given:
-        versionUpdate.getVersion() >> "7.3.1"
         when:
         updateRunner.run(true)
         then:
@@ -52,52 +55,41 @@ class UpdateRunnerTest extends Specification {
     }
 
     def "run should change platform version in database"() {
-        given:
-        versionUpdate.version >> "7.3.1"
         when:
         updateRunner.run(true)
         then:
-        1 * sql.executeUpdate("UPDATE platform SET previousVersion = version, version = ${"7.3.1"}")
+        1 * sql.executeUpdate("UPDATE platform SET previousVersion = version, version = ${DEFAULT_THREE_DIGIT_VERSION}")
     }
 
     def "run check pre-requisites before running update"() {
-        setup:
-        def twoDigitVersion = "7.14"
-        def versionUpdate = Mock(VersionUpdate)
-        versionUpdate.version >> "${twoDigitVersion}.0"
+        given:
         versionUpdate.getPreUpdateWarnings(updateContext) >> ["some message1", "some message2"]
         versionUpdate.getUpdateSteps() >> []
 
         // so that we don't get asked for confirmation:
         System.setProperty("auto.accept", "true")
 
-        UpdateRunner updateRunner = new UpdateRunner(versionUpdates: [versionUpdate], context: updateContext, logger: logger, displayUtil: displayUtil)
-
         when:
         updateRunner.run(false)
 
         then:
-        1 * displayUtil.logWarningsInRectangleWithTitle("Update to version ${twoDigitVersion}", "some message1", "some message2")
+        1 * displayUtil.logWarningsInRectangleWithTitle("Update to version ${DEFAULT_TWO_DIGIT_VERSION}", "some message1", "some message2")
     }
 
     def "run check blocking pre-requisites before running update"() {
-        setup:
-        def versionUpdate_7_8_0 = Mock(VersionUpdate)
-        versionUpdate_7_8_0.version >> "7.8.0"
-        versionUpdate_7_8_0.getPreUpdateBlockingMessages(updateContext) >> ["Blocking Message"]
-        versionUpdate_7_8_0.getUpdateSteps() >> []
-
-        UpdateRunner updateRunner = new UpdateRunner(versionUpdates: [versionUpdate_7_8_0], context: updateContext, logger: logger, displayUtil: displayUtil)
+        given:
+        versionUpdate.getPreUpdateBlockingMessages(updateContext) >> ["Blocking Message"]
+        versionUpdate.getUpdateSteps() >> []
 
         when:
         updateRunner.run(false)
 
         then:
-        1 * displayUtil.logWarningsInRectangleWithTitle("Update to version 7.8", ["Blocking Message"] as String[])
+        1 * displayUtil.logWarningsInRectangleWithTitle("Update to version ${DEFAULT_TWO_DIGIT_VERSION}", ["Blocking Message"] as String[])
     }
 
     def "should gather ALL pre-requisites before asking for confirmation"() {
-        setup:
+        given:
         def versionUpdate_7_4_9 = Mock(VersionUpdate)
         versionUpdate_7_4_9.version >> "7.4.9"
         versionUpdate_7_4_9.getPreUpdateWarnings(updateContext) >> ["Warning 7.4.9"]
@@ -137,7 +129,7 @@ class UpdateRunnerTest extends Specification {
     }
 
     def "should warn when VERSION_OVERRIDDEN defined and not VERSION_OVERRIDE_BY"() {
-        setup:
+        given:
         System.setProperty(UpdateRunner.VERSION_OVERRIDDEN, "crush")
         System.clearProperty(UpdateRunner.VERSION_OVERRIDE_BY)
 
@@ -150,7 +142,7 @@ class UpdateRunnerTest extends Specification {
 
 
     def "should warn when VERSION_OVERRIDE_BY defined and not VERSION_OVERRIDDEN"() {
-        setup:
+        given:
         System.clearProperty(UpdateRunner.VERSION_OVERRIDDEN)
         System.setProperty(UpdateRunner.VERSION_OVERRIDE_BY, "candy")
 
@@ -162,7 +154,7 @@ class UpdateRunnerTest extends Specification {
     }
 
     def "should override new version to VERSION_OVERRIDE_BY"() {
-        setup:
+        given:
         System.setProperty(UpdateRunner.VERSION_OVERRIDDEN, "7.5.1")
         System.setProperty(UpdateRunner.VERSION_OVERRIDE_BY, "7.5.1.RC-02")
         updateRunner.checkOverrideValidity()
@@ -176,7 +168,7 @@ class UpdateRunnerTest extends Specification {
     }
 
     def "should not override new version if VERSION_OVERRIDE_BY does not match"() {
-        setup:
+        given:
         System.setProperty(UpdateRunner.VERSION_OVERRIDDEN, "7.5.9")
         System.setProperty(UpdateRunner.VERSION_OVERRIDE_BY, "7.5.1.RC-02")
         updateRunner.checkOverrideValidity()
@@ -189,35 +181,53 @@ class UpdateRunnerTest extends Specification {
         1 * logger.info("Platform version in database is now 7.5.3")
     }
 
-    public static final List<String> GLOBAL_POST_UPDATE_WARNINGS = ['Archive contract data table backup had been created ("arch_contract_data_backup") as its model update is time consuming.',
-                                                                       'All this information is not required by Bonita to work and does not affect user experience,',
-                                                                       'but it keeps the information of all contracts sent to execute tasks or instantiate processes.',
-                                                                       'Based on your needs, this information can be updated into the original table using the tool',
-                                                                       '(please run live-migration tool available on Bonitasoft Customer Portal) while bonita platform is up & running',
-                                                                       'or dropped to reduce disk space']
-
     def "should log warning message if arch_contract_data_backup table exists"() {
         given:
-        versionUpdate.getVersion() >> "7.9.0"
         databaseHelper.hasTable("arch_contract_data_backup") >> true
 
         when:
         updateRunner.run(false)
 
         then:
-        1 * displayUtil.logWarningsInRectangleWithTitle("Global post-update warning", GLOBAL_POST_UPDATE_WARNINGS)
+        1 * displayUtil.logWarningsInRectangleWithTitle("Global post-update warnings", UpdateUtil.ARCH_CONTRACT_DATA_BACKUP_GLOBAL_MSG)
     }
 
     def "should NOT log warning message if arch_contract_data_backup table does not exist"() {
         given:
-        versionUpdate.getVersion() >> "7.9.0"
         databaseHelper.hasTable("arch_contract_data_backup") >> false
 
         when:
         updateRunner.run(false)
 
         then:
-        0 * displayUtil.logWarningsInRectangleWithTitle("Global post-update warning", GLOBAL_POST_UPDATE_WARNINGS)
+        0 * displayUtil.logWarningsInRectangleWithTitle("Global post-update warnings", UpdateUtil.ARCH_CONTRACT_DATA_BACKUP_GLOBAL_MSG)
+    }
+
+    def "run step warnings after running step update"() {
+        given:
+        updateStep1.description >> "updateStep1"
+        updateStep1.warning >> "warning step 1"
+        updateStep2.description >> "updateStep2"
+        updateStep2.warning >> "warning step 2"
+
+        when:
+        updateRunner.run(false)
+
+        then:
+        1 * displayUtil.logWarningsInRectangleWithTitle("Update to version: ${DEFAULT_TWO_DIGIT_VERSION} - step: updateStep1", "warning step 1")
+        1 * displayUtil.logWarningsInRectangleWithTitle("Update to version: ${DEFAULT_TWO_DIGIT_VERSION} - step: updateStep2", "warning step 2")
+    }
+
+    def "run post-update warnings after running update"() {
+        given:
+        versionUpdate.getPostUpdateWarnings(updateContext) >> ["post-update warning 1", "post-update warning 2"]
+        versionUpdate.getUpdateSteps() >> []
+
+        when:
+        updateRunner.run(false)
+
+        then:
+        1 * displayUtil.logWarningsInRectangleWithTitle("Post-update to version: ${DEFAULT_TWO_DIGIT_VERSION}", "post-update warning 1", "post-update warning 2")
     }
 
 }
