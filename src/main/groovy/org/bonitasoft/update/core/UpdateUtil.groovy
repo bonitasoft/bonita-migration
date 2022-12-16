@@ -38,6 +38,15 @@ class UpdateUtil {
 
     public static read = System.in.newReader().&readLine
 
+    public final static String[] ARCH_CONTRACT_DATA_BACKUP_GLOBAL_MSG = [
+            "Archive contract data table backup had been created (\"arch_contract_data_backup\") as its model update is time consuming.",
+            "All this information is not required by Bonita to work and does not affect user experience,",
+            "but it keeps the information of all contracts sent to execute tasks or instantiate processes.",
+            "Based on your needs, this information can be updated into the original table using the tool",
+            "(please run live-migration tool available on Bonitasoft Customer Portal) while bonita platform is up & running",
+            "or dropped to reduce disk space"
+    ]
+
     static boolean isAutoAccept() {
         return System.getProperty(AUTO_ACCEPT) == "true"
     }
@@ -193,6 +202,10 @@ class UpdateUtil {
             while (rs.next()) tenants.add(rs.getLong(1))
         }
         return tenants
+    }
+
+    static boolean isMultiTenantPlatform(Sql sql) {
+        sql.rows("SELECT * FROM tenant").size() > 1
     }
 
     static updateDirectory(String fromDir, String toDir, boolean deleteOldDirectory) {

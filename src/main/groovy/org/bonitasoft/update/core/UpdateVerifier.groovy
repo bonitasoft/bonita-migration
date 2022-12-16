@@ -55,15 +55,19 @@ class UpdateVerifier implements UpdateAction {
     }
 
     Map<String, String[]> getWarningPrerequisites() {
-        Map<String, String[]> beforeUpdateWarnings = [:]
+        Map<String, String[]> updateWarnings = [:]
         versionUpdates.each {
             // Warn before running ANY update step if there are pre-update warnings:
             String[] preVersionWarnings = it.getPreUpdateWarnings(context)
             if (preVersionWarnings) {
-                beforeUpdateWarnings.put(it.version, preVersionWarnings)
+                updateWarnings.put(it.version, preVersionWarnings)
+            }
+            String[] postVersionWarnings = it.getPostUpdateWarnings(context)
+            if (postVersionWarnings) {
+                updateWarnings.put(it.version, postVersionWarnings)
             }
         }
-        beforeUpdateWarnings
+        updateWarnings
     }
 
     @Override
