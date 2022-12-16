@@ -36,10 +36,10 @@ class UpdateRunner implements UpdateAction {
     void run(boolean isSp) {
 
         if (!hasBlockingPrerequisites()) {
-            getWarningPrerequisites()
+            displayWarningPrerequisites()
 
             Date updateStartDate = new Date()
-            String lastVersion
+            String lastVersion = null
             def warnings = [:]
             versionUpdates.each {
                 logger.info "Execute update to version " + UpdateUtil.getDisplayVersion(it.getVersion())
@@ -54,40 +54,42 @@ class UpdateRunner implements UpdateAction {
                     step.execute(context)
                     def stepWarningMessage = step.warning
                     if (stepWarningMessage) {
-                        warnings.put("Update to version:${UpdateUtil.getDisplayVersion(it.version)} - step: ${step.description}" as String, stepWarningMessage)
+                        warnings.put("Update to version: ${UpdateUtil.getDisplayVersion(it.version)} - step: ${step.description}" as String, stepWarningMessage)
                     }
                     UpdateUtil.logSuccessUpdate(stepStartDate, updateStartDate)
                     logger.info "---------------"
                 }
+
+                String[] postUpdateWarnings = it.getPostUpdateWarnings(context)
+                if (postUpdateWarnings) {
+                    warnings.put("Post-update to version: ${UpdateUtil.getDisplayVersion(it.version)}" as String, postUpdateWarnings)
+                }
+
                 changePlatformVersion(context.sql, it.getVersion())
                 lastVersion = it.getVersion()
             }
+
             logSuccessfullyCompleted(updateStartDate, lastVersion)
-            String postUpdateWarnings = this.postUpdateWarnings()
-            if (postUpdateWarnings) {
-                warnings.put("Global post-update warning", postUpdateWarnings)
+
+            String[] globalPostUpdateWarnings = this.getGlobalPostUpdateWarnings()
+            if (globalPostUpdateWarnings) {
+                warnings.put("Global post-update warnings", globalPostUpdateWarnings)
             }
             if (warnings) {
                 logger.warn " However, some warnings require your attention:"
                 warnings.each { line ->
-                    displayUtil.logWarningsInRectangleWithTitle(line.key, line.value.split("\n"))
+                    displayUtil.logWarningsInRectangleWithTitle(line.key, line.value)
                 }
             }
         }
     }
 
-
-    private String postUpdateWarnings() {
+    private String[] getGlobalPostUpdateWarnings() {
+        def warnings = []
         if (context.databaseHelper.hasTable("arch_contract_data_backup")) {
-            return "Archive contract data table backup had been created (\"arch_contract_data_backup\") as its model update is time consuming.\n" +
-                    "All this information is not required by Bonita to work and does not affect user experience,\n" +
-                    "but it keeps the information of all contracts sent to execute tasks or instantiate processes.\n" +
-                    "Based on your needs, this information can be updated into the original table using the tool\n" +
-                    "(please run live-migration tool available on Bonitasoft Customer Portal) while bonita platform is up & running\n" +
-                    "or dropped to reduce disk space"
+            warnings.addAll(UpdateUtil.ARCH_CONTRACT_DATA_BACKUP_GLOBAL_MSG)
         }
-        return null
-
+        return warnings
     }
 
     @Override
@@ -111,11 +113,11 @@ class UpdateRunner implements UpdateAction {
             VersionUpdate versionUpdate ->
                 String[] preVersionBlockings = versionUpdate.getPreUpdateBlockingMessages(context)
                 if (preVersionBlockings) {
-                    beforeUpdateBlocks.put("Update to version ${UpdateUtil.getDisplayVersion(versionUpdate.getVersion())}", preVersionBlockings)
+                    beforeUpdateBlocks.put("Update to version ${UpdateUtil.getDisplayVersion(versionUpdate.getVersion())}" as String, preVersionBlockings)
                 }
         }
         if (beforeUpdateBlocks) {
-            logger.warn "Some update steps cannot complete :"
+            logger.warn "Some update steps cannot complete:"
             beforeUpdateBlocks.each { warning ->
                 displayUtil.logWarningsInRectangleWithTitle(warning.key, warning.value)
             }
@@ -124,14 +126,14 @@ class UpdateRunner implements UpdateAction {
         return false
     }
 
-    private void getWarningPrerequisites() {
+    private void displayWarningPrerequisites() {
         checkOverrideValidity()
         Map<String, String[]> beforeUpdateWarnings = [:]
         versionUpdates.each {
             // Warn before running ANY update step if there are pre-update warnings:
             String[] preVersionWarnings = it.getPreUpdateWarnings(context)
             if (preVersionWarnings) {
-                beforeUpdateWarnings.put("Update to version ${UpdateUtil.getDisplayVersion(it.getVersion())}", preVersionWarnings)
+                beforeUpdateWarnings.put("Update to version ${UpdateUtil.getDisplayVersion(it.getVersion())}" as String, preVersionWarnings)
             }
         }
         if (beforeUpdateWarnings) {

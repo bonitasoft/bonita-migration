@@ -28,4 +28,6 @@ abstract class VersionUpdate {
 
     String[] getPreUpdateBlockingMessages(UpdateContext context) { [] }
 
+    String[] getPostUpdateWarnings(UpdateContext context) { [] }
+
 }
