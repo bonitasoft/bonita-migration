@@ -11,7 +11,7 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
-package org.bonitasoft.update.version.to7_16_0
+package org.bonitasoft.update.version.to8_0_0
 
 import org.bonitasoft.update.core.UpdateStep
 import org.bonitasoft.update.core.VersionUpdate
@@ -20,7 +20,7 @@ import org.bonitasoft.update.core.VersionUpdate
 /**
  * @author Danila Mazour
  */
-class UpdateTo7_16_0 extends VersionUpdate {
+class UpdateTo8_0_0 extends VersionUpdate {
 
     @Override
     List<UpdateStep> getUpdateSteps() {
