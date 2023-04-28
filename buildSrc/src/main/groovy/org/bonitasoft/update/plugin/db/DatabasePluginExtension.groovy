@@ -28,6 +28,5 @@ class DatabasePluginExtension {
     String dbDatabaseName
     String dbServerName
     String dbServerPort
-    boolean isDockerDb
 
 }
