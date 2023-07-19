@@ -16,7 +16,6 @@ package org.bonitasoft.update.version.to9_0_0
 import org.bonitasoft.update.core.UpdateStep
 import org.bonitasoft.update.core.VersionUpdate
 
-
 /**
  * @author Anthony Birembaut
  */
@@ -25,7 +24,9 @@ class UpdateTo9_0_0 extends VersionUpdate {
     @Override
     List<UpdateStep> getUpdateSteps() {
         // keep one line per step and comma (,) at start of line to avoid false-positive merge conflict:
-        return []
+        return [
+                new CreateTemporaryContentTable()
+        ]
     }
 
 }
