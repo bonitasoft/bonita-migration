@@ -53,14 +53,13 @@ class TestUpdateTask extends Test {
         super.executeTests()
     }
 
-
     def configureBonita(Project project, String bonitaVersion, boolean isSP) {
         this.isSP = isSP
         this.bonitaVersion = bonitaVersion
         testClassesDirs = project.sourceSets.enginetest.output.classesDirs
         classpath = project.files(
                 project.sourceSets.enginetest.runtimeClasspath,
-                project.getConfigurations().getByName(underscored(bonitaVersion)),
+                project.getConfigurations().named(underscored(bonitaVersion)),
                 getDatabaseDriverConfiguration(project, bonitaVersion)
         )
         //add as input the database configuration, tests must  be relaunched when database configuration change

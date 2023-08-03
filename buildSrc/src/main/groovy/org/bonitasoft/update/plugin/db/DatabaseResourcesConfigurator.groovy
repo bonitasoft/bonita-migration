@@ -18,21 +18,21 @@ class DatabaseResourcesConfigurator {
 
     def static finalizeTasksDependenciesOnDatabaseResources(Project project) {
         DatabasePluginExtension extension = project.extensions.getByType(DatabasePluginExtension.class)
-        def integrationTestTask = project.tasks.findByName('integrationTest')
+        def integrationTestTask = project.tasks.named('integrationTest')
         def uniqueName = "${extension.dbvendor.capitalize()}"
-        def vendorConfigurationTask = project.tasks.findByName("${uniqueName}Configuration")
-        def removeVendorContainer = project.tasks.findByName("remove${uniqueName}Container")
+        def vendorConfigurationTask = project.tasks.named("${uniqueName}Configuration")
+        def removeVendorContainer = project.tasks.named("remove${uniqueName}Container")
 
         // Integration tests
-        integrationTestTask.dependsOn(vendorConfigurationTask)
-        removeVendorContainer.mustRunAfter(integrationTestTask)
+        integrationTestTask.configure { dependsOn(vendorConfigurationTask) }
+        removeVendorContainer.configure { mustRunAfter(integrationTestTask) }
 
         // Update tests
         if (project.plugins.hasPlugin(UpdatePlugin)) {
             getVersionsToUpdate(project).each {
                 String underscoredVersion = underscored(it)
-                project.tasks.findByName("cleandb_" + underscoredVersion).dependsOn(vendorConfigurationTask)
-                removeVendorContainer.mustRunAfter(project.tasks.findByName("testUpdate_" + underscoredVersion))
+                project.tasks.named("cleandb_" + underscoredVersion).configure { dependsOn(vendorConfigurationTask) }
+                removeVendorContainer.configure { mustRunAfter(project.tasks.named("testUpdate_" + underscoredVersion)) }
             }
         }
     }
