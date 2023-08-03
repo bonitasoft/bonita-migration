@@ -88,6 +88,9 @@ class Update {
             connectToDatabase()
             try {
                 def versionUpdates = getVersionUpdatesToRun(runner)
+                if (versionUpdates.empty) {
+                    return
+                }
                 runner.versionUpdates = versionUpdates
                 runner.run(isSp)
             }
@@ -146,6 +149,10 @@ class Update {
         context.sourceVersion = version
         def versions = getVersionsAfter(version)
         def visibleVersions = filterOutInvisibleVersions(versions)
+        if (visibleVersions.empty) {
+            logger.warn("Your Bonita version is already the latest supported version. Nothing to update.")
+            return []
+        }
         logger.info(runner.getDescription())
         if (context.targetVersion == null) {
             logger.info "Enter the target version"
