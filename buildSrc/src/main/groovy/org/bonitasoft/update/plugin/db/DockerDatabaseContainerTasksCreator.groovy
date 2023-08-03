@@ -74,7 +74,7 @@ class DockerDatabaseContainerTasksCreator {
         project.plugins.apply('com.bmuschko.docker-remote-api')
         def vendor = vendors.find { it.name == dbVendor }
         def uniqueName = "${vendor.name.capitalize()}"
-        def pullImage = project.tasks.create("pull${uniqueName}Image", DockerPullImage) {
+        def pullImage = project.tasks.register("pull${uniqueName}Image", DockerPullImage) {
             description = "Pull docker image for $uniqueName db vendor"
             group = null // do not show task when running `gradle tasks`
 
@@ -88,42 +88,42 @@ class DockerDatabaseContainerTasksCreator {
             }
         }
 
-        def createContainer = project.tasks.create("create${uniqueName}Container", DockerCreateContainer) {
+        def createContainer = project.tasks.register("create${uniqueName}Container", DockerCreateContainer) {
             description = "Create a docker container for $uniqueName db vendor"
             group = null // do not show task when running `gradle tasks`
 
             dependsOn pullImage
             portBindings = [":$vendor.portBinding"]
-            targetImageId pullImage.getImageId()
+            targetImageId pullImage.get().getImageId()
             if (vendor.name == 'oracle') {
                 // 1Go
                 shmSize = 1099511627776
             }
         }
 
-        def startContainer = project.tasks.create("start${uniqueName}Container", DockerStartContainer) {
+        def startContainer = project.tasks.register("start${uniqueName}Container", DockerStartContainer) {
             description = "Start a docker container for $uniqueName db vendor"
             group = 'docker'
 
             dependsOn createContainer
-            targetContainerId createContainer.getContainerId()
+            targetContainerId createContainer.get().getContainerId()
         }
 
-        def waitForContainerStartup = project.tasks.create("waitFor${uniqueName}ContainerStartup", DockerWaitHealthyContainer) {
+        def waitForContainerStartup = project.tasks.register("waitFor${uniqueName}ContainerStartup", DockerWaitHealthyContainer) {
             description = "Wait for a started docker container for $vendor.name db vendor to be healthy"
             group = null // do not show task when running `gradle tasks`
 
             dependsOn startContainer
-            targetContainerId startContainer.getContainerId()
+            targetContainerId startContainer.get().getContainerId()
             timeout = Duration.ofSeconds(420)
         }
 
-        def inspectContainer = project.tasks.create("inspect${uniqueName}ContainerUrl", DockerInspectContainer) {
+        def inspectContainer = project.tasks.register("inspect${uniqueName}ContainerUrl", DockerInspectContainer) {
             description = "Get url of a docker container for $uniqueName db vendor"
             group = null // do not show task when running `gradle tasks`
 
             dependsOn waitForContainerStartup
-            targetContainerId startContainer.getContainerId()
+            targetContainerId startContainer.get().getContainerId()
 
             onNext {
                 it.networkSettings.ports.getBindings().each { exposedPort, bindingArr ->
@@ -132,29 +132,31 @@ class DockerDatabaseContainerTasksCreator {
                         def dockerHost = getDockerHost()
                         def url = format(vendor.uriTemplate as String, dockerHost, portBinding)
                         project.logger.info "Container url: ${url}"
-                        project.tasks["${uniqueName}Configuration"].doFirst {
-                            DatabasePluginExtension extension = project.extensions.getByType(DatabasePluginExtension)
-                            extension.dburl = url
-                            extension.dbServerName = dockerHost
-                            extension.dbServerPort = portBinding
-                            extension.dbDatabaseName = vendor.databaseName
-                            project.logger.quiet("db.url set to ${extension.dburl}")
+                        project.tasks.named("${uniqueName}Configuration").configure {
+                            doFirst {
+                                DatabasePluginExtension extension = project.extensions.getByType(DatabasePluginExtension)
+                                extension.dburl = url
+                                extension.dbServerName = dockerHost
+                                extension.dbServerPort = portBinding
+                                extension.dbDatabaseName = vendor.databaseName
+                                project.logger.quiet("db.url set to ${extension.dburl}")
+                            }
                         }
                     }
                 }
             }
         }
 
-        def removeContainer = project.tasks.create("remove${uniqueName}Container", DockerRemoveContainer) {
+        def removeContainer = project.tasks.register("remove${uniqueName}Container", DockerRemoveContainer) {
             description = "Remove a docker container for $uniqueName db vendor"
             group = 'docker'
 
             force = true
             removeVolumes = true
-            targetContainerId createContainer.getContainerId()
+            targetContainerId createContainer.get().getContainerId()
         }
 
-        project.tasks.create("${uniqueName}Configuration") {
+        project.tasks.register("${uniqueName}Configuration") {
             description = "Setup database connection parameter for $uniqueName"
             group = 'docker'
             dependsOn inspectContainer
@@ -175,6 +177,6 @@ class DockerDatabaseContainerTasksCreator {
         }
 
         //container should be removed even when there is a failure
-        startContainer.finalizedBy(removeContainer)
+        startContainer.configure { finalizedBy(removeContainer) }
     }
 }

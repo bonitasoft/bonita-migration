@@ -106,7 +106,7 @@ class PrepareUpdateTestTask extends JavaExec {
         this.isSP = isSP
         this.targetVersion = targetVersion
         classpath(
-                project.getConfigurations().getByName(previousVersion), // Bonita version configuration (eg. 7_8_0)
+                project.getConfigurations().named(previousVersion), // Bonita version configuration (eg. 7_8_0)
                 project.sourceSets.filler.runtimeClasspath,
                 getDatabaseDriverConfiguration(project, previousVersion)
         )

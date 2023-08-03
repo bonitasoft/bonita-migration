@@ -51,7 +51,7 @@ class CleanDbTask extends DefaultTask {
         logger.info "Clean database for vendor ${properties.dbvendor}"
         logger.info "Drop only (no db and credentials creation)? ${dropOnly}"
 
-        def drivers = project.files(getDatabaseDriverConfiguration(project, bonitaVersion))
+        def drivers = project.files(getDatabaseDriverConfiguration(project, bonitaVersion).get())
         List<URL> urls = new ArrayList<>()
         drivers.each { File file ->
             urls.add(file.toURI().toURL())

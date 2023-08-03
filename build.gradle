@@ -124,7 +124,7 @@ group 'org.bonitasoft.update'
 
 artifacts { archives distZip }
 
-distTar.enabled = false
+distTar.configure {enabled = false }
 
 sourceCompatibility = 11
 targetCompatibility = 11
@@ -182,19 +182,16 @@ sourceSets {
 test {
     useJUnitPlatform()
 }
-task("testJar", type: Jar) {
-    classifier = 'tests'
+tasks.register("testJar", Jar) {
+    archiveClassifier = 'tests'
     from sourceSets.test.output + sourceSets.intTest.output
 }
 
 processResources {
     filesMatching('**/bonita-update-info.properties') {
-        expand(
-                'project_version': project.property('version'),
-        )
+        expand('project_version': project.property('version'))
     }
 }
-
 
 distributions {
     main {
@@ -213,5 +210,4 @@ distributions {
     }
 }
 
-
-tasks.distZip.dependsOn configurations.inDistrib
+tasks.named("distZip").configure { dependsOn configurations.inDistrib }

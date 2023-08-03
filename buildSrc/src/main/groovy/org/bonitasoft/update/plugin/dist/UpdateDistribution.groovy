@@ -50,21 +50,23 @@ class UpdateDistribution implements Plugin<Project> {
 
     private static void defineTasks(Project project, UpdatePluginExtension configuration) {
         //Define tasks
-        project.task(TASK_ADD_VERSION_IN_DIST, type: AddVersionsToTheDistributionTask) {
+        project.tasks.register(TASK_ADD_VERSION_IN_DIST, AddVersionsToTheDistributionTask) {
             group = UPDATE_DISTRIBUTION_GROUP
             description = "Put possible bonita versions inside the distribution."
             versionsToAdd = getVersionList(project, configuration)
             propertiesFile = new File(project.projectDir, 'src/main/resources/bonita-versions.properties')
         }
 
-        project.tasks.clean.doLast {
-            def versionsFile = new File(project.projectDir, "src/main/resources/bonita-versions.properties")
-            if (versionsFile.exists()) versionsFile.delete()
+        project.tasks.named("clean").configure {
+            doLast {
+                def versionsFile = new File(project.projectDir, "src/main/resources/bonita-versions.properties")
+                if (versionsFile.exists()) versionsFile.delete()
+            }
         }
     }
 
     private static void defineTaskDependencies(Project project) {
-        project.tasks.processResources.dependsOn project.tasks.addVersionsToTheDistribution
+        project.tasks.named("processResources").configure { dependsOn project.tasks.named(TASK_ADD_VERSION_IN_DIST) }
     }
 
     private defineDependencies(Project project) {

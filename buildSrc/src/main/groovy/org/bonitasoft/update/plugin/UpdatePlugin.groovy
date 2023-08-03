@@ -19,11 +19,9 @@ import org.bonitasoft.update.plugin.db.CleanDbTask
 import org.bonitasoft.update.plugin.db.DatabasePluginExtension
 import org.bonitasoft.update.plugin.db.DatabaseResourcesConfigurator
 import org.bonitasoft.update.plugin.db.JdbcDriverDependencies
-import org.gradle.api.Plugin
-import org.gradle.api.Project
-import org.gradle.api.Task
-import org.gradle.api.UnknownTaskException
+import org.gradle.api.*
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.testing.Test
 
 import static org.bonitasoft.update.plugin.PropertiesUtils.loadProperties
@@ -38,7 +36,6 @@ class UpdatePlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-
 
         def itSourceSet = project.sourceSets.create('integrationTest')
         project.sourceSets.create('filler')
@@ -104,8 +101,8 @@ class UpdatePlugin implements Plugin<Project> {
         "${dbVendor}_${underscored(bonitaVersion)}" // Example: mysql_7_8_4, postgres_7_9_0
     }
 
-    static Configuration getDatabaseDriverConfiguration(Project project, String bonitaVersion) {
-        return project.getConfigurations().getByName(getDatabaseDriverConfigurationName(project.extensions.database.dbvendor, bonitaVersion))
+    static NamedDomainObjectProvider getDatabaseDriverConfiguration(Project project, String bonitaVersion) {
+        return project.getConfigurations().named(getDatabaseDriverConfigurationName(project.extensions.database.dbvendor, bonitaVersion))
     }
 
     def static getDatabaseDriverDependency(String dbVendor) {
@@ -135,21 +132,27 @@ class UpdatePlugin implements Plugin<Project> {
         List<String> previousVersions = allVersions.subList(0, allVersions.size() - 1)
         List<String> versions = allVersions.subList(1, allVersions.size())
 
-        def allUpdateTests = project.task("allUpdateTests", description: "Run all update tests", group: "update")
-        def lastUpdateTests = project.task("lastUpdateTests", description: "Run update tests of only last step", group: "update")
+        def allUpdateTests = project.tasks.register("allUpdateTests") {
+            description: "Run all update tests"
+            group: "update"
+        }
+        def lastUpdateTests = project.tasks.register("lastUpdateTests") {
+            description: "Run update tests of only last step"
+            group: "update"
+        }
 
         def currentVersion = allVersions.last()
         versions.each {
             createConfigurationForBonitaVersion(project, it, updatePluginExtension, allVersions)
-            PrepareUpdateTestTask prepareTestTask = createPrepareTestTask(project, it, previousVersions,
+            TaskProvider<PrepareUpdateTestTask> prepareTestTask = createPrepareTestTask(project, it, previousVersions,
                     updatePluginExtension.isSP)
-            Task runUpdateTask = createRunUpdateTask(project, it, updatePluginExtension.isSP)
-            Task updateTestTask = createTestUpdateTask(project, it, updatePluginExtension.isSP)
-            runUpdateTask.dependsOn(prepareTestTask)
-            updateTestTask.dependsOn(runUpdateTask)
-            allUpdateTests.dependsOn(updateTestTask)
+            TaskProvider<RunUpdateTask> runUpdateTask = createRunUpdateTask(project, it, updatePluginExtension.isSP)
+            def updateTestTask = createTestUpdateTask(project, it, updatePluginExtension.isSP)
+            runUpdateTask.configure { dependsOn(prepareTestTask) }
+            updateTestTask.configure { dependsOn(runUpdateTask) }
+            allUpdateTests.configure { dependsOn(updateTestTask) }
             if (it == currentVersion) {
-                lastUpdateTests.dependsOn(updateTestTask)
+                lastUpdateTests.configure { dependsOn(updateTestTask) }
             }
         }
         def versionWithModifier = getVersion(allVersions, currentVersion, updatePluginExtension)
@@ -161,50 +164,60 @@ class UpdatePlugin implements Plugin<Project> {
         project.dependencies.add("enginetestCompileOnly", getTestEngineDependencyName(updatePluginExtension, versionWithModifier, getRawVersion(currentVersion)), defaultExclude())
     }
 
-    def createTestUpdateTask(Project project, String version, boolean isSP) {
-        TestUpdateTask updateTestTask = project.tasks.create(name: "testUpdate_" + underscored(version), type:
-                TestUpdateTask, description: "test Bonita after updating to version $version", group: "update")
-        updateTestTask.configureBonita(project, version, isSP)
-        updateTestTask.dependsOn project.tasks.getByName("testClasses") //bug? need to have the test compiled in
+    static def createTestUpdateTask(Project project, String version, boolean isSP) {
+        def updateTestTask = project.tasks.register("testUpdate_" + underscored(version),
+                TestUpdateTask) {
+            description:
+            "test Bonita after updating to version $version"
+            group: "update"
+        }
+        updateTestTask.configure {
+            configureBonita(project, version, isSP)
+            dependsOn project.tasks.named("testClasses") //bug? need to have the test compiled in
+        }
         updateTestTask
     }
 
-    def createRunUpdateTask(Project project, String version, boolean isSP) {
-        RunUpdateTask runUpdateTask = project.tasks.create(name: "update_" + underscored(version), type:
-                RunUpdateTask, description: "Run the update step to version $version", group: 'RunUpdate',
-                constructorArgs: [isSP])
-        runUpdateTask.configureBonita(version)
-        runUpdateTask.dependsOn project.tasks.getByName("distZip")
+    static def createRunUpdateTask(Project project, String version, boolean isSP) {
+        def runUpdateTask = project.tasks.register("update_" + underscored(version), RunUpdateTask, isSP)
+        runUpdateTask.configure {
+            description:
+            "Run the update step to version $version"
+            group: 'RunUpdate'
+            configureBonita(version)
+            dependsOn project.tasks.named("distZip")
+        }
         runUpdateTask
     }
 
     def createPrepareTestTask(Project project, String targetVersion, List<String> previousVersions, boolean isSP) {
         def previousVersion = getVersionBefore(previousVersions, targetVersion)
-        def cleandb = project.tasks.create(name: "cleandb_" + underscored(targetVersion), type: CleanDbTask) {
+        def cleanDb = project.tasks.register("cleandb_" + underscored(targetVersion), CleanDbTask) {
             bonitaVersion = previousVersion
         }
-        PrepareUpdateTestTask prepareTestTask = project.tasks.create(name: "prepareTestFor_" + underscored(targetVersion), type:
-                PrepareUpdateTestTask)
-        prepareTestTask.configureBonita(project, underscored(previousVersion), underscored(targetVersion), isSP)
+        def prepareTestTask = project.tasks.register("prepareTestFor_" + underscored(targetVersion), PrepareUpdateTestTask) {
+            configureBonita(project, underscored(previousVersion), underscored(targetVersion), isSP)
+        }
         DatabasePluginExtension properties = project.extensions.getByType(DatabasePluginExtension.class)
         if (properties.dbvendor == 'sqlserver') {
             defineXaRecoveryConfiguration(project)
-            RunMsSqlserverXARecoveryTask xaRecoveryTask
+            TaskProvider<RunMsSqlserverXARecoveryTask> xaRecoveryTask
             try {
-                xaRecoveryTask = project.tasks.getByName('xarecovery') // create it only once
+                xaRecoveryTask = project.tasks.named('xarecovery', RunMsSqlserverXARecoveryTask) // create it only once
             } catch (UnknownTaskException ignored) {
-                xaRecoveryTask = project.tasks.create(name: "xarecovery", type: RunMsSqlserverXARecoveryTask)
-                xaRecoveryTask.dependsOn cleandb
+                xaRecoveryTask = project.tasks.register("xarecovery", RunMsSqlserverXARecoveryTask) {
+                    dependsOn cleanDb
+                }
             }
-            xaRecoveryTask.setMain("com.bonitasoft.tools.sqlserver.XARecovery")
-            prepareTestTask.dependsOn xaRecoveryTask
+            xaRecoveryTask.configure { setMainClass("com.bonitasoft.tools.sqlserver.XARecovery") }
+            prepareTestTask.configure { dependsOn xaRecoveryTask }
         } else {
-            prepareTestTask.dependsOn cleandb
+            prepareTestTask.configure { dependsOn cleanDb }
         }
         prepareTestTask
     }
 
-    Configuration createConfigurationForBonitaVersion(Project project, String bonitaVersion, UpdatePluginExtension extension, List<String> versionList) {
+    static Configuration createConfigurationForBonitaVersion(Project project, String bonitaVersion, UpdatePluginExtension extension, List<String> versionList) {
         Configuration configuration = project.configurations.create(underscored(bonitaVersion))
         def versionWithModifier = getVersion(versionList, bonitaVersion, extension)
         project.dependencies.add(configuration.name, getBonitaClientEngineDependency(extension, versionWithModifier), defaultExclude())
@@ -218,7 +231,8 @@ class UpdatePlugin implements Plugin<Project> {
      */
     static Closure defaultExclude() {
         return {
-            exclude group: "org.codehaus.groovy" //exclude groovy-all and other groovy deps to avoid having multiple versions. The update tool declares the dependency itself
+            exclude group: "org.codehaus.groovy"
+            //exclude groovy-all and other groovy deps to avoid having multiple versions. The update tool declares the dependency itself
             exclude module: "sqlserver"
             exclude module: "postgresql"
             exclude module: "mysql-connector-java"
@@ -269,7 +283,6 @@ class UpdatePlugin implements Plugin<Project> {
     // =================================================================================================================
     // for integration tests
     // =================================================================================================================
-
     private createIntegrationTestTasks(Project project) {
         defineIntegrationTestDependencies(project)
         defineIntegrationTestTask(project)
@@ -285,9 +298,8 @@ class UpdatePlugin implements Plugin<Project> {
         }
     }
 
-    private void defineIntegrationTestTask(Project project) {
-
-        project.task('integrationTest', type: Test) {
+    private static void defineIntegrationTestTask(Project project) {
+        project.tasks.register('integrationTest', Test) {
             group = 'Verification'
             description = 'Run integration tests.'
 
@@ -301,7 +313,6 @@ class UpdatePlugin implements Plugin<Project> {
             //use junit 5 (provided by spock 2+)
             useJUnitPlatform()
         }
-
     }
 
 }
