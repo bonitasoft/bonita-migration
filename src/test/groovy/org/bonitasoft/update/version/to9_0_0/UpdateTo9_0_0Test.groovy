@@ -21,7 +21,8 @@ class UpdateTo9_0_0Test extends Specification {
 
         where:
         stepName << [
-                "CreateTemporaryContentTable"
+                "CreateTemporaryContentTable",
+                "AddAppVersionToPlatform"
         ]
 
     }

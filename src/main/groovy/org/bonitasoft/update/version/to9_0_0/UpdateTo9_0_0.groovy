@@ -25,7 +25,8 @@ class UpdateTo9_0_0 extends VersionUpdate {
     List<UpdateStep> getUpdateSteps() {
         // keep one line per step and comma (,) at start of line to avoid false-positive merge conflict:
         return [
-                new CreateTemporaryContentTable()
+                new CreateTemporaryContentTable(),
+                new AddAppVersionToPlatform()
         ]
     }
 
