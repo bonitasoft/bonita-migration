@@ -35,12 +35,15 @@ class CreateTemporaryContentTableIT extends Specification {
         updateStep.execute(updateContext)
 
         then:
-        assert updateContext.databaseHelper.hasTable("temporary_content")
-        assert updateContext.databaseHelper.hasColumnOnTable("temporary_content", "id")
-        assert updateContext.databaseHelper.hasColumnOnTable("temporary_content", "creationDate")
-        assert updateContext.databaseHelper.hasColumnOnTable("temporary_content", "key_")
-        assert updateContext.databaseHelper.hasColumnOnTable("temporary_content", "fileName")
-        assert updateContext.databaseHelper.hasColumnOnTable("temporary_content", "mimeType")
-        assert updateContext.databaseHelper.hasColumnOnTable("temporary_content", "content")
+        updateContext.databaseHelper.hasTable("temporary_content")
+        updateContext.databaseHelper.hasColumnOnTable("temporary_content", "id")
+        updateContext.databaseHelper.hasColumnOnTable("temporary_content", "creationDate")
+        updateContext.databaseHelper.hasColumnOnTable("temporary_content", "key_")
+        updateContext.databaseHelper.hasColumnOnTable("temporary_content", "fileName")
+        updateContext.databaseHelper.hasColumnOnTable("temporary_content", "mimeType")
+        updateContext.databaseHelper.hasColumnOnTable("temporary_content", "content")
+
+        // validate new sequence presence
+        updateContext.databaseHelper.getSequenceValue(-1, 5) != null
     }
 }

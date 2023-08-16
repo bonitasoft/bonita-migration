@@ -8,6 +8,7 @@ class CreateTemporaryContentTable extends UpdateStep {
     @Override
     def execute(UpdateContext context) {
         context.databaseHelper.executeScript("CreateTemporaryContentTable", "")
+        context.databaseHelper.insertSequences(Map.of(-1L, 1L) , 5)
     }
 
     @Override

@@ -848,11 +848,11 @@ END"""
         sql.rows("select t.id, t.name, t.status from tenant t order by t.id")
     }
 
-    def insertSequences(Map<Long, Long> resourcesCount, context, Integer sequenceId) {
+    def insertSequences(Map<Long, Long> resourcesCount, Integer sequenceId) {
         if (resourcesCount.isEmpty())
             throw new IllegalStateException("There is no tenants on which insert the sequences")
         return resourcesCount.each { it ->
-            context.sql.executeInsert("INSERT INTO sequence VALUES(${it.getKey()}, ${sequenceId}, ${it.getValue()})")
+            sql.executeInsert("INSERT INTO sequence VALUES(${it.getKey()}, ${sequenceId}, ${it.getValue()})")
         }
     }
 
