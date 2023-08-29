@@ -17,6 +17,7 @@ class CreateTemporaryContentTableIT extends Specification {
     def setup() {
         dropTestTables()
         updateContext.setVersion("9.0.0")
+        dbUnitHelper.createTables("9_0_0")
     }
 
     def cleanup() {
@@ -24,7 +25,7 @@ class CreateTemporaryContentTableIT extends Specification {
     }
 
     private String[] dropTestTables() {
-        dbUnitHelper.dropTables(["temporary_content"] as String[])
+        dbUnitHelper.dropTables(["temporary_content", "sequence", "platform", "ref_biz_data_inst", "process_instance", "tenant"] as String[])
     }
 
 

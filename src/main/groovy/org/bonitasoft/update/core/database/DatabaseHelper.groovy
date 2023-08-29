@@ -297,6 +297,7 @@ END"""
                 default:
                     execute("ALTER TABLE $table DROP $column")
             }
+            logger.info("Dropped column '$column' from table '$table'")
         } else {
             logger.info("Column '$column' does not exist on table '$table'. Skipping DROP instruction.")
         }
@@ -396,6 +397,17 @@ END"""
         }
     }
 
+    def createForeignKey(String referencingTableName, String foreignKeyName, String referencedTableName,
+                         List<String> referencingColumns, List<String> referencedColumns, boolean onDeleteCascade) {
+        def referencingCols = referencingColumns.collect { it }.join(", ")
+        def referencedCols = referencedColumns.collect { it }.join(", ")
+        String request = """ALTER TABLE $referencingTableName ADD CONSTRAINT ${foreignKeyName} FOREIGN KEY ($referencingCols)
+REFERENCES $referencedTableName ($referencedCols) ${onDeleteCascade ? "ON DELETE CASCADE" : ""}
+"""
+        logger.info "Executing request: $request"
+        sql.execute(request)
+    }
+
     def dropPrimaryKey(String tableName) {
         def query = getScriptContent("/database/primaryKey", "primaryKey")
         sql.eachRow(query, [tableName]) { row ->
@@ -412,6 +424,13 @@ END"""
             sql.execute(request)
         }
 
+    }
+
+    def createPrimaryKey(String tableName, String... columns) {
+        def concatenatedColumns = columns.collect { it }.join(", ")
+        String request = "ALTER TABLE $tableName ADD CONSTRAINT pk_${tableName} PRIMARY KEY ($concatenatedColumns)"
+        logger.info "Executing request: $request"
+        sql.execute(request)
     }
 
     /**
@@ -544,8 +563,12 @@ END"""
      */
     boolean hasPrimaryKeyOnTable(String tableName, String pkName) {
         def primaryKey = getPrimaryKey(tableName)
-        primaryKey != null && primaryKey == pkName
-
+        switch (dbVendor) {
+            case MYSQL:
+                return primaryKey != null // because MySQL does not store the PK name
+            default:
+                return primaryKey != null && primaryKey.toLowerCase() == pkName.toLowerCase()
+        }
     }
 
     /**
@@ -886,8 +909,8 @@ END"""
         limitQuery
     }
 
-    String BOOLEAN(){
-        switch (dbVendor){
+    String BOOLEAN() {
+        switch (dbVendor) {
             case ORACLE:
                 return "NUMBER(1)"
             case SQLSERVER:
@@ -896,8 +919,9 @@ END"""
                 return "BOOLEAN"
         }
     }
-    String BLOB(){
-        switch (dbVendor){
+
+    String BLOB() {
+        switch (dbVendor) {
             case ORACLE:
                 return "BLOB"
             case SQLSERVER:
@@ -908,8 +932,9 @@ END"""
                 return "BYTEA"
         }
     }
-    String VARCHAR(int size){
-        switch (dbVendor){
+
+    String VARCHAR(int size) {
+        switch (dbVendor) {
             case ORACLE:
                 return "VARCHAR2($size CHAR)"
             case SQLSERVER:
