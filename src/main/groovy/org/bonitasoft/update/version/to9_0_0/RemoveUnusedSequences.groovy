@@ -13,23 +13,21 @@
  **/
 package org.bonitasoft.update.version.to9_0_0
 
+import org.bonitasoft.update.core.UpdateContext
 import org.bonitasoft.update.core.UpdateStep
-import org.bonitasoft.update.core.VersionUpdate
 
-/**
- * @author Anthony Birembaut
- */
-class UpdateTo9_0_0 extends VersionUpdate {
+class RemoveUnusedSequences extends UpdateStep {
 
     @Override
-    List<UpdateStep> getUpdateSteps() {
-        // keep one line per step and comma (,) at start of line to avoid false-positive merge conflict:
-        return [
-                new CreateTemporaryContentTable()
-                , new AddAppVersionToPlatform()
-                , new RemoveUnusedSequences()
-                , new RemoveTenantIdFromProcessInstance()
-        ]
+    def execute(UpdateContext context) {
+        context.databaseHelper.with {
+            execute("DELETE FROM sequence WHERE tenantId = -1 AND id = 30")
+            execute("DELETE FROM sequence WHERE tenantId = -1 AND id = 31")
+        }
     }
 
+    @Override
+    String getDescription() {
+        return "Remove unused Bonita sequences"
+    }
 }

@@ -5,14 +5,14 @@ import org.bonitasoft.update.core.UpdateContext
 import spock.lang.Shared
 import spock.lang.Specification
 
-class AddAppVersionToPlatformIT extends Specification {
+class RemoveTenantIdFromProcessInstanceIT extends Specification {
 
     @Shared
     DBUnitHelper dbUnitHelper = DBUnitHelper.getInstance()
     @Shared
     UpdateContext updateContext = dbUnitHelper.context
 
-    private AddAppVersionToPlatform updateStep = new AddAppVersionToPlatform()
+    private RemoveTenantIdFromProcessInstance updateStep = new RemoveTenantIdFromProcessInstance()
 
     def setup() {
         dropTestTables()
@@ -27,14 +27,17 @@ class AddAppVersionToPlatformIT extends Specification {
         dbUnitHelper.dropTables(["temporary_content", "sequence", "platform", "ref_biz_data_inst", "process_instance", "tenant"] as String[])
     }
 
-    def "should create new column on platform table"() {
-        given:
 
+    def "should remove tenantId from process_instance"() {
         when:
         updateStep.execute(updateContext)
 
         then:
-        updateContext.databaseHelper.hasTable("platform")
-        updateContext.databaseHelper.hasColumnOnTable("platform", "application_version")
+        ! updateContext.databaseHelper.hasColumnOnTable("process_instance", "tenantId")
+        updateContext.databaseHelper.hasPrimaryKeyOnTable("process_instance", "pk_process_instance")
+        ! updateContext.databaseHelper.hasForeignKeyOnTable("process_instance", "fk_process_instance_tenantId")
+        updateContext.databaseHelper.hasIndexOnTable("process_instance", "idx1_proc_inst_pdef_state")
+        updateContext.databaseHelper.hasForeignKeyOnTable("ref_biz_data_inst", "fk_ref_biz_data_proc")
     }
+
 }
