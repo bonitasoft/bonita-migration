@@ -19,8 +19,8 @@ class DockerDatabaseContainerTasksCreator {
 
     def static vendors = [
             [name               : 'oracle',
-             repository         : 'bonitasoft.jfrog.io/docker-releases/bonita-oracle-21.3.0-ee',
-             tag                : '0.0.1',
+             repository         : 'bonitasoft.jfrog.io/docker-releases/bonita-oracle-19c-ee',
+             tag                : '0.0.2',
              registryUrlEnv     : 'DOCKER_BONITASOFT_REGISTRY',
              registryUsernameEnv: 'REGISTRY_USERNAME',
              registryPasswordEnv: 'REGISTRY_TOKEN',
