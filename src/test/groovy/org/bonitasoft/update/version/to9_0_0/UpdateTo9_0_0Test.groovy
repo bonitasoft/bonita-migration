@@ -23,6 +23,7 @@ class UpdateTo9_0_0Test extends Specification {
         stepName << [
                 "CreateTemporaryContentTable"
                 , "AddAppVersionToPlatform"
+                , "AddMaintenanceMessageToPlatform"
                 , "RemoveUnusedSequences"
                 , "RemoveTenantIdFromProcessInstance"
         ]

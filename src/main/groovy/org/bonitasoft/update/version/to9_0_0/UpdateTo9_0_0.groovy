@@ -27,6 +27,7 @@ class UpdateTo9_0_0 extends VersionUpdate {
         return [
                 new CreateTemporaryContentTable()
                 , new AddAppVersionToPlatform()
+                , new AddMaintenanceMessageToPlatform()
                 , new RemoveUnusedSequences()
                 , new RemoveTenantIdFromProcessInstance()
         ]

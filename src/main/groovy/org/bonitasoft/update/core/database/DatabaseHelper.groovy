@@ -943,4 +943,15 @@ REFERENCES $referencedTableName ($referencedCols) ${onDeleteCascade ? "ON DELETE
                 return "VARCHAR($size)"
         }
     }
+
+    String TEXT() {
+        switch (dbVendor) {
+            case ORACLE:
+                return "VARCHAR2(1024 CHAR)"
+            case SQLSERVER:
+                return "NVARCHAR(MAX)"
+            default:
+                return "TEXT"
+        }
+    }
 }
