@@ -147,7 +147,7 @@ class ConfigurationHelperTest extends Specification {
         setup:
         def captured = []
         def fileName = "existingFile"
-        def existingContent = "# existing comment\nkey=value\nkey2=value2"
+        def existingContent = "# existing comment\nkey =  value\nkey2=value2"
         databaseHelper.getBlobContentAsString(_) >> existingContent
         def results = [[tenant_id: 0L, content_type: "template_type", resource_content: existingContent.bytes],
                        [tenant_id: 5L, content_type: "type", resource_content: existingContent.bytes],

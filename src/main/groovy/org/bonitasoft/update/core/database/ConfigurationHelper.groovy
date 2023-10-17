@@ -89,8 +89,8 @@ class ConfigurationHelper {
             } else {
                 def oldValue = properties.get(propertyKey)
                 if (oldValue != newPropertyValue) {
-                    def oldEntry = "${propertyKey}=${oldValue}"
-                    def newContent = content.replace(oldEntry, newEntry)
+                    def oldEntry = "${propertyKey}[ ]*=[ ]*${oldValue}"
+                    def newContent = content.replaceAll(oldEntry, newEntry)
                     updateConfigurationFileContent(fileName, tenantId, it.content_type, newContent.bytes)
                     logger.info(String.format("update property in configuration file | tenant id: %3d | type: %-25s | file name: %s | new property: %s", tenantId, it.content_type, fileName, "${propertyKey}=${newPropertyValue}"))
                 } else {
