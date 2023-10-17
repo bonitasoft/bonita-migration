@@ -13,25 +13,27 @@
  **/
 package org.bonitasoft.update.version.to9_0_0
 
+import org.bonitasoft.update.core.UpdateContext
 import org.bonitasoft.update.core.UpdateStep
-import org.bonitasoft.update.core.VersionUpdate
 
 /**
- * @author Anthony Birembaut
+ * @author Emmanuel Duchastenier
  */
-class UpdateTo9_0_0 extends VersionUpdate {
+class RenameTechUserProperties extends UpdateStep {
+
+    protected static final String CONFIG_FILE_NAME = "bonita-tenant-community-custom.properties"
+
+    private Map<String, String> toRename = ["userName"    : "bonita.runtime.admin.username",
+                                            "userPassword": "bonita.runtime.admin.password"]
 
     @Override
-    List<UpdateStep> getUpdateSteps() {
-        // keep one line per step and comma (,) at start of line to avoid false-positive merge conflict:
-        return [
-                new CreateTemporaryContentTable()
-                , new AddAppVersionToPlatform()
-                , new AddMaintenanceMessageToPlatform()
-                , new RemoveUnusedSequences()
-                , new RemoveTenantIdFromProcessInstance()
-                , new RenameTechUserProperties()
-        ]
+    execute(UpdateContext context) {
+        context.configurationHelper.renamePropertiesInConfigFiles(CONFIG_FILE_NAME, toRename)
+    }
+
+    @Override
+    String getDescription() {
+        return "Rename Bonita properties $toRename in configuration file $CONFIG_FILE_NAME"
     }
 
 }

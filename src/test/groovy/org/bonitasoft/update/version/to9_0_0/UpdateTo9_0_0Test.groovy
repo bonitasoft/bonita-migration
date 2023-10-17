@@ -26,6 +26,7 @@ class UpdateTo9_0_0Test extends Specification {
                 , "AddMaintenanceMessageToPlatform"
                 , "RemoveUnusedSequences"
                 , "RemoveTenantIdFromProcessInstance"
+                , "RenameTechUserProperties"
         ]
 
     }
