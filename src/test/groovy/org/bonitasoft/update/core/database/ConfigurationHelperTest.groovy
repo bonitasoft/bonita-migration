@@ -176,7 +176,7 @@ class ConfigurationHelperTest extends Specification {
 
     }
 
-    def "should not update up to date property in property file"() {
+    def "should not update up-to-date property in property file"() {
         setup:
         def fileName = "existingFile"
         def existingContent = "#mycomment\nkey=value\nkey2=value2"
@@ -196,7 +196,7 @@ class ConfigurationHelperTest extends Specification {
 
         then:
         0 * sql.execute(_)
-        3 * logger.info("property file is already up to date ")
+        3 * logger.info("property file is already up to date")
     }
 
     def "updateKeyInAllPropertyFiles should not add comment if comment is null"() {
@@ -363,6 +363,78 @@ key1@value1"""
         def entry = configurationHelper.newPropertyEntry("key2", "value", "=", null)
         then:
         entry == "key2=value"
+    }
+
+    def "renamePropertiesInConfigFiles should throw exception when file does not exist"() {
+        setup:
+        def fileName = "non-existing"
+
+        when:
+        configurationHelper.renamePropertiesInConfigFiles(fileName, ["key": "value"])
+
+        then:
+        IllegalArgumentException argumentException = thrown()
+        argumentException.message == "configuration file ${fileName} not found in database."
+
+    }
+
+    def "renamePropertiesInConfigFiles should log WARN message if no key match in specified file"() {
+        setup:
+        def fileName = "existingFile"
+        def existingContent = "some.key=some value"
+
+        databaseHelper.getBlobContentAsString(_) >> existingContent
+        sql.rows("""
+                SELECT tenant_id, content_type, resource_content
+                FROM configuration
+                WHERE resource_name=${fileName}       
+                ORDER BY content_type, tenant_id
+                """) >> [[tenant_id: 1L, content_type: "type", resource_content: existingContent.bytes]]
+
+        when:
+        configurationHelper.renamePropertiesInConfigFiles(fileName, ["non-existing.key": "other value"])
+
+        then:
+        0 * sql.execute(_)
+        1 * logger.warn("None of keys [non-existing.key] where found to replace in file $fileName (content_type: type).")
+    }
+
+    def "renamePropertiesInConfigFiles should update property name, even if commented out"() {
+        setup:
+        def captured = []
+        def fileName = "existingFile"
+        def existingContent = """# file comment
+# oldPropertyName=original value
+key2=unchanged value
+oldToto= some value
+"""
+
+        databaseHelper.getBlobContentAsString(_) >> existingContent
+        def results = [[tenant_id: 0L, content_type: "template_type", resource_content: existingContent.bytes],
+                       [tenant_id: 5L, content_type: "type", resource_content: existingContent.bytes]]
+        sql.rows("""
+                SELECT tenant_id, content_type, resource_content
+                FROM configuration
+                WHERE resource_name=${fileName}       
+                ORDER BY content_type, tenant_id
+                """) >> results
+
+        when:
+        configurationHelper.renamePropertiesInConfigFiles(fileName, ["oldPropertyName": "newPropertyName", "oldToto": "newTata"])
+
+        then:
+        2 * sql.execute({ captured.add(it) })
+        def expectedContent = """# file comment
+# newPropertyName=original value
+key2=unchanged value
+newTata=some value
+"""
+
+        captured == ["UPDATE configuration SET resource_content = ${expectedContent.bytes} WHERE tenant_id = 0 " +
+                             "AND content_type = template_type AND resource_name = ${fileName}",
+                     "UPDATE configuration SET resource_content = ${expectedContent.bytes} WHERE tenant_id = 5 " +
+                             "AND content_type = type AND resource_name = ${fileName}"]
+
     }
 
 }
