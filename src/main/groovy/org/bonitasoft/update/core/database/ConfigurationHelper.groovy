@@ -89,18 +89,51 @@ class ConfigurationHelper {
             } else {
                 def oldValue = properties.get(propertyKey)
                 if (oldValue != newPropertyValue) {
-                    def oldEntry = "${propertyKey}=${oldValue}"
-                    def newContent = content.replace(oldEntry, newEntry)
+                    def oldEntry = "${propertyKey}[ ]*=[ ]*${oldValue}"
+                    def newContent = content.replaceAll(oldEntry, newEntry)
                     updateConfigurationFileContent(fileName, tenantId, it.content_type, newContent.bytes)
-                    logger.info(String.format("update property in configuration file | tenant id: %3d | type: %-25s | file name: %s | new property: %s", tenantId, it.content_type, fileName, "${propertyKey}=${newPropertyValue}"))
+                    logger.info(String.format("update property in configuration file | tenant id: %3d | type: %-25s | file name: %s | replaced property: %s", tenantId, it.content_type, fileName, "${propertyKey}=${newPropertyValue}"))
                 } else {
-                    logger.info(String.format("property file is already up to date "))
+                    logger.info(String.format("property file is already up to date"))
                 }
             }
             updatedFiles++
         }
         if (updatedFiles == 0) {
             throw new IllegalArgumentException("configuration file ${fileName} not found in database.")
+        }
+    }
+
+    def renamePropertiesInConfigFiles(String fileName, Map<String, String> propertyNames) {
+        def results = sql.rows("""
+                SELECT tenant_id, content_type, resource_content
+                FROM configuration
+                WHERE resource_name=${fileName}       
+                ORDER BY content_type, tenant_id
+                """)
+        if (!results) {
+            throw new IllegalArgumentException("configuration file ${fileName} not found in database.")
+        }
+        results.each {
+            String content = databaseHelper.getBlobContentAsString(it.resource_content)
+            def tenantId = it.tenant_id as long
+            String contentType = it.content_type
+            String newContent = content
+            boolean updated = false
+            propertyNames.each { String oldPropertyName, String newPropertyName ->
+                if (newContent.contains(oldPropertyName)) {
+                    newContent = newContent.replaceAll("${oldPropertyName}[ ]*=[ ]*", "${newPropertyName}=")
+                    updated = true
+                } else {
+                    logger.warn("Property name $oldPropertyName does not exist in file $fileName (content_type: $contentType).")
+                }
+            }
+            if (updated) {
+                updateConfigurationFileContent(fileName, tenantId, contentType, newContent.bytes)
+                logger.info(String.format("Updated properties in configuration file | tenant id: %3d | type: %-25s | file name: %s | property names: %s", tenantId, it.content_type, fileName, propertyNames))
+            } else {
+                logger.warn("None of keys ${propertyNames.keySet()} where found to replace in file $fileName (content_type: $contentType).")
+            }
         }
     }
 

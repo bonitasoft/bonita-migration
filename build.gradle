@@ -147,7 +147,7 @@ dependencies {
 
     // TODO should be fillerRuntime (require changed in tasks)
     fillerImplementation "ch.qos.logback:logback-classic:$logbackVersion"
-    fillerImplementation 'junit:junit:4.11'
+    fillerImplementation 'junit:junit:4.13.1'
     fillerImplementation "org.codehaus.groovy:groovy-all:3.0.9"
     fillerImplementation 'org.awaitility:awaitility:3.0.0'
     fillerImplementation 'org.assertj:assertj-core:3.12.2'
