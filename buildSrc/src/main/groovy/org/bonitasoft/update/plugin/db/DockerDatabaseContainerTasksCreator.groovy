@@ -77,9 +77,7 @@ class DockerDatabaseContainerTasksCreator {
         def pullImage = project.tasks.register("pull${uniqueName}Image", DockerPullImage) {
             description = "Pull docker image for $uniqueName db vendor"
             group = null // do not show task when running `gradle tasks`
-
-            repository = vendor.repository
-            tag = vendor.tag
+            image = "$vendor.repository:$vendor.tag"
 
             if (vendor.registryUrlEnv != null) {
                 registryCredentials.url = System.getenv(vendor.registryUrlEnv)
@@ -93,11 +91,11 @@ class DockerDatabaseContainerTasksCreator {
             group = null // do not show task when running `gradle tasks`
 
             dependsOn pullImage
-            portBindings = [":$vendor.portBinding"]
-            targetImageId pullImage.get().getImageId()
+            hostConfig.portBindings = [":$vendor.portBinding"]
+            targetImageId pullImage.get().getImage()
             if (vendor.name == 'oracle') {
                 // 1Go
-                shmSize = 1099511627776
+                hostConfig.shmSize = 1099511627776
             }
         }
 

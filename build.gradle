@@ -126,11 +126,14 @@ artifacts { archives distZip }
 
 distTar.configure {enabled = false }
 
-sourceCompatibility = 11
-targetCompatibility = 11
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(11))
+    }
+}
 
 dependencies {
-    implementation "org.codehaus.groovy:groovy-all:3.0.9"
+    implementation "org.codehaus.groovy:groovy-all:3.0.19"
     implementation "com.github.zafarkhaja:java-semver:0.9.0"
     implementation group: 'org.apache.commons', name: 'commons-dbcp2', version: '2.9.0'
     implementation "ch.qos.logback:logback-classic:$logbackVersion"
@@ -140,23 +143,23 @@ dependencies {
 
     testRuntimeOnly "cglib:cglib-nodep:2.2"
     testRuntimeOnly 'org.objenesis:objenesis:1.2'
-    testImplementation 'org.assertj:assertj-core:3.12.2'
+    testImplementation 'org.assertj:assertj-core:3.24.2'
     testImplementation('org.dbunit:dbunit:2.5.1')
-    testImplementation "org.spockframework:spock-core:2.1-groovy-3.0"
+    testImplementation "org.spockframework:spock-core:2.3-groovy-3.0"
     testImplementation 'xmlunit:xmlunit:1.5'
 
     // TODO should be fillerRuntime (require changed in tasks)
     fillerImplementation "ch.qos.logback:logback-classic:$logbackVersion"
     fillerImplementation 'junit:junit:4.13.1'
-    fillerImplementation "org.codehaus.groovy:groovy-all:3.0.9"
-    fillerImplementation 'org.awaitility:awaitility:3.0.0'
-    fillerImplementation 'org.assertj:assertj-core:3.12.2'
+    fillerImplementation "org.codehaus.groovy:groovy-all:3.0.19"
+    fillerImplementation 'org.awaitility:awaitility:4.2.0'
+    fillerImplementation 'org.assertj:assertj-core:3.24.2'
 
-    enginetestImplementation 'org.awaitility:awaitility:3.0.0'
-    enginetestImplementation 'org.assertj:assertj-core:3.12.2'
-    enginetestImplementation("org.spockframework:spock-junit4:2.1-groovy-3.0")
-    enginetestImplementation("org.spockframework:spock-core:2.1-groovy-3.0")
-    enginetestImplementation "org.codehaus.groovy:groovy-all:3.0.9"
+    enginetestImplementation 'org.awaitility:awaitility:4.2.0'
+    enginetestImplementation 'org.assertj:assertj-core:3.24.2'
+    enginetestImplementation("org.spockframework:spock-junit4:2.3-groovy-3.0")
+    enginetestImplementation("org.spockframework:spock-core:2.3-groovy-3.0")
+    enginetestImplementation "org.codehaus.groovy:groovy-all:3.0.19"
     enginetestImplementation 'javax.xml.bind:jaxb-api:2.3.1'
     enginetestImplementation 'org.glassfish.jaxb:jaxb-runtime:2.3.1'
     // TODO should be enginetestRuntime (require changed in tasks)
