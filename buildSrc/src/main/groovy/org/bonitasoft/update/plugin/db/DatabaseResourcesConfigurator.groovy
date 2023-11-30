@@ -4,6 +4,7 @@ import org.bonitasoft.update.plugin.UpdatePlugin
 import org.bonitasoft.update.plugin.UpdatePluginExtension
 import org.gradle.api.Project
 
+import static org.bonitasoft.update.plugin.VersionUtils.padMajorVersionOn2Digits
 import static org.bonitasoft.update.plugin.VersionUtils.underscored
 import static org.bonitasoft.update.plugin.VersionUtils.getTestableVersionList
 
@@ -30,9 +31,10 @@ class DatabaseResourcesConfigurator {
         // Update tests
         if (project.plugins.hasPlugin(UpdatePlugin)) {
             getVersionsToUpdate(project).each {
+                String testUpdateVersion = underscored(padMajorVersionOn2Digits(it))
                 String underscoredVersion = underscored(it)
                 project.tasks.named("cleandb_" + underscoredVersion).configure { dependsOn(vendorConfigurationTask) }
-                removeVendorContainer.configure { mustRunAfter(project.tasks.named("testUpdate_" + underscoredVersion)) }
+                removeVendorContainer.configure { mustRunAfter(project.tasks.named("testUpdate_" + testUpdateVersion)) }
             }
         }
     }

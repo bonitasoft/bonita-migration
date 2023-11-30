@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2018 BonitaSoft S.A.
+ * Copyright (C) 2023 BonitaSoft S.A.
  * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
@@ -24,17 +24,21 @@ import org.bonitasoft.engine.test.junit.BonitaEngineRule
 import org.bonitasoft.update.filler.FillAction
 import org.junit.Rule
 
-class InitializerAfter7_11_0 extends CommonInitializer {
+/**
+ * @author Emmanuel Duchastenier
+ */
+class InitializerAfter8_0_0 extends CommonInitializer {
 
+    // keepPlatformOnShutdown does not exist anymore since after 8.0.x:
     @Rule
-    public BonitaEngineRule bonitaEngineRule = BonitaEngineRule.create().keepPlatformOnShutdown()
+    public BonitaEngineRule bonitaEngineRule = BonitaEngineRule.create()
 
     @FillAction
     void 'create and install a BDM and a process with Business Data'() {
         def client = new APIClient()
         client.login("install", "install")
         client.tenantAdministrationAPI.pause()
-        client.tenantAdministrationAPI.installBusinessDataModel(new BusinessObjectModelConverter().zip(buildCustomBOM()))
+        client.tenantAdministrationAPI.updateBusinessDataModel(new BusinessObjectModelConverter().zip(buildCustomBOM()))
         client.tenantAdministrationAPI.resume()
 
         def identityAPI = client.getIdentityAPI()

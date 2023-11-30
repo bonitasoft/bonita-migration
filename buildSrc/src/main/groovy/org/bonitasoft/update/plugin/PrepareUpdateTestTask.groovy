@@ -80,19 +80,24 @@ class PrepareUpdateTestTask extends JavaExec {
     @Internal
     def getFillersToRun() {
         def fillers = []
-        if (semver(targetVersion) != semver("7.9.1")) {
+        def version = semver(targetVersion)
+        if (version != semver("7.9.1")) {
             //special case, there is a bug in test api 7.9.0, the bonita engine rule does not work properly
             if (isSP) {
-                if (semver(targetVersion) < Version.valueOf("7.11.0")) {
+                if (version < Version.valueOf("7.11.0")) {
                     fillers.add("com.bonitasoft.update.InitializerBefore7_11_0SP")
-                } else {
+                } else if (version < Version.valueOf("9.0.0")) {
                     fillers.add("com.bonitasoft.update.InitializerAfter7_11_0SP")
+                } else {
+                    fillers.add("com.bonitasoft.update.InitializerAfter8_0_0SP")
                 }
             } else {
-               if (semver(targetVersion) < Version.valueOf("7.11.0")) {
+               if (version < Version.valueOf("7.11.0")) {
                     fillers.add("org.bonitasoft.update.InitializerBefore7_11_0")
-                } else {
+                } else if (version < Version.valueOf("9.0.0")) {
                     fillers.add("org.bonitasoft.update.InitializerAfter7_11_0")
+                } else {
+                    fillers.add("org.bonitasoft.update.InitializerAfter8_0_0")
                 }
             }
         }

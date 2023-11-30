@@ -15,6 +15,10 @@ package org.bonitasoft.update.plugin
 
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.tasks.TaskProvider
+import org.gradle.jvm.toolchain.JavaLanguageVersion
+import org.gradle.jvm.toolchain.JavaToolchainService
+import com.github.zafarkhaja.semver.Version
 
 /**
  * @author Emmanuel Duchastenier
@@ -29,6 +33,14 @@ class AlternateJVMRunner {
             def alternateJvm = project.property(ALTERNATE_JVM)
             project.logger.info("Parameter '$ALTERNATE_JVM' detected. ${project.name} will use alternate JVM '$alternateJvm' to run $task")
             task.executable = alternateJvm
+        }
+    }
+
+    static setupJavaToolChain(String version, Project project, TaskProvider taskProvider) {
+        // Engine >= 10.0 requires Java 17 to run:
+        if (Version.valueOf(version) >= Version.valueOf("10.0.0")) {
+            JavaToolchainService service = project.getExtensions().getByType(JavaToolchainService.class);
+            taskProvider.configure { javaLauncher.set(service.launcherFor { languageVersion = JavaLanguageVersion.of(17) }) }
         }
     }
 }

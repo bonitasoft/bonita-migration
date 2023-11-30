@@ -124,12 +124,17 @@ group 'org.bonitasoft.update'
 
 artifacts { archives distZip }
 
-distTar.configure {enabled = false }
+distTar.configure { enabled = false }
 
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(11))
     }
+}
+project.tasks.withType(JavaCompile).configureEach {
+    javaCompiler.set(javaToolchains.compilerFor {
+        languageVersion = JavaLanguageVersion.of(17)
+    })
 }
 
 dependencies {

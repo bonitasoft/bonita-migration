@@ -11,7 +11,6 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
-
 package org.bonitasoft.update.filler
 
 import org.junit.Rule
@@ -26,7 +25,6 @@ class FillerRunner {
     public static void main(String[] args) {
         def classNames = args.toList()
 
-
         println "FillerRunner: fill with classes names:" + classNames
 
 
@@ -36,7 +34,7 @@ class FillerRunner {
             try {
                 def clazz = Class.forName(it)
                 instances.add(clazz.newInstance())
-            } catch (ClassNotFoundException e) {
+            } catch (ClassNotFoundException ignored) {
                 println "Filler $it not found, skipping it"
             }
         }
@@ -58,7 +56,6 @@ class FillerRunner {
 
         println "FillerRunner: finished "
         System.exit(0)
-
     }
 
     static def withFillerInitializer(Statement statement, instances) {
