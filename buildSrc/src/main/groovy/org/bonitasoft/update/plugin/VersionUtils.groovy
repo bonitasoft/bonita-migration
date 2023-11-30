@@ -25,6 +25,16 @@ class VersionUtils {
         return version.replace('.', '_')
     }
 
+    // Pad left with 0 if 1-digit, so that 9.0.0 comes BEFORE 10.0.0 --> 09_0_0 < 10_0_0
+    static String padMajorVersionOn2Digits(String version) {
+        def (major) = version.split('\\.')
+        if (major.size() == 1) {
+            return "0${version}"
+        } else {
+            return version
+        }
+    }
+
     static Version semver(String version) {
         return Version.valueOf(version.replace('_', '.'))
     }
@@ -64,7 +74,7 @@ class VersionUtils {
 
     static String getVersionBefore(List<String> previousVersions, String targetVersion) {
         for (int i = 0; i < previousVersions.size(); i++) {
-            if (previousVersions.get(i).equals(targetVersion)) {
+            if (previousVersions.get(i) == targetVersion) {
                 return previousVersions.get(i - 1)
             }
         }

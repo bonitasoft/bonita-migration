@@ -165,7 +165,7 @@ class UpdatePlugin implements Plugin<Project> {
     }
 
     static def createTestUpdateTask(Project project, String version, boolean isSP) {
-        def updateTestTask = project.tasks.register("testUpdate_" + underscored(version),
+        def updateTestTask = project.tasks.register("testUpdate_" + underscored(padMajorVersionOn2Digits(version)),
                 TestUpdateTask) {
             description:
             "test Bonita after updating to version $version"
@@ -175,6 +175,7 @@ class UpdatePlugin implements Plugin<Project> {
             configureBonita(project, version, isSP)
             dependsOn project.tasks.named("testClasses") //bug? need to have the test compiled in
         }
+        AlternateJVMRunner.setupJavaToolChain(version, project, updateTestTask)
         updateTestTask
     }
 
@@ -198,6 +199,8 @@ class UpdatePlugin implements Plugin<Project> {
         def prepareTestTask = project.tasks.register("prepareTestFor_" + underscored(targetVersion), PrepareUpdateTestTask) {
             configureBonita(project, underscored(previousVersion), underscored(targetVersion), isSP)
         }
+        AlternateJVMRunner.setupJavaToolChain(targetVersion, project, prepareTestTask)
+
         DatabasePluginExtension properties = project.extensions.getByType(DatabasePluginExtension.class)
         if (properties.dbvendor == 'sqlserver') {
             defineXaRecoveryConfiguration(project)
