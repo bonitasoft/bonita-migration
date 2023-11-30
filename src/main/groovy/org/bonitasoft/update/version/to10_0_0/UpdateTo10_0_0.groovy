@@ -13,6 +13,7 @@
  **/
 package org.bonitasoft.update.version.to10_0_0
 
+import org.bonitasoft.update.core.UpdateContext
 import org.bonitasoft.update.core.UpdateStep
 import org.bonitasoft.update.core.VersionUpdate
 
@@ -21,11 +22,20 @@ import org.bonitasoft.update.core.VersionUpdate
  */
 class UpdateTo10_0_0 extends VersionUpdate {
 
+    public static final List<String> WARN_MESSAGE_JAVA_17 =
+            ["Warning: Bonita versions 10.0.0 / 2024.1 and later only run on Java 17 environments.",
+             "If your JRE or JDK is older than 17, you need to update your target environment before starting your updated Bonita platform."]
+
     @Override
     List<UpdateStep> getUpdateSteps() {
         // keep one line per step and comma (,) at start of line to avoid false-positive merge conflict:
         return [
         ]
+    }
+
+    @Override
+    String[] getPreUpdateWarnings(UpdateContext context) {
+        WARN_MESSAGE_JAVA_17
     }
 
 }
