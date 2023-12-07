@@ -235,7 +235,7 @@ class UpdatePlugin implements Plugin<Project> {
             //exclude groovy-all and other groovy deps to avoid having multiple versions. The update tool declares the dependency itself
             exclude module: "sqlserver"
             exclude module: "postgresql"
-            exclude module: "mysql-connector-java"
+            exclude module: "mysql-connector-j"
             exclude module: "ojdbc"
             exclude module: "pull-parser" // to not pull a wrong XML parser
         }
