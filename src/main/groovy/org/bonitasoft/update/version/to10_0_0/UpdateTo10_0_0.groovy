@@ -31,18 +31,25 @@ class UpdateTo10_0_0 extends VersionUpdate {
              "Word-based search has been replaced with Like-based search in Bonita versions 10.0.0 / 2024.1 and later",
              "These configuration beans are not used anymore, and should be removed"]
 
+    public static final List<String> PERMISSIONS_ACTIVATION_WARNING =
+            ["Starting from 10.0.0, the dynamic REST API authorizations are activated by default on Bonita platform",
+             " it will be activated automatically when updating unless the property bonita.runtime.authorization.dynamic-check.enabled is set to false.",
+             " More information is available in the documentation https://documentation.bonitasoft.com/bonita/latest/identity/rest-api-authorization#dynamic_authorization"]
+
+
     @Override
     List<UpdateStep> getUpdateSteps() {
         // keep one line per step and comma (,) at start of line to avoid false-positive merge conflict:
-        return [new RemoveEnableWordSearchConfig()]
+        return [new RemoveEnableWordSearchConfig(),
+                new AddEnableDynamicCheckConfig()]
     }
 
     @Override
     String[] getPreUpdateWarnings(UpdateContext context) {
         if (wordSearchExclusionMappingsExist(context)) {
-            return [WARN_MESSAGE_JAVA_17, WARN_MESSAGE_WORD_SEARCH]
+            return [WARN_MESSAGE_JAVA_17, PERMISSIONS_ACTIVATION_WARNING, WARN_MESSAGE_WORD_SEARCH]
         }
-        WARN_MESSAGE_JAVA_17
+        return [WARN_MESSAGE_JAVA_17, PERMISSIONS_ACTIVATION_WARNING]
     }
 
     boolean wordSearchExclusionMappingsExist(UpdateContext context) {
