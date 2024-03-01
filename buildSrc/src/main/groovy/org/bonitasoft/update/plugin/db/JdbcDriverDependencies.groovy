@@ -18,7 +18,7 @@ public class JdbcDriverDependencies {
 
     public final static String mysql8 = 'com.mysql:mysql-connector-j:8.2.0'
     public final static String oracle = 'com.oracle.database.jdbc:ojdbc8:19.3.0.0'
-    public final static String postgres = 'org.postgresql:postgresql:42.4.3'
+    public final static String postgres = 'org.postgresql:postgresql:42.4.4'
     public final static String sqlserver = 'com.microsoft.sqlserver:mssql-jdbc:8.4.1.jre8'
 
 }
