@@ -12,7 +12,7 @@ class UpdateTo10_0_0Test extends Specification {
     @Unroll
 
 
-    def "should 10.0.0 preUpdateWarnings warn about Java 17 & wordSearchExclusionMapping"() {
+    def "should 10.0.0 preUpdateWarnings warn about Java 17 & wordSearchExclusionMapping & dynamic authorization"() {
         setup:
         def version = Spy(UpdateTo10_0_0.class)
         version.wordSearchExclusionMappingsExist(null) >> true
@@ -25,6 +25,7 @@ class UpdateTo10_0_0Test extends Specification {
         warnings.any {
             it.contains("Java 17")
             it.contains("wordSearchExclusionMapping")
+            it.contains("dynamic REST API authorizations")
         }
     }
 
@@ -41,7 +42,8 @@ class UpdateTo10_0_0Test extends Specification {
 
         where:
         stepName << [
-                "RemoveEnableWordSearchConfig"
+                "RemoveEnableWordSearchConfig",
+                "AddEnableDynamicCheckConfig"
         ]
     }
 
