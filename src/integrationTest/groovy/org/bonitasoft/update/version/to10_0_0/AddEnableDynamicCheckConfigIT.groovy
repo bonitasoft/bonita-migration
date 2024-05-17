@@ -28,7 +28,7 @@ class AddEnableDynamicCheckConfigIT extends Specification {
         dbUnitHelper.dropTables(["configuration"] as String[])
     }
 
-    def "should addd the enable dynamic check property to configuration file"() {
+    def "should add the enable dynamic check property to configuration file"() {
         given:
         byte[] confContent = this.getClass().getResourceAsStream("/conf/bonita-tenant-community-custom.properties").text.bytes
         updateContext.sql.executeInsert("insert into configuration(tenant_id, content_type, resource_name, resource_content) values (?,?,?,?)",

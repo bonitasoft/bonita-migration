@@ -23,33 +23,40 @@ import org.bonitasoft.update.core.VersionUpdate
 class UpdateTo10_0_0 extends VersionUpdate {
 
     public static final List<String> WARN_MESSAGE_JAVA_17 =
-            ["Warning: Bonita versions 10.0.0 / 2024.1 and later only run on Java 17 environments.",
+            ["IMPORTANT: Bonita versions 10.0.0 / 2024.1 and later only run on Java 17 environments.",
              "If your JRE or JDK is older than 17, you need to update your target environment before starting your updated Bonita platform."]
 
     public static final List<String> WARN_MESSAGE_WORD_SEARCH =
-            ["Warning: wordSearchExclusionMapping beans have been detected in bonita-platform-custom.xml",
+            ["NOTE: wordSearchExclusionMapping beans have been detected in bonita-platform-custom.xml",
              "Word-based search has been replaced with Like-based search in Bonita versions 10.0.0 / 2024.1 and later",
              "These configuration beans are not used anymore, and should be removed"]
 
     public static final List<String> PERMISSIONS_ACTIVATION_WARNING =
-            ["Starting from 10.0.0, the dynamic REST API authorizations are activated by default on Bonita platform",
+            ["NOTE: Starting from 10.0.0, the dynamic REST API authorizations are activated by default on Bonita platform",
              " it will be activated automatically when updating unless the property bonita.runtime.authorization.dynamic-check.enabled is set to false.",
              " More information is available in the documentation https://documentation.bonitasoft.com/bonita/latest/identity/rest-api-authorization#dynamic_authorization"]
 
+    public static final List<String> WARN_MESSAGE_HTML_SANITIZER_FILTER =
+            ["CRITICAL: In order to address CVE-2024-26542, a servlet filter has been ENABLED by default as a countermeasure.",
+             "Please acknowledge the behavior of this filter by reading the documentation: https://documentation.bonitasoft.com/bonita/latest/security/sanitizer-security.",
+             "In some cases, keeping the filter enabled may corrupt user data."]
 
     @Override
     List<UpdateStep> getUpdateSteps() {
         // keep one line per step and comma (,) at start of line to avoid false-positive merge conflict:
         return [new RemoveEnableWordSearchConfig(),
-                new AddEnableDynamicCheckConfig()]
+                new AddEnableDynamicCheckConfig()
+                , new AddSecuritySanitizerConfig()
+        ]
     }
 
     @Override
     String[] getPreUpdateWarnings(UpdateContext context) {
+        def messages = [WARN_MESSAGE_HTML_SANITIZER_FILTER, WARN_MESSAGE_JAVA_17, PERMISSIONS_ACTIVATION_WARNING]
         if (wordSearchExclusionMappingsExist(context)) {
-            return [WARN_MESSAGE_JAVA_17, PERMISSIONS_ACTIVATION_WARNING, WARN_MESSAGE_WORD_SEARCH]
+            messages << WARN_MESSAGE_WORD_SEARCH
         }
-        return [WARN_MESSAGE_JAVA_17, PERMISSIONS_ACTIVATION_WARNING]
+        return messages.flatten()
     }
 
     boolean wordSearchExclusionMappingsExist(UpdateContext context) {
