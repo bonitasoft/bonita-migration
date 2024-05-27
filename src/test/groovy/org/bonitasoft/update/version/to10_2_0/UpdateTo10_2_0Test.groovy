@@ -13,17 +13,25 @@
  **/
 package org.bonitasoft.update.version.to10_2_0
 
-import org.bonitasoft.update.core.UpdateStep
-import org.bonitasoft.update.core.VersionUpdate
+import spock.lang.Specification
+import spock.lang.Unroll
 
-class UpdateTo10_2_0 extends VersionUpdate {
+class UpdateTo10_2_0Test extends Specification {
 
-    @Override
-    List<UpdateStep> getUpdateSteps() {
-        // keep one line per step and comma (,) at start of line to avoid false-positive merge conflict:
-        return [
-                new AddColumnAdvancedToBusinessApp()
+    @Unroll
+    def "should update to 10.2.0 include step '#stepName'"(def stepName) {
+        given:
+        def updateTo = new UpdateTo10_2_0()
+
+        expect:
+        def steps = updateTo.updateSteps
+        steps.collect {
+            it.class.getSimpleName()
+        }.contains(stepName)
+
+        where:
+        stepName << [
+                "AddColumnAdvancedToBusinessApp"
         ]
     }
-
 }
