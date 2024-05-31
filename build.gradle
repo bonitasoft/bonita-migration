@@ -1,7 +1,3 @@
-import com.github.zafarkhaja.semver.Version
-
-import static pl.allegro.tech.build.axion.release.domain.PredefinedVersionIncrementer.versionIncrementerFor
-
 buildscript {
     repositories {
         mavenCentral()
@@ -31,93 +27,6 @@ apply plugin: 'update'
 
 configurations {
     inDistrib
-}
-
-scmVersion {
-    tag { // Resulting tag will by x.y.z
-        prefix = ''
-        versionSeparator = ''
-    }
-    hooks {
-        //change in the readme the version
-        pre 'fileUpdate', [file: 'README.md', pattern: { v, p -> /$v/ }, replacement: { v, p -> "$v" }]
-        pre 'fileUpdate', [file       : 'community/update.properties', pattern: { v, p ->
-            /currentVersionModifier=.*/
-        },
-                           replacement: { String v, p ->
-                               def parsedVersion = Version.valueOf(v)
-                               if (!parsedVersion.preReleaseVersion.isEmpty()) {
-                                   return "currentVersionModifier=" + parsedVersion.preReleaseVersion
-                               } else {
-                                   return "currentVersionModifier=NONE"
-                               }
-                           }]
-        // create a commit for the release
-        pre 'commit', { v, p -> "chore(release): create release $v" }
-    }
-    tag {
-        deserialize = { config, position, String tagName -> normalizeOldTagName(tagName) }
-    }
-
-    versionIncrementer { context ->
-        def version = context.currentVersion
-        if (project.hasProperty("release.maintenance")) {
-            return versionIncrementerFor("incrementPatch").call(context)
-        }
-        if (project.hasProperty("release.minor")) {
-            return versionIncrementerFor("incrementMinor").call(context)
-        }
-        if (project.hasProperty("release.major")) {
-            return versionIncrementerFor("incrementMajor").call(context)
-        }
-        if (project.hasProperty("release.rc")) {
-            return nextPreRelease(version, "rc")
-        }
-        if (project.hasProperty("release.alpha")) {
-            return nextPreRelease(version, "alpha")
-        }
-        if (project.hasProperty("release.beta")) {
-            return nextPreRelease(version, "beta")
-        }
-        if (version.preReleaseVersion.startsWith("rc")
-                || version.preReleaseVersion.startsWith("alpha")
-                || version.preReleaseVersion.startsWith("beta")) {
-            return Version.valueOf("$version.majorVersion.$version.minorVersion.$version.patchVersion")
-        }
-        return versionIncrementerFor("incrementPatch").call(context)
-    }
-}
-
-private static Version nextPreRelease(Version currentVersion, String suffix) {
-    if (currentVersion.preReleaseVersion.startsWith(suffix)) {
-        def currentPreReleaseNumber = Integer.valueOf(currentVersion.preReleaseVersion.substring(suffix.size() + 1))
-        def nextNumber = String.format("%02d", currentPreReleaseNumber + 1)
-        return Version.valueOf("$currentVersion.majorVersion.$currentVersion.minorVersion.$currentVersion.patchVersion-$suffix-$nextNumber")
-    }
-    return Version.valueOf("$currentVersion.majorVersion.$currentVersion.minorVersion.$currentVersion.patchVersion-$suffix-01")
-}
-
-
-private static String normalizeOldTagName(String tagName) {
-    int dotCounter = 0
-    char[] finalTag = new char[tagName.length()]
-    for (int i = 0; i < tagName.length(); i++) {
-        char c = tagName.chars[i]
-        if (c == '.'.chars[0]) {
-            dotCounter++
-            if (dotCounter == 3) {
-                c = '-'
-            }
-        }
-        finalTag[i] = c
-    }
-    return new String(finalTag)
-}
-
-project.version = scmVersion.version
-
-project.rootProject.allprojects {
-    version = scmVersion.version
 }
 
 group 'org.bonitasoft.update'
