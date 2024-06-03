@@ -10,5 +10,4 @@ build
 *.orig
 *.mine
 bonita-update*.log
-bonita-update-tool/Config.properties
-bonita-update-tool/src/main/resources/bonita-versions.properties
+src/main/resources/bonita-versions.properties
