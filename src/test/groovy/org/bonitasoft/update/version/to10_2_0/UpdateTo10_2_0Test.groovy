@@ -31,7 +31,7 @@ class UpdateTo10_2_0Test extends Specification {
 
         where:
         stepName << [
-                "AddColumnAdvancedToBusinessApp"
+                "AddColumnLinkToBusinessApp"
         ]
     }
 }

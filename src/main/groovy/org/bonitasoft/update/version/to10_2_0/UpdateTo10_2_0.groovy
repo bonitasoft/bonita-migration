@@ -22,7 +22,7 @@ class UpdateTo10_2_0 extends VersionUpdate {
     List<UpdateStep> getUpdateSteps() {
         // keep one line per step and comma (,) at start of line to avoid false-positive merge conflict:
         return [
-                new AddColumnAdvancedToBusinessApp()
+                new AddColumnLinkToBusinessApp()
         ]
     }
 

@@ -5,14 +5,14 @@ import org.bonitasoft.update.core.UpdateContext
 import spock.lang.Shared
 import spock.lang.Specification
 
-class AddColumnAdvancedToBusinessAppIT extends Specification {
+class AddColumnLinkToBusinessAppIT extends Specification {
 
     @Shared
     DBUnitHelper dbUnitHelper = DBUnitHelper.getInstance()
     @Shared
     UpdateContext updateContext = dbUnitHelper.context
 
-    private AddColumnAdvancedToBusinessApp updateStep = new AddColumnAdvancedToBusinessApp()
+    private AddColumnLinkToBusinessApp updateStep = new AddColumnLinkToBusinessApp()
 
     def setup() {
         dropTestTables()
@@ -29,14 +29,14 @@ class AddColumnAdvancedToBusinessAppIT extends Specification {
 
     def "should add new column to business_app table"() {
         given:
-        assert !updateContext.databaseHelper.hasColumnOnTable("business_app", "advanced")
+        assert !updateContext.databaseHelper.hasColumnOnTable("business_app", "link")
 
         when:
         updateStep.execute(updateContext)
 
         then:
         updateContext.databaseHelper.hasTable("business_app")
-        updateContext.databaseHelper.hasColumnOnTable("business_app", "advanced")
+        updateContext.databaseHelper.hasColumnOnTable("business_app", "link")
     }
 
 }
