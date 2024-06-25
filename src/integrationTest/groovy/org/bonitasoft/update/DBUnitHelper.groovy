@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2014 BonitaSoft S.A.
+ * Copyright (C) 2014-2024 BonitaSoft S.A.
  * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,14 +16,11 @@
  */
 package org.bonitasoft.update
 
-import java.sql.SQLException
-
-import groovy.xml.StreamingMarkupBuilder
 import org.bonitasoft.update.core.Logger
 import org.bonitasoft.update.core.UpdateContext
 import org.bonitasoft.update.core.UpdateStep
-import org.dbunit.dataset.ReplacementDataSet
-import org.dbunit.dataset.xml.FlatXmlDataSet
+
+import java.sql.SQLException
 
 /**
  * @author Baptiste Mesta
@@ -64,13 +61,6 @@ class DBUnitHelper {
         falseValueMap.get(context.dbVendor)
 
     }
-
-    def static dataSet(data) {
-        new ReplacementDataSet(new FlatXmlDataSet(new StringReader(new StreamingMarkupBuilder().bind {
-            dataset data
-        }.toString())), ["[NULL]": null], null)
-    }
-
 
     def executeScript(URL resource) {
         resource.text.split("@@|GO|;").each({ String stmt ->
