@@ -29,14 +29,14 @@ class AddColumnLinkToBusinessAppIT extends Specification {
 
     def "should add new column to business_app table"() {
         given:
-        assert !updateContext.databaseHelper.hasColumnOnTable("business_app", "link")
+        assert !updateContext.databaseHelper.hasColumnOnTable("business_app", "isLink")
 
         when:
         updateStep.execute(updateContext)
 
         then:
         updateContext.databaseHelper.hasTable("business_app")
-        updateContext.databaseHelper.hasColumnOnTable("business_app", "link")
+        updateContext.databaseHelper.hasColumnOnTable("business_app", "isLink")
     }
 
 }
