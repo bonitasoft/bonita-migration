@@ -38,6 +38,7 @@ class RemoveTenantIdFromProcessInstanceIT extends Specification {
         ! updateContext.databaseHelper.hasForeignKeyOnTable("process_instance", "fk_process_instance_tenantId")
         updateContext.databaseHelper.hasIndexOnTable("process_instance", "idx1_proc_inst_pdef_state")
         updateContext.databaseHelper.hasForeignKeyOnTable("ref_biz_data_inst", "fk_ref_biz_data_proc")
+        updateContext.databaseHelper.hasIndexOnTable("ref_biz_data_inst", "idx_biz_data_inst3")
     }
 
 }

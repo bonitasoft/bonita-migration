@@ -33,10 +33,14 @@ class RemoveTenantIdFromProcessInstance extends UpdateStep {
 
             createPrimaryKey("process_instance", "id")
             createForeignKey("ref_biz_data_inst", "fk_ref_biz_data_proc", "process_instance", ["proc_inst_id"], ["id"], true)
+            // Index on foreign key is mandatory on Oracle
+            addOrReplaceIndex("ref_biz_data_inst", "idx_biz_data_inst3","proc_inst_id")
+
             addOrReplaceIndex("process_instance", "idx1_proc_inst_pdef_state", "processdefinitionid", "stateid")
 
             // Finally drop the column!
             dropColumnIfExists("process_instance", "tenantId")
+
         }
     }
 
