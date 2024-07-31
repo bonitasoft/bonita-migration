@@ -11,37 +11,20 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
-package org.bonitasoft.update.version.to10_0_0
+package org.bonitasoft.update.version.to10_1_0
 
+import org.bonitasoft.update.version.to10_0_0.UpdateTo10_0_0
 import spock.lang.Specification
 import spock.lang.Unroll
 
 /**
  * @author Emmanuel Duchastenier
  */
-class UpdateTo10_0_0Test extends Specification {
+class UpdateTo10_1_0Test extends Specification {
+
 
     @Unroll
-    def "should 10.0.0 preUpdateWarnings warn about Java 17 & wordSearchExclusionMapping & dynamic authorization"() {
-        setup:
-        def version = Spy(UpdateTo10_0_0.class)
-        version.wordSearchExclusionMappingsExist(null) >> true
-
-        when:
-        def warnings = version.getPreUpdateWarnings(null)
-
-        then:
-        warnings.size() > 0
-        warnings.any {
-            it.contains("Java 17")
-            it.contains("wordSearchExclusionMapping")
-            it.contains("CVE-2024-26542")
-            it.contains("dynamic REST API authorizations")
-        }
-    }
-
-    @Unroll
-    def "should update to 10.0.0 include step '#stepName'"(def stepName) {
+    def "should update to 10.1.0 include step '#stepName'"(def stepName) {
         given:
         def updateTo = new UpdateTo10_0_0()
 
@@ -53,9 +36,6 @@ class UpdateTo10_0_0Test extends Specification {
 
         where:
         stepName << [
-                "RemoveEnableWordSearchConfig",
-                "AddEnableDynamicCheckConfig",
-                "AddSecuritySanitizerConfig",
                 "CreateRefBizDataInstIndex"
         ]
     }
