@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2024 Bonitasoft S.A.
+ * Copyright (C) 2023 Bonitasoft S.A.
  * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
@@ -11,22 +11,23 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
-package org.bonitasoft.update.version.to10_1_0
+package org.bonitasoft.update.version.to10_0_0
 
-
+import org.bonitasoft.update.core.UpdateContext
 import org.bonitasoft.update.core.UpdateStep
-import org.bonitasoft.update.core.VersionUpdate
-import org.bonitasoft.update.version.to10_0_0.CreateRefBizDataInstIndex
 
-/**
- * @author Emmanuel Duchastenier
- */
-class UpdateTo10_1_0 extends VersionUpdate {
+class CreateRefBizDataInstIndex extends UpdateStep {
 
     @Override
-    List<UpdateStep> getUpdateSteps() {
-        // keep one line per step and comma (,) at start of line to avoid false-positive merge conflict:
-        return [ new CreateRefBizDataInstIndex()]
+    def execute(UpdateContext context) {
+        context.databaseHelper.with {
+            // Index on foreign key is mandatory on Oracle to avoid deadlocks
+            addIndexIfMissing("ref_biz_data_inst", "idx_biz_data_inst3","proc_inst_id")
+        }
     }
 
+    @Override
+    String getDescription() {
+        return "Create mandatory index on ref_biz_data_inst table"
+    }
 }
