@@ -489,6 +489,25 @@ REFERENCES $referencedTableName ($referencedCols) ${onDeleteCascade ? "ON DELETE
     }
 
     /**
+     * remove existing index if already exists and create new index
+     * @param tableName
+     * @param indexName
+     * @param columns
+     * @return create index SQl statement
+     */
+    String addIndexIfMissing(String tableName, String indexName, String... columns) {
+        if (hasIndexOnTable(tableName, indexName)) {
+            logger.info "Index $indexName already exists on table $tableName. Skipping creation."
+            return "";
+        }
+        def concatenatedColumns = columns.collect { it }.join(", ")
+        String request = "CREATE INDEX $indexName ON $tableName ($concatenatedColumns)"
+        logger.info "Executing request: $request"
+        sql.execute(request)
+        return request
+    }
+
+    /**
      * remove existing index if already exists
      * @param tableName
      * @param indexName

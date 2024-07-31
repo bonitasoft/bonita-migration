@@ -45,8 +45,9 @@ class UpdateTo10_0_0 extends VersionUpdate {
     List<UpdateStep> getUpdateSteps() {
         // keep one line per step and comma (,) at start of line to avoid false-positive merge conflict:
         return [new RemoveEnableWordSearchConfig(),
-                new AddEnableDynamicCheckConfig()
-                , new AddSecuritySanitizerConfig()
+                new AddEnableDynamicCheckConfig(),
+                new AddSecuritySanitizerConfig(),
+                new CreateRefBizDataInstIndex()
         ]
     }
 
