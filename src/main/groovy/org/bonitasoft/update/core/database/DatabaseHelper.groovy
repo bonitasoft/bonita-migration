@@ -489,7 +489,7 @@ REFERENCES $referencedTableName ($referencedCols) ${onDeleteCascade ? "ON DELETE
     }
 
     /**
-     * remove existing index if already exists and create new index
+     * Create new index if not already exists
      * @param tableName
      * @param indexName
      * @param columns
