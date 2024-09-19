@@ -17,6 +17,8 @@ import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import org.bonitasoft.update.core.Logger
 
+import java.util.regex.Pattern
+
 /**
  * @author Laurent Leseigneur
  */
@@ -135,6 +137,52 @@ class ConfigurationHelper {
                 logger.warn("None of keys ${propertyNames.keySet()} where found to replace in file $fileName (content_type: $contentType).")
             }
         }
+    }
+
+    def Map<String,String> removePropertiesInConfigFiles(String fileName, String... property) {
+        if(property == null){
+            throw new IllegalArgumentException("At least one property name must be provided.")
+        }
+        def results = sql.rows("""
+                SELECT tenant_id, content_type, resource_content
+                FROM configuration
+                WHERE resource_name=${fileName}       
+                ORDER BY content_type, tenant_id
+                """)
+        if (!results) {
+            throw new IllegalArgumentException("configuration file ${fileName} not found in database.")
+        }
+        def removedProperties = new LinkedHashMap<String,String>()
+        results.each {
+            String content = databaseHelper.getBlobContentAsString(it.resource_content)
+            def tenantId = it.tenant_id as long
+            String contentType = it.content_type
+            String newContent = content
+            boolean updated = false
+            def properties = new Properties()
+            properties.load(new StringReader(newContent))
+            property.each {
+                if (newContent.contains(it)) {
+                    if(properties.containsKey(it)) {
+                        def value = properties.getProperty(it)
+                        logger.debug("Removing property $it with value $value from file $fileName (content_type: $contentType).")
+                        removedProperties.put(it, value)
+                    }
+                    def pattern = Pattern.compile("^#?\\s*${it}=[0-9]+\\R", Pattern.MULTILINE)
+                    newContent = newContent.replaceAll(pattern, "")
+                    updated = true
+                } else {
+                    logger.warn("Property name $it does not exist in file $fileName (content_type: $contentType).")
+                }
+            }
+            if (updated) {
+                updateConfigurationFileContent(fileName, tenantId, contentType, newContent.bytes)
+                logger.info(String.format("Properties removed from configuration file | tenant id: %3d | type: %-25s | file name: %s | property names: %s", tenantId, it.content_type, fileName,  Arrays.asList(property)))
+            } else {
+                logger.warn("None of keys ${Arrays.asList(property)} where found to replace in file $fileName (content_type: $contentType).")
+            }
+        }
+        return removedProperties
     }
 
     def appendToSpecificConfigurationFileIfPropertyIsMissing(String contentType, String fileName, String propertyKey, String propertyValue, String keyValueSeparator, String comment) {

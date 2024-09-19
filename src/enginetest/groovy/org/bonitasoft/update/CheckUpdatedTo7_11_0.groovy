@@ -13,11 +13,11 @@
  **/
 package org.bonitasoft.update
 
-import static org.bonitasoft.engine.commons.io.IOUtil.unzip
-
 import org.bonitasoft.engine.api.APIClient
 import org.junit.Rule
 import spock.lang.Specification
+
+import static org.bonitasoft.engine.commons.io.IOUtil.unzip
 
 class CheckUpdatedTo7_11_0 extends Specification {
 

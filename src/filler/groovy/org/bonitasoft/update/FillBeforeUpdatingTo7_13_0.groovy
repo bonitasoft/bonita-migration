@@ -13,13 +13,13 @@
  **/
 package org.bonitasoft.update
 
-import static org.bonitasoft.update.test.TestUtil.createTestPageContent
-
 import org.bonitasoft.engine.api.APIClient
 import org.bonitasoft.engine.business.application.ApplicationCreator
 import org.bonitasoft.engine.test.junit.BonitaEngineRule
 import org.bonitasoft.update.filler.FillAction
 import org.junit.Rule
+
+import static org.bonitasoft.update.test.TestUtil.createTestPageContent
 
 class FillBeforeUpdatingTo7_13_0 {
     @Rule

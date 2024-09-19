@@ -13,9 +13,9 @@
  **/
 package org.bonitasoft.update.core
 
-import static org.assertj.core.api.Assertions.assertThat
-
 import spock.lang.Specification
+
+import static org.assertj.core.api.Assertions.assertThat
 
 /**
  * @author Emmanuel Duchastenier

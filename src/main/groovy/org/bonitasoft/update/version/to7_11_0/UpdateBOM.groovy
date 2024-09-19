@@ -1,10 +1,10 @@
 package org.bonitasoft.update.version.to7_11_0
 
-import static org.bonitasoft.update.core.IOUtil.unzip
-import static org.bonitasoft.update.core.IOUtil.zip
-
 import org.bonitasoft.update.core.UpdateContext
 import org.bonitasoft.update.core.UpdateStep
+
+import static org.bonitasoft.update.core.IOUtil.unzip
+import static org.bonitasoft.update.core.IOUtil.zip
 
 class UpdateBOM extends UpdateStep {
 
