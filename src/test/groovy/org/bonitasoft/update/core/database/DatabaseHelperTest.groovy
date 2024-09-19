@@ -1,9 +1,9 @@
 package org.bonitasoft.update.core.database
 
-import static org.bonitasoft.update.core.UpdateStep.DBVendor.*
-
 import spock.lang.Specification
 import spock.lang.Unroll
+
+import static org.bonitasoft.update.core.UpdateStep.DBVendor.*
 
 class DatabaseHelperTest extends Specification {
 

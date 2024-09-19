@@ -1,6 +1,6 @@
 package org.bonitasoft.update.version.to7_15_0
 
-import org.bonitasoft.update.version.to7_14_0.UpdateTo7_14_0
+
 import spock.lang.Specification
 import spock.lang.Unroll
 

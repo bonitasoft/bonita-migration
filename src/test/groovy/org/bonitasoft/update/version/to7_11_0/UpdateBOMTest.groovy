@@ -1,13 +1,13 @@
 package org.bonitasoft.update.version.to7_11_0
 
-import static org.bonitasoft.update.core.IOUtil.unzip
-import static org.bonitasoft.update.core.IOUtil.zip
-
 import groovy.sql.Sql
 import org.bonitasoft.update.core.Logger
 import org.bonitasoft.update.core.UpdateContext
 import org.bonitasoft.update.core.database.DatabaseHelper
 import spock.lang.Specification
+
+import static org.bonitasoft.update.core.IOUtil.unzip
+import static org.bonitasoft.update.core.IOUtil.zip
 
 class UpdateBOMTest extends Specification {
     private Sql sql

@@ -13,10 +13,10 @@
  **/
 package org.bonitasoft.update
 
+import groovy.sql.Sql
+
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
-
-import groovy.sql.Sql
 
 /**
  * @author Baptiste Mesta

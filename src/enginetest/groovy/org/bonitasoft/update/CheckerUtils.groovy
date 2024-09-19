@@ -13,10 +13,6 @@
  **/
 
 package org.bonitasoft.update
-
-import java.util.zip.ZipEntry
-import java.util.zip.ZipOutputStream
-
 /**
  * @author Baptiste Mesta
  */
