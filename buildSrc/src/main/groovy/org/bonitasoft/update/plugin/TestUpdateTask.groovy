@@ -63,7 +63,7 @@ class TestUpdateTask extends Test {
                 getDatabaseDriverConfiguration(project, bonitaVersion)
         )
         //add as input the database configuration, tests must  be relaunched when database configuration change
-        dbvendor = project.extensions.database.dbvendor
+        dbvendor = project.extensions.database.dbVendor
 
         def bonitaSemVer = Version.valueOf(bonitaVersion)
         if (bonitaSemVer >= Version.valueOf("7.11.0")) {

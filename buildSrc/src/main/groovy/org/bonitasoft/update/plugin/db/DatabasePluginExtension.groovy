@@ -18,13 +18,13 @@ package org.bonitasoft.update.plugin.db
  */
 class DatabasePluginExtension {
 
-    String dbvendor
+    String dbVendor
     String dbRootUser
     String dbRootPassword
-    String dbuser
-    String dbpassword
-    String dbdriverClass
-    String dburl
+    String dbUser
+    String dbPassword
+    String dbDriverClass
+    String dbUrl
     String dbDatabaseName
     String dbServerName
     String dbServerPort

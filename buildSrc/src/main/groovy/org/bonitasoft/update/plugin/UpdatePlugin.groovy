@@ -37,6 +37,8 @@ class UpdatePlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
 
+        verifyDatabaseVendor()
+
         def itSourceSet = project.sourceSets.create('integrationTest')
         project.sourceSets.create('filler')
         project.sourceSets.create('enginetest')
@@ -50,18 +52,18 @@ class UpdatePlugin implements Plugin<Project> {
             xarecovery
         }
         project.dependencies {
-            //make integration tests depends on the project main classes
+            // make integration tests depends on the project main classes
             integrationTestImplementation project
         }
 
         def updatePluginExtension = project.extensions.create("update", UpdatePluginExtension.class)
 
-        project.extensions.create("database", DatabasePluginExtension)
+        def databasePluginExtension = project.extensions.create("database", DatabasePluginExtension.class)
 
         project.afterEvaluate {
             DatabaseResourcesConfigurator.configureDatabaseResources(project)
 
-            allVersions = getTestableVersionList(project, updatePluginExtension)
+            allVersions = getTestableVersionList(project, updatePluginExtension, databasePluginExtension.dbVendor)
             defineAllJdbcDriversConfigurations(project)
 
             createUpdateTestsTasks(project, updatePluginExtension)
@@ -82,14 +84,14 @@ class UpdatePlugin implements Plugin<Project> {
         // TODO: remove this:
         project.dependencies {
             // the following jdbc drivers are available for integration tests:
-            drivers JdbcDriverDependencies.mysql8
+            drivers JdbcDriverDependencies.mysql
             drivers JdbcDriverDependencies.oracle
             drivers JdbcDriverDependencies.postgres
             drivers JdbcDriverDependencies.sqlserver
         }
 
         // Creating a specific driver configuration for each DB vendor and bonita version:
-        String dbVendor = project.extensions.database.dbvendor
+        String dbVendor = project.extensions.database.dbVendor
         allVersions.each { version ->
             Configuration configuration = project.configurations.create(getDatabaseDriverConfigurationName(dbVendor, version))
             project.dependencies.add(configuration.name, getDatabaseDriverDependency(dbVendor))
@@ -102,14 +104,14 @@ class UpdatePlugin implements Plugin<Project> {
     }
 
     static NamedDomainObjectProvider getDatabaseDriverConfiguration(Project project, String bonitaVersion) {
-        return project.getConfigurations().named(getDatabaseDriverConfigurationName(project.extensions.database.dbvendor, bonitaVersion))
+        return project.getConfigurations().named(getDatabaseDriverConfigurationName(project.extensions.database.dbVendor, bonitaVersion))
     }
 
     def static getDatabaseDriverDependency(String dbVendor) {
         String dep
         switch (dbVendor) {
             case 'mysql':
-                dep = JdbcDriverDependencies.mysql8
+                dep = JdbcDriverDependencies.mysql
                 break
             case 'oracle':
                 dep = JdbcDriverDependencies.oracle
@@ -137,7 +139,7 @@ class UpdatePlugin implements Plugin<Project> {
             group: "update"
         }
         def lastUpdateTests = project.tasks.register("lastUpdateTests") {
-            description: "Run update tests of only last step"
+            description: "Run update tests for last step only"
             group: "update"
         }
 
@@ -202,7 +204,7 @@ class UpdatePlugin implements Plugin<Project> {
         AlternateJVMRunner.setupJavaToolChain(targetVersion, project, prepareTestTask)
 
         DatabasePluginExtension properties = project.extensions.getByType(DatabasePluginExtension.class)
-        if (properties.dbvendor == 'sqlserver') {
+        if (properties.dbVendor == 'sqlserver') {
             defineXaRecoveryConfiguration(project)
             TaskProvider<RunMsSqlserverXARecoveryTask> xaRecoveryTask
             try {
@@ -315,6 +317,13 @@ class UpdatePlugin implements Plugin<Project> {
             }
             //use junit 5 (provided by spock 2+)
             useJUnitPlatform()
+        }
+    }
+
+    private void verifyDatabaseVendor() {
+        String dbVendor = System.getProperty("db.vendor", "postgres")
+        if (!['postgres', 'mysql', 'oracle', 'sqlserver'].contains(dbVendor)) {
+            throw new IllegalArgumentException("Unsupported database $dbVendor")
         }
     }
 

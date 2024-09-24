@@ -133,11 +133,11 @@ class DockerDatabaseContainerTasksCreator {
                         project.tasks.named("${uniqueName}Configuration").configure {
                             doFirst {
                                 DatabasePluginExtension extension = project.extensions.getByType(DatabasePluginExtension)
-                                extension.dburl = url
+                                extension.dbUrl = url
                                 extension.dbServerName = dockerHost
                                 extension.dbServerPort = portBinding
                                 extension.dbDatabaseName = vendor.databaseName
-                                project.logger.quiet("db.url set to ${extension.dburl}")
+                                project.logger.quiet("db.url set to ${extension.dbUrl}")
                             }
                         }
                     }
@@ -161,16 +161,16 @@ class DockerDatabaseContainerTasksCreator {
 
             doFirst {
                 DatabasePluginExtension extension = project.extensions.getByType(DatabasePluginExtension)
-                extension.dbvendor = vendor.name
-                extension.dbdriverClass = vendor.driverClassName
+                extension.dbVendor = vendor.name
+                extension.dbDriverClass = vendor.driverClassName
                 extension.dbRootUser = vendor.rootUser
                 extension.dbRootPassword = vendor.rootPassword
                 // Common to all databases
-                extension.dbuser = 'bonita'
-                extension.dbpassword = 'bpm'
+                extension.dbUser = 'bonita'
+                extension.dbPassword = 'bpm'
 
-                project.logger.quiet("db.vendor set to ${extension.dbvendor}")
-                project.logger.quiet("db.driver set to ${extension.dbdriverClass}")
+                project.logger.quiet("db.vendor set to ${extension.dbVendor}")
+                project.logger.quiet("db.driver set to ${extension.dbDriverClass}")
             }
         }
 

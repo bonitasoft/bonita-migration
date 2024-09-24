@@ -48,7 +48,7 @@ class CleanDbTask extends DefaultTask {
     @TaskAction
     def cleanDb() {
         DatabasePluginExtension properties = project.extensions.getByType(DatabasePluginExtension.class)
-        logger.info "Clean database for vendor ${properties.dbvendor}"
+        logger.info "Clean database for vendor ${properties.dbVendor}"
         logger.info "Drop only (no db and credentials creation)? ${dropOnly}"
 
         def drivers = project.files(getDatabaseDriverConfiguration(project, bonitaVersion).get())
@@ -61,9 +61,9 @@ class CleanDbTask extends DefaultTask {
         drivers.each { File file ->
             loader1.addURL(file.toURI().toURL())
         }
-        Sql.class.getClassLoader().loadClass(properties.dbdriverClass)
+        Sql.class.getClassLoader().loadClass(properties.dbDriverClass)
 
-        switch (properties.dbvendor) {
+        switch (properties.dbVendor) {
             case "oracle":
                 cleanOracleDb(properties)
                 break
@@ -80,7 +80,7 @@ class CleanDbTask extends DefaultTask {
     }
 
     private List extractDataBaseNameAndGenericUrl(DatabasePluginExtension properties) {
-        DbParser.DbConnectionSettings dbConnectionSettings = new DbParser().extractDbConnectionSettings(properties.dburl)
+        DbParser.DbConnectionSettings dbConnectionSettings = new DbParser().extractDbConnectionSettings(properties.dbUrl)
 
         def genericUrl = dbConnectionSettings.genericUrl
         def databaseName = dbConnectionSettings.databaseName
@@ -92,16 +92,16 @@ class CleanDbTask extends DefaultTask {
         checkRootCredentials(properties)
         def (databaseName, genericUrl) = extractDataBaseNameAndGenericUrl(properties)
 
-        Sql sql = newSqlInstance(genericUrl, properties.dbRootUser, properties.dbRootPassword, properties.dbdriverClass)
+        Sql sql = newSqlInstance(genericUrl, properties.dbRootUser, properties.dbRootPassword, properties.dbDriverClass)
         sql.executeUpdate("DROP DATABASE IF EXISTS " + databaseName)
-        sql.eachRow("SELECT DISTINCT user FROM mysql.user WHERE user ='" + properties.dbuser + "'") {
-            sql.executeUpdate("DROP USER " + properties.dbuser)
+        sql.eachRow("SELECT DISTINCT user FROM mysql.user WHERE user ='" + properties.dbUser + "'") {
+            sql.executeUpdate("DROP USER " + properties.dbUser)
         }
 
         if (!dropOnly) {
-            sql.executeUpdate("CREATE USER " + properties.dbuser + " IDENTIFIED BY '" + properties.dbpassword + "'")
+            sql.executeUpdate("CREATE USER " + properties.dbUser + " IDENTIFIED BY '" + properties.dbPassword + "'")
             sql.executeUpdate("CREATE DATABASE " + databaseName + " DEFAULT CHARACTER SET utf8")
-            sql.executeUpdate("GRANT ALL ON " + databaseName + ".* TO " + properties.dbuser)
+            sql.executeUpdate("GRANT ALL ON " + databaseName + ".* TO " + properties.dbUser)
         }
         sql.close()
     }
@@ -128,7 +128,7 @@ class CleanDbTask extends DefaultTask {
     private void cleanPostgresDb(DatabasePluginExtension properties) {
         checkRootCredentials(properties)
         def (databaseName, genericUrl) = extractDataBaseNameAndGenericUrl(properties)
-        Sql sql = newSqlInstance((String) genericUrl, properties.dbRootUser, properties.dbRootPassword, properties.dbdriverClass)
+        Sql sql = newSqlInstance((String) genericUrl, properties.dbRootUser, properties.dbRootPassword, properties.dbDriverClass)
 
         // postgres 9.3 script version
         sql.eachRow("""
@@ -147,19 +147,19 @@ class CleanDbTask extends DefaultTask {
         }
 
         sql.executeUpdate("DROP DATABASE IF EXISTS $databaseName;".toString())
-        sql.executeUpdate("DROP ROLE IF EXISTS $properties.dbuser;".toString())
+        sql.executeUpdate("DROP ROLE IF EXISTS $properties.dbUser;".toString())
 
         if (!dropOnly) {
-            sql.executeUpdate("CREATE ROLE $properties.dbuser WITH LOGIN PASSWORD '$properties.dbpassword';".toString())
-            sql.executeUpdate("CREATE DATABASE $databaseName OWNER $properties.dbuser;".toString())
-            sql.executeUpdate("GRANT ALL PRIVILEGES ON DATABASE $databaseName TO $properties.dbuser;".toString())
+            sql.executeUpdate("CREATE ROLE $properties.dbUser WITH LOGIN PASSWORD '$properties.dbPassword';".toString())
+            sql.executeUpdate("CREATE DATABASE $databaseName OWNER $properties.dbUser;".toString())
+            sql.executeUpdate("GRANT ALL PRIVILEGES ON DATABASE $databaseName TO $properties.dbUser;".toString())
         }
         sql.close()
     }
 
     private void checkRootCredentials(DatabasePluginExtension properties) {
         if (properties.dbRootUser == null || properties.dbRootUser.isEmpty() || properties.dbRootPassword == null || properties.dbRootPassword.isEmpty()) {
-            throw new IllegalStateException("must specify db.root.user and db.root.password for ${properties.dbvendor}")
+            throw new IllegalStateException("must specify db.root.user and db.root.password for ${properties.dbVendor}")
         }
     }
 
@@ -167,7 +167,7 @@ class CleanDbTask extends DefaultTask {
         checkRootCredentials(properties)
         def (databaseName, genericUrl) = extractDataBaseNameAndGenericUrl(properties)
 
-        Sql sql = newSqlInstance(genericUrl, properties.dbRootUser, properties.dbRootPassword, properties.dbdriverClass)
+        Sql sql = newSqlInstance(genericUrl, properties.dbRootUser, properties.dbRootPassword, properties.dbDriverClass)
 
         executeSqlServerScript(sql, "/sqlserver-01-drop.sql", properties, databaseName)
         if (!dropOnly) {
@@ -180,8 +180,8 @@ class CleanDbTask extends DefaultTask {
     private void executeSqlServerScript(Sql sql, String scriptPath, DatabasePluginExtension properties, String databaseName) {
         def script = this.getClass().getResourceAsStream(scriptPath).text
         script = script.replace("@sqlserver.db.name@", databaseName)
-        script = script.replace("@sqlserver.connection.username@", properties.dbuser)
-        script = script.replace("@sqlserver.connection.password@", properties.dbpassword)
+        script = script.replace("@sqlserver.connection.username@", properties.dbUser)
+        script = script.replace("@sqlserver.connection.password@", properties.dbPassword)
         script.split("GO").each {
             logger.info "Executing query $it"
             sql.executeUpdate(it)
@@ -192,7 +192,7 @@ class CleanDbTask extends DefaultTask {
         checkRootCredentials(properties)
 
         Properties props = [user: properties.dbRootUser, password: properties.dbRootPassword] as Properties
-        Sql sql = newSqlInstance(properties.dburl, props, properties.dbdriverClass)
+        Sql sql = newSqlInstance(properties.dbUrl, props, properties.dbDriverClass)
 
         def sqlQuery = """-- Drop/Create user script 
   declare
@@ -201,16 +201,16 @@ class CleanDbTask extends DefaultTask {
 
   begin
   -- lock user if exists
-  select count(1) into v_count from dba_users where upper(username) = upper('${properties.dbuser}');
+  select count(1) into v_count from dba_users where upper(username) = upper('${properties.dbUser}');
   if v_count != 0
   then
-    execute immediate 'ALTER USER ${properties.dbuser} ACCOUNT LOCK';
+    execute immediate 'ALTER USER ${properties.dbUser} ACCOUNT LOCK';
   end if;
 
   -- disconnect sessions
   for session_rec in (
             select s.sid, s.serial# from v\$session s
-            where s.type != 'BACKGROUND' and ( upper(s.username) = upper('${properties.dbuser}') )
+            where s.type != 'BACKGROUND' and ( upper(s.username) = upper('${properties.dbUser}') )
             )
   loop
     begin
@@ -232,10 +232,10 @@ class CleanDbTask extends DefaultTask {
   -- drop user if exists
   FOR i IN 1 .. v_max_retries LOOP
     BEGIN
-      select count(1) into v_count from dba_users where upper(username) = upper('${properties.dbuser}');
+      select count(1) into v_count from dba_users where upper(username) = upper('${properties.dbUser}');
       if v_count != 0
       then
-        execute immediate 'drop user ${properties.dbuser} cascade';
+        execute immediate 'drop user ${properties.dbUser} cascade';
       end if;
       EXIT;
     EXCEPTION
@@ -252,13 +252,13 @@ class CleanDbTask extends DefaultTask {
         if (!dropOnly) {
             sqlQuery += """
   -- recreate user
-  execute immediate 'CREATE USER ${properties.dbuser} IDENTIFIED BY ${properties.dbpassword}';
-  execute immediate 'ALTER USER ${properties.dbuser} QUOTA 300M ON USERS';
-  execute immediate 'GRANT connect, resource TO ${properties.dbuser}';
-  execute immediate 'GRANT select ON sys.dba_pending_transactions TO ${properties.dbuser}';
-  execute immediate 'GRANT select ON sys.pending_trans\$ TO ${properties.dbuser}';
-  execute immediate 'GRANT select ON sys.dba_2pc_pending TO ${properties.dbuser}';
-  execute immediate 'GRANT execute ON sys.dbms_system TO ${properties.dbuser}';
+  execute immediate 'CREATE USER ${properties.dbUser} IDENTIFIED BY ${properties.dbPassword}';
+  execute immediate 'ALTER USER ${properties.dbUser} QUOTA 300M ON USERS';
+  execute immediate 'GRANT connect, resource TO ${properties.dbUser}';
+  execute immediate 'GRANT select ON sys.dba_pending_transactions TO ${properties.dbUser}';
+  execute immediate 'GRANT select ON sys.pending_trans\$ TO ${properties.dbUser}';
+  execute immediate 'GRANT select ON sys.dba_2pc_pending TO ${properties.dbUser}';
+  execute immediate 'GRANT execute ON sys.dbms_system TO ${properties.dbUser}';
             """
         }
         sqlQuery += "end;"
