@@ -1,6 +1,6 @@
 /**
  * Copyright (C) 2015 Bonitasoft S.A.
- * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
+ * Bonitasoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
  * version 2.1 of the License.
@@ -40,13 +40,13 @@ class FillerRunner {
         }
 
         def statement = new Statement() {
-            @Override
-            void evaluate() throws Throwable {
-                instances.each {
-                    executeAllMethodsHaving(org.bonitasoft.update.filler.FillAction, it)
+                    @Override
+                    void evaluate() throws Throwable {
+                        instances.each {
+                            executeAllMethodsHaving(org.bonitasoft.update.filler.FillAction, it)
+                        }
+                    }
                 }
-            }
-        }
         statement = withFillerBdmInitializer(statement, instances)
         statement = withRules(statement, instances)
         statement = withFillerInitializer(statement, instances)
@@ -60,32 +60,32 @@ class FillerRunner {
 
     static def withFillerInitializer(Statement statement, instances) {
         return new Statement() {
-            @Override
-            void evaluate() throws Throwable {
-                executeAllMethodsHaving(FillerInitializer, instances)
-                statement.evaluate()
-            }
-        }
+                    @Override
+                    void evaluate() throws Throwable {
+                        executeAllMethodsHaving(FillerInitializer, instances)
+                        statement.evaluate()
+                    }
+                }
     }
 
     static def withFillerBdmInitializer(Statement statement, instances) {
         return new Statement() {
-            @Override
-            void evaluate() throws Throwable {
-                executeAllMethodsHaving(FillerBdmInitializer, instances)
-                statement.evaluate()
-            }
-        }
+                    @Override
+                    void evaluate() throws Throwable {
+                        executeAllMethodsHaving(FillerBdmInitializer, instances)
+                        statement.evaluate()
+                    }
+                }
     }
 
     static def withFillerShutdown(Statement statement, instances) {
         return new Statement() {
-            @Override
-            void evaluate() throws Throwable {
-                statement.evaluate()
-                executeAllMethodsHaving(FillerShutdown, instances)
-            }
-        }
+                    @Override
+                    void evaluate() throws Throwable {
+                        statement.evaluate()
+                        executeAllMethodsHaving(FillerShutdown, instances)
+                    }
+                }
     }
 
     static def withRules(Statement statement, Object instances) {

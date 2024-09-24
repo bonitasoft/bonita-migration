@@ -32,5 +32,4 @@ class CheckUpdatedTo7_14_0 extends Specification {
         expect:
         TestUtil.sql.firstRow("SELECT count(*) FROM sequence WHERE id = ${500}")[0] == 0
     }
-
 }

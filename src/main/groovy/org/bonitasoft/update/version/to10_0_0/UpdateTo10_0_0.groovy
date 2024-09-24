@@ -1,6 +1,6 @@
 /**
  * Copyright (C) 2023 Bonitasoft S.A.
- * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
+ * Bonitasoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
  * version 2.1 of the License.
@@ -23,31 +23,39 @@ import org.bonitasoft.update.core.VersionUpdate
 class UpdateTo10_0_0 extends VersionUpdate {
 
     public static final List<String> WARN_MESSAGE_JAVA_17 =
-            ["IMPORTANT: Bonita versions 10.0.0 / 2024.1 and later only run on Java 17 environments.",
-             "If your JRE or JDK is older than 17, you need to update your target environment before starting your updated Bonita platform."]
+    [
+        "IMPORTANT: Bonita versions 10.0.0 / 2024.1 and later only run on Java 17 environments.",
+        "If your JRE or JDK is older than 17, you need to update your target environment before starting your updated Bonita platform."
+    ]
 
     public static final List<String> WARN_MESSAGE_WORD_SEARCH =
-            ["NOTE: wordSearchExclusionMapping beans have been detected in bonita-platform-custom.xml",
-             "Word-based search has been replaced with Like-based search in Bonita versions 10.0.0 / 2024.1 and later",
-             "These configuration beans are not used anymore, and should be removed"]
+    [
+        "NOTE: wordSearchExclusionMapping beans have been detected in bonita-platform-custom.xml",
+        "Word-based search has been replaced with Like-based search in Bonita versions 10.0.0 / 2024.1 and later",
+        "These configuration beans are not used anymore, and should be removed"
+    ]
 
     public static final List<String> PERMISSIONS_ACTIVATION_WARNING =
-            ["NOTE: Starting from 10.0.0, the dynamic REST API authorizations are activated by default on Bonita platform",
-             " it will be activated automatically when updating unless the property bonita.runtime.authorization.dynamic-check.enabled is set to false.",
-             " More information is available in the documentation https://documentation.bonitasoft.com/bonita/latest/identity/rest-api-authorization#dynamic_authorization"]
+    [
+        "NOTE: Starting from 10.0.0, the dynamic REST API authorizations are activated by default on Bonita platform",
+        " it will be activated automatically when updating unless the property bonita.runtime.authorization.dynamic-check.enabled is set to false.",
+        " More information is available in the documentation https://documentation.bonitasoft.com/bonita/latest/identity/rest-api-authorization#dynamic_authorization"
+    ]
 
     public static final List<String> WARN_MESSAGE_HTML_SANITIZER_FILTER =
-            ["CRITICAL: In order to address CVE-2024-26542, a servlet filter has been ENABLED by default as a countermeasure.",
-             "Please acknowledge the behavior of this filter by reading the documentation: https://documentation.bonitasoft.com/bonita/latest/security/sanitizer-security.",
-             "In some cases, keeping the filter enabled may corrupt user data."]
+    [
+        "CRITICAL: In order to address CVE-2024-26542, a servlet filter has been ENABLED by default as a countermeasure.",
+        "Please acknowledge the behavior of this filter by reading the documentation: https://documentation.bonitasoft.com/bonita/latest/security/sanitizer-security.",
+        "In some cases, keeping the filter enabled may corrupt user data."
+    ]
 
     @Override
     List<UpdateStep> getUpdateSteps() {
-        // keep one line per step and comma (,) at start of line to avoid false-positive merge conflict:
-        return [new RemoveEnableWordSearchConfig(),
-                new AddEnableDynamicCheckConfig(),
-                new AddSecuritySanitizerConfig(),
-                new CreateRefBizDataInstIndex()
+        return [
+            new RemoveEnableWordSearchConfig(),
+            new AddEnableDynamicCheckConfig(),
+            new AddSecuritySanitizerConfig(),
+            new CreateRefBizDataInstIndex()
         ]
     }
 
@@ -72,5 +80,4 @@ class UpdateTo10_0_0 extends VersionUpdate {
         }
         return false
     }
-
 }

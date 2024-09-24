@@ -1,6 +1,6 @@
 /**
  * Copyright (C) 2023 Bonitasoft S.A.
- * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
+ * Bonitasoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
  * version 2.1 of the License.
@@ -23,15 +23,13 @@ class UpdateTo9_0_0 extends VersionUpdate {
 
     @Override
     List<UpdateStep> getUpdateSteps() {
-        // keep one line per step and comma (,) at start of line to avoid false-positive merge conflict:
         return [
-                new CreateTemporaryContentTable()
-                , new AddAppVersionToPlatform()
-                , new AddMaintenanceMessageToPlatform()
-                , new RemoveUnusedSequences()
-                , new RemoveTenantIdFromProcessInstance()
-                , new RenameTechUserProperties()
+            new CreateTemporaryContentTable(),
+            new AddAppVersionToPlatform(),
+            new AddMaintenanceMessageToPlatform(),
+            new RemoveUnusedSequences(),
+            new RemoveTenantIdFromProcessInstance(),
+            new RenameTechUserProperties()
         ]
     }
-
 }

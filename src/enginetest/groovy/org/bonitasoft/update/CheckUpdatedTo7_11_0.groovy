@@ -37,5 +37,4 @@ class CheckUpdatedTo7_11_0 extends Specification {
         cleanup:
         client.logout()
     }
-
 }

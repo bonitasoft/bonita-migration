@@ -1,3 +1,16 @@
+/**
+ * Copyright (C) 2024 Bonitasoft S.A.
+ * Bonitasoft, 32 rue Gustave Eiffel - 38000 Grenoble
+ * This library is free software; you can redistribute it and/or modify it under the terms
+ * of the GNU Lesser General Public License as published by the Free Software Foundation
+ * version 2.1 of the License.
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ * You should have received a copy of the GNU Lesser General Public License along with this
+ * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
+ * Floor, Boston, MA 02110-1301, USA.
+ **/
 package org.bonitasoft.update.version.to7_13_0
 
 import groovy.sql.GroovyResultSet
@@ -19,42 +32,42 @@ class UpdateProfileMenuToApplications extends UpdateStep {
         return postUpdateWarnings ? postUpdateWarnings.join('\n') : null
     }
     private static final Map<String, String> PROVIDED_LEGACY_PAGES_TO_APP_PAGES = [
-            "licensemonitoringadmin"  : "custompage_adminLicenseBonita",
-            "tasklistinguser"         : "custompage_tasklist",
-            "tasklistingpm"           : "",
-            "tasklistingadmin"        : "custompage_adminTaskListBonita",
-            "caselistinguser"         : "custompage_userCaseListBonita",
-            "caselistingadmin"        : "custompage_adminCaseListBonita",
-            "caselistingpm"           : "",
-            "processlistingadmin"     : "custompage_adminProcessListBonita",
-            "processlistingpm"        : "",
-            "userlistingadmin"        : "custompage_adminUserListBonita",
-            "grouplistingadmin"       : "custompage_adminGroupListBonita",
-            "rolelistingadmin"        : "custompage_adminRoleListBonita",
-            "profilelisting"          : "custompage_adminProfileListBonita",
-            "reportlistingadminext"   : "",
-            "thememoredetailsadminext": "",
-            "pagelisting"             : "custompage_adminResourceListBonita",
-            "applicationslistingadmin": "custompage_adminApplicationListBonita",
-            "monitoringadmin"         : "custompage_adminMonitoringBonita",
-            "monitoringpm"            : "",
-            "bdm"                     : "custompage_adminBDMBonita"]
+        "licensemonitoringadmin"  : "custompage_adminLicenseBonita",
+        "tasklistinguser"         : "custompage_tasklist",
+        "tasklistingpm"           : "",
+        "tasklistingadmin"        : "custompage_adminTaskListBonita",
+        "caselistinguser"         : "custompage_userCaseListBonita",
+        "caselistingadmin"        : "custompage_adminCaseListBonita",
+        "caselistingpm"           : "",
+        "processlistingadmin"     : "custompage_adminProcessListBonita",
+        "processlistingpm"        : "",
+        "userlistingadmin"        : "custompage_adminUserListBonita",
+        "grouplistingadmin"       : "custompage_adminGroupListBonita",
+        "rolelistingadmin"        : "custompage_adminRoleListBonita",
+        "profilelisting"          : "custompage_adminProfileListBonita",
+        "reportlistingadminext"   : "",
+        "thememoredetailsadminext": "",
+        "pagelisting"             : "custompage_adminResourceListBonita",
+        "applicationslistingadmin": "custompage_adminApplicationListBonita",
+        "monitoringadmin"         : "custompage_adminMonitoringBonita",
+        "monitoringpm"            : "",
+        "bdm"                     : "custompage_adminBDMBonita"]
 
     private static final Map<String, List<String>> PAGE_LINK_MAPPING = [
-            "custompage_adminApplicationListBonita": ["custompage_adminApplicationDetailsBonita"],
-            "custompage_adminCaseDetailsBonita"    : ["custompage_adminTaskListBonita"],
-            "custompage_adminCaseListBonita"       : ["custompage_adminCaseDetailsBonita", "custompage_adminCaseVisuBonita"],
-            "custompage_adminGroupListBonita"      : ["custompage_adminUserDetailsBonita"],
-            "custompage_adminMonitoringBonita"     : ["custompage_adminProcessDetailsBonita", "custompage_adminCaseVisuBonita", "custompage_adminCaseListBonita"],
-            "custompage_adminProcessDetailsBonita" : ["custompage_adminCaseListBonita", "custompage_adminProcessVisuBonita"],
-            "custompage_adminProcessListBonita"    : ["custompage_adminProcessDetailsBonita"],
-            "custompage_adminTaskListBonita"       : ["custompage_adminTaskDetailsBonita"],
-            "custompage_adminUserListBonita"       : ["custompage_adminUserDetailsBonita"],
-            "custompage_error403Bonita"            : ["custompage_applicationDirectoryBonita"],
-            "custompage_error404Bonita"            : ["custompage_applicationDirectoryBonita"],
-            "custompage_error500Bonita"            : ["custompage_applicationDirectoryBonita"],
-            "custompage_userCaseDetailsBonita"     : ["custompage_tasklist"],
-            "custompage_userCaseListBonita"        : ["custompage_userCaseDetailsBonita"]]
+        "custompage_adminApplicationListBonita": ["custompage_adminApplicationDetailsBonita"],
+        "custompage_adminCaseDetailsBonita"    : ["custompage_adminTaskListBonita"],
+        "custompage_adminCaseListBonita"       : ["custompage_adminCaseDetailsBonita", "custompage_adminCaseVisuBonita"],
+        "custompage_adminGroupListBonita"      : ["custompage_adminUserDetailsBonita"],
+        "custompage_adminMonitoringBonita"     : ["custompage_adminProcessDetailsBonita", "custompage_adminCaseVisuBonita", "custompage_adminCaseListBonita"],
+        "custompage_adminProcessDetailsBonita" : ["custompage_adminCaseListBonita", "custompage_adminProcessVisuBonita"],
+        "custompage_adminProcessListBonita"    : ["custompage_adminProcessDetailsBonita"],
+        "custompage_adminTaskListBonita"       : ["custompage_adminTaskDetailsBonita"],
+        "custompage_adminUserListBonita"       : ["custompage_adminUserDetailsBonita"],
+        "custompage_error403Bonita"            : ["custompage_applicationDirectoryBonita"],
+        "custompage_error404Bonita"            : ["custompage_applicationDirectoryBonita"],
+        "custompage_error500Bonita"            : ["custompage_applicationDirectoryBonita"],
+        "custompage_userCaseDetailsBonita"     : ["custompage_tasklist"],
+        "custompage_userCaseListBonita"        : ["custompage_userCaseDetailsBonita"]]
 
     @Canonical
     private static class Profile {
@@ -135,9 +148,9 @@ class UpdateProfileMenuToApplications extends UpdateStep {
             def layoutId = sql.firstRow("SELECT id from page WHERE tenantId=${profile.tenantId} AND name = ${'custompage_layoutBonita'}")[0]
             def themeId = sql.firstRow("SELECT id from page WHERE tenantId=${profile.tenantId} AND name = ${'custompage_themeBonita'}")[0]
             logger.info("Generating application with token \"${appToken}\" for profile \"${profile.name}\"")
-            sql.executeInsert(""" INSERT INTO business_app(tenantId, id, token, version, description, 
-iconPath, creationDate, createdBy, lastUpdateDate, updatedBy, state, homePageId, profileId, layoutId, themeId, 
-iconMimeType, iconContent, displayName, editable, internalProfile) 
+            sql.executeInsert(""" INSERT INTO business_app(tenantId, id, token, version, description,
+iconPath, creationDate, createdBy, lastUpdateDate, updatedBy, state, homePageId, profileId, layoutId, themeId,
+iconMimeType, iconContent, displayName, editable, internalProfile)
 VALUES (${profile.tenantId},${applicationNextId},${appToken},${'1.0'},${profile.description},
 ${null},${now},${-1L},${now},${-1L},${'ACTIVATED'},${null},${profile.id},$layoutId,$themeId,
 ${null},${null},${appName},${true},${null})""")
@@ -202,7 +215,7 @@ ${null},${null},${appName},${true},${null})""")
 
             def applicationPageNextId = databaseHelper.getAndUpdateNextSequenceId(10201, profile.tenantId)
 
-            sql.executeInsert(""" INSERT INTO business_app_page(tenantId, id, applicationId, pageId, token) 
+            sql.executeInsert(""" INSERT INTO business_app_page(tenantId, id, applicationId, pageId, token)
 VALUES (${profile.tenantId},${applicationPageNextId},${applicationNextId},${page[0]},${applicationPageToken})""")
 
             applicationPageNextId
@@ -213,7 +226,7 @@ VALUES (${profile.tenantId},${applicationPageNextId},${applicationNextId},${page
         updateContext.with {
             def applicationMenuNextId = databaseHelper.getAndUpdateNextSequenceId(10202, profile.tenantId)
             sql.executeInsert(""" INSERT INTO business_app_menu(tenantId, id, displayName, applicationId,
-applicationPageId, parentId, index_) 
+applicationPageId, parentId, index_)
 VALUES (${profile.tenantId},${applicationMenuNextId},${entry.name},${applicationNextId},
 ${applicationPageNextId},${parentApplicationMenuId},${index + 1})""")
 
@@ -282,7 +295,7 @@ ${applicationPageNextId},${parentApplicationMenuId},${index + 1})""")
                     id: profileEntryRow['id'],
                     name: profileEntryRow['name'],
                     page: profileEntryRow['page']
-            )
+                    )
             sql.eachRow("SELECT * FROM profileentry WHERE tenantid = ${profile.tenantId} AND profileid = ${profile.id} AND parentid = ${entry.id} ORDER BY index_ ASC") { childEntryRow ->
                 entry.children.add(toProfileEntry(context, profile, childEntryRow))
             }
@@ -307,7 +320,7 @@ ${applicationPageNextId},${parentApplicationMenuId},${index + 1})""")
     }
 
     private static String removeUserPrefix(String input) {
-        return input.startsWith("user") ? input.substring("user".length()) : input;
+        return input.startsWith("user") ? input.substring("user".length()) : input
     }
 
     private static String removeCustomPagePrefix(String input) {
