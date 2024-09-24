@@ -1,6 +1,6 @@
 /**
  * Copyright (C) 2024 Bonitasoft S.A.
- * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
+ * Bonitasoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
  * version 2.1 of the License.
@@ -21,8 +21,8 @@ import org.bonitasoft.update.version.to10_0_0.CreateRefBizDataInstIndex
 class UpdateTo10_2_0 extends VersionUpdate {
 
     public static final List<String> BLOCK_IF_NON_POSTGRES_DATABASE = [
-            "Bonita Community edition 2024.3 (10.2) and above only supports PostgreSQL database.",
-            " If you need to continue using MS Sql Server, Oracle, or MySQL, please use Bonita Enterprise edition.",
+        "Bonita Community edition 2024.3 (10.2) and above only supports PostgreSQL database.",
+        " If you need to continue using MS Sql Server, Oracle, or MySQL, please use Bonita Enterprise edition.",
     ]
 
     @Override
@@ -38,12 +38,11 @@ class UpdateTo10_2_0 extends VersionUpdate {
     List<UpdateStep> getUpdateSteps() {
         // keep one line per step and comma (,) at start of line to avoid false-positive merge conflict:
         return [
-                new AddColumnLinkToBusinessApp(),
-                new CreateRefBizDataInstIndex(),
-                new RemoveWorkThreadPoolProperties(),
-                new RemoveWorkDelayOnXAResourceProperties(),
-                new RemoveConnectorThreadPoolProperties()
+            new AddColumnLinkToBusinessApp(),
+            new CreateRefBizDataInstIndex(),
+            new RemoveWorkThreadPoolProperties(),
+            new RemoveWorkDelayOnXAResourceProperties(),
+            new RemoveConnectorThreadPoolProperties()
         ]
     }
-
 }
