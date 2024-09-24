@@ -146,7 +146,7 @@ class ConfigurationHelper {
         def results = sql.rows("""
                 SELECT tenant_id, content_type, resource_content
                 FROM configuration
-                WHERE resource_name=${fileName}       
+                WHERE resource_name=${fileName}
                 ORDER BY content_type, tenant_id
                 """)
         if (!results) {
