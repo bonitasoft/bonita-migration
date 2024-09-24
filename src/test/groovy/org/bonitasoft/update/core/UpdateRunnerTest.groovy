@@ -1,6 +1,6 @@
 /**
  * Copyright (C) 2015 Bonitasoft S.A.
- * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
+ * Bonitasoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
  * version 2.1 of the License.
@@ -11,7 +11,6 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
-
 package org.bonitasoft.update.core
 
 import groovy.sql.Sql
@@ -125,7 +124,6 @@ class UpdateRunnerTest extends Specification {
         1 * logger.info("Execute update to version 7.4")
         1 * logger.info("Execute update to version 7.5")
         1 * logger.info("Execute update to version 7.13")
-
     }
 
     def "should warn when VERSION_OVERRIDDEN defined and not VERSION_OVERRIDE_BY"() {
@@ -229,6 +227,4 @@ class UpdateRunnerTest extends Specification {
         then:
         1 * displayUtil.logWarningsInRectangleWithTitle("Post-update to version: ${DEFAULT_TWO_DIGIT_VERSION}", "post-update warning 1", "post-update warning 2")
     }
-
 }
-

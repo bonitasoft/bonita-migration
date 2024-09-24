@@ -1,6 +1,6 @@
 /**
  * Copyright (C) 2021 Bonitasoft S.A.
- * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
+ * Bonitasoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
  * version 2.1 of the License.
@@ -87,7 +87,7 @@ class MakeAdminPagesFinalIT extends Specification {
         switch (updateContext.dbVendor) {
             case UpdateStep.DBVendor.SQLSERVER:
                 dbUnitHelper.context.sql.execute(
-                        """
+                """
                          INSERT INTO page (tenantId, id, name, displayName, description, installationDate, installedBy, provided,
                          editable, removable, hidden, lastModificationDate, lastUpdatedBy, contentName, content,
                          contentType, processDefinitionId) VALUES (1, 24, N'custompage_adminCaseDetailsBonita', N'Bonita Admin Case Details',
@@ -133,7 +133,7 @@ class MakeAdminPagesFinalIT extends Specification {
                 return
             case UpdateStep.DBVendor.POSTGRES:
                 dbUnitHelper.context.sql.execute(
-                        """
+                """
                          INSERT INTO page (tenantId, id, name, displayName, description, installationDate, installedBy, provided,
                          editable, removable, hidden, lastModificationDate, lastUpdatedBy, contentName, content,
                          contentType, processDefinitionId) VALUES (1, 24, 'custompage_adminCaseDetailsBonita', 'Bonita Admin Case Details',
@@ -175,7 +175,7 @@ class MakeAdminPagesFinalIT extends Specification {
                 return
             case UpdateStep.DBVendor.MYSQL:
                 dbUnitHelper.context.sql.execute(
-                        """
+                """
                          INSERT INTO page (tenantId, id, name, displayName, description, installationDate, installedBy, provided,
                          editable, removable, hidden, lastModificationDate, lastUpdatedBy, contentName, content,
                          contentType, processDefinitionId) VALUES (1, 24, 'custompage_adminCaseDetailsBonita', 'Bonita Admin Case Details',

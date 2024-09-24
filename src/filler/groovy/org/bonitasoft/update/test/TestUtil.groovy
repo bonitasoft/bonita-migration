@@ -1,6 +1,6 @@
 /**
  * Copyright (C) 2015 Bonitasoft S.A.
- * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
+ * Bonitasoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
  * version 2.1 of the License.
@@ -23,23 +23,23 @@ class TestUtil {
 
     public
     static byte[] createTestPageContent(String pageName, String displayName, String description) throws Exception {
-        ByteArrayOutputStream e = new ByteArrayOutputStream();
-        ZipOutputStream zos = new ZipOutputStream(e);
-        zos.putNextEntry(new ZipEntry("Index.groovy"));
-        zos.write("return \"\";".getBytes());
-        zos.putNextEntry(new ZipEntry("page.properties"));
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("name=");
-        stringBuilder.append(pageName);
-        stringBuilder.append("\n");
-        stringBuilder.append("displayName=");
-        stringBuilder.append(displayName);
-        stringBuilder.append("\n");
-        stringBuilder.append("description=");
-        stringBuilder.append(description);
-        stringBuilder.append("\n");
-        zos.write(stringBuilder.toString().getBytes());
-        zos.closeEntry();
-        return e.toByteArray();
+        ByteArrayOutputStream e = new ByteArrayOutputStream()
+        ZipOutputStream zos = new ZipOutputStream(e)
+        zos.putNextEntry(new ZipEntry("Index.groovy"))
+        zos.write("return \"\";".getBytes())
+        zos.putNextEntry(new ZipEntry("page.properties"))
+        StringBuilder stringBuilder = new StringBuilder()
+        stringBuilder.append("name=")
+        stringBuilder.append(pageName)
+        stringBuilder.append("\n")
+        stringBuilder.append("displayName=")
+        stringBuilder.append(displayName)
+        stringBuilder.append("\n")
+        stringBuilder.append("description=")
+        stringBuilder.append(description)
+        stringBuilder.append("\n")
+        zos.write(stringBuilder.toString().getBytes())
+        zos.closeEntry()
+        return e.toByteArray()
     }
 }

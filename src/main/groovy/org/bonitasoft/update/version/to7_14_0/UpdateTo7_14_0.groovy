@@ -1,6 +1,6 @@
 /**
  * Copyright (C) 2021 Bonitasoft S.A.
- * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
+ * Bonitasoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
  * version 2.1 of the License.
@@ -25,11 +25,10 @@ class UpdateTo7_14_0 extends VersionUpdate {
 
     @Override
     List<UpdateStep> getUpdateSteps() {
-        // keep one line per step and comma (,) at start of line to avoid false-positive merge conflict:
         return [
-                new RemoveHiddenFieldFromPages(),
-                new RemoveReportingTables(),
-                new MakeAdminPagesFinal()
+            new RemoveHiddenFieldFromPages(),
+            new RemoveReportingTables(),
+            new MakeAdminPagesFinal()
         ]
     }
 }

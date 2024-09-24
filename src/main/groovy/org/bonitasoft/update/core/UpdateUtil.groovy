@@ -1,6 +1,6 @@
 /**
- * Copyright (C) 2013 BonitaSoft S.A.
- * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
+ * Copyright (C) 2013 Bonitasoft S.A.
+ * Bonitasoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
  * version 2.1 of the License.
@@ -39,12 +39,12 @@ class UpdateUtil {
     public static read = System.in.newReader().&readLine
 
     public final static String[] ARCH_CONTRACT_DATA_BACKUP_GLOBAL_MSG = [
-            "Archive contract data table backup had been created (\"arch_contract_data_backup\") as its model update is time consuming.",
-            "All this information is not required by Bonita to work and does not affect user experience,",
-            "but it keeps the information of all contracts sent to execute tasks or instantiate processes.",
-            "Based on your needs, this information can be updated into the original table using the tool",
-            "(please run live-migration tool available on Bonitasoft Customer Portal) while bonita platform is up & running",
-            "or dropped to reduce disk space"
+        "Archive contract data table backup had been created (\"arch_contract_data_backup\") as its model update is time consuming.",
+        "All this information is not required by Bonita to work and does not affect user experience,",
+        "but it keeps the information of all contracts sent to execute tasks or instantiate processes.",
+        "Based on your needs, this information can be updated into the original table using the tool",
+        "(please run live-migration tool available on Bonitasoft Customer Portal) while bonita platform is up & running",
+        "or dropped to reduce disk space"
     ]
 
     static boolean isAutoAccept() {
@@ -175,7 +175,7 @@ class UpdateUtil {
     }
 
     /**
-     * Return a list of ids. 
+     * Return a list of ids.
      * The SQL file to execute need to begin by "SELECT id FROM...".
      */
 
@@ -314,6 +314,4 @@ class UpdateUtil {
         }
         return info
     }
-
 }
-

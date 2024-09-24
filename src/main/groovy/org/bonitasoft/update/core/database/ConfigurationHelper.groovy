@@ -1,6 +1,6 @@
 /**
  * Copyright (C) 2017-2021 Bonitasoft S.A.
- * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
+ * Bonitasoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
  * version 2.1 of the License.
@@ -72,8 +72,8 @@ class ConfigurationHelper {
         def results = sql.rows("""
                 SELECT tenant_id, content_type, resource_content
                 FROM configuration
-                WHERE resource_name=${fileName}       
-                ORDER BY content_type, tenant_id 
+                WHERE resource_name=${fileName}
+                ORDER BY content_type, tenant_id
                 """)
         results.each {
             String content = databaseHelper.getBlobContentAsString(it.resource_content)
@@ -108,7 +108,7 @@ class ConfigurationHelper {
         def results = sql.rows("""
                 SELECT tenant_id, content_type, resource_content
                 FROM configuration
-                WHERE resource_name=${fileName}       
+                WHERE resource_name=${fileName}
                 ORDER BY content_type, tenant_id
                 """)
         if (!results) {
@@ -142,8 +142,8 @@ class ConfigurationHelper {
                 SELECT tenant_id, content_type, resource_content
                 FROM configuration
                 WHERE resource_name=${fileName}
-                AND content_type=${contentType}      
-                ORDER BY tenant_id 
+                AND content_type=${contentType}
+                ORDER BY tenant_id
                 """)
         def foundFiles = appendToConfigurationFilesWithCommentIfPropertyIsMissing(results, propertyKey, keyValueSeparator, propertyValue, fileName, comment)
         if (foundFiles == 0) {
@@ -155,8 +155,8 @@ class ConfigurationHelper {
         def results = sql.rows("""
                 SELECT tenant_id, content_type, resource_content
                 FROM configuration
-                WHERE resource_name=${fileName}       
-                ORDER BY content_type, tenant_id 
+                WHERE resource_name=${fileName}
+                ORDER BY content_type, tenant_id
                 """)
         def foundFiles = appendToConfigurationFilesWithCommentIfPropertyIsMissing(results, propertyKey, keyValueSeparator, propertyValue, fileName, null)
         if (foundFiles == 0) {
@@ -199,13 +199,13 @@ class ConfigurationHelper {
         def results = sql.rows("""
                 SELECT tenant_id, content_type, resource_content
                 FROM configuration
-                WHERE resource_name=${fileName}       
-                ORDER BY content_type, tenant_id 
+                WHERE resource_name=${fileName}
+                ORDER BY content_type, tenant_id
                 """)
         results.each {
             foundFiles++
             def currentProperties = databaseHelper.getBlobContentAsString(it.resource_content).split("\n")
-            def newProperties = new ArrayList<String>();
+            def newProperties = new ArrayList<String>()
             def tenantId = it.tenant_id as long
             currentProperties.each { String line ->
                 if (!line.startsWith("#") && !line.contains(permissionValue)) {

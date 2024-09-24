@@ -1,6 +1,6 @@
 /**
  * Copyright (C) 2015 Bonitasoft S.A.
- * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
+ * Bonitasoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
  * version 2.1 of the License.
@@ -11,7 +11,6 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
-
 package org.bonitasoft.update.core
 
 import com.github.zafarkhaja.semver.Version
@@ -95,11 +94,13 @@ class UpdateRunner implements UpdateAction {
     @Override
     List<String> getBannerAndGlobalWarnings() {
         return [
-                "This tool will update the database of your installation of Bonita.",
-                "Please refer to the documentation for further steps to completely update your production environment.",
-                "",
-                "Warning:",
-                "Back up the database before updating", ""]
+            "This tool will update the database of your installation of Bonita.",
+            "Please refer to the documentation for further steps to completely update your production environment.",
+            "",
+            "Warning:",
+            "Back up the database before updating",
+            ""
+        ]
     }
 
     @Override
@@ -109,12 +110,11 @@ class UpdateRunner implements UpdateAction {
 
     private boolean hasBlockingPrerequisites() {
         Map<String, String[]> beforeUpdateBlocks = [:]
-        versionUpdates.each {
-            VersionUpdate versionUpdate ->
-                String[] preVersionBlockings = versionUpdate.getPreUpdateBlockingMessages(context)
-                if (preVersionBlockings) {
-                    beforeUpdateBlocks.put("Update to version ${UpdateUtil.getDisplayVersion(versionUpdate.getVersion())}" as String, preVersionBlockings)
-                }
+        versionUpdates.each { VersionUpdate versionUpdate ->
+            String[] preVersionBlockings = versionUpdate.getPreUpdateBlockingMessages(context)
+            if (preVersionBlockings) {
+                beforeUpdateBlocks.put("Update to version ${UpdateUtil.getDisplayVersion(versionUpdate.getVersion())}" as String, preVersionBlockings)
+            }
         }
         if (beforeUpdateBlocks) {
             logger.warn "Some update steps cannot complete:"
@@ -185,5 +185,4 @@ class UpdateRunner implements UpdateAction {
             sql.executeUpdate("UPDATE platform SET version = $dbVersion")
         }
     }
-
 }

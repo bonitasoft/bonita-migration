@@ -1,3 +1,16 @@
+/**
+ * Copyright (C) 2024 Bonitasoft S.A.
+ * Bonitasoft, 32 rue Gustave Eiffel - 38000 Grenoble
+ * This library is free software; you can redistribute it and/or modify it under the terms
+ * of the GNU Lesser General Public License as published by the Free Software Foundation
+ * version 2.1 of the License.
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ * You should have received a copy of the GNU Lesser General Public License along with this
+ * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
+ * Floor, Boston, MA 02110-1301, USA.
+ **/
 package org.bonitasoft.update.core
 
 import com.github.zafarkhaja.semver.Version
@@ -108,39 +121,41 @@ class UpdateTest extends Specification {
         "7.10.3" | "7.13.0" || ["UpdateTo7_11_0", "UpdateTo7_12_0", "UpdateTo7_13_0"]
     }
 
-    //There are no "forbidden" version right now
-//    def "should NOT throw exception if trying to update to 7.7.0 and SysProp \"ignore.invalid.target.version\" provided"() {
-//        given:
-//        versionInDatabase("7.6.3")
-//        targetVersion("7.7.0")
-//        System.setProperty("ignore.invalid.target.version", "value")
-//
-//        when:
-//        update.run(false)
-//
-//        then:
-//        noExceptionThrown()
-//
-//        cleanup:
-//        System.clearProperty("ignore.invalid.target.version")
-//    }
-//
-//    def "should INDEED throw exception if trying to update to 7.6.9 and SysProp \"ignore.invalid.target.version\" provided but 7.6.9 not in invisible TRANSITION VERSION list"() {
-//        given:
-//        versionInDatabase("7.6.3")
-//        targetVersion("7.6.9")
-//        System.setProperty("ignore.invalid.target.version", "value")
-//
-//        when:
-//        update.run(false)
-//
-//        then:
-//        IllegalStateException throwable = thrown()
-//        throwable.message == "7.6.9 is not yet handled by this version of the update tool"
-//
-//        cleanup:
-//        System.clearProperty("ignore.invalid.target.version")
-//    }
+    // Those 2 tests are commented because there are no "forbidden" version right now,
+    // but we may want to add some in the future, as the mechanism is already in place.
+    // See Update.TRANSITION_VERSIONS for details:
+    //    def "should NOT throw exception if trying to update to 7.7.0 and SysProp \"ignore.invalid.target.version\" provided"() {
+    //        given:
+    //        versionInDatabase("7.6.3")
+    //        targetVersion("7.7.0")
+    //        System.setProperty("ignore.invalid.target.version", "value")
+    //
+    //        when:
+    //        update.run(false)
+    //
+    //        then:
+    //        noExceptionThrown()
+    //
+    //        cleanup:
+    //        System.clearProperty("ignore.invalid.target.version")
+    //    }
+
+    //    def "should INDEED throw exception if trying to update to 7.6.9 and SysProp \"ignore.invalid.target.version\" provided but 7.6.9 not in invisible TRANSITION VERSION list"() {
+    //        given:
+    //        versionInDatabase("7.6.3")
+    //        targetVersion("7.6.9")
+    //        System.setProperty("ignore.invalid.target.version", "value")
+    //
+    //        when:
+    //        update.run(false)
+    //
+    //        then:
+    //        IllegalStateException throwable = thrown()
+    //        throwable.message == "7.6.9 is not yet handled by this version of the update tool"
+    //
+    //        cleanup:
+    //        System.clearProperty("ignore.invalid.target.version")
+    //    }
 
     def "should allow to update between 2 version handled by the tool"() {
         given:
@@ -163,5 +178,4 @@ class UpdateTest extends Specification {
         sql.firstRow(_ as String) >> new GroovyRowResult([version: s])
         updateContext.sourceVersion >> Version.valueOf(s)
     }
-
 }

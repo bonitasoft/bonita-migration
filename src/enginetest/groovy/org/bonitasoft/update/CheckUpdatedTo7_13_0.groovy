@@ -62,7 +62,7 @@ class CheckUpdatedTo7_13_0 extends Specification {
         icon.content == "theContent".bytes
     }
 
-     def "should have new columns available in page objects"() {
+    def "should have new columns available in page objects"() {
         given:
         def client = new APIClient()
         client.login("install", "install")
@@ -111,5 +111,4 @@ class CheckUpdatedTo7_13_0 extends Specification {
         expect:
         TestUtil.sql.firstRow("SELECT count(*) FROM sequence WHERE id = ${9890}")[0] == 0
     }
-
 }

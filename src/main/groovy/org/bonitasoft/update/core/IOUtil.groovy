@@ -1,6 +1,6 @@
 /**
- * Copyright (C) 2013 BonitaSoft S.A.
- * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
+ * Copyright (C) 2013 Bonitasoft S.A.
+ * Bonitasoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
  * version 2.1 of the License.
@@ -53,7 +53,8 @@ class IOUtil {
         }
         // recurse
         File[] files = srcDir.listFiles()
-        if (files == null) {  // null if security restricted
+        if (files == null) {
+            // null if security restricted
             throw new IOException("Failed to list contents of " + srcDir)
         }
         for (int i = 0; i < files.length; i++) {
@@ -101,7 +102,7 @@ class IOUtil {
         }
         if (srcFile.length() != destFile.length()) {
             throw new IOException("Failed to copy full contents from '" +
-                    srcFile + "' to '" + destFile + "'")
+            srcFile + "' to '" + destFile + "'")
         }
         destFile.setLastModified(srcFile.lastModified())
     }
@@ -123,7 +124,6 @@ class IOUtil {
                         while ((read = zipStream.read(buff)) != -1) {
                             os.write(buff, 0, read)
                         }
-
                     }
                 }
             }
@@ -135,11 +135,11 @@ class IOUtil {
         def zipStream = new ZipInputStream(new ByteArrayInputStream(zip))
         ZipEntry entry
         while ((entry = zipStream.getNextEntry()) != null) {
-            final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            int bytesRead;
-            final byte[] buffer = new byte[1024];
+            final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()
+            int bytesRead
+            final byte[] buffer = new byte[1024]
             while ((bytesRead = zipStream.read(buffer)) > -1) {
-                byteArrayOutputStream.write(buffer, 0, bytesRead);
+                byteArrayOutputStream.write(buffer, 0, bytesRead)
             }
             result.put(entry.getName(), byteArrayOutputStream.toByteArray())
         }
@@ -160,5 +160,4 @@ class IOUtil {
         }
         return out.toByteArray()
     }
-
 }

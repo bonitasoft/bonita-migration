@@ -1,6 +1,6 @@
 /**
  * Copyright (C) 2021 Bonitasoft S.A.
- * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
+ * Bonitasoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
  * version 2.1 of the License.
@@ -23,19 +23,20 @@ import org.bonitasoft.update.core.VersionUpdate
 class UpdateTo7_13_0 extends VersionUpdate {
 
     public static final List<String> WARN_MESSAGE_JAVA_11 =
-            ["Warning: Bonita versions 7.13.0 / 2021.2 and later only run on Java 11 environments.",
-             "If your JRE or JDK is older than 11, you need to update your target environment before starting your updated Bonita platform."]
+    [
+        "Warning: Bonita versions 7.13.0 / 2021.2 and later only run on Java 11 environments.",
+        "If your JRE or JDK is older than 11, you need to update your target environment before starting your updated Bonita platform."
+    ]
 
     @Override
     List<UpdateStep> getUpdateSteps() {
-        // keep one line per step and comma (,) at start of line to avoid false-positive merge conflict:
         return [
-                new RemoveUselessV6formsConfiguration(),
-                new UpdateApplicationSchema()
-                , new UpdatePageSchema()
-                , new CreateNewPages()
-                , new UpdateProfileMenuToApplications()
-                , new RemoveThemes()
+            new RemoveUselessV6formsConfiguration(),
+            new UpdateApplicationSchema(),
+            new UpdatePageSchema(),
+            new CreateNewPages(),
+            new UpdateProfileMenuToApplications(),
+            new RemoveThemes()
         ]
     }
 
