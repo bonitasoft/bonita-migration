@@ -37,6 +37,7 @@ class UpdateTo10_2_0Test extends Specification {
                 "AddColumnLinkToBusinessApp",
                 "CreateRefBizDataInstIndex",
                 "RemoveWorkThreadPoolProperties",
+                "RemoveWorkDelayOnXAResourceProperties",
                 "RemoveConnectorThreadPoolProperties"
         ]
     }
