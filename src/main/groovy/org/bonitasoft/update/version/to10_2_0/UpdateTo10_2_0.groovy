@@ -41,6 +41,7 @@ class UpdateTo10_2_0 extends VersionUpdate {
                 new AddColumnLinkToBusinessApp(),
                 new CreateRefBizDataInstIndex(),
                 new RemoveWorkThreadPoolProperties(),
+                new RemoveWorkDelayOnXAResourceProperties(),
                 new RemoveConnectorThreadPoolProperties()
         ]
     }
