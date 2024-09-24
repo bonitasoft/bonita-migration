@@ -1,6 +1,6 @@
 /**
  * Copyright (C) 2023 Bonitasoft S.A.
- * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
+ * Bonitasoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
  * version 2.1 of the License.
@@ -24,7 +24,7 @@ class RenameTechUserProperties extends UpdateStep {
     protected static final String CONFIG_FILE_NAME = "bonita-tenant-community-custom.properties"
 
     private Map<String, String> toRename = ["userName"    : "bonita.runtime.admin.username",
-                                            "userPassword": "bonita.runtime.admin.password"]
+        "userPassword": "bonita.runtime.admin.password"]
 
     @Override
     execute(UpdateContext context) {
@@ -35,5 +35,4 @@ class RenameTechUserProperties extends UpdateStep {
     String getDescription() {
         return "Rename Bonita properties $toRename in configuration file $CONFIG_FILE_NAME"
     }
-
 }

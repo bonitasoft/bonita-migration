@@ -11,7 +11,6 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
-
 package org.bonitasoft.update
 
 import org.bonitasoft.engine.test.junit.BonitaEngineRule
@@ -28,11 +27,11 @@ class After7_2_0Initializer implements MethodRule {
     Statement apply(Statement statement, FrameworkMethod frameworkMethod, Object target) {
         statement = BonitaEngineRule.create().reuseExistingPlatform().apply(statement, frameworkMethod, target)
         return new Statement() {
-            @Override
-            void evaluate() throws Throwable {
-                CheckerUtils.initializeEngineSystemProperties()
-                statement.evaluate()
-            }
-        }
+                    @Override
+                    void evaluate() throws Throwable {
+                        CheckerUtils.initializeEngineSystemProperties()
+                        statement.evaluate()
+                    }
+                }
     }
 }

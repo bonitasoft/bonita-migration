@@ -1,6 +1,6 @@
 /**
  * Copyright (C) 2024 Bonitasoft S.A.
- * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
+ * Bonitasoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
  * version 2.1 of the License.
@@ -13,7 +13,6 @@
  **/
 package org.bonitasoft.update.version.to10_1_0
 
-import org.bonitasoft.update.version.to10_0_0.UpdateTo10_0_0
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -22,11 +21,10 @@ import spock.lang.Unroll
  */
 class UpdateTo10_1_0Test extends Specification {
 
-
     @Unroll
     def "should update to 10.1.0 include step '#stepName'"(def stepName) {
         given:
-        def updateTo = new UpdateTo10_0_0()
+        def updateTo = new UpdateTo10_1_0()
 
         expect:
         def steps = updateTo.updateSteps
@@ -35,9 +33,6 @@ class UpdateTo10_1_0Test extends Specification {
         }.contains(stepName)
 
         where:
-        stepName << [
-                "CreateRefBizDataInstIndex"
-        ]
+        stepName << ["CreateRefBizDataInstIndex"]
     }
-
 }

@@ -1,6 +1,6 @@
 /**
- * Copyright (C) 2023 BonitaSoft S.A.
- * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
+ * Copyright (C) 2023 Bonitasoft S.A.
+ * Bonitasoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
  * version 2.1 of the License.
@@ -60,6 +60,4 @@ class InitializerAfter8_0_0 extends CommonInitializer {
 
         client.getProcessAPI().deployAndEnableProcess(businessArchive)
     }
-
 }
-

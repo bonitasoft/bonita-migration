@@ -1,3 +1,16 @@
+/**
+ * Copyright (C) 2024 Bonitasoft S.A.
+ * Bonitasoft, 32 rue Gustave Eiffel - 38000 Grenoble
+ * This library is free software; you can redistribute it and/or modify it under the terms
+ * of the GNU Lesser General Public License as published by the Free Software Foundation
+ * version 2.1 of the License.
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ * You should have received a copy of the GNU Lesser General Public License along with this
+ * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
+ * Floor, Boston, MA 02110-1301, USA.
+ **/
 package org.bonitasoft.update.core.database
 
 import groovy.sql.GroovyRowResult
@@ -29,7 +42,6 @@ class ConfigurationHelperTest extends Specification {
         then:
         1 * logger.debug(_)
         1 * sql.executeInsert("INSERT INTO configuration(tenant_id,content_type,resource_name,resource_content) VALUES (5, type, fileName, ${'content'.bytes})")
-
     }
 
     def "should update configuration content"() {
@@ -39,8 +51,6 @@ class ConfigurationHelperTest extends Specification {
         then:
         1 * logger.debug(_)
         1 * sql.execute("UPDATE configuration SET resource_content = ${'content'.bytes} WHERE tenant_id = 5 AND content_type = type AND resource_name = fileName")
-
-
     }
 
     def "should throw exception when configuration file does not exists"() {
@@ -56,7 +66,6 @@ class ConfigurationHelperTest extends Specification {
         then:
         IllegalArgumentException argumentException = thrown()
         argumentException.message == "Configuration file ${fileName} does not exist in database."
-
     }
 
     def "should append configuration file content"() {
@@ -67,9 +76,11 @@ class ConfigurationHelperTest extends Specification {
         count.equals(0) >> false
         databaseHelper.getBlobContentAsString(_) >> "content"
         sql.firstRow("SELECT count(*) FROM configuration WHERE resource_name = ${fileName}") >> count
-        def results = [[tenant_id: 0L, content_type: "template_type", resource_content: "content".bytes],
-                       [tenant_id: 5L, content_type: "type", resource_content: "content".bytes],
-                       [tenant_id: 8L, content_type: "type", resource_content: "content".bytes]]
+        def results = [
+            [tenant_id: 0L, content_type: "template_type", resource_content: "content".bytes],
+            [tenant_id: 5L, content_type: "type", resource_content: "content".bytes],
+            [tenant_id: 8L, content_type: "type", resource_content: "content".bytes]
+        ]
         sql.rows("SELECT tenant_id, content_type, resource_content FROM configuration WHERE resource_name = " +
                 "${fileName} ") >> results
 
@@ -81,13 +92,14 @@ class ConfigurationHelperTest extends Specification {
         3 * sql.execute({
             captured.add(it)
         })
-        captured == ["UPDATE configuration SET resource_content = ${"content\nadd this".bytes} WHERE tenant_id = 0 " +
-                             "AND content_type = template_type AND resource_name = fileName",
-                     "UPDATE configuration SET resource_content = ${"content\nadd this".bytes} WHERE tenant_id = 5 " +
-                             "AND content_type = type AND resource_name = fileName",
-                     "UPDATE configuration SET resource_content = ${"content\nadd this".bytes} WHERE tenant_id = 8 " +
-                             "AND content_type = type AND resource_name = fileName"]
-
+        captured == [
+            "UPDATE configuration SET resource_content = ${"content\nadd this".bytes} WHERE tenant_id = 0 " +
+            "AND content_type = template_type AND resource_name = fileName",
+            "UPDATE configuration SET resource_content = ${"content\nadd this".bytes} WHERE tenant_id = 5 " +
+            "AND content_type = type AND resource_name = fileName",
+            "UPDATE configuration SET resource_content = ${"content\nadd this".bytes} WHERE tenant_id = 8 " +
+            "AND content_type = type AND resource_name = fileName"
+        ]
     }
 
     def "should throw exception when updating key in non existing file"() {
@@ -97,8 +109,8 @@ class ConfigurationHelperTest extends Specification {
         sql.rows("""
                 SELECT tenant_id, content_type, resource_content
                 FROM configuration
-                WHERE resource_name=${fileName}       
-                ORDER BY content_type, tenant_id 
+                WHERE resource_name=${fileName}
+                ORDER BY content_type, tenant_id
                 """) >> []
 
         when:
@@ -107,7 +119,6 @@ class ConfigurationHelperTest extends Specification {
         then:
         IllegalArgumentException argumentException = thrown()
         argumentException.message == "configuration file ${fileName} not found in database."
-
     }
 
     def "should add entry in property file"() {
@@ -116,14 +127,16 @@ class ConfigurationHelperTest extends Specification {
         def fileName = "existingFile"
         def existingContent = "# existing comment\nkey=value"
         databaseHelper.getBlobContentAsString(_) >> existingContent
-        def results = [[tenant_id: 0L, content_type: "template_type", resource_content: existingContent.bytes],
-                       [tenant_id: 5L, content_type: "type", resource_content: existingContent.bytes],
-                       [tenant_id: 8L, content_type: "type", resource_content: existingContent.bytes]]
+        def results = [
+            [tenant_id: 0L, content_type: "template_type", resource_content: existingContent.bytes],
+            [tenant_id: 5L, content_type: "type", resource_content: existingContent.bytes],
+            [tenant_id: 8L, content_type: "type", resource_content: existingContent.bytes]
+        ]
         sql.rows("""
                 SELECT tenant_id, content_type, resource_content
                 FROM configuration
-                WHERE resource_name=${fileName}       
-                ORDER BY content_type, tenant_id 
+                WHERE resource_name=${fileName}
+                ORDER BY content_type, tenant_id
                 """) >> results
 
         when:
@@ -134,13 +147,14 @@ class ConfigurationHelperTest extends Specification {
             captured.add(it)
         })
         def expectedContent = "${existingContent}\n# new comment\nnewKey=newValue"
-        captured == ["UPDATE configuration SET resource_content = ${expectedContent.bytes} WHERE tenant_id = 0 " +
-                             "AND content_type = template_type AND resource_name = ${fileName}",
-                     "UPDATE configuration SET resource_content = ${expectedContent.bytes} WHERE tenant_id = 5 " +
-                             "AND content_type = type AND resource_name = ${fileName}",
-                     "UPDATE configuration SET resource_content = ${expectedContent.bytes} WHERE tenant_id = 8 " +
-                             "AND content_type = type AND resource_name = ${fileName}"]
-
+        captured == [
+            "UPDATE configuration SET resource_content = ${expectedContent.bytes} WHERE tenant_id = 0 " +
+            "AND content_type = template_type AND resource_name = ${fileName}",
+            "UPDATE configuration SET resource_content = ${expectedContent.bytes} WHERE tenant_id = 5 " +
+            "AND content_type = type AND resource_name = ${fileName}",
+            "UPDATE configuration SET resource_content = ${expectedContent.bytes} WHERE tenant_id = 8 " +
+            "AND content_type = type AND resource_name = ${fileName}"
+        ]
     }
 
     def "should update property for existing key in property file"() {
@@ -149,14 +163,16 @@ class ConfigurationHelperTest extends Specification {
         def fileName = "existingFile"
         def existingContent = "# existing comment\nkey =  value\nkey2=value2"
         databaseHelper.getBlobContentAsString(_) >> existingContent
-        def results = [[tenant_id: 0L, content_type: "template_type", resource_content: existingContent.bytes],
-                       [tenant_id: 5L, content_type: "type", resource_content: existingContent.bytes],
-                       [tenant_id: 8L, content_type: "type", resource_content: existingContent.bytes]]
+        def results = [
+            [tenant_id: 0L, content_type: "template_type", resource_content: existingContent.bytes],
+            [tenant_id: 5L, content_type: "type", resource_content: existingContent.bytes],
+            [tenant_id: 8L, content_type: "type", resource_content: existingContent.bytes]
+        ]
         sql.rows("""
                 SELECT tenant_id, content_type, resource_content
                 FROM configuration
-                WHERE resource_name=${fileName}       
-                ORDER BY content_type, tenant_id 
+                WHERE resource_name=${fileName}
+                ORDER BY content_type, tenant_id
                 """) >> results
 
         when:
@@ -167,13 +183,14 @@ class ConfigurationHelperTest extends Specification {
             captured.add(it)
         })
         def expectedContent = "# existing comment\n# new comment\nkey=newValue\nkey2=value2"
-        captured == ["UPDATE configuration SET resource_content = ${expectedContent.bytes} WHERE tenant_id = 0 " +
-                             "AND content_type = template_type AND resource_name = ${fileName}",
-                     "UPDATE configuration SET resource_content = ${expectedContent.bytes} WHERE tenant_id = 5 " +
-                             "AND content_type = type AND resource_name = ${fileName}",
-                     "UPDATE configuration SET resource_content = ${expectedContent.bytes} WHERE tenant_id = 8 " +
-                             "AND content_type = type AND resource_name = ${fileName}"]
-
+        captured == [
+            "UPDATE configuration SET resource_content = ${expectedContent.bytes} WHERE tenant_id = 0 " +
+            "AND content_type = template_type AND resource_name = ${fileName}",
+            "UPDATE configuration SET resource_content = ${expectedContent.bytes} WHERE tenant_id = 5 " +
+            "AND content_type = type AND resource_name = ${fileName}",
+            "UPDATE configuration SET resource_content = ${expectedContent.bytes} WHERE tenant_id = 8 " +
+            "AND content_type = type AND resource_name = ${fileName}"
+        ]
     }
 
     def "should not update up-to-date property in property file"() {
@@ -181,14 +198,16 @@ class ConfigurationHelperTest extends Specification {
         def fileName = "existingFile"
         def existingContent = "#mycomment\nkey=value\nkey2=value2"
         databaseHelper.getBlobContentAsString(_) >> existingContent
-        def results = [[tenant_id: 0L, content_type: "template_type", resource_content: existingContent.bytes],
-                       [tenant_id: 5L, content_type: "type", resource_content: existingContent.bytes],
-                       [tenant_id: 8L, content_type: "type", resource_content: existingContent.bytes]]
+        def results = [
+            [tenant_id: 0L, content_type: "template_type", resource_content: existingContent.bytes],
+            [tenant_id: 5L, content_type: "type", resource_content: existingContent.bytes],
+            [tenant_id: 8L, content_type: "type", resource_content: existingContent.bytes]
+        ]
         sql.rows("""
                 SELECT tenant_id, content_type, resource_content
                 FROM configuration
-                WHERE resource_name=${fileName}       
-                ORDER BY content_type, tenant_id 
+                WHERE resource_name=${fileName}
+                ORDER BY content_type, tenant_id
                 """) >> results
 
         when:
@@ -209,8 +228,8 @@ class ConfigurationHelperTest extends Specification {
         sql.rows("""
                 SELECT tenant_id, content_type, resource_content
                 FROM configuration
-                WHERE resource_name=${fileName}       
-                ORDER BY content_type, tenant_id 
+                WHERE resource_name=${fileName}
+                ORDER BY content_type, tenant_id
                 """) >> results
 
         when:
@@ -219,7 +238,9 @@ class ConfigurationHelperTest extends Specification {
         then:
         1 * sql.execute({ captured.add(it) })
         def expectedContent = "${existingContent}\nkey=value"
-        captured == ["UPDATE configuration SET resource_content = ${expectedContent.bytes} WHERE tenant_id = 0 AND content_type = template_type AND resource_name = ${fileName}"]
+        captured == [
+            "UPDATE configuration SET resource_content = ${expectedContent.bytes} WHERE tenant_id = 0 AND content_type = template_type AND resource_name = ${fileName}"
+        ]
     }
 
     def "should throw exception when adding key in non existing file"() {
@@ -229,8 +250,8 @@ class ConfigurationHelperTest extends Specification {
         sql.rows("""
                 SELECT tenant_id, content_type, resource_content
                 FROM configuration
-                WHERE resource_name=${fileName}       
-                ORDER BY content_type, tenant_id 
+                WHERE resource_name=${fileName}
+                ORDER BY content_type, tenant_id
                 """) >> []
 
         when:
@@ -239,7 +260,6 @@ class ConfigurationHelperTest extends Specification {
         then:
         IllegalArgumentException argumentException = thrown()
         argumentException.message == "configuration file ${fileName} not found in database."
-
     }
 
     def "should not change up to date property in property file"() {
@@ -248,14 +268,16 @@ class ConfigurationHelperTest extends Specification {
         def fileName = "existingFile"
         def existingContent = "#mycomment\nkey=value\nkey2=value2"
         databaseHelper.getBlobContentAsString(_) >> existingContent
-        def results = [[tenant_id: 0L, content_type: "template_type", resource_content: existingContent.bytes],
-                       [tenant_id: 5L, content_type: "type", resource_content: existingContent.bytes],
-                       [tenant_id: 8L, content_type: "type", resource_content: existingContent.bytes]]
+        def results = [
+            [tenant_id: 0L, content_type: "template_type", resource_content: existingContent.bytes],
+            [tenant_id: 5L, content_type: "type", resource_content: existingContent.bytes],
+            [tenant_id: 8L, content_type: "type", resource_content: existingContent.bytes]
+        ]
         sql.rows("""
                 SELECT tenant_id, content_type, resource_content
                 FROM configuration
-                WHERE resource_name=${fileName}       
-                ORDER BY content_type, tenant_id 
+                WHERE resource_name=${fileName}
+                ORDER BY content_type, tenant_id
                 """) >> results
 
         when:
@@ -266,12 +288,11 @@ class ConfigurationHelperTest extends Specification {
         3 * logger.info({ captured.add(it) })
         def message = "configuration file already up to date | tenant id: %3d | type: %-25s | file name:" +
                 " %s"
-        captured == [String.format(message, 0L, "template_type", fileName),
-                     String.format(message, 5L, "type", fileName),
-                     String.format(message, 8L, "type", fileName)
+        captured == [
+            String.format(message, 0L, "template_type", fileName),
+            String.format(message, 5L, "type", fileName),
+            String.format(message, 8L, "type", fileName)
         ]
-
-
     }
 
 
@@ -281,14 +302,16 @@ class ConfigurationHelperTest extends Specification {
         def fileName = "existingFile"
         def existingContent = "#mycomment\nkey=value\nkey2=value2"
         databaseHelper.getBlobContentAsString(_) >> existingContent
-        def results = [[tenant_id: 0L, content_type: "template_type", resource_content: existingContent.bytes],
-                       [tenant_id: 5L, content_type: "type", resource_content: existingContent.bytes],
-                       [tenant_id: 8L, content_type: "type", resource_content: existingContent.bytes]]
+        def results = [
+            [tenant_id: 0L, content_type: "template_type", resource_content: existingContent.bytes],
+            [tenant_id: 5L, content_type: "type", resource_content: existingContent.bytes],
+            [tenant_id: 8L, content_type: "type", resource_content: existingContent.bytes]
+        ]
         sql.rows("""
                 SELECT tenant_id, content_type, resource_content
                 FROM configuration
-                WHERE resource_name=${fileName}       
-                ORDER BY content_type, tenant_id 
+                WHERE resource_name=${fileName}
+                ORDER BY content_type, tenant_id
                 """) >> results
 
         when:
@@ -297,13 +320,14 @@ class ConfigurationHelperTest extends Specification {
         then:
         3 * sql.execute({ captured.add(it) })
         def expectedContent = "${existingContent}\nnewKey=newValue"
-        captured == ["UPDATE configuration SET resource_content = ${expectedContent.bytes} WHERE tenant_id = 0 " +
-                             "AND content_type = template_type AND resource_name = ${fileName}",
-                     "UPDATE configuration SET resource_content = ${expectedContent.bytes} WHERE tenant_id = 5 " +
-                             "AND content_type = type AND resource_name = ${fileName}",
-                     "UPDATE configuration SET resource_content = ${expectedContent.bytes} WHERE tenant_id = 8 " +
-                             "AND content_type = type AND resource_name = ${fileName}"]
-
+        captured == [
+            "UPDATE configuration SET resource_content = ${expectedContent.bytes} WHERE tenant_id = 0 " +
+            "AND content_type = template_type AND resource_name = ${fileName}",
+            "UPDATE configuration SET resource_content = ${expectedContent.bytes} WHERE tenant_id = 5 " +
+            "AND content_type = type AND resource_name = ${fileName}",
+            "UPDATE configuration SET resource_content = ${expectedContent.bytes} WHERE tenant_id = 8 " +
+            "AND content_type = type AND resource_name = ${fileName}"
+        ]
     }
 
     def "should update entry if permission value is missing in property file"() {
@@ -319,14 +343,16 @@ unknown_key=[perm1]
 """
 
         databaseHelper.getBlobContentAsString(_) >> existingContent
-        def results = [[tenant_id: 0L, content_type: "template_type", resource_content: existingContent.bytes],
-                       [tenant_id: 5L, content_type: "type", resource_content: existingContent.bytes],
-                       [tenant_id: 8L, content_type: "type", resource_content: existingContent.bytes]]
+        def results = [
+            [tenant_id: 0L, content_type: "template_type", resource_content: existingContent.bytes],
+            [tenant_id: 5L, content_type: "type", resource_content: existingContent.bytes],
+            [tenant_id: 8L, content_type: "type", resource_content: existingContent.bytes]
+        ]
         sql.rows("""
                 SELECT tenant_id, content_type, resource_content
                 FROM configuration
-                WHERE resource_name=${fileName}       
-                ORDER BY content_type, tenant_id 
+                WHERE resource_name=${fileName}
+                ORDER BY content_type, tenant_id
                 """) >> results
 
         when:
@@ -341,13 +367,14 @@ key2=[perm1,permToAdd,perm2]
 key3=[perm1,perm2, permToAdd]
 unknown_key=[perm1]"""
 
-        captured == ["UPDATE configuration SET resource_content = ${expectedContent.bytes} WHERE tenant_id = 0 " +
-                             "AND content_type = template_type AND resource_name = ${fileName}",
-                     "UPDATE configuration SET resource_content = ${expectedContent.bytes} WHERE tenant_id = 5 " +
-                             "AND content_type = type AND resource_name = ${fileName}",
-                     "UPDATE configuration SET resource_content = ${expectedContent.bytes} WHERE tenant_id = 8 " +
-                             "AND content_type = type AND resource_name = ${fileName}"]
-
+        captured == [
+            "UPDATE configuration SET resource_content = ${expectedContent.bytes} WHERE tenant_id = 0 " +
+            "AND content_type = template_type AND resource_name = ${fileName}",
+            "UPDATE configuration SET resource_content = ${expectedContent.bytes} WHERE tenant_id = 5 " +
+            "AND content_type = type AND resource_name = ${fileName}",
+            "UPDATE configuration SET resource_content = ${expectedContent.bytes} WHERE tenant_id = 8 " +
+            "AND content_type = type AND resource_name = ${fileName}"
+        ]
     }
 
     def "should create a new entry with comment"() {
@@ -375,7 +402,6 @@ key1@value1"""
         then:
         IllegalArgumentException argumentException = thrown()
         argumentException.message == "configuration file ${fileName} not found in database."
-
     }
 
     def "renamePropertiesInConfigFiles should log WARN message if no key match in specified file"() {
@@ -387,7 +413,7 @@ key1@value1"""
         sql.rows("""
                 SELECT tenant_id, content_type, resource_content
                 FROM configuration
-                WHERE resource_name=${fileName}       
+                WHERE resource_name=${fileName}
                 ORDER BY content_type, tenant_id
                 """) >> [[tenant_id: 1L, content_type: "type", resource_content: existingContent.bytes]]
 
@@ -410,12 +436,14 @@ oldToto= some value
 """
 
         databaseHelper.getBlobContentAsString(_) >> existingContent
-        def results = [[tenant_id: 0L, content_type: "template_type", resource_content: existingContent.bytes],
-                       [tenant_id: 5L, content_type: "type", resource_content: existingContent.bytes]]
+        def results = [
+            [tenant_id: 0L, content_type: "template_type", resource_content: existingContent.bytes],
+            [tenant_id: 5L, content_type: "type", resource_content: existingContent.bytes]
+        ]
         sql.rows("""
                 SELECT tenant_id, content_type, resource_content
                 FROM configuration
-                WHERE resource_name=${fileName}       
+                WHERE resource_name=${fileName}
                 ORDER BY content_type, tenant_id
                 """) >> results
 
@@ -430,11 +458,11 @@ key2=unchanged value
 newTata=some value
 """
 
-        captured == ["UPDATE configuration SET resource_content = ${expectedContent.bytes} WHERE tenant_id = 0 " +
-                             "AND content_type = template_type AND resource_name = ${fileName}",
-                     "UPDATE configuration SET resource_content = ${expectedContent.bytes} WHERE tenant_id = 5 " +
-                             "AND content_type = type AND resource_name = ${fileName}"]
-
+        captured == [
+            "UPDATE configuration SET resource_content = ${expectedContent.bytes} WHERE tenant_id = 0 " +
+            "AND content_type = template_type AND resource_name = ${fileName}",
+            "UPDATE configuration SET resource_content = ${expectedContent.bytes} WHERE tenant_id = 5 " +
+            "AND content_type = type AND resource_name = ${fileName}"
+        ]
     }
-
 }

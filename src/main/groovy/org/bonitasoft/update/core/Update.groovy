@@ -11,7 +11,6 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
-
 package org.bonitasoft.update.core
 
 import com.github.zafarkhaja.semver.Version
@@ -54,7 +53,7 @@ class Update {
             new Update(
                     updateContext,
                     new DisplayUtil(logger: logger)
-            ).run(isSp)
+                    ).run(isSp)
         } catch (Throwable ignored) {
             // logs managed in the run method
             System.exit(-1)
@@ -243,7 +242,7 @@ class Update {
     def logUpdateBannerAndGlobalWarnings(boolean isSp, UpdateAction runner) {
         def updateToolVersion = getProjectProperties().getProperty("update.tool.version", "DEV")
         def banner = (["", "Bonita update tool ${updateToolVersion} ${Edition.from(isSp).displayName} edition", ""] +
-                runner.getBannerAndGlobalWarnings() + [""]) as String[]
+        runner.getBannerAndGlobalWarnings() + [""]) as String[]
         displayUtil.logInfoCenteredInRectangle(banner)
     }
 
@@ -275,5 +274,4 @@ class Update {
         }
         logger.info "  implementation-version ${version}"
     }
-
 }

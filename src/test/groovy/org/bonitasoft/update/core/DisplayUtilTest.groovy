@@ -1,6 +1,6 @@
 /**
  * Copyright (C) 2017-2019 Bonitasoft S.A.
- * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
+ * Bonitasoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
  * version 2.1 of the License.
@@ -52,7 +52,7 @@ class DisplayUtilTest extends Specification {
                 , '|my first message                                      |'
                 , '|my Second message which is longer than the first one  |'
                 , '+------------------------------------------------------+'
-        )
+                )
     }
 
     def 'should log warnings in rectangle wth title take title into account for longest message'() {
@@ -66,7 +66,7 @@ class DisplayUtilTest extends Specification {
                 , '|my first message                                         |'
                 , '|my Second message                                        |'
                 , '+---------------------------------------------------------+'
-        )
+                )
     }
 
     def 'should log warnings in rectangle wth title split multiline messages when calculating size'() {
@@ -82,7 +82,7 @@ class DisplayUtilTest extends Specification {
                 , '|purposes                                 |'
                 , '|my Second message                        |'
                 , '+-----------------------------------------+'
-        )
+                )
     }
 
     def 'should generate a dash line'() {
@@ -143,7 +143,6 @@ class DisplayUtilTest extends Specification {
                 , '|             how are you?              |'
                 , '| a very very very long long long line! |'
                 , '+---------------------------------------+'
-        )
+                )
     }
-
 }
