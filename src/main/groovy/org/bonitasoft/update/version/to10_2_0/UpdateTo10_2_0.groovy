@@ -13,11 +13,26 @@
  **/
 package org.bonitasoft.update.version.to10_2_0
 
+import org.bonitasoft.update.core.UpdateContext
 import org.bonitasoft.update.core.UpdateStep
 import org.bonitasoft.update.core.VersionUpdate
 import org.bonitasoft.update.version.to10_0_0.CreateRefBizDataInstIndex
 
 class UpdateTo10_2_0 extends VersionUpdate {
+
+    public static final List<String> BLOCK_IF_NON_POSTGRES_DATABASE = [
+            "Bonita Community edition 2024.3 (10.2) and above only supports PostgreSQL database.",
+            " If you need to continue using MS Sql Server, Oracle, or MySQL, please use Bonita Enterprise edition.",
+    ]
+
+    @Override
+    String[] getPreUpdateBlockingMessages(UpdateContext context) {
+        def warnings = []
+        if (context.dbVendor != UpdateStep.DBVendor.POSTGRES) {
+            warnings.addAll(BLOCK_IF_NON_POSTGRES_DATABASE)
+        }
+        return warnings
+    }
 
     @Override
     List<UpdateStep> getUpdateSteps() {

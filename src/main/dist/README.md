@@ -31,7 +31,7 @@ Eg.
 ## Accepted parameters
 
 ### Mandatory parameters
->     db.vendor <the kind of your database>, can be [mysql,postgres,sqlserver,oracle]
+>     db.vendor <the kind of your database>, can be [mysql,postgres,sqlserver,oracle]. Note that from version 10.2.0, Bonita Community edition only supports PostgreSQL database.
 >     db.url <the url of the database>
 >     db.driverclass <the class of the jdbc driver>
 >     db.user <the username to connect to the database>

@@ -13,6 +13,9 @@
  **/
 package org.bonitasoft.update.version.to10_2_0
 
+
+import org.bonitasoft.update.core.UpdateContext
+import org.bonitasoft.update.core.UpdateStep
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -36,5 +39,31 @@ class UpdateTo10_2_0Test extends Specification {
                 "RemoveWorkThreadPoolProperties",
                 "RemoveConnectorThreadPoolProperties"
         ]
+    }
+
+    def "should 10.2.0 pre-update block if non-postgres dbVendor detected"() {
+        given:
+        def updateTo = new UpdateTo10_2_0()
+        def updateContext = Mock(UpdateContext)
+        updateContext.dbVendor >> UpdateStep.DBVendor.MYSQL
+
+        when:
+        def warnings = updateTo.getPreUpdateBlockingMessages(updateContext)
+
+        then:
+        warnings.size() > 0
+        UpdateTo10_2_0.BLOCK_IF_NON_POSTGRES_DATABASE.every {
+            warnings.contains(it)
+        }
+    }
+
+    def "should 10.2.0 pre-update not block if postgres dbVendor detected"() {
+        given:
+        def updateTo = new UpdateTo10_2_0()
+        def updateContext = Mock(UpdateContext)
+        updateContext.dbVendor >> UpdateStep.DBVendor.POSTGRES
+
+        expect:
+        updateTo.getPreUpdateBlockingMessages(updateContext).size() == 0
     }
 }

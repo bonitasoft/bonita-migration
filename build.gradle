@@ -12,7 +12,7 @@ plugins {
     // to be able to build Gradle task graph:
     // Run 'taskTree' to activate it.
     // Eg. './gradlew :bonita-update-tool:testUpdate_7_8_1 :bonita-update-tool:taskTree -Ddb.vendor=oracle'
-    id 'com.dorongold.task-tree' version '1.3.1'
+    id 'com.dorongold.task-tree' version '4.0.0'
 }
 repositories {
     mavenLocal()

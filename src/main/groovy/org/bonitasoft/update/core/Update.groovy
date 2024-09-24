@@ -117,16 +117,16 @@ class Update {
      */
     Closure toVersionUpdateInstance = { Version it ->
         def versionUnderscored = it.toString().replace(".", "_")
-        def versionUpdateClass
+        Class versionUpdateClass
         def className = "com.bonitasoft.update.version.to${versionUnderscored}.UpdateTo$versionUnderscored"
         try {
-            logger.debug("Trying to find " + className)
+            logger.debug("Trying to find class " + className)
             versionUpdateClass = Thread.currentThread().contextClassLoader.loadClass(className)
         } catch (ClassNotFoundException ignored) {
-            logger.debug("Unable to find " + className)
+            logger.debug("Unable to find Subscription specific class $className. Will use the Community version instead:")
             versionUpdateClass = Thread.currentThread().contextClassLoader.loadClass("org.bonitasoft.update.version.to${versionUnderscored}.UpdateTo$versionUnderscored")
         }
-        logger.debug("Using " + versionUpdateClass)
+        logger.debug("Using class " + versionUpdateClass)
         return versionUpdateClass.newInstance(version: it, logger: logger)
     }
 

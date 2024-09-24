@@ -13,14 +13,14 @@ class DatabaseResourcesConfigurator {
     def static configureDatabaseResources(Project project) {
         String dbVendor = System.getProperty("db.vendor", "postgres")
         DatabasePluginExtension extension = project.extensions.getByType(DatabasePluginExtension.class)
-        extension.dbvendor = dbVendor
+        extension.dbVendor = dbVendor
         DockerDatabaseContainerTasksCreator.createTasks(project, dbVendor)
     }
 
     def static finalizeTasksDependenciesOnDatabaseResources(Project project) {
         DatabasePluginExtension extension = project.extensions.getByType(DatabasePluginExtension.class)
         def integrationTestTask = project.tasks.named('integrationTest')
-        def uniqueName = "${extension.dbvendor.capitalize()}"
+        def uniqueName = "${extension.dbVendor.capitalize()}"
         def vendorConfigurationTask = project.tasks.named("${uniqueName}Configuration")
         def removeVendorContainer = project.tasks.named("remove${uniqueName}Container")
 
@@ -41,18 +41,19 @@ class DatabaseResourcesConfigurator {
 
     private static List<String> getVersionsToUpdate(Project project) {
         UpdatePluginExtension updatePluginExtension = project.extensions.getByType(UpdatePluginExtension.class)
-        def allVersions = getTestableVersionList(project, updatePluginExtension)
+        DatabasePluginExtension databasePluginExtension = project.extensions.getByType(DatabasePluginExtension.class)
+        def allVersions = getTestableVersionList(project, updatePluginExtension, databasePluginExtension.dbVendor)
         allVersions.subList(1, allVersions.size())
     }
 
     def static getDatabaseConnectionSystemProperties(Project project) {
         DatabasePluginExtension configuration = project.extensions.getByType(DatabasePluginExtension.class)
         def dbValues = [
-                "db.vendor"       : String.valueOf(configuration.dbvendor),
-                "db.url"          : String.valueOf(configuration.dburl),
-                "db.user"         : String.valueOf(configuration.dbuser),
-                "db.password"     : String.valueOf(configuration.dbpassword),
-                "db.driverClass"  : String.valueOf(configuration.dbdriverClass),
+                "db.vendor"       : String.valueOf(configuration.dbVendor),
+                "db.url"          : String.valueOf(configuration.dbUrl),
+                "db.user"         : String.valueOf(configuration.dbUser),
+                "db.password"     : String.valueOf(configuration.dbPassword),
+                "db.driverClass"  : String.valueOf(configuration.dbDriverClass),
                 "db.root.user"    : String.valueOf(configuration.dbRootUser),
                 "db.root.password": String.valueOf(configuration.dbRootPassword),
                 "db.server.name"  : String.valueOf(configuration.dbServerName),
@@ -61,7 +62,7 @@ class DatabaseResourcesConfigurator {
                 "auto.accept"     : "true"
         ]
 
-        if ('oracle' == configuration.dbvendor) {
+        if ('oracle' == configuration.dbVendor) {
             // fix for https://community.oracle.com/message/3701989
             // http://www.thezonemanager.com/2015/07/whats-so-special-about-devurandom.html
             dbValues.put('java.security.egd', 'file:/dev/./urandom')

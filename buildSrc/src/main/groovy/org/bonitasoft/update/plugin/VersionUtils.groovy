@@ -1,6 +1,7 @@
 package org.bonitasoft.update.plugin
 
 import com.github.zafarkhaja.semver.Version
+import org.gradle.api.Project
 
 import static org.bonitasoft.update.plugin.PropertiesUtils.loadProperties
 /**
@@ -45,8 +46,13 @@ class VersionUtils {
         project.file(configuration.versionListFile).text.normalize().split("\n").toList()
     }
 
-    static List<String> getTestableVersionList(project, configuration) {
-        return getVersionList(project, configuration)
+    static List<String> getTestableVersionList(Project project, UpdatePluginExtension updatePluginExtension, String dbVendor) {
+        def versionList = getVersionList(project, updatePluginExtension)
+        // Filter out versions upper than 10.1.0 if dbVendor != postgres for Community Edition:
+        if (!updatePluginExtension.isSP && dbVendor != 'postgres') {
+            versionList.removeIf { Version.valueOf(it) > Version.valueOf("10.1.0") }
+        }
+        return versionList
     }
 
     static String getVersion(List<String> versions, String version, UpdatePluginExtension configuration) {
