@@ -38,7 +38,8 @@ class UpdateTo10_2_0Test extends Specification {
             "CreateRefBizDataInstIndex",
             "RemoveWorkThreadPoolProperties",
             "RemoveWorkDelayOnXAResourceProperties",
-            "RemoveConnectorThreadPoolProperties"
+            "RemoveConnectorThreadPoolProperties",
+            "InitPlatformInformation"
         ]
     }
 

@@ -75,7 +75,7 @@ class TestUpdateTask extends Test {
                 project.getConfigurations().named(underscored(bonitaVersion)),
                 getDatabaseDriverConfiguration(project, bonitaVersion)
         )
-        //add as input the database configuration, tests must  be relaunched when database configuration change
+        // add as input the database configuration, tests must be relaunched when database configuration change
         dbvendor = project.extensions.database.dbVendor
 
         def bonitaSemVer = Version.valueOf(bonitaVersion)
@@ -86,6 +86,9 @@ class TestUpdateTask extends Test {
         }
         include "**/*To" + underscored(bonitaVersion) + (isSP ? "SP" : "") + "*"
         useJUnitPlatform()
+        // To allow to use the real implementation of the ProcessStarterVerifier, and so the one that comes with
+        // TestEngine, as we use bonita-test-api
+        systemProperty("spring.profiles.active", "update-tool")
     }
 
 }
