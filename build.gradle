@@ -53,6 +53,8 @@ dependencies {
     implementation "ch.qos.logback:logback-classic:$logbackVersion"
     implementation "commons-cli:commons-cli:1.4"
     implementation "com.sun.activation:jakarta.activation:1.2.2"
+
+    implementation "com.fasterxml.jackson.core:jackson-databind:2.17.1"
     runtimeOnly 'javax.activation:activation:1.1'
 
     testRuntimeOnly "cglib:cglib-nodep:2.2"

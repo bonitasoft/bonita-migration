@@ -42,7 +42,8 @@ class UpdateTo10_2_0 extends VersionUpdate {
             new CreateRefBizDataInstIndex(),
             new RemoveWorkThreadPoolProperties(),
             new RemoveWorkDelayOnXAResourceProperties(),
-            new RemoveConnectorThreadPoolProperties()
+            new RemoveConnectorThreadPoolProperties(),
+            new InitPlatformInformation()
         ]
     }
 }
