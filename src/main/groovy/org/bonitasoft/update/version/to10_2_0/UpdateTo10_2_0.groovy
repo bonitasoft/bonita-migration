@@ -16,7 +16,7 @@ package org.bonitasoft.update.version.to10_2_0
 import org.bonitasoft.update.core.UpdateContext
 import org.bonitasoft.update.core.UpdateStep
 import org.bonitasoft.update.core.VersionUpdate
-import org.bonitasoft.update.version.to10_0_0.CreateRefBizDataInstIndex
+import org.bonitasoft.update.version.to9_0_0.RemoveTenantIdFromIndexes
 
 class UpdateTo10_2_0 extends VersionUpdate {
 
@@ -39,11 +39,11 @@ class UpdateTo10_2_0 extends VersionUpdate {
         // keep one line per step and comma (,) at start of line to avoid false-positive merge conflict:
         return [
             new AddColumnLinkToBusinessApp(),
-            new CreateRefBizDataInstIndex(),
             new RemoveWorkThreadPoolProperties(),
             new RemoveWorkDelayOnXAResourceProperties(),
             new RemoveConnectorThreadPoolProperties(),
-            new InitPlatformInformation()
+            new InitPlatformInformation(),
+            new RemoveTenantIdFromIndexes()
         ]
     }
 }

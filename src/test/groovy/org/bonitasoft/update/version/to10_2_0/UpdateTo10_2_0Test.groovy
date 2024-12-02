@@ -35,11 +35,11 @@ class UpdateTo10_2_0Test extends Specification {
         where:
         stepName << [
             "AddColumnLinkToBusinessApp",
-            "CreateRefBizDataInstIndex",
             "RemoveWorkThreadPoolProperties",
             "RemoveWorkDelayOnXAResourceProperties",
             "RemoveConnectorThreadPoolProperties",
-            "InitPlatformInformation"
+            "InitPlatformInformation",
+            "RemoveTenantIdFromIndexes"
         ]
     }
 

@@ -13,11 +13,9 @@
  **/
 package org.bonitasoft.update.version.to10_1_0
 
-
 import org.bonitasoft.update.core.UpdateStep
 import org.bonitasoft.update.core.VersionUpdate
-import org.bonitasoft.update.version.to10_0_0.CreateRefBizDataInstIndex
-
+import org.bonitasoft.update.version.to9_0_0.RemoveTenantIdFromIndexes
 /**
  * @author Emmanuel Duchastenier
  */
@@ -25,6 +23,6 @@ class UpdateTo10_1_0 extends VersionUpdate {
 
     @Override
     List<UpdateStep> getUpdateSteps() {
-        return [new CreateRefBizDataInstIndex()]
+        return [new RemoveTenantIdFromIndexes()]
     }
 }

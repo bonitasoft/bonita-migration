@@ -18,12 +18,10 @@ import groovy.sql.Sql
 import groovy.transform.PackageScope
 import org.bonitasoft.update.core.Logger
 import org.bonitasoft.update.core.UpdateStep.DBVendor
-import org.bonitasoft.update.core.database.schema.ColumnDefinition
 import org.bonitasoft.update.core.database.schema.ForeignKeyDefinition
 import org.bonitasoft.update.core.database.schema.IndexDefinition
 
 import static org.bonitasoft.update.core.UpdateStep.DBVendor.*
-
 /**
  * @author Baptiste Mesta
  */
@@ -307,10 +305,12 @@ END"""
      * to set field values.
      */
     def addColumn(String table, String column, String type, String defaultValue, String constraint) {
-        sql.execute("""ALTER TABLE $table ADD $column $type ${defaultValue != null ? "DEFAULT $defaultValue" : ""
+        sql.execute("""
+ALTER TABLE $table ADD $column $type ${defaultValue != null ? "DEFAULT $defaultValue" : ""
             } ${
                 constraint != null ? constraint : ""
-            }""" as String)
+            }
+""" as String)
     // in this case, sqlserver sets the constraint but lets the column with a null value, so set the value by hand
     if (dbVendor == SQLSERVER && defaultValue != null && constraint == null) {
         sql.execute("UPDATE $table set $column = $defaultValue" as String)
@@ -342,21 +342,21 @@ void dropColumnDefaultValueIfExists(String table, String column) {
 
 private String getSqlServerDefaultValueConstraintName(String table, String column) {
     return sql.firstRow("""
-            SELECT name FROM SYS.DEFAULT_CONSTRAINTS
-            WHERE PARENT_OBJECT_ID = OBJECT_ID('$table')
-            AND PARENT_COLUMN_ID = (SELECT column_id FROM sys.columns
-                                    WHERE NAME = N'$column'
-                                    AND object_id = OBJECT_ID(N'$table'))
-            """ as String)?.get('name')
+                SELECT name FROM SYS.DEFAULT_CONSTRAINTS
+                WHERE PARENT_OBJECT_ID = OBJECT_ID('$table')
+                AND PARENT_COLUMN_ID = (SELECT column_id FROM sys.columns
+                                        WHERE NAME = N'$column'
+                                        AND object_id = OBJECT_ID(N'$table'))
+                """ as String)?.get('name')
 }
 
 private String getMysqlColumnDefaultValue(String table, String column) {
     return sql.firstRow("""
-                    SELECT column_default FROM INFORMATION_SCHEMA.COLUMNS
-                    WHERE table_name = '$table'
-                    AND column_name = '$column'
-                    AND column_default is not null
-            """ as String)?.get('column_default')
+                        SELECT column_default FROM INFORMATION_SCHEMA.COLUMNS
+                        WHERE table_name = '$table'
+                        AND column_name = '$column'
+                        AND column_default is not null
+                """ as String)?.get('column_default')
 }
 
 /**
@@ -403,8 +403,8 @@ def createForeignKey(String referencingTableName, String foreignKeyName, String 
     def referencingCols = referencingColumns.collect { it }.join(", ")
     def referencedCols = referencedColumns.collect { it }.join(", ")
     String request = """ALTER TABLE $referencingTableName ADD CONSTRAINT ${foreignKeyName} FOREIGN KEY ($referencingCols)
-REFERENCES $referencedTableName ($referencedCols) ${onDeleteCascade ? "ON DELETE CASCADE" : ""}
-"""
+    REFERENCES $referencedTableName ($referencedCols) ${onDeleteCascade ? "ON DELETE CASCADE" : ""}
+    """
     logger.info "Executing request: $request"
     sql.execute(request)
 }
@@ -471,46 +471,57 @@ String getUniqueKeyNameOnTable(String tableName) {
 }
 
 /**
- * remove existing index if already exists and create new index
- * @param tableName
- * @param indexName
- * @param columns
+ * Remove existing index if already exists and create new index
+ *
  * @return create index SQl statement
  */
 String addOrReplaceIndex(String tableName, String indexName, String... columns) {
     dropIndexIfExists(tableName, indexName)
+    return createIndex(tableName, indexName, columns)
+}
 
+String createIndex(String tableName, String indexName, boolean unique = false, String... columns) {
     def concatenatedColumns = columns.collect { it }.join(", ")
-    String request = "CREATE INDEX $indexName ON $tableName ($concatenatedColumns)"
-    logger.info "Executing request: $request"
+    String request = "CREATE ${unique?"UNIQUE ":""}INDEX $indexName ON $tableName($concatenatedColumns)"
+    logger.info "Creating index: $request"
     sql.execute(request)
     return request
 }
 
+void renameIndex(String tableName, String oldName, String newName) {
+    String query
+    switch (dbVendor) {
+        case POSTGRES:
+        case ORACLE:
+            query = "ALTER INDEX $oldName RENAME TO $newName"
+            break
+        case MYSQL:
+            query = "ALTER TABLE $tableName RENAME INDEX $oldName TO $newName"
+            break
+        case SQLSERVER:
+            query = """BEGIN
+EXEC sp_rename N'${tableName}.${oldName}', N'${newName}', N'INDEX'
+END"""
+            break
+    }
+    logger.info "Renaming index: $query"
+    sql.execute(query)
+}
+
 /**
  * Create new index if not already exists
- * @param tableName
- * @param indexName
- * @param columns
- * @return create index SQl statement
+ * @return create index SQl statement, or empty string if index already exists
  */
 String addIndexIfMissing(String tableName, String indexName, String... columns) {
     if (hasIndexOnTable(tableName, indexName)) {
         logger.info "Index $indexName already exists on table $tableName. Skipping creation."
         return ""
     }
-    def concatenatedColumns = columns.collect { it }.join(", ")
-    String request = "CREATE INDEX $indexName ON $tableName ($concatenatedColumns)"
-    logger.info "Executing request: $request"
-    sql.execute(request)
-    return request
+    return createIndex(tableName, indexName, columns)
 }
 
 /**
- * remove existing index if already exists
- * @param tableName
- * @param indexName
- * @return
+ * remove index if exists
  */
 def dropIndexIfExists(String tableName, String indexName) {
     if (hasIndexOnTable(tableName, indexName)) {
@@ -527,24 +538,86 @@ def dropIndexIfExists(String tableName, String indexName) {
                 query = "DROP INDEX " + tableName + "." + indexName
                 break
         }
-        logger.info "Executing request: $query"
+        logger.info "Deleting index: $query"
         sql.execute(query)
     }
 }
 
 /**
- * retrieve index definition for a given table
- * @param tableName
- * @param indexName
- * @return
+ * retrieve index definition for a given table from database
  */
 IndexDefinition getIndexDefinition(String tableName, String indexName) {
     def query = getScriptContent("/database/indexDefinition", "indexDefinition")
     def indexDefinition = new IndexDefinition(tableName, indexName)
+    boolean exists = false
     sql.eachRow(query, [tableName, indexName]) {
-        indexDefinition.addColumn(new ColumnDefinition(it["column_name"], it["column_order"]))
+        indexDefinition.addColumn(it["column_name"] as String)
+        exists = true
     }
-    indexDefinition
+    return !exists ? null : indexDefinition
+}
+
+/**
+ * retrieve potential index definition for a given table and a list of columns
+ */
+IndexDefinition getIndexDefinition(String tableName, boolean unique = false, String... columnNames) {
+    def columns
+    def result
+    if (dbVendor == POSTGRES) {
+        def query = """SELECT LOWER(indexname)
+FROM pg_indexes
+WHERE LOWER(tablename) = LOWER(?)
+  AND LOWER(indexdef) LIKE LOWER(?)"""
+        columns = "CREATE ${unique?'UNIQUE ':''}INDEX%(" + columnNames.collect { it }.join(", ") + ")%" as String
+        result = sql.firstRow(query, [tableName, columns])
+    } else if (dbVendor == MYSQL) {
+        def query = """SELECT LOWER(INDEX_NAME)
+FROM INFORMATION_SCHEMA.STATISTICS
+WHERE NON_UNIQUE = ${unique?'0':'1'}
+    AND TABLE_SCHEMA = DATABASE()
+    AND TABLE_NAME = ?
+    AND LOWER(COLUMN_NAME) IN (${columnNames.collect{'?'}.join(',')})
+GROUP BY INDEX_NAME
+HAVING MAX(SEQ_IN_INDEX) = ? AND COUNT(DISTINCT COLUMN_NAME) = ?
+"""
+        List<Object> params = [tableName]
+        params.addAll(columnNames)
+        params.add(columnNames.size())
+        params.add(columnNames.size())
+        result = sql.firstRow(query, params)
+    } else if (dbVendor == SQLSERVER) {
+        def query = """SELECT LOWER(i.name) AS index_name
+FROM sys.indexes i
+    JOIN sys.index_columns ic ON i.object_id = ic.object_id AND i.index_id = ic.index_id
+    JOIN sys.columns c ON ic.object_id = c.object_id AND ic.column_id = c.column_id
+WHERE LOWER(i.object_id) = OBJECT_ID(?)
+    AND LOWER(c.name) IN (${columnNames.collect{'?'}.join(',')})
+    AND i.is_unique = ${unique?'1':'0'}
+GROUP BY i.name
+HAVING COUNT(DISTINCT c.name) = ? and MAX(index_column_id) = ?
+"""
+        List<Object> params = [tableName]
+        params.addAll(columnNames)
+        params.add(columnNames.size())
+        params.add(columnNames.size())
+        result = sql.firstRow(query, params)
+    } else {
+        // ORACLE
+        def query = """SELECT LOWER(i.index_name)
+FROM all_indexes i
+    JOIN all_ind_columns ic ON i.index_name = ic.index_name AND i.table_name = ic.table_name
+WHERE LOWER(i.table_name) = ?
+    AND LOWER(ic.column_name) IN (${columnNames.collect{'?'}.join(',')})
+    AND i.uniqueness = '${unique?'UNIQUE':'NONUNIQUE'}'
+GROUP BY i.index_name
+HAVING COUNT(DISTINCT ic.column_name) = ? AND MAX(column_position) = ?"""
+        List<Object> params = [tableName]
+        params.addAll(columnNames)
+        params.add(columnNames.size())
+        params.add(columnNames.size())
+        result = sql.firstRow(query, params)
+    }
+    return !result || result.isEmpty() ? null : new IndexDefinition(tableName, result[0] as String, columnNames)
 }
 
 /**
@@ -836,7 +909,6 @@ def executeScript(String version, String folderName, String scriptName) {
 private String getScriptContent(String folderName, String scriptName) {
     def scriptContent = ""
     def sqlFile = "$folderName/${dbVendor.toString().toLowerCase()}_${scriptName}.sql"
-    logger.info "execute script: $sqlFile"
     def stream1 = this.class.getResourceAsStream(sqlFile)
     stream1.withStream { InputStream s ->
         scriptContent = s.text

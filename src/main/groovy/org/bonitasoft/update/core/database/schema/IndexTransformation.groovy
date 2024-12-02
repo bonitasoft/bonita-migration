@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Bonitasoft S.A.
+ * Copyright (C) 2024 Bonitasoft S.A.
  * Bonitasoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
@@ -12,31 +12,16 @@
  * Floor, Boston, MA 02110-1301, USA.
  **/
 package org.bonitasoft.update.core.database.schema
+
 /**
- * @author Laurent Leseigneur
+ * @author Emmanuel Duchastenier
  */
-class ColumnDefinition {
+class IndexTransformation {
+    IndexDefinition source
+    IndexDefinition target
 
-    private final String columnName
-    private final long position
-
-    def ColumnDefinition(String columnName, long position) {
-
-        this.columnName = columnName
-        this.position = position
-    }
-
-    def ColumnDefinition(String columnName, BigDecimal position) {
-
-        this.columnName = columnName
-        this.position = position.longValue()
-    }
-
-    String getColumnName() {
-        return columnName
-    }
-
-    long getPosition() {
-        return position
+    IndexTransformation(IndexDefinition source, IndexDefinition target) {
+        this.source = source
+        this.target = target
     }
 }

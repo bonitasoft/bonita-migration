@@ -18,7 +18,7 @@ enum Edition {
     , SUBSCRIPTION("Subscription")
     , UNKNOWN("Unknown")
 
-    private String displayName
+    protected String displayName
 
     private Edition(String displayName) {
         this.displayName = displayName

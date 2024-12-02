@@ -29,7 +29,8 @@ class UpdateTo9_0_0 extends VersionUpdate {
             new AddMaintenanceMessageToPlatform(),
             new RemoveUnusedSequences(),
             new RemoveTenantIdFromProcessInstance(),
-            new RenameTechUserProperties()
+            new RenameTechUserProperties(),
+            new RemoveTenantIdFromIndexes()
         ]
     }
 }

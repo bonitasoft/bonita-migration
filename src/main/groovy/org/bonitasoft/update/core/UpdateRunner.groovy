@@ -18,28 +18,29 @@ import groovy.sql.Sql
 import groovy.time.TimeCategory
 
 /**
+ * Main Update tool runner, that updates a Bonita platform to an upper version.
+ *
  * @author Baptiste Mesta
  */
-class UpdateRunner implements UpdateAction {
+class UpdateRunner extends UpdateDefaultAction implements UpdateAction {
 
     public static final String VERSION_OVERRIDDEN = "version.overridden"
     public static final String VERSION_OVERRIDE_BY = "version.override.by"
     List<VersionUpdate> versionUpdates
     UpdateContext context
-    Logger logger
     DisplayUtil displayUtil
     def overriddenVersion
     def overrideByVersion
 
     @Override
-    void run(boolean isSp) {
+    void runSpecificAction(boolean isSp) {
 
         if (!hasBlockingPrerequisites()) {
             displayWarningPrerequisites()
 
             Date updateStartDate = new Date()
             String lastVersion = null
-            def warnings = [:]
+            Map<String, String[]> warnings = [:]
             versionUpdates.each {
                 logger.info "Execute update to version " + UpdateUtil.getDisplayVersion(it.getVersion())
                 it.context = context

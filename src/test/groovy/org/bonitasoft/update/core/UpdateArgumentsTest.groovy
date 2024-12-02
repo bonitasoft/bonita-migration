@@ -54,4 +54,16 @@ class UpdateArgumentsTest extends Specification {
         def exception = thrown(ParseException)
         exception.message == "Unrecognized option: --toto"
     }
+
+    @Unroll
+    def "should parse update-indexes option"() {
+        given:
+        def arguments = ["--update-indexes"] as String[]
+
+        when:
+        def parsedArguments = UpdateArguments.parse(arguments)
+
+        then:
+        parsedArguments.updateIndexes
+    }
 }

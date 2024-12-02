@@ -18,10 +18,7 @@ import groovy.sql.Sql
 import groovy.time.TimeCategory
 import org.bonitasoft.update.core.UpdateStep.DBVendor
 
-import java.sql.ResultSet
-
 import static org.bonitasoft.update.core.UpdateStep.DBVendor.*
-
 /**
  *
  * Util classes that contains common methods for update
@@ -60,52 +57,6 @@ class UpdateUtil {
 
         def endFeatureDate = new Date()
         logger.info("| --> Update step success in " + TimeCategory.minus(endFeatureDate, startFeatureDate) + ". Update started " + TimeCategory.minus(endFeatureDate, startUpdateDate) + " ago. --")
-    }
-
-    static Sql getSqlConnection(String dburl, String user, String pwd, String driverClass) {
-        return Sql.newInstance(dburl, user, pwd, driverClass)
-    }
-
-    static executeDefaultSqlFile(File file, String dbVendor, Sql sql) {
-        executeSqlFile(file, dbVendor, null, null, sql, true)
-    }
-
-    /**
-     * execute a sql file
-     * @param feature
-     *      the folder where the feature to update is
-     * @param dbVendor
-     *      the current database type
-     * @param suffix
-     *      the suffix of the file to execute, format is: <dbVendor>-<suffixe>.sql
-     * @param parameters
-     *      parameters to replace inside the file, if parameter 'tenant' is given, all word 'tenant' will be replace by the value
-     * @param sql
-     *      the sql connection to the database
-     * @param toUpdate
-     *      if this will update elements
-     */
-
-    static executeSqlFile(File feature, String dbVendor, String suffix, Map<String, String> parameters, Sql sql, boolean toUpdate) {
-        def sqlFile = getSqlFile(feature, dbVendor, suffix)
-        if (sqlFile.exists()) {
-            def List<String> contents = getSqlContent(sqlFile.text, parameters)
-
-            for (content in contents) {
-                if (!content.trim().empty) {
-                    if (toUpdate) {
-                        def count = sql.executeUpdate(content)
-                        if (count > 0) {
-                            logger.info count + " row(s) updated"
-                        }
-                    } else {
-                        sql.execute(content)
-                    }
-                }
-            }
-        } else {
-            logger.info "nothing to execute"
-        }
     }
 
     static List<String> getSqlContent(String sqlFileContent, Map<String, String> parameters) {
@@ -160,71 +111,8 @@ class UpdateUtil {
         return semVer.majorVersion + '.' + semVer.minorVersion
     }
 
-    static Object getId(File feature, String dbVendor, String fileExtension, Object it, Sql sql) {
-        if (it == null || sql == null) {
-            throw new IllegalArgumentException("Can't execute getId method with arguments : it = " + it + ", sql = " + sql)
-        }
-
-        def sqlFile = getSqlFile(feature, dbVendor, fileExtension)
-        def parameters = Collections.singletonMap(":tenantId", String.valueOf(it))
-        def id = null
-        sql.eachRow(getSqlContent(sqlFile.text, parameters).get(0)) { row ->
-            id = row[0]
-        }
-        return id
-    }
-
-    /**
-     * Return a list of ids.
-     * The SQL file to execute need to begin by "SELECT id FROM...".
-     */
-
-    static List<Long> getIds(File feature, String dbVendor, String fileExtension, Map<String, String> parameters, Sql sql) {
-        if (sql == null) {
-            throw new IllegalArgumentException("Can't execute getId method with arguments : sql = " + sql)
-        }
-        def sqlFile = getSqlFile(feature, dbVendor, fileExtension)
-        def ids = []
-        sql.query(getSqlContent(sqlFile.text, parameters).get(0)) { ResultSet rs ->
-            while (rs.next())
-                ids.add(rs.getLong(1))
-        }
-        return ids
-    }
-
-    static List<Object> getTenantIds(Sql sql) {
-        if (sql == null) {
-            throw new IllegalArgumentException("Can't execute getTenantIds method with arguments : sql = " + sql)
-        }
-        def tenants = []
-
-        sql.query("SELECT id FROM tenant ORDER BY id ASC") { ResultSet rs ->
-            while (rs.next()) tenants.add(rs.getLong(1))
-        }
-        return tenants
-    }
-
     static boolean isMultiTenantPlatform(Sql sql) {
         sql.rows("SELECT * FROM tenant").size() > 1
-    }
-
-    static updateDirectory(String fromDir, String toDir, boolean deleteOldDirectory) {
-        if (fromDir == null || toDir == null) {
-            throw new IllegalArgumentException("Can't execute updateDirectory method with arguments : fromDir = " + fromDir + ", toDir = " + toDir)
-        }
-        def fileFromDir = new File(fromDir)
-        def fileToDir = new File(toDir)
-
-        if (!fileFromDir.exists() || !fileFromDir.isDirectory()) {
-            throw new IllegalStateException("Update failed. Source folder does not exist : " + fromDir)
-        }
-
-        if (!deleteOldDirectory) {
-            logger.info " | Adding/overwriting content in $toDir..."
-        } else {
-            IOUtil.deleteDirectory(fileToDir)
-        }
-        IOUtil.copyDirectory(fileFromDir, fileToDir)
     }
 
     static void askIfWeContinue() {
@@ -239,10 +127,10 @@ class UpdateUtil {
     }
 
     static String askForOptions(List<String> options) {
-        def input = null
+        def input
         while (true) {
             options.eachWithIndex { it, idx ->
-                logger.info "${idx + 1} -- ${UpdateUtil.getDisplayVersion(it)} "
+                logger.info "${idx + 1} -- ${getDisplayVersion(it)} "
             }
             logger.info "choice: "
             input = read()
@@ -251,18 +139,18 @@ class UpdateUtil {
                 if (choiceNumber <= options.size()) {
                     //index in the list is -1, as arrays start at index 0:
                     String choice = options.get(choiceNumber - 1)
-                    logger.info "$choiceNumber --> ${UpdateUtil.getDisplayVersion(choice)}"
+                    logger.info "$choiceNumber --> ${getDisplayVersion(choice)}"
                     return choice
                 }
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
             logger.warn "Invalid choice, please enter a value between 1 and ${options.size()}"
         }
     }
 
-    static getNexIdsForTable(Sql sql, long sequenceId) {
+    static getNexSequenceIdsForTable(Sql sql, long sequenceId) {
         def idsByTenants = [:]
-        sql.eachRow("SELECT tenantid,nextId from sequence WHERE id = $sequenceId") { row ->
+        sql.eachRow("SELECT tenantid, nextId from sequence WHERE id = $sequenceId") { row ->
             idsByTenants.put(row[0], row[1])
         }
         logger.info "next id by tenants for sequence id $sequenceId: $idsByTenants"
