@@ -14,14 +14,23 @@
 package org.bonitasoft.update.version.to10_3_0
 
 
-import org.bonitasoft.update.core.UpdateStep
-import org.bonitasoft.update.core.VersionUpdate
-import org.bonitasoft.update.version.to9_0_0.RemoveTenantIdFromIndexes
+import spock.lang.Specification
+import spock.lang.Unroll
 
-class UpdateTo10_3_0 extends VersionUpdate {
+class UpdateTo10_3_0Test extends Specification {
 
-    @Override
-    List<UpdateStep> getUpdateSteps() {
-        return [new CreateBpmFailureTables(), new RemoveTenantIdFromIndexes()]
+    @Unroll
+    def "should update to 10.3.0 include step '#stepName'"(def stepName) {
+        given:
+        def updateTo = new UpdateTo10_3_0()
+
+        expect:
+        def steps = updateTo.updateSteps
+        steps.collect {
+            it.class.getSimpleName()
+        }.contains(stepName)
+
+        where:
+        stepName << ["CreateBpmFailureTables", "RemoveTenantIdFromIndexes"]
     }
 }
