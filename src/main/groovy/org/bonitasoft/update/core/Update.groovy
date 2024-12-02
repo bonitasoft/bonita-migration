@@ -12,11 +12,6 @@
  * Floor, Boston, MA 02110-1301, USA.
  **/
 package org.bonitasoft.update.core
-
-import com.github.zafarkhaja.semver.Version
-
-import static org.bonitasoft.update.core.UpdateUtil.getDisplayVersion
-
 /**
  *
  * Get all versions and steps to execute and launch the update runner with it
@@ -24,13 +19,6 @@ import static org.bonitasoft.update.core.UpdateUtil.getDisplayVersion
  * @author Baptiste Mesta
  */
 class Update {
-
-    // This list contains the steps in which we cannot stop.
-    // Update will execute steps but slide until next version:
-    // It's currently empty but add the version in the list if needed
-    public static List<Version> TRANSITION_VERSIONS = [].collect {
-        Version.valueOf(it)
-    }
     private static final Logger logger = new Logger()
     private UpdateContext context
     private DisplayUtil displayUtil
@@ -50,6 +38,7 @@ class Update {
         try {
             def updateContext = new UpdateContext(logger: logger)
             updateContext.verifyOnly = arguments.verify
+            updateContext.updateIndexes = arguments.updateIndexes
             new Update(
                     updateContext,
                     new DisplayUtil(logger: logger)
@@ -86,11 +75,6 @@ class Update {
 
             connectToDatabase()
             try {
-                def versionUpdates = getVersionUpdatesToRun(runner)
-                if (versionUpdates.empty) {
-                    return
-                }
-                runner.versionUpdates = versionUpdates
                 runner.run(isSp)
             }
             finally {
@@ -106,27 +90,11 @@ class Update {
     protected UpdateAction createRunner() {
         if (context.verifyOnly) {
             return new UpdateVerifier(context: context, logger: logger, displayUtil: displayUtil)
+        } else if (context.updateIndexes) {
+            return new UpdateIndexesOnly(context: context, logger: logger, displayUtil: displayUtil)
         } else {
             return new UpdateRunner(context: context, logger: logger, displayUtil: displayUtil)
         }
-    }
-
-    /**
-     * get a version as string and return the class of the update step
-     */
-    Closure toVersionUpdateInstance = { Version it ->
-        def versionUnderscored = it.toString().replace(".", "_")
-        Class versionUpdateClass
-        def className = "com.bonitasoft.update.version.to${versionUnderscored}.UpdateTo$versionUnderscored"
-        try {
-            logger.debug("Trying to find class " + className)
-            versionUpdateClass = Thread.currentThread().contextClassLoader.loadClass(className)
-        } catch (ClassNotFoundException ignored) {
-            logger.debug("Unable to find Subscription specific class $className. Will use the Community version instead:")
-            versionUpdateClass = Thread.currentThread().contextClassLoader.loadClass("org.bonitasoft.update.version.to${versionUnderscored}.UpdateTo$versionUnderscored")
-        }
-        logger.debug("Using class " + versionUpdateClass)
-        return versionUpdateClass.newInstance(version: it, logger: logger)
     }
 
     private void connectToDatabase() {
@@ -141,99 +109,9 @@ class Update {
         }
     }
 
-    List<VersionUpdate> getVersionUpdatesToRun(UpdateAction runner) {
-        def version = Version.valueOf(getPlatformVersion().normalVersion)
-        logger.info("Detected version in database: ${getDisplayVersion(version)}")
-        verifyPlatformIsValid(version)
-        context.sourceVersion = version
-        def versions = getVersionsAfter(version)
-        def visibleVersions = filterOutInvisibleVersions(versions)
-        if (visibleVersions.empty) {
-            logger.warn("Your Bonita version is already the latest supported version. Nothing to update.")
-            return []
-        }
-        logger.info(runner.getDescription())
-        if (context.targetVersion == null) {
-            logger.info "Enter the target version"
-            context.targetVersion = Version.valueOf(UpdateUtil.askForOptions(visibleVersions.collect {
-                it.toString()
-            }))
-        }
-        verifyTargetVersionIsValid(visibleVersions)
-        return getVersionsToExecute(versions)
-    }
-
-    static List<Version> filterOutInvisibleVersions(List<Version> versions) {
-        versions.findAll { !TRANSITION_VERSIONS.contains(it) }
-    }
-
-    def verifyPlatformIsValid(Version platformVersionInDatabase) {
-        if (platformVersionInDatabase.majorVersion < 7
-                || ( platformVersionInDatabase.majorVersion == 7 && platformVersionInDatabase.minorVersion < 10 )) {
-            // Should we rename also migration tool v2 to update tool v2?
-            throw new IllegalStateException("Sorry, but this tool can't manage version before 7.10.0, use the migration tool version 2")
-        }
-    }
-
-    private Version getPlatformVersion() {
-        return UpdateUtil.getPlatformVersion(context.sql)
-    }
-
-    def verifyTargetVersionIsValid(List<Version> possibleTarget) {
-        if (context.targetVersion < context.sourceVersion) {
-            throw new IllegalStateException("The target version $context.targetVersion can not be before source version ${getDisplayVersion(context.sourceVersion)}")
-        }
-        if (context.targetVersion == context.sourceVersion) {
-            throw new IllegalStateException("The version is already in ${getDisplayVersion(context.sourceVersion)}")
-        }
-        if (!possibleTarget?.contains(context.targetVersion)) {
-            if (TRANSITION_VERSIONS.contains(context.targetVersion)) {
-                if (System.getProperty("ignore.invalid.target.version") != null) {
-                    // only accept this hidden sysprop "ignore.invalid.target.version" if the targetVersion is in the list of invisible transition versions:
-                    logger.info("Ignoring normally-forbidden target version $context.targetVersion (for tests only)")
-                } else {
-                    throw new IllegalStateException("Updating to version $context.targetVersion is forbidden. Please choose a more recent version")
-                }
-            } else {
-                throw new IllegalStateException("$context.targetVersion is not yet handled by this version of the update tool")
-            }
-        }
-    }
-
-    private List<VersionUpdate> getVersionsToExecute(List<Version> versions) {
-        return versions.subList(versions.indexOf(context.sourceVersion) + 1, versions.indexOf(context.targetVersion) + 1).collect(toVersionUpdateInstance) as List<VersionUpdate>
-    }
-
-    private List<Version> getVersionsAfter(Version sourceVersion) {
-        Properties updateProperties = getUpdateProperties()
-        def versionsAsString = updateProperties.getProperty("versions")
-        def allVersions = parseVersionsFromUpdateProperties(versionsAsString)
-        def indexOfSourceVersion = allVersions.indexOf(sourceVersion)
-        if (indexOfSourceVersion == -1) {
-            throw new IllegalStateException("Sorry the version $sourceVersion can not be updated using this update tool")
-        }
-        return allVersions.subList(indexOfSourceVersion + 1, allVersions.size())
-    }
-
-    private static List<Version> parseVersionsFromUpdateProperties(String versionsAsString) {
-        return versionsAsString.substring(1, versionsAsString.length() - 1).split(",").collect {
-            it.trim()
-        }.collect {
-            Version.valueOf(it)
-        }
-    }
-
-    private Properties getUpdateProperties() {
-        return loadFromClasspath("/bonita-versions.properties")
-    }
-
     private Properties getProjectProperties() {
-        return loadFromClasspath("/bonita-update-info.properties")
-    }
-
-    private Properties loadFromClasspath(String name) {
         def properties = new Properties()
-        this.class.getResourceAsStream(name).withStream {
+        this.class.getResourceAsStream("/bonita-update-info.properties").withStream {
             properties.load(it)
         }
         return properties
@@ -246,7 +124,7 @@ class Update {
         displayUtil.logInfoCenteredInRectangle(banner)
     }
 
-    private logJvmInformation() {
+    private static logJvmInformation() {
         def sysProps = System.getProperties()
         logger.info "JVM Information"
         logger.info "  java.version ${sysProps['java.version']}"

@@ -33,6 +33,6 @@ class UpdateTo10_1_0Test extends Specification {
         }.contains(stepName)
 
         where:
-        stepName << ["CreateRefBizDataInstIndex"]
+        stepName << ["RemoveTenantIdFromIndexes"]
     }
 }

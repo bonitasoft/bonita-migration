@@ -56,7 +56,7 @@ class UpdateTo10_0_0Test extends Specification {
             "RemoveEnableWordSearchConfig",
             "AddEnableDynamicCheckConfig",
             "AddSecuritySanitizerConfig",
-            "CreateRefBizDataInstIndex"
+            "RemoveTenantIdFromIndexes"
         ]
     }
 }

@@ -68,7 +68,7 @@ class UpdateVerifierTest extends Specification {
         ]
 
         when:
-        runner.run(false)
+        runner.runSpecificAction(false)
         then:
         errors == [
             "Update to version 1.2.1 is currently not possible:",
@@ -110,7 +110,7 @@ class UpdateVerifierTest extends Specification {
         ]
 
         when:
-        runner.run(false)
+        runner.runSpecificAction(false)
         then:
         errors == [
             "Update to version 1.2.1 is currently not possible, you can only update to version 1.2.0:",
@@ -153,12 +153,12 @@ class UpdateVerifierTest extends Specification {
         ]
 
         when:
-        runner.run(false)
+        runner.runSpecificAction(false)
         then:
         infos.empty
         errors.empty
         warns == [
-            "Update to version 1.2.1 is possible but there is some warnings:",
+            "Update to version 1.2.1 is possible but there are some warnings:",
             " * Step 1.2.0:",
             "warning message 1",
             "warning message 2",
@@ -192,7 +192,7 @@ class UpdateVerifierTest extends Specification {
         ]
 
         when:
-        runner.run(false)
+        runner.runSpecificAction(false)
         then:
         infos == ["Update to version 1.2.1 is possible."]
         errors.empty

@@ -16,6 +16,7 @@ package org.bonitasoft.update
 import org.bonitasoft.update.core.Logger
 import org.bonitasoft.update.core.UpdateContext
 import org.bonitasoft.update.core.UpdateStep
+import org.bonitasoft.update.core.database.schema.IndexDefinition
 
 import java.sql.SQLException
 
@@ -106,5 +107,57 @@ class DBUnitHelper {
 
     def countConfigFileWithNameOfAnyType(String configFileName) {
         return context.sql.firstRow("SELECT COUNT(1) FROM configuration WHERE resource_name=${configFileName}")[0]
+    }
+
+    List<IndexDefinition> getIndexesWithTenantIdAsColumn() {
+        def query
+        def dbVendor = System.getProperty("db.vendor")
+        switch (dbVendor) {
+            case "postgres":
+                query = "SELECT tablename, indexname FROM pg_indexes WHERE LOWER(indexdef) LIKE LOWER('CREATE %INDEX idx%(%tenantid%)%')"
+                break
+
+            case "oracle":
+                query = """
+SELECT i.table_name, i.index_name
+  FROM all_indexes i
+  JOIN all_ind_columns ic ON i.index_name = ic.index_name
+ WHERE LOWER(ic.column_name) = 'tenantid'
+   AND LOWER(i.index_name) LIKE 'idx%'
+ORDER BY i.table_name ASC, index_name ASC
+"""
+                break
+
+            case "mysql":
+                query = """
+SELECT table_name, index_name
+FROM   INFORMATION_SCHEMA.STATISTICS
+WHERE  TABLE_SCHEMA = DATABASE()
+  AND  LOWER(COLUMN_NAME) IN ('tenantid')
+  AND  LOWER(index_name) LIKE 'idx%' -- to exclude all non-Bonita indexes (like foreign keys that MySQL creates automatically...)
+ORDER BY table_name ASC, index_name ASC
+  """
+                break
+
+            case "sqlserver":
+                query = """
+SELECT t.name, i.name
+  FROM sys.indexes i
+  JOIN sys.index_columns ic ON i.object_id = ic.object_id AND i.index_id = ic.index_id
+  JOIN sys.columns c ON ic.object_id = c.object_id AND ic.column_id = c.column_id
+  JOIN sys.tables t ON t.object_id = i.object_id
+ WHERE LOWER(c.name) = 'tenantid' and LOWER(i.name) LIKE 'idx%'
+ ORDER BY t.name, i.name
+"""
+                break
+            default:
+                throw new IllegalStateException("db vendor invalid: $dbVendor")
+        }
+
+        List<IndexDefinition> indexesWithTenantId = []
+        context.sql.eachRow(query) {
+            indexesWithTenantId.add(new IndexDefinition(it[0], it[1]))
+        }
+        return indexesWithTenantId
     }
 }

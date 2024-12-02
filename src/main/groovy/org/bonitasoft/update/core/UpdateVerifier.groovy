@@ -13,15 +13,18 @@
  **/
 package org.bonitasoft.update.core
 
-class UpdateVerifier implements UpdateAction {
+/**
+ * Alternative runner that does NOT run the update of the Bonita platform
+ * but simply verifies if the update is possible.
+ */
+class UpdateVerifier extends UpdateDefaultAction implements UpdateAction {
 
     List<VersionUpdate> versionUpdates
     UpdateContext context
-    Logger logger
     DisplayUtil displayUtil
 
     @Override
-    void run(boolean isSp) {
+    void runSpecificAction(boolean isSp) {
         def warnings
         def errors
         def lastPossibleVersion
@@ -37,7 +40,7 @@ class UpdateVerifier implements UpdateAction {
                 }
             }
         } else if (!warnings.isEmpty()) {
-            logger.warn("Update to version ${versionUpdates.last().version} is possible but there is some warnings:")
+            logger.warn("Update to version ${versionUpdates.last().version} is possible but there are some warnings:")
             warnings.each {
                 logger.warn(" * Step ${it.key}:")
                 it.value.each { message ->
@@ -52,14 +55,14 @@ class UpdateVerifier implements UpdateAction {
 
     def getBlockingPrerequisites() {
         Map<String, String[]> beforeUpdateBlocks = [:]
-        def hasBlockings = false
+        def hasBlockingMessages = false
         def lastPossibleVersion = null
         versionUpdates.each { VersionUpdate versionUpdate ->
-            String[] preVersionBlockings = versionUpdate.getPreUpdateBlockingMessages(context)
-            if (preVersionBlockings) {
-                beforeUpdateBlocks.put(versionUpdate.version, preVersionBlockings)
-                hasBlockings = true
-            } else if (!hasBlockings) {
+            String[] preVersionBlockingMessages = versionUpdate.getPreUpdateBlockingMessages(context)
+            if (preVersionBlockingMessages) {
+                beforeUpdateBlocks.put(versionUpdate.version, preVersionBlockingMessages)
+                hasBlockingMessages = true
+            } else if (!hasBlockingMessages) {
                 lastPossibleVersion = versionUpdate.version
             }
         }

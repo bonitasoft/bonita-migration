@@ -54,6 +54,7 @@ class UpdateContext {
     DbConfig dbConfig
     private ExecutorService executorService
     boolean verifyOnly
+    boolean updateIndexes
 
     UpdateContext() {
     }

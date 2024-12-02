@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Bonitasoft S.A.
+ * Copyright (C) 2015-2024 Bonitasoft S.A.
  * Bonitasoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
@@ -17,26 +17,33 @@ import groovy.json.JsonBuilder
 
 /**
  * @author Laurent Leseigneur
+ * @author Emmanuel Duchastenier
  */
 class IndexDefinition {
 
-    private final String indexName
-    private final String tableName
+    final String tableName
+    final String indexName
+    final boolean unique
 
-    private final List<ColumnDefinition> columnDefinitions
+    final List<String> columnNames
 
-    def IndexDefinition(String tableName, String indexName) {
+    IndexDefinition(String tableName, String indexName) {
         this.tableName = tableName
         this.indexName = indexName
-        this.columnDefinitions = new ArrayList<>()
+        this.unique = false
+        this.columnNames = new ArrayList<>()
     }
 
-    def addColumn(ColumnDefinition columnDefinition) {
-        this.columnDefinitions.add(columnDefinition)
+    IndexDefinition(String tableName, String indexName, boolean unique = false, String... columnNames) {
+        this.tableName = tableName
+        this.indexName = indexName
+        this.unique = unique
+        this.columnNames = new ArrayList<>()
+        this.columnNames.addAll(columnNames)
     }
 
-    List<ColumnDefinition> getColumnDefinitions() {
-        return columnDefinitions
+    def addColumn(String columnName) {
+        columnNames.add(columnName)
     }
 
     String getTableName() {
@@ -49,7 +56,22 @@ class IndexDefinition {
 
     @Override
     String toString() {
-        JsonBuilder builder=new JsonBuilder(this)
+        JsonBuilder builder = new JsonBuilder(this)
         builder.toPrettyString()
+    }
+
+    boolean isSameWithDifferentIndexName(IndexDefinition indexDef) {
+        return (tableName == indexDef.tableName) && (indexName != indexDef.indexName) && columnNames == indexDef.columnNames
+    }
+
+    @Override
+    boolean equals(Object o) {
+        if (this.is(o)) return true
+        if (getClass() != o.class) return false
+
+        IndexDefinition that = (IndexDefinition) o
+        if (indexName != that.indexName) return false
+        if (tableName != that.tableName) return false
+        return columnNames == that.columnNames
     }
 }

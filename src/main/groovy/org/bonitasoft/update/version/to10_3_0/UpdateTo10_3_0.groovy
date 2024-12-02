@@ -13,11 +13,9 @@
  **/
 package org.bonitasoft.update.version.to10_3_0
 
-import org.bonitasoft.update.core.UpdateContext
+
 import org.bonitasoft.update.core.UpdateStep
 import org.bonitasoft.update.core.VersionUpdate
-import org.bonitasoft.update.version.to10_0_0.CreateRefBizDataInstIndex
-import org.bonitasoft.update.version.to10_2_0.*
 
 class UpdateTo10_3_0 extends VersionUpdate {
 
