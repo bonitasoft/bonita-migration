@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Hazelcast configuration.
+
+  To learn how to configure Hazelcast, please see the schema at
+  https://hazelcast.com/schema/config/hazelcast-config-5.3.xsd
+  or the Reference Manual at https://docs.hazelcast.com/
+-->
+
+<!--suppress XmlDefaultAttributeValue -->
+<hazelcast xmlns="http://www.hazelcast.com/schema/config"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.hazelcast.com/schema/config
+           http://www.hazelcast.com/schema/config/hazelcast-config-5.3.xsd">
+
+    <!-- Config for query cache -->
+    <cache name="default-query-results-region">
+        <!-- <time-to-live-seconds>3600</time-to-live-seconds> -->
+        <eviction eviction-policy="LRU" size="4000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="8" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="default-update-timestamps-region"/>
+
+
+    <!--  Each Hibernate entity has its own Cache Region  -->
+
+    <cache name="org.bonitasoft.engine.actor.mapping.model.SActor">
+        <eviction eviction-policy="LRU" size="10000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.actor.mapping.model.SActorMember">
+        <eviction eviction-policy="LRU" size="10000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.business.application.model.SApplicationMenu">
+        <eviction eviction-policy="LRU" size="1000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.command.model.SCommand">
+        <eviction eviction-policy="LRU" size="500" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.core.category.model.SCategory">
+        <eviction eviction-policy="LRU" size="500" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.core.contract.data.SAContractData">
+        <eviction eviction-policy="LRU" size="10000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.core.contract.data.SContractData">
+        <eviction eviction-policy="LRU" size="10000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.core.form.SFormMapping">
+        <eviction eviction-policy="LRU" size="1000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.core.process.comment.model.archive.SAComment">
+        <eviction eviction-policy="LRU" size="4000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.core.process.comment.model.SComment">
+        <eviction eviction-policy="LRU" size="4000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.core.process.definition.model.SProcessDefinitionDeployInfo">
+        <eviction eviction-policy="LRU" size="1000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.core.process.definition.model.SProcessDefinitionDesignContent">
+        <eviction eviction-policy="LRU" size="1000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.core.process.instance.model.archive.business.data.SARefBusinessDataInstance">
+        <eviction eviction-policy="LRU" size="1000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.core.process.instance.model.archive.SAConnectorInstance">
+        <eviction eviction-policy="LRU" size="1000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.core.process.instance.model.archive.SAFlowNodeInstance">
+        <eviction eviction-policy="LRU" size="10000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.core.process.instance.model.archive.SAProcessInstance">
+        <eviction eviction-policy="LRU" size="10000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.core.process.instance.model.business.data.SRefBusinessDataInstance">
+        <eviction eviction-policy="LRU" size="10000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.core.process.instance.model.event.handling.SMessageInstance">
+        <eviction eviction-policy="LRU" size="10000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.core.process.instance.model.event.handling.SWaitingEvent">
+        <eviction eviction-policy="LRU" size="10000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.core.process.instance.model.event.trigger.STimerEventTriggerInstance">
+        <eviction eviction-policy="LRU" size="10000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.core.process.instance.model.SConnectorInstance">
+        <eviction eviction-policy="LRU" size="10000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.core.process.instance.model.SFlowNodeInstance">
+        <eviction eviction-policy="LRU" size="10000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.core.process.instance.model.SPendingActivityMapping">
+        <eviction eviction-policy="LRU" size="20000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.core.process.instance.model.SProcessInstance">
+        <eviction eviction-policy="LRU" size="10000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.data.instance.model.archive.SADataInstance">
+        <eviction eviction-policy="LRU" size="10000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.data.instance.model.SDataInstance">
+        <eviction eviction-policy="LRU" size="10000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.dependency.model.SDependency">
+        <eviction eviction-policy="LRU" size="1000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.dependency.model.SPlatformDependency">
+        <eviction eviction-policy="LRU" size="1000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.external.identity.mapping.model.SExternalIdentityMapping">
+        <eviction eviction-policy="LRU" size="1000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.identity.model.SCustomUserInfoDefinition">
+        <eviction eviction-policy="LRU" size="2000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.identity.model.SGroup">
+        <eviction eviction-policy="LRU" size="4000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.identity.model.SRole">
+        <eviction eviction-policy="LRU" size="4000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.identity.model.SUser">
+        <eviction eviction-policy="LRU" size="10000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.identity.model.SUserLogin">
+        <eviction eviction-policy="LRU" size="10000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.identity.model.SUserMembership">
+        <eviction eviction-policy="LRU" size="10000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.identity.SIcon">
+        <eviction eviction-policy="LRU" size="10000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.page.SPage">
+        <eviction eviction-policy="LRU" size="4000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.page.SPageMapping">
+        <eviction eviction-policy="LRU" size="10000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.page.SPageWithContent">
+        <eviction eviction-policy="LRU" size="900" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.parameter.SParameter">
+        <eviction eviction-policy="LRU" size="10000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.platform.command.model.SPlatformCommand">
+        <eviction eviction-policy="LRU" size="1000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.platform.model.SPlatform"> <!-- There is only 1 platform instance -->
+        <eviction eviction-policy="LRU" size="1" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.platform.model.STenant"> <!-- There is only 1 tenant instance -->
+        <eviction eviction-policy="LRU" size="1" max-size-policy="ENTRY_COUNT"/> <!-- There is only 1 tenant -->
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.profile.model.SProfile">
+        <eviction eviction-policy="LRU" size="1000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.profile.model.SProfileMember">
+        <eviction eviction-policy="LRU" size="10000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.queriablelogger.model.SQueriableLog">
+        <eviction eviction-policy="LRU" size="2000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.queriablelogger.model.SQueriableLogParameter">
+        <eviction eviction-policy="LRU" size="1000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.resources.SBARResource">
+        <eviction eviction-policy="LRU" size="900" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.resources.SBARResourceLight">
+        <eviction eviction-policy="LRU" size="10000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.resources.STenantResource">
+        <eviction eviction-policy="LRU" size="900" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.resources.STenantResourceLight">
+        <eviction eviction-policy="LRU" size="3000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.scheduler.model.SJobDescriptor">
+        <eviction eviction-policy="LRU" size="10000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <cache name="org.bonitasoft.engine.supervisor.mapping.model.SProcessSupervisor">
+        <eviction eviction-policy="LRU" size="5000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+
+    <!-- Default values, if not set. It completes all other objects if not specified more precisely above -->
+    <cache name="org.bonitasoft.engine.*">
+        <eviction eviction-policy="LRU" size="10000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="4" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+    <!-- Add here a section for each CACHEABLE entity!!! -->
+
+    <!--  Example of how we can use configuration specific to one Hibernate object:  -->
+    <!--cache name="org.bonitasoft.engine.MyNewEngine"-->
+    <!-- memory format should always stay BINARY -->
+    <!--        <eviction eviction-policy="LRU" size="10000" max-size-policy="ENTRY_COUNT"/> -->
+    <!--        <expiry-policy-factory>-->
+    <!--            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>-->
+    <!--        </expiry-policy-factory>-->
+    <!-- Add the following listener to track down Hibernate L2 cache issues: -->
+    <!-- <cache-entry-listeners>
+        <cache-entry-listener old-value-required="false" synchronous="false"> -->
+    <!-- To activate debug logs about operations on the Map: -->
+    <!-- Set <Logger name="com.bonitasoft.engine.hazelcast" level="DEBUG"/> in log4j2-loggers.xml config file -->
+    <!--            <cache-entry-listener-factory-->
+    <!--                 class-name="com.bonitasoft.engine.hazelcast.L2CacheEntryListenerFactory"/>-->
+    <!--            </cache-entry-listener>-->
+    <!--        </cache-entry-listeners>-->
+    <!--    </cache>-->
+
+</hazelcast>

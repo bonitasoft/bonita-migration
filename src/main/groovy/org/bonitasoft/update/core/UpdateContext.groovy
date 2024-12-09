@@ -19,6 +19,7 @@ import org.apache.commons.dbcp2.BasicDataSource
 import org.bonitasoft.update.core.database.ConfigurationHelper
 import org.bonitasoft.update.core.database.DatabaseHelper
 import org.bonitasoft.update.core.database.DbConfig
+import org.bonitasoft.update.core.database.HazelcastConfigurationHelper
 
 import javax.sql.DataSource
 import java.util.concurrent.*
@@ -47,6 +48,7 @@ class UpdateContext {
     Logger logger
     DatabaseHelper databaseHelper
     ConfigurationHelper configurationHelper
+    HazelcastConfigurationHelper hazelcastConfigurationHelper
 
     private LoggingConfiguration loggingConfiguration = new LoggingConfiguration()
 
@@ -154,6 +156,7 @@ class UpdateContext {
 
         databaseHelper = new DatabaseHelper(dbVendor: dbVendor, sql: getSql(), logger: logger)
         configurationHelper = new ConfigurationHelper(sql: getSql(), logger: logger, databaseHelper: databaseHelper)
+        hazelcastConfigurationHelper = new HazelcastConfigurationHelper(sql: getSql(), logger: logger, databaseHelper: databaseHelper)
     }
 
     private setupDataSource() {
