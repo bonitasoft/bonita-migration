@@ -280,7 +280,7 @@ class RemoveTenantIdFromIndexes extends UpdateStep {
                 createForeignKey("business_app_menu", "fk_app_menu_appId", "business_app", ["tenantid", "applicationId"], ["tenantid", "id"], true)
 
                 createForeignKey("business_app_menu", "fk_app_menu_pageId", "business_app_page", ["tenantid", "applicationPageId"], ["tenantid", "id"], true)
-                createForeignKey("business_app_menu", "fk_app_menu_parentId", "business_app_page", ["tenantid", "parentId"], ["tenantid", "id"], true)
+                createForeignKey("business_app_menu", "fk_app_menu_parentId", "business_app_menu", ["tenantid", "parentId"], ["tenantid", "id"], true)
                 createForeignKey("pending_mapping", "fk_pending_mapping_flownode_instanceId", "flownode_instance", ["tenantid", "activityId"], ["tenantid", "id"], true)
                 createForeignKey("business_app_page", "fk_page_id", "page", ["tenantid", "pageId"], ["tenantid", "id"], true)
                 createForeignKey("ref_biz_data_inst", "fk_ref_biz_data_fn", "flownode_instance", ["tenantid", "fn_inst_id"], ["tenantid", "id"], true)
