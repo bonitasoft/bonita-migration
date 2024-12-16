@@ -228,21 +228,14 @@ class RemoveTenantIdFromIndexes extends UpdateStep {
                 // MySQL has a duplicate index that we need to drop before running the update step:
                 dropIndexIfExists("job_param", "fk_job_param_jobId_idx")
 
-                // MySQL has a foreign key referencing the index we want to drop / recreate:
                 dropForeignKey("job_param", "fk_job_param_jobid") // drop it at the beginning...
                 dropForeignKey("job_log", "fk_job_log_jobid")
                 dropForeignKey("business_app", "fk_app_profileId")
-                dropIndexIfExists("business_app", "fk_app_profileId")
                 dropForeignKey("business_app_menu", "fk_app_menu_appId")
-                dropIndexIfExists("business_app_menu", "fk_app_menu_appId")
                 dropForeignKey("ref_biz_data_inst", "fk_ref_biz_data_fn")
-                dropIndexIfExists("ref_biz_data_inst", "fk_ref_biz_data_fn")
                 dropForeignKey("business_app_page", "fk_page_id")
-                dropIndexIfExists("business_app_page", "fk_page_id")
                 dropForeignKey("business_app_menu", "fk_app_menu_pageId")
-                dropIndexIfExists("business_app_menu", "fk_app_menu_pageId")
                 dropForeignKey("business_app_menu", "fk_app_menu_parentId")
-                dropIndexIfExists("business_app_menu", "fk_app_menu_parentId")
                 dropForeignKey("pending_mapping", "fk_pending_mapping_flownode_instanceId")
             }
 

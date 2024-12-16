@@ -22,12 +22,8 @@ class RemoveTenantIdFromProcessInstance extends UpdateStep {
     def execute(UpdateContext context) {
         context.databaseHelper.with {
             dropForeignKey("process_instance", "fk_process_instance_tenantId")
-            // MySQL automatically creates an index with the same name:
-            dropIndexIfExists("process_instance", "fk_process_instance_tenantId")
 
             dropForeignKey("ref_biz_data_inst", "fk_ref_biz_data_proc")
-            // MySQL automatically creates an index with the same name:
-            dropIndexIfExists("ref_biz_data_inst", "fk_ref_biz_data_proc")
 
             dropPrimaryKey("process_instance")
 

@@ -371,7 +371,7 @@ def addColumnIfNotExist(String table, String columnName, String type, String def
 
 def dropForeignKey(String table, String foreignKeyName) {
     if (!hasForeignKeyOnTable(table, foreignKeyName)) {
-        logger.info "foreign key ${foreignKeyName} not found on table ${table}"
+        logger.info "Foreign key ${foreignKeyName} not found on table ${table}"
         return
     }
     def request
@@ -384,6 +384,10 @@ def dropForeignKey(String table, String foreignKeyName) {
     }
     logger.info "Executing request: $request"
     sql.execute(request)
+    if (dbVendor == MYSQL) {
+        // In the case of Mysql, an index is automatically created with the same name as the foreign key:
+        dropIndexIfExists(table, foreignKeyName)
+    }
 }
 
 /**
@@ -412,13 +416,13 @@ def createForeignKey(String referencingTableName, String foreignKeyName, String 
 def dropPrimaryKey(String tableName) {
     def query = getScriptContent("/database/primaryKey", "primaryKey")
     sql.eachRow(query, [tableName]) { row ->
-        def request
+        String request
         switch (dbVendor) {
             case MYSQL:
-                request = "ALTER TABLE " + row.TABLE_NAME + " DROP PRIMARY KEY"
+                request = "ALTER TABLE ${row.TABLE_NAME} DROP PRIMARY KEY"
                 break
             default:
-                request = "ALTER TABLE " + row.TABLE_NAME + " DROP CONSTRAINT " + row.CONSTRAINT_NAME
+                request = "ALTER TABLE ${row.TABLE_NAME} DROP CONSTRAINT ${row.CONSTRAINT_NAME}"
         }
         logger.info row as String
         logger.info "Executing request: $request"
@@ -532,7 +536,7 @@ def dropIndexIfExists(String tableName, String indexName) {
                 query = "DROP INDEX " + indexName
                 break
             case MYSQL:
-                query = "DROP INDEX " + indexName + " on " + tableName
+                query = "DROP INDEX " + indexName + " ON " + tableName
                 break
             case SQLSERVER:
                 query = "DROP INDEX " + tableName + "." + indexName
@@ -540,6 +544,8 @@ def dropIndexIfExists(String tableName, String indexName) {
         }
         logger.info "Deleting index: $query"
         sql.execute(query)
+    } else {
+        logger.debug "Index $indexName does not exist on table $tableName. Skipping deletion."
     }
 }
 
