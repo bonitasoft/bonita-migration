@@ -22,6 +22,11 @@ class UpdateTo10_3_0 extends VersionUpdate {
 
     @Override
     List<UpdateStep> getUpdateSteps() {
-        return [new CreateBpmFailureTables(), new RemoveTenantIdFromIndexes(), new RemoveTenantIdFromFlowNodeInstance()]
+        return [
+            new CreateBpmFailureTables(),
+            new RemoveTenantIdFromIndexes(),
+            new RemoveTenantIdFromFlowNodeInstance(),
+            new RemoveUnusedTables()
+        ]
     }
 }

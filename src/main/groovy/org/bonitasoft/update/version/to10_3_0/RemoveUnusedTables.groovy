@@ -13,24 +13,26 @@
  **/
 package org.bonitasoft.update.version.to10_3_0
 
+import org.bonitasoft.update.core.UpdateContext
+import org.bonitasoft.update.core.UpdateStep
 
-import spock.lang.Specification
-import spock.lang.Unroll
+/**
+ * Remove unused tables queriablelog_p and blob_
+ *
+ * @author Emmanuel Duchastenier
+ */
+class RemoveUnusedTables extends UpdateStep {
 
-class UpdateTo10_3_0Test extends Specification {
+    @Override
+    def execute(UpdateContext context) {
+        context.databaseHelper.with {
+            dropTableIfExists("queriablelog_p")
+            dropTableIfExists("blob_")
+        }
+    }
 
-    @Unroll
-    def "should update to 10.3.0 include step '#stepName'"(def stepName) {
-        given:
-        def updateTo = new UpdateTo10_3_0()
-
-        expect:
-        def steps = updateTo.updateSteps
-        steps.collect {
-            it.class.getSimpleName()
-        }.contains(stepName)
-
-        where:
-        stepName << ["CreateBpmFailureTables", "RemoveTenantIdFromIndexes", "RemoveTenantIdFromFlowNodeInstance", "RemoveUnusedTables"]
+    @Override
+    String getDescription() {
+        return "Remove unused tables 'queriablelog_p' and 'blob_'"
     }
 }
