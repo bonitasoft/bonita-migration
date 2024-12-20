@@ -31,6 +31,12 @@ class UpdateTo10_3_0Test extends Specification {
         }.contains(stepName)
 
         where:
-        stepName << ["CreateBpmFailureTables", "RemoveTenantIdFromIndexes", "RemoveTenantIdFromFlowNodeInstance", "RemoveUnusedTables"]
+        stepName << [
+            "CreateBpmFailureTables",
+            "RemoveUnusedTables",
+            "RemoveTenantIdFromIndexes",
+            "RemoveTenantIdFromFlowNodeInstance",
+            "RemoveTenantIdFromPageAndFormMapping",
+        ]
     }
 }

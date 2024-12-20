@@ -77,28 +77,58 @@ CREATE INDEX idx_fni_activity_instance_id_kind ON flownode_instance(activityInst
 ALTER TABLE flownode_instance ADD CONSTRAINT fk_flownode_instance_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
 
 CREATE TABLE pending_mapping (
-	tenantid NUMERIC(19, 0) NOT NULL,
-  	id NUMERIC(19, 0) NOT NULL,
-  	activityId NUMERIC(19, 0) NOT NULL,
-  	actorId NUMERIC(19, 0),
-  	userId NUMERIC(19, 0),
-  	PRIMARY KEY (tenantid, id)
+  tenantid NUMERIC(19, 0) NOT NULL,
+  id NUMERIC(19, 0) NOT NULL,
+  activityId NUMERIC(19, 0) NOT NULL,
+  actorId NUMERIC(19, 0),
+  userId NUMERIC(19, 0),
+  PRIMARY KEY (tenantid, id)
 );
 CREATE UNIQUE INDEX idx_UQ_pending_mapping ON pending_mapping (activityId, userId, actorId);
 ALTER TABLE pending_mapping ADD CONSTRAINT fk_pending_mapping_flownode_instanceId FOREIGN KEY (tenantid, activityId) REFERENCES flownode_instance(tenantid, id);
 
 CREATE TABLE ref_biz_data_inst (
-	tenantid NUMERIC(19, 0) NOT NULL,
-  	id NUMERIC(19, 0) NOT NULL,
-  	kind NVARCHAR(15) NOT NULL,
-  	name NVARCHAR(255) NOT NULL,
-  	proc_inst_id NUMERIC(19, 0),
-  	fn_inst_id NUMERIC(19, 0),
-  	data_id NUMERIC(19, 0),
-  	data_classname NVARCHAR(255) NOT NULL
+  tenantid NUMERIC(19, 0) NOT NULL,
+  id NUMERIC(19, 0) NOT NULL,
+  kind NVARCHAR(15) NOT NULL,
+  name NVARCHAR(255) NOT NULL,
+  proc_inst_id NUMERIC(19, 0),
+  fn_inst_id NUMERIC(19, 0),
+  data_id NUMERIC(19, 0),
+  data_classname NVARCHAR(255) NOT NULL
 );
 
 CREATE INDEX idx_biz_data_inst2 ON ref_biz_data_inst (fn_inst_id);
 CREATE INDEX idx_biz_data_inst3 ON ref_biz_data_inst (proc_inst_id);
 ALTER TABLE ref_biz_data_inst ADD CONSTRAINT pk_ref_biz_data PRIMARY KEY (tenantid, id);
 ALTER TABLE ref_biz_data_inst ADD CONSTRAINT fk_ref_biz_data_fn FOREIGN KEY (tenantid, fn_inst_id) REFERENCES flownode_instance(tenantid, id) ON DELETE CASCADE;
+
+CREATE TABLE form_mapping (
+  tenantId NUMERIC(19, 0) NOT NULL,
+  id NUMERIC(19, 0) NOT NULL,
+  process NUMERIC(19, 0) NOT NULL,
+  type INT NOT NULL,
+  task NVARCHAR(255),
+  page_mapping_tenant_id NUMERIC(19, 0),
+  page_mapping_id NUMERIC(19, 0),
+  lastUpdateDate NUMERIC(19, 0),
+  lastUpdatedBy NUMERIC(19, 0),
+  target NVARCHAR(16) NOT NULL,
+  PRIMARY KEY (tenantId, id)
+);
+
+CREATE TABLE page_mapping (
+  tenantId NUMERIC(19, 0) NOT NULL,
+  id NUMERIC(19, 0) NOT NULL,
+  key_ NVARCHAR(255) NOT NULL,
+  pageId NUMERIC(19, 0) NULL,
+  url NVARCHAR(1024) NULL,
+  urladapter NVARCHAR(255) NULL,
+  page_authoriz_rules NVARCHAR(MAX) NULL,
+  lastUpdateDate NUMERIC(19, 0) NULL,
+  lastUpdatedBy NUMERIC(19, 0) NULL,
+  CONSTRAINT UK_page_mapping UNIQUE (tenantId, key_),
+  PRIMARY KEY (tenantId, id)
+);
+
+ALTER TABLE form_mapping ADD CONSTRAINT fk_form_mapping_key FOREIGN KEY (page_mapping_tenant_id, page_mapping_id) REFERENCES page_mapping(tenantId, id);

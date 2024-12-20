@@ -13,33 +13,9 @@
  **/
 package org.bonitasoft.update.version.to10_3_0
 
-import org.bonitasoft.update.DBUnitHelper
-import org.bonitasoft.update.core.UpdateContext
-import spock.lang.Shared
-import spock.lang.Specification
-
-class RemoveTenantIdFromFlowNodeInstanceIT extends Specification {
-
-    @Shared
-    DBUnitHelper dbUnitHelper = DBUnitHelper.getInstance()
-    @Shared
-    UpdateContext updateContext = dbUnitHelper.context
+class RemoveTenantIdFromFlowNodeInstanceIT extends AbstractTestTo10_3_0 {
 
     private RemoveTenantIdFromFlowNodeInstance updateStep = new RemoveTenantIdFromFlowNodeInstance()
-
-    def setup() {
-        dropTestTables()
-        dbUnitHelper.createTables("10_3_0")
-    }
-
-    def cleanup() {
-        dropTestTables()
-    }
-
-    private String[] dropTestTables() {
-        dbUnitHelper.dropTables(["sequence", "ref_biz_data_inst", "pending_mapping", "flownode_instance", "tenant"] as String[])
-    }
-
 
     def "should remove tenantId from flownode_instance"() {
         when:

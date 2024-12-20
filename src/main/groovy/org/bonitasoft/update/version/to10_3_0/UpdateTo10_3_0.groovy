@@ -24,9 +24,10 @@ class UpdateTo10_3_0 extends VersionUpdate {
     List<UpdateStep> getUpdateSteps() {
         return [
             new CreateBpmFailureTables(),
+            new RemoveUnusedTables(),
             new RemoveTenantIdFromIndexes(),
             new RemoveTenantIdFromFlowNodeInstance(),
-            new RemoveUnusedTables()
+            new RemoveTenantIdFromPageAndFormMapping(),
         ]
     }
 }

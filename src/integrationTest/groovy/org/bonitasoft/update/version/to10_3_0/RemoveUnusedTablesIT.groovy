@@ -13,33 +13,19 @@
  **/
 package org.bonitasoft.update.version.to10_3_0
 
-import org.bonitasoft.update.DBUnitHelper
-import org.bonitasoft.update.core.UpdateContext
-import spock.lang.Shared
-import spock.lang.Specification
-
-class RemoveUnusedTablesIT extends Specification {
-
-    @Shared
-    DBUnitHelper dbUnitHelper = DBUnitHelper.getInstance()
-    @Shared
-    UpdateContext updateContext = dbUnitHelper.context
+class RemoveUnusedTablesIT extends AbstractTestTo10_3_0 {
 
     private RemoveUnusedTables updateStep = new RemoveUnusedTables()
 
-    def setup() {
-        dropTestTables()
+    @Override
+    def createTestTables() {
         dbUnitHelper.createTables("10_3_0/unused_tables")
     }
 
-    def cleanup() {
-        dropTestTables()
-    }
-
-    private String[] dropTestTables() {
+    @Override
+    def dropTestTables() {
         dbUnitHelper.dropTables(["queriablelog_p", "queriablelog", "blob_"] as String[])
     }
-
 
     def "should drop tables 'queriablelog_p' and 'blob_'"() {
         given:

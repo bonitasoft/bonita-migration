@@ -13,35 +13,9 @@
  **/
 package org.bonitasoft.update.version.to10_3_0
 
-import org.bonitasoft.update.DBUnitHelper
-import org.bonitasoft.update.core.UpdateContext
-import org.bonitasoft.update.version.to9_0_0.CreateTemporaryContentTable
-import spock.lang.Shared
-import spock.lang.Specification
-
-class CreateBpmFailureTableIT extends Specification {
-
-    @Shared
-    DBUnitHelper dbUnitHelper = DBUnitHelper.getInstance()
-    @Shared
-    UpdateContext updateContext = dbUnitHelper.context
+class CreateBpmFailureTableIT extends AbstractTestTo10_3_0 {
 
     private CreateBpmFailureTables updateStep = new CreateBpmFailureTables()
-
-    def setup() {
-        dropTestTables()
-        updateContext.setVersion("10.3.0")
-        dbUnitHelper.createTables("10_3_0")
-    }
-
-    def cleanup() {
-        dropTestTables()
-    }
-
-    private String[] dropTestTables() {
-        dbUnitHelper.dropTables(["bpm_failure", "arch_bpm_failure", "sequence"] as String[])
-    }
-
 
     def "should create bpm failures table"() {
         given:
