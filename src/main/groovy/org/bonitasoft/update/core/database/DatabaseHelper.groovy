@@ -370,7 +370,7 @@ END"""
 
     def dropForeignKey(String table, String foreignKeyName) {
         if (!hasForeignKeyOnTable(table, foreignKeyName)) {
-            logger.info "Foreign key ${foreignKeyName} not found on table ${table}"
+            logger.warn "Foreign key ${foreignKeyName} not found on table ${table}"
             return
         }
         def request
@@ -422,12 +422,14 @@ END"""
                 default:
                     request = "ALTER TABLE ${row.TABLE_NAME} DROP CONSTRAINT ${row.CONSTRAINT_NAME}"
             }
-            logger.info row as String
             logger.info "Executing request: $request"
             sql.execute(request)
         }
     }
 
+    /**
+     * By convention, the primary key created is named `pk_${tableName}`
+     */
     def createPrimaryKey(String tableName, String... columns) {
         def concatenatedColumns = columns.collect { it }.join(", ")
         String request = "ALTER TABLE $tableName ADD CONSTRAINT pk_${tableName} PRIMARY KEY ($concatenatedColumns)"
@@ -447,27 +449,46 @@ END"""
      */
     def dropUniqueKey(String tableName, String ukName) {
         if (hasUniqueKeyOnTable(tableName, ukName)) {
-            switch (dbVendor) {
-                case POSTGRES:
-                case SQLSERVER:
-                    sql.execute("ALTER TABLE " + tableName + " DROP CONSTRAINT " + ukName)
-                    break
-                case ORACLE:
-                    sql.execute("ALTER TABLE " + tableName + " DROP CONSTRAINT " + ukName)
-                    if (hasIndexOnTable(tableName, ukName)) {
-                        sql.execute("DROP INDEX " + ukName)
-                    }
-                    break
-                case MYSQL:
-                    sql.execute("ALTER TABLE " + tableName + " DROP INDEX " + ukName)
+            doDropExistingUniqueKey(tableName, ukName)
+        } else {
+            logger.warn("Unique key ${ukName} not found on table ${tableName}")
+        }
+    }
+
+    def dropUniqueKeyWithNameInList(String tableName, String... ukNameList) {
+        def found = false
+        for (String ukName : ukNameList) {
+            if (hasUniqueKeyOnTable(tableName, ukName)) {
+                doDropExistingUniqueKey(tableName, ukName)
+                found = true
             }
+        }
+        if (!found) {
+            logger.warn("Unique key not found on table ${tableName} in name list ${ukNameList}")
+        }
+    }
+
+    private doDropExistingUniqueKey(String tableName, String ukName) {
+        switch (dbVendor) {
+            case ORACLE:
+                sql.execute("ALTER TABLE " + tableName + " DROP CONSTRAINT " + ukName)
+                if (hasIndexOnTable(tableName, ukName)) {
+                    sql.execute("DROP INDEX " + ukName)
+                }
+                break
+            case MYSQL:
+                sql.execute("ALTER TABLE " + tableName + " DROP INDEX " + ukName)
+                break
+            default:
+                sql.execute("ALTER TABLE " + tableName + " DROP CONSTRAINT " + ukName)
+                break
         }
     }
 
     /**
      * Drop the unique key identified by the given columns on the given table.
      * @param tableName table name where the unique key is defined
-     * @param columns columns of the unique key
+     * @param columns case is not important, as lookup is forced lowercase
      */
     def dropUniqueKeyFromColumns(String tableName, String... columns) {
         String ukName = getUniqueKeyByColumns(tableName, columns)
@@ -519,6 +540,14 @@ END"""
         def concatenatedColumns = columns.collect { it }.join(", ")
         String request = "CREATE ${unique?"UNIQUE ":""}INDEX $indexName ON $tableName($concatenatedColumns)"
         logger.info "Creating index: $request"
+        sql.execute(request)
+        return request
+    }
+
+    String createUniqueConstraint(String tableName, String constraintName, String... columns) {
+        def concatenatedColumns = columns.collect { it }.join(", ")
+        String request = "ALTER TABLE ${tableName} ADD CONSTRAINT $constraintName UNIQUE ($concatenatedColumns)"
+        logger.info "Creating unique constraint: $request"
         sql.execute(request)
         return request
     }

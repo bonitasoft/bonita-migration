@@ -43,13 +43,19 @@ abstract class AbstractTestTo10_3_0 extends Specification {
         dbUnitHelper.dropTables([
             "bpm_failure",
             "arch_bpm_failure",
-            "sequence",
+            "business_app_menu",
+            "business_app_page",
+            "business_app",
+            "profilemember",
+            "profile",
+            "page",
+            "form_mapping",
+            "page_mapping",
             "ref_biz_data_inst",
             "pending_mapping",
             "flownode_instance",
             "tenant",
-            "form_mapping",
-            "page_mapping"
+            "sequence"
         ] as String[])
     }
 }

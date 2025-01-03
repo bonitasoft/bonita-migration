@@ -37,6 +37,7 @@ class UpdateTo10_3_0Test extends Specification {
             "RemoveTenantIdFromIndexes",
             "RemoveTenantIdFromFlowNodeInstance",
             "RemoveTenantIdFromPageAndFormMapping",
+            "RemoveTenantIdFromApplicationPageProfile"
         ]
     }
 }

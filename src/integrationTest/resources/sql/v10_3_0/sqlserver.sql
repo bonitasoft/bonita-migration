@@ -103,20 +103,6 @@ CREATE INDEX idx_biz_data_inst3 ON ref_biz_data_inst (proc_inst_id);
 ALTER TABLE ref_biz_data_inst ADD CONSTRAINT pk_ref_biz_data PRIMARY KEY (tenantid, id);
 ALTER TABLE ref_biz_data_inst ADD CONSTRAINT fk_ref_biz_data_fn FOREIGN KEY (tenantid, fn_inst_id) REFERENCES flownode_instance(tenantid, id) ON DELETE CASCADE;
 
-CREATE TABLE form_mapping (
-  tenantId NUMERIC(19, 0) NOT NULL,
-  id NUMERIC(19, 0) NOT NULL,
-  process NUMERIC(19, 0) NOT NULL,
-  type INT NOT NULL,
-  task NVARCHAR(255),
-  page_mapping_tenant_id NUMERIC(19, 0),
-  page_mapping_id NUMERIC(19, 0),
-  lastUpdateDate NUMERIC(19, 0),
-  lastUpdatedBy NUMERIC(19, 0),
-  target NVARCHAR(16) NOT NULL,
-  PRIMARY KEY (tenantId, id)
-);
-
 CREATE TABLE page_mapping (
   tenantId NUMERIC(19, 0) NOT NULL,
   id NUMERIC(19, 0) NOT NULL,
@@ -131,4 +117,133 @@ CREATE TABLE page_mapping (
   PRIMARY KEY (tenantId, id)
 );
 
+CREATE TABLE form_mapping (
+  tenantId NUMERIC(19, 0) NOT NULL,
+  id NUMERIC(19, 0) NOT NULL,
+  process NUMERIC(19, 0) NOT NULL,
+  type INT NOT NULL,
+  task NVARCHAR(255),
+  page_mapping_tenant_id NUMERIC(19, 0),
+  page_mapping_id NUMERIC(19, 0),
+  lastUpdateDate NUMERIC(19, 0),
+  lastUpdatedBy NUMERIC(19, 0),
+  target NVARCHAR(16) NOT NULL,
+  PRIMARY KEY (tenantId, id)
+);
 ALTER TABLE form_mapping ADD CONSTRAINT fk_form_mapping_key FOREIGN KEY (page_mapping_tenant_id, page_mapping_id) REFERENCES page_mapping(tenantId, id);
+
+CREATE TABLE page (
+  tenantId NUMERIC(19, 0) NOT NULL,
+  id NUMERIC(19, 0) NOT NULL,
+  name NVARCHAR(255) NOT NULL,
+  displayName NVARCHAR(255) NOT NULL,
+  description NVARCHAR(MAX),
+  installationDate NUMERIC(19, 0) NOT NULL,
+  installedBy NUMERIC(19, 0) NOT NULL,
+  provided BIT,
+  editable BIT,
+  removable BIT,
+  lastModificationDate NUMERIC(19, 0) NOT NULL,
+  lastUpdatedBy NUMERIC(19, 0) NOT NULL,
+  contentName NVARCHAR(280) NOT NULL,
+  content VARBINARY(MAX),
+  contentType NVARCHAR(50) NOT NULL,
+  processDefinitionId NUMERIC(19,0) NOT NULL,
+  pageHash NVARCHAR(32)
+);
+ALTER TABLE page ADD CONSTRAINT pk_page PRIMARY KEY (tenantid, id);
+ALTER TABLE page ADD CONSTRAINT uk_page UNIQUE (tenantId, name, processDefinitionId);
+
+CREATE TABLE profile (
+  tenantId NUMERIC(19, 0) NOT NULL,
+  id NUMERIC(19, 0) NOT NULL,
+  isDefault BIT NOT NULL,
+  name NVARCHAR(50) NOT NULL,
+  description NVARCHAR(MAX),
+  creationDate NUMERIC(19, 0) NOT NULL,
+  createdBy NUMERIC(19, 0) NOT NULL,
+  lastUpdateDate NUMERIC(19, 0) NOT NULL,
+  lastUpdatedBy NUMERIC(19, 0) NOT NULL,
+  UNIQUE (tenantId, name),
+  PRIMARY KEY (tenantId, id)
+);
+ALTER TABLE profile ADD CONSTRAINT fk_profile_tenantId FOREIGN KEY (tenantId) REFERENCES tenant(id);
+
+CREATE TABLE profilemember (
+  tenantId NUMERIC(19, 0) NOT NULL,
+  id NUMERIC(19, 0) NOT NULL,
+  profileId NUMERIC(19, 0) NOT NULL,
+  userId NUMERIC(19, 0) NOT NULL,
+  groupId NUMERIC(19, 0) NOT NULL,
+  roleId NUMERIC(19, 0) NOT NULL,
+  UNIQUE (tenantId, profileId, userId, groupId, roleId),
+  PRIMARY KEY (tenantId, id)
+);
+ALTER TABLE profilemember ADD CONSTRAINT fk_profilemember_tenantId FOREIGN KEY (tenantId) REFERENCES tenant(id);
+ALTER TABLE profilemember ADD CONSTRAINT fk_profilemember_profileId FOREIGN KEY (tenantId, profileId) REFERENCES profile(tenantId, id);
+
+CREATE TABLE business_app (
+  tenantId NUMERIC(19, 0) NOT NULL,
+  id NUMERIC(19, 0) NOT NULL,
+  token NVARCHAR(50) NOT NULL,
+  version NVARCHAR(50) NOT NULL,
+  description NVARCHAR(MAX),
+  iconPath NVARCHAR(255),
+  creationDate NUMERIC(19, 0) NOT NULL,
+  createdBy NUMERIC(19, 0) NOT NULL,
+  lastUpdateDate NUMERIC(19, 0) NOT NULL,
+  updatedBy NUMERIC(19, 0) NOT NULL,
+  state NVARCHAR(30) NOT NULL,
+  homePageId NUMERIC(19, 0),
+  profileId NUMERIC(19, 0),
+  layoutId NUMERIC(19, 0),
+  themeId NUMERIC(19, 0),
+  iconMimeType NVARCHAR(255),
+  iconContent VARBINARY(MAX),
+  displayName NVARCHAR(255) NOT NULL,
+  editable BIT,
+  internalProfile NVARCHAR(255),
+  isLink BIT DEFAULT 0
+);
+ALTER TABLE business_app ADD CONSTRAINT pk_business_app PRIMARY KEY (tenantid, id);
+ALTER TABLE business_app ADD CONSTRAINT uk_app_token_version UNIQUE (tenantId, token, version);
+CREATE INDEX idx_app_token ON business_app (token);
+CREATE INDEX idx_app_profile ON business_app (profileId);
+CREATE INDEX idx_app_homepage ON business_app (homePageId);
+ALTER TABLE business_app ADD CONSTRAINT fk_app_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
+ALTER TABLE business_app ADD CONSTRAINT fk_app_profileId FOREIGN KEY (tenantid, profileId) REFERENCES profile (tenantid, id);
+ALTER TABLE business_app ADD CONSTRAINT fk_app_layoutId FOREIGN KEY (tenantid, layoutId) REFERENCES page (tenantid, id);
+ALTER TABLE business_app ADD CONSTRAINT fk_app_themeId FOREIGN KEY (tenantid, themeId) REFERENCES page (tenantid, id);
+
+CREATE TABLE business_app_page (
+  tenantId NUMERIC(19, 0) NOT NULL,
+  id NUMERIC(19, 0) NOT NULL,
+  applicationId NUMERIC(19, 0) NOT NULL,
+  pageId NUMERIC(19, 0) NOT NULL,
+  token NVARCHAR(255) NOT NULL
+);
+ALTER TABLE business_app_page ADD CONSTRAINT pk_business_app_page PRIMARY KEY (tenantid, id);
+ALTER TABLE business_app_page ADD CONSTRAINT uk_app_page_appId_token UNIQUE (tenantId, applicationId, token);
+CREATE INDEX idx_app_page_token ON business_app_page (applicationId, token);
+CREATE INDEX idx_app_page_pageId ON business_app_page (pageId);
+ALTER TABLE business_app_page ADD CONSTRAINT fk_app_page_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
+ALTER TABLE business_app_page ADD CONSTRAINT fk_bus_app_id FOREIGN KEY (tenantid, applicationId) REFERENCES business_app (tenantid, id) ON DELETE CASCADE;
+ALTER TABLE business_app_page ADD CONSTRAINT fk_page_id FOREIGN KEY (tenantid, pageId) REFERENCES page (tenantid, id);
+
+CREATE TABLE business_app_menu (
+  tenantId NUMERIC(19, 0) NOT NULL,
+  id NUMERIC(19, 0) NOT NULL,
+  displayName NVARCHAR(255) NOT NULL,
+  applicationId NUMERIC(19, 0) NOT NULL,
+  applicationPageId NUMERIC(19, 0),
+  parentId NUMERIC(19, 0),
+  index_ NUMERIC(19, 0)
+);
+ALTER TABLE business_app_menu ADD CONSTRAINT pk_business_app_menu PRIMARY KEY (tenantid, id);
+CREATE INDEX idx_app_menu_app ON business_app_menu (applicationId);
+CREATE INDEX idx_app_menu_page ON business_app_menu (applicationPageId);
+CREATE INDEX idx_app_menu_parent ON business_app_menu (parentId);
+ALTER TABLE business_app_menu ADD CONSTRAINT fk_app_menu_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
+ALTER TABLE business_app_menu ADD CONSTRAINT fk_app_menu_appId FOREIGN KEY (tenantid, applicationId) REFERENCES business_app (tenantid, id);
+ALTER TABLE business_app_menu ADD CONSTRAINT fk_app_menu_pageId FOREIGN KEY (tenantid, applicationPageId) REFERENCES business_app_page (tenantid, id);
+ALTER TABLE business_app_menu ADD CONSTRAINT fk_app_menu_parentId FOREIGN KEY (tenantid, parentId) REFERENCES business_app_menu (tenantid, id);

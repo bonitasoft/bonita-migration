@@ -13,11 +13,11 @@
  **/
 package org.bonitasoft.update.version.to10_3_0
 
-class CreateBpmFailureTableIT extends AbstractTestTo10_3_0 {
+class CreateBpmFailureTablesIT extends AbstractTestTo10_3_0 {
 
     private CreateBpmFailureTables updateStep = new CreateBpmFailureTables()
 
-    def "should create bpm failures table"() {
+    def "should create bpm failure tables"() {
         given:
 
         when:
