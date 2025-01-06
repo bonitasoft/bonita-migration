@@ -49,6 +49,6 @@ class RemoveTenantIdFromPageAndFormMapping extends UpdateStep {
 
     @Override
     String getDescription() {
-        return "Remove tenantId from page_mapping and form_mapping tables"
+        return "Remove tenantId from 'page_mapping' and 'form_mapping' tables"
     }
 }

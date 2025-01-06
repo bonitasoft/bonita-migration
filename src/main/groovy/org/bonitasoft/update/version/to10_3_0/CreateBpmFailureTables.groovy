@@ -28,6 +28,6 @@ class CreateBpmFailureTables extends UpdateStep {
 
     @Override
     String getDescription() {
-        return "Create bpm_failure and arch_bpm_failure tables"
+        return "Create 'bpm_failure' and 'arch_bpm_failure' tables"
     }
 }

@@ -28,7 +28,8 @@ class UpdateTo10_3_0 extends VersionUpdate {
             new RemoveTenantIdFromIndexes(),
             new RemoveTenantIdFromFlowNodeInstance(),
             new RemoveTenantIdFromPageAndFormMapping(),
-            new RemoveTenantIdFromApplicationPageProfile()
+            new RemoveTenantIdFromApplicationPageProfile(),
+            new RemoveTenantIdFromJobTables(),
         ]
     }
 }

@@ -244,3 +244,39 @@ ALTER TABLE business_app_menu ADD CONSTRAINT fk_app_menu_tenantId FOREIGN KEY (t
 ALTER TABLE business_app_menu ADD CONSTRAINT fk_app_menu_appId FOREIGN KEY (tenantid, applicationId) REFERENCES business_app (tenantid, id);
 ALTER TABLE business_app_menu ADD CONSTRAINT fk_app_menu_pageId FOREIGN KEY (tenantid, applicationPageId) REFERENCES business_app_page (tenantid, id);
 ALTER TABLE business_app_menu ADD CONSTRAINT fk_app_menu_parentId FOREIGN KEY (tenantid, parentId) REFERENCES business_app_menu (tenantid, id);
+
+CREATE TABLE job_desc (
+  tenantId NUMBER(19, 0) NOT NULL,
+  id NUMBER(19, 0) NOT NULL,
+  jobclassname VARCHAR2(100 CHAR) NOT NULL,
+  jobname VARCHAR2(100 CHAR) NOT NULL,
+  description VARCHAR2(50 CHAR),
+  PRIMARY KEY (tenantId, id)
+);
+CREATE INDEX idx_job_desc_id ON job_desc(id);
+ALTER TABLE job_desc ADD CONSTRAINT fk_job_desc_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
+
+CREATE TABLE job_param (
+  tenantId NUMBER(19, 0) NOT NULL,
+  id NUMBER(19, 0) NOT NULL,
+  jobDescriptorId NUMBER(19, 0) NOT NULL,
+  key_ VARCHAR2(50 CHAR) NOT NULL,
+  value_ BLOB NOT NULL,
+  PRIMARY KEY (tenantId, id)
+);
+ALTER TABLE job_param ADD CONSTRAINT fk_job_param_jobid FOREIGN KEY (tenantid, jobDescriptorId) REFERENCES job_desc(tenantid, id) ON DELETE CASCADE;
+CREATE INDEX idx_job_param_jobid ON job_param(jobDescriptorId);
+ALTER TABLE job_param ADD CONSTRAINT fk_job_param_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
+
+CREATE TABLE job_log (
+  tenantId NUMBER(19, 0) NOT NULL,
+  id NUMBER(19, 0) NOT NULL,
+  jobDescriptorId NUMBER(19, 0) NOT NULL,
+  retryNumber NUMBER(19, 0),
+  lastUpdateDate NUMBER(19, 0),
+  lastMessage CLOB,
+  UNIQUE (tenantId, jobDescriptorId),
+  PRIMARY KEY (tenantId, id)
+);
+ALTER TABLE job_log ADD CONSTRAINT fk_job_log_jobid FOREIGN KEY (tenantid, jobDescriptorId) REFERENCES job_desc(tenantid, id) ON DELETE CASCADE;
+CREATE INDEX idx_job_log_jobdescid ON job_log(jobdescriptorid);

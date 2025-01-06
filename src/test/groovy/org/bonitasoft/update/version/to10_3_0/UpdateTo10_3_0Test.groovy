@@ -13,31 +13,28 @@
  **/
 package org.bonitasoft.update.version.to10_3_0
 
-
 import spock.lang.Specification
-import spock.lang.Unroll
 
 class UpdateTo10_3_0Test extends Specification {
 
-    @Unroll
-    def "should update to 10.3.0 include step '#stepName'"(def stepName) {
+    def "should update to 10.3.0 include all steps"() {
         given:
         def updateTo = new UpdateTo10_3_0()
-
-        expect:
-        def steps = updateTo.updateSteps
-        steps.collect {
-            it.class.getSimpleName()
-        }.contains(stepName)
-
-        where:
-        stepName << [
+        def expectedSteps = [
             "CreateBpmFailureTables",
             "RemoveUnusedTables",
             "RemoveTenantIdFromIndexes",
             "RemoveTenantIdFromFlowNodeInstance",
             "RemoveTenantIdFromPageAndFormMapping",
-            "RemoveTenantIdFromApplicationPageProfile"
+            "RemoveTenantIdFromApplicationPageProfile",
+            "RemoveTenantIdFromJobTables",
         ]
+
+        expect:
+        def steps = updateTo.updateSteps
+        steps.size() == expectedSteps.size()
+        steps.collect {
+            it.class.getSimpleName()
+        }.containsAll(expectedSteps)
     }
 }

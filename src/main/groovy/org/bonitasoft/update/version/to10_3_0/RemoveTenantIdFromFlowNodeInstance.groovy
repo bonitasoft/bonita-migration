@@ -48,6 +48,6 @@ class RemoveTenantIdFromFlowNodeInstance extends UpdateStep {
 
     @Override
     String getDescription() {
-        return "Remove tenantId from flownode_instance table"
+        return "Remove tenantId from 'flownode_instance' table"
     }
 }

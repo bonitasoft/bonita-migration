@@ -41,6 +41,9 @@ abstract class AbstractTestTo10_3_0 extends Specification {
 
     def dropTestTables() {
         dbUnitHelper.dropTables([
+            "job_log",
+            "job_param",
+            "job_desc",
             "bpm_failure",
             "arch_bpm_failure",
             "business_app_menu",
