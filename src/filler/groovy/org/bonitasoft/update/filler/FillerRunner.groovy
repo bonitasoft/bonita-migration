@@ -22,10 +22,10 @@ import org.junit.runners.model.Statement
  */
 class FillerRunner {
 
-    public static void main(String[] args) {
+    static void main(String[] args) {
         def classNames = args.toList()
 
-        println "FillerRunner: fill with classes names:" + classNames
+        println "FillerRunner: fill with class names: " + classNames
 
 
         def instances = []
@@ -33,7 +33,7 @@ class FillerRunner {
         classNames.each {
             try {
                 def clazz = Class.forName(it)
-                instances.add(clazz.newInstance())
+                instances.add(clazz.getDeclaredConstructor().newInstance())
             } catch (ClassNotFoundException ignored) {
                 println "Filler $it not found, skipping it"
             }
@@ -43,7 +43,7 @@ class FillerRunner {
                     @Override
                     void evaluate() throws Throwable {
                         instances.each {
-                            executeAllMethodsHaving(org.bonitasoft.update.filler.FillAction, it)
+                            executeAllMethodsHaving(FillAction, it)
                         }
                     }
                 }
@@ -54,7 +54,7 @@ class FillerRunner {
 
         statement.evaluate()
 
-        println "FillerRunner: finished "
+        println "FillerRunner: finished"
         System.exit(0)
     }
 
@@ -89,7 +89,6 @@ class FillerRunner {
     }
 
     static def withRules(Statement statement, Object instances) {
-
         Statement newStatement = statement
         instances.each { instance ->
             instance.class.getDeclaredFields().each { field ->
@@ -107,12 +106,12 @@ class FillerRunner {
             instance.class.getMethods().each { method ->
                 def annotation = method.getAnnotation(clazz)
                 if (annotation != null) {
-                    println("FillerRunner: Executing " + instance.class.getName() + "." + method.getName())
+                    println("FillerRunner: Executing ${instance.class.getName()}.${method.getName()}")
                     try {
                         method.invoke(instance)
                     } catch (Exception e) {
-                        println "Issue while executing " + instance.class.getName() + "." + method.getName()
-                        println "${e.getClass().getName()}  ${e.getMessage()}"
+                        println "Issue while executing ${instance.class.getName()}.${method.getName()}"
+                        println "${e.getClass().getName()} ${e.getMessage()}"
                         e.printStackTrace()
                         System.exit(1)
                     }

@@ -86,8 +86,8 @@ class TestUpdateTask extends Test {
         }
         include "**/*To" + underscored(bonitaVersion) + (isSP ? "SP" : "") + "*"
         useJUnitPlatform()
-        // To allow to use the real implementation of the ProcessStarterVerifier, and so the one that comes with
-        // TestEngine, as we use bonita-test-api
+        // To allow to use the real implementation of the ProcessStarterVerifier, and not the one that comes with
+        // TestEngine, as we use bonita-test-api:
         systemProperty("spring.profiles.active", "update-tool")
     }
 

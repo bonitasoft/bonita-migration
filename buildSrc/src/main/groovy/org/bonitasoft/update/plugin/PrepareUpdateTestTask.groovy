@@ -50,6 +50,9 @@ class PrepareUpdateTestTask extends JavaExec {
         setDescription "Setup the engine in order to run update tests on it."
         mainClass = 'org.bonitasoft.update.filler.FillerRunner'
         setDebug System.getProperty("filler.debug") != null
+        // To allow to use the real implementation of the ProcessStarterVerifier, and not the one that comes with
+        // TestEngine, as we use bonita-test-api:
+        systemProperty("spring.profiles.active", "update-tool")
     }
 
     @Override

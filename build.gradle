@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     ext {
-        logbackVersion = '1.2.13'
+        logbackVersion = '1.5.15'
     }
 }
 plugins {
@@ -37,7 +37,7 @@ distTar.configure { enabled = false }
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(11))
+        languageVersion.set(JavaLanguageVersion.of(17))
     }
 }
 project.tasks.withType(JavaCompile).configureEach {
@@ -67,7 +67,7 @@ dependencies {
     fillerImplementation "ch.qos.logback:logback-classic:$logbackVersion"
     fillerImplementation 'junit:junit:4.13.1'
     fillerImplementation "org.codehaus.groovy:groovy-all:3.0.19"
-    fillerImplementation 'org.awaitility:awaitility:4.2.0'
+    fillerImplementation 'org.awaitility:awaitility:4.2.2'
     fillerImplementation 'org.assertj:assertj-core:3.24.2'
 
     enginetestImplementation 'org.awaitility:awaitility:4.2.0'
