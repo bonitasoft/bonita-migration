@@ -2,6 +2,7 @@ CREATE TABLE bpm_failure (
   id NUMERIC(19, 0) NOT NULL,
   processDefinitionId NUMERIC(19, 0) NOT NULL,
   processInstanceId NUMERIC(19, 0) NOT NULL,
+  rootProcessInstanceId NUMERIC(19, 0),
   flowNodeInstanceId NUMERIC(19, 0),
   scope NVARCHAR(255),
   context NVARCHAR(1024),
@@ -14,5 +15,7 @@ CREATE TABLE bpm_failure (
 CREATE INDEX idx_flownode_instance_id ON bpm_failure (flowNodeInstanceId)
 @@
 CREATE INDEX idx_process_instance_id ON bpm_failure (processInstanceId)
+@@
+CREATE INDEX idx_root_process_instance_id ON bpm_failure (rootProcessInstanceId)
 @@
 CREATE INDEX idx_process_definition_id ON bpm_failure (processDefinitionId)
