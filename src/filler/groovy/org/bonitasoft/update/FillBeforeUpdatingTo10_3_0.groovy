@@ -33,6 +33,7 @@ import org.bonitasoft.engine.connector.AbstractConnector
 import org.bonitasoft.engine.exception.BonitaException
 import org.bonitasoft.engine.expression.Expression
 import org.bonitasoft.engine.expression.ExpressionBuilder
+import org.bonitasoft.engine.identity.CustomUserInfoDefinitionCreator
 import org.bonitasoft.engine.identity.User
 import org.bonitasoft.engine.operation.LeftOperandBuilder
 import org.bonitasoft.engine.operation.OperatorType
@@ -41,6 +42,7 @@ import org.bonitasoft.engine.search.SearchOptions
 import org.bonitasoft.engine.search.SearchOptionsBuilder
 import org.bonitasoft.engine.test.junit.BonitaEngineRule
 import org.bonitasoft.update.filler.FillAction
+import org.bonitasoft.update.test.TestUtil
 import org.junit.Rule
 
 import static org.awaitility.Awaitility.await
@@ -56,9 +58,24 @@ class FillBeforeUpdatingTo10_3_0 {
     void 'execute complex process with connectors, data, multi-instance activity, etc'() {
         def client = new APIClient()
         client.login("install", "install")
-        def user = client.getIdentityAPI().createUser("walter.bates", "bpm")
+
+        // Create a group
+        def group = client.getIdentityAPI().createGroup(TestUtil.buildGroupAcme())
+        // Create a role
+        def role = client.getIdentityAPI().createRole(TestUtil.buildRoleMember())
+        // Create a user with a manager
+        def manager = client.getIdentityAPI().createUser(TestUtil.buildUserHelenKelly())
+        def user = client.getIdentityAPI().createUser(TestUtil.buildUserWalterBates(manager.id))
+        // Create a membership
+        client.getIdentityAPI().addUserMembership(user.id, group.id, role.id)
+        // Create a custom user info definition and value
+        def definition = client.getIdentityAPI().createCustomUserInfoDefinition(
+                new CustomUserInfoDefinitionCreator("Skype ID", "Skype ID of the user"))
+        client.getIdentityAPI().setCustomUserInfoValue(definition.id, user.id, "live:walter.bates")
+
         client.logout()
         client.login("walter.bates", "bpm")
+
         final String valueOfInput1 = "valueOfInput1"
         final String defaultValue = "default"
         final String dataName = "myData1"

@@ -22,15 +22,16 @@ class RemoveTenantIdFromPageAndFormMappingIT extends AbstractTestTo10_3_0 {
         updateStep.execute(updateContext)
 
         then:
-        !updateContext.databaseHelper.hasColumnOnTable("page_mapping", "tenantId")
-        updateContext.databaseHelper.hasPrimaryKeyOnTable("page_mapping", "pk_page_mapping")
-        !updateContext.databaseHelper.hasUniqueKeyOnTableByColumns("page_mapping", "tenantId", "key_")
-        updateContext.databaseHelper.hasUniqueKeyOnTable("page_mapping", "uk_page_mapping_key")
-        updateContext.databaseHelper.hasUniqueKeyOnTableByColumns("page_mapping", "key_")
+        with(updateContext.databaseHelper) {
+            !hasColumnOnTable("page_mapping", "tenantId")
+            hasPrimaryKeyOnTable("page_mapping", "pk_page_mapping")
+            !hasUniqueKeyOnTableWithColumns("page_mapping", "tenantId", "key_")
+            hasUniqueKeyOnTableWithNameAndColumns("page_mapping", "uk_page_mapping_key", "key_")
 
-        !updateContext.databaseHelper.hasColumnOnTable("form_mapping", "tenantId")
-        !updateContext.databaseHelper.hasColumnOnTable("form_mapping", "page_mapping_tenant_id")
-        updateContext.databaseHelper.hasPrimaryKeyOnTable("form_mapping", "pk_form_mapping")
-        updateContext.databaseHelper.hasForeignKeyOnTable("form_mapping", "fk_form_mapping_key")
+            !hasColumnOnTable("form_mapping", "tenantId")
+            !hasColumnOnTable("form_mapping", "page_mapping_tenant_id")
+            hasPrimaryKeyOnTable("form_mapping", "pk_form_mapping")
+            hasForeignKeyOnTable("form_mapping", "fk_form_mapping_key")
+        }
     }
 }

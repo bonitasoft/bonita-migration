@@ -283,3 +283,131 @@ CREATE TABLE job_log (
 );
 ALTER TABLE job_log ADD CONSTRAINT fk_job_log_jobid FOREIGN KEY (tenantid, jobDescriptorId) REFERENCES job_desc(tenantid, id) ON DELETE CASCADE;
 CREATE INDEX idx_job_log_jobdescid ON job_log(jobdescriptorid);
+
+CREATE TABLE group_ (
+  tenantid NUMERIC(19, 0) NOT NULL,
+  id NUMERIC(19, 0) NOT NULL,
+  name NVARCHAR(125) NOT NULL,
+  parentPath NVARCHAR(255),
+  displayName NVARCHAR(255),
+  description NVARCHAR(MAX),
+  createdBy NUMERIC(19, 0),
+  creationDate NUMERIC(19, 0),
+  lastUpdate NUMERIC(19, 0),
+  iconid NUMERIC(19, 0),
+  PRIMARY KEY (tenantid, id)
+);
+CREATE INDEX idx_group_name ON group_ (parentPath, name);
+ALTER TABLE group_ ADD CONSTRAINT fk_group__tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
+
+CREATE TABLE role (
+  tenantid NUMERIC(19, 0) NOT NULL,
+  id NUMERIC(19, 0) NOT NULL,
+  name NVARCHAR(255) NOT NULL,
+  displayName NVARCHAR(255),
+  description NVARCHAR(MAX),
+  createdBy NUMERIC(19, 0),
+  creationDate NUMERIC(19, 0),
+  lastUpdate NUMERIC(19, 0),
+  iconid NUMERIC(19, 0),
+  UNIQUE (tenantid, name),
+  PRIMARY KEY (tenantid, id)
+);
+CREATE INDEX idx_role_name ON role (name);
+ALTER TABLE role ADD CONSTRAINT fk_role_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
+
+CREATE TABLE user_ (
+  tenantid NUMERIC(19, 0) NOT NULL,
+  id NUMERIC(19, 0) NOT NULL,
+  enabled BIT NOT NULL,
+  userName NVARCHAR(255) NOT NULL,
+  password NVARCHAR(60),
+  firstName NVARCHAR(255),
+  lastName NVARCHAR(255),
+  title NVARCHAR(50),
+  jobTitle NVARCHAR(255),
+  managerUserId NUMERIC(19, 0),
+  createdBy NUMERIC(19, 0),
+  creationDate NUMERIC(19, 0),
+  lastUpdate NUMERIC(19, 0),
+  iconid NUMERIC(19, 0),
+  UNIQUE (tenantid, userName),
+  PRIMARY KEY (tenantid, id)
+);
+CREATE INDEX idx_user_name ON user_ (userName);
+ALTER TABLE user_ ADD CONSTRAINT fk_user__tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
+
+CREATE TABLE user_login (
+  tenantid NUMERIC(19, 0) NOT NULL,
+  id NUMERIC(19, 0) NOT NULL,
+  lastConnection NUMERIC(19, 0),
+  PRIMARY KEY (tenantid, id)
+);
+
+CREATE TABLE user_contactinfo (
+  tenantid NUMERIC(19, 0) NOT NULL,
+  id NUMERIC(19, 0) NOT NULL,
+  userId NUMERIC(19, 0) NOT NULL,
+  email NVARCHAR(255),
+  phone NVARCHAR(50),
+  mobile NVARCHAR(50),
+  fax NVARCHAR(50),
+  building NVARCHAR(50),
+  room NVARCHAR(50),
+  address NVARCHAR(255),
+  zipCode NVARCHAR(50),
+  city NVARCHAR(255),
+  state NVARCHAR(255),
+  country NVARCHAR(255),
+  website NVARCHAR(255),
+  personal BIT NOT NULL,
+  UNIQUE (tenantid, userId, personal),
+  PRIMARY KEY (tenantid, id)
+);
+ALTER TABLE user_contactinfo ADD CONSTRAINT fk_contact_user FOREIGN KEY (tenantid, userId) REFERENCES user_ (tenantid, id) ON DELETE CASCADE;
+CREATE INDEX idx_user_contactinfo ON user_contactinfo (userId, personal);
+
+CREATE TABLE custom_usr_inf_def (
+  tenantid NUMERIC(19, 0) NOT NULL,
+  id NUMERIC(19, 0) NOT NULL,
+  name NVARCHAR(75) NOT NULL,
+  description NVARCHAR(MAX),
+  UNIQUE (tenantid, name),
+  PRIMARY KEY (tenantid, id)
+);
+CREATE INDEX idx_custom_usr_inf_def_name ON custom_usr_inf_def (name);
+ALTER TABLE custom_usr_inf_def ADD CONSTRAINT fk_custom_usr_inf_def_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
+
+CREATE TABLE custom_usr_inf_val (
+  id NUMERIC(19, 0) NOT NULL,
+  tenantid NUMERIC(19, 0) NOT NULL,
+  definitionId NUMERIC(19, 0) NOT NULL,
+  userId NUMERIC(19, 0) NOT NULL,
+  value NVARCHAR(255),
+  UNIQUE (tenantid, definitionId, userId),
+  PRIMARY KEY (tenantid, id)
+);
+ALTER TABLE custom_usr_inf_val ADD CONSTRAINT fk_user_id FOREIGN KEY (tenantid, userId) REFERENCES user_ (tenantid, id) ON DELETE CASCADE;
+ALTER TABLE custom_usr_inf_val ADD CONSTRAINT fk_definition_id FOREIGN KEY (tenantid, definitionId) REFERENCES custom_usr_inf_def (tenantid, id) ON DELETE CASCADE;
+ALTER TABLE custom_usr_inf_val ADD CONSTRAINT fk_custom_usr_inf_val_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
+
+CREATE TABLE user_membership (
+  tenantid NUMERIC(19, 0) NOT NULL,
+  id NUMERIC(19, 0) NOT NULL,
+  userId NUMERIC(19, 0) NOT NULL,
+  roleId NUMERIC(19, 0) NOT NULL,
+  groupId NUMERIC(19, 0) NOT NULL,
+  assignedBy NUMERIC(19, 0),
+  assignedDate NUMERIC(19, 0),
+  UNIQUE (tenantid, userId, roleId, groupId),
+  PRIMARY KEY (tenantid, id)
+);
+ALTER TABLE user_membership ADD CONSTRAINT fk_user_membership_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
+
+CREATE TABLE icon (
+  tenantId NUMERIC(19, 0) NOT NULL,
+  id NUMERIC(19, 0) NOT NULL,
+  mimetype NVARCHAR(255) NOT NULL,
+  content VARBINARY(MAX) NOT NULL,
+  CONSTRAINT pk_icon PRIMARY KEY (tenantId, id)
+);

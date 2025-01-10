@@ -22,10 +22,12 @@ class RemoveTenantIdFromFlowNodeInstanceIT extends AbstractTestTo10_3_0 {
         updateStep.execute(updateContext)
 
         then:
-        ! updateContext.databaseHelper.hasColumnOnTable("flownode_instance", "tenantId")
-        updateContext.databaseHelper.hasPrimaryKeyOnTable("flownode_instance", "pk_flownode_instance")
-        ! updateContext.databaseHelper.hasForeignKeyOnTable("flownode_instance", "fk_flownode_instance_tenantId")
-        updateContext.databaseHelper.hasForeignKeyOnTable("ref_biz_data_inst", "fk_ref_biz_data_fn")
-        updateContext.databaseHelper.hasForeignKeyOnTable("pending_mapping", "fk_pending_mapping_flownode_instanceId")
+        with(updateContext.databaseHelper) {
+            !hasColumnOnTable("flownode_instance", "tenantId")
+            hasPrimaryKeyOnTable("flownode_instance", "pk_flownode_instance")
+            !hasForeignKeyOnTable("flownode_instance", "fk_flownode_instance_tenantId")
+            hasForeignKeyOnTable("ref_biz_data_inst", "fk_ref_biz_data_fn")
+            hasForeignKeyOnTable("pending_mapping", "fk_pending_mapping_flownode_instanceId")
+        }
     }
 }

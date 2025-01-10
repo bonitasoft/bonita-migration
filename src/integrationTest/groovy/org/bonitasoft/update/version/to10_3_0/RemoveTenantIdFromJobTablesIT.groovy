@@ -22,23 +22,24 @@ class RemoveTenantIdFromJobTablesIT extends AbstractTestTo10_3_0 {
         updateStep.execute(updateContext)
 
         then:
-        !updateContext.databaseHelper.hasColumnOnTable("job_desc", "tenantId")
-        updateContext.databaseHelper.hasPrimaryKeyOnTable("job_desc", "pk_job_desc")
-        !updateContext.databaseHelper.hasIndexOnTable("job_desc", "idx_job_desc_id")
+        with(updateContext.databaseHelper) {
+            !hasColumnOnTable("job_desc", "tenantId")
+            hasPrimaryKeyOnTable("job_desc", "pk_job_desc")
+            !hasIndexOnTable("job_desc", "idx_job_desc_id")
 
-        !updateContext.databaseHelper.hasColumnOnTable("job_param", "tenantId")
-        updateContext.databaseHelper.hasPrimaryKeyOnTable("job_param", "pk_job_param")
-        updateContext.databaseHelper.hasIndexOnTable("job_param", "idx_job_param_jobid")
-        !updateContext.databaseHelper.hasForeignKeyOnTable("job_param", "fk_job_param_jobid")
-        updateContext.databaseHelper.hasForeignKeyOnTable("job_param", "fk_job_param_jobdescriptorid")
+            !hasColumnOnTable("job_param", "tenantId")
+            hasPrimaryKeyOnTable("job_param", "pk_job_param")
+            hasIndexOnTable("job_param", "idx_job_param_jobid")
+            !hasForeignKeyOnTable("job_param", "fk_job_param_jobid")
+            hasForeignKeyOnTable("job_param", "fk_job_param_jobdescriptorid")
 
-        !updateContext.databaseHelper.hasColumnOnTable("job_log", "tenantId")
-        updateContext.databaseHelper.hasPrimaryKeyOnTable("job_log", "pk_job_log")
-        !updateContext.databaseHelper.hasIndexOnTable("job_log", "idx_job_log_jobdescid")
-        !updateContext.databaseHelper.hasUniqueKeyOnTableByColumns("job_log", "tenantId", "jobDescriptorId")
-        updateContext.databaseHelper.hasUniqueKeyOnTable("job_log", "uk_job_log_jobdescriptorid")
-        updateContext.databaseHelper.hasUniqueKeyOnTableByColumns("job_log", "jobDescriptorId")
-        !updateContext.databaseHelper.hasForeignKeyOnTable("job_log", "fk_job_log_jobid")
-        updateContext.databaseHelper.hasForeignKeyOnTable("job_log", "fk_job_log_jobdescriptorid")
+            !hasColumnOnTable("job_log", "tenantId")
+            hasPrimaryKeyOnTable("job_log", "pk_job_log")
+            !hasIndexOnTable("job_log", "idx_job_log_jobdescid")
+            !hasUniqueKeyOnTableWithColumns("job_log", "tenantId", "jobDescriptorId")
+            hasUniqueKeyOnTableWithNameAndColumns("job_log", "uk_job_log_jobdescriptorid", "jobDescriptorId")
+            !hasForeignKeyOnTable("job_log", "fk_job_log_jobid")
+            hasForeignKeyOnTable("job_log", "fk_job_log_jobdescriptorid")
+        }
     }
 }

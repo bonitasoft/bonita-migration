@@ -41,7 +41,7 @@ class RemoveTenantIdFromApplicationPageProfile extends UpdateStep {
             dropForeignKey("business_app_menu", "fk_app_menu_pageId")
             dropForeignKey("business_app_menu", "fk_app_menu_parentId")
 
-            dropForeignKey("profilemember", "fk_profilemember_profileId")
+            dropForeignKey("profilemember", "fk_profilemember_profileId") // does not exist on Oracle
             dropPrimaryKey("business_app_menu")
             dropUniqueKeyWithNameInList("business_app_page", "uk_app_page_appId_token", "UK_Business_app_page") // existing name is different on Oracle
             dropPrimaryKey("business_app_page")

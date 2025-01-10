@@ -428,11 +428,15 @@ END"""
     }
 
     /**
-     * By convention, the primary key created is named `pk_${tableName}`
+     * By convention, the primary key created is named `pk_$tableName`
      */
     def createPrimaryKey(String tableName, String... columns) {
+        createPrimaryKeyWithName(tableName, "pk_$tableName", columns)
+    }
+
+    def createPrimaryKeyWithName(String tableName, String pkName, String... columns) {
         def concatenatedColumns = columns.collect { it }.join(", ")
-        String request = "ALTER TABLE $tableName ADD CONSTRAINT pk_${tableName} PRIMARY KEY ($concatenatedColumns)"
+        String request = "ALTER TABLE $tableName ADD CONSTRAINT $pkName PRIMARY KEY ($concatenatedColumns)"
         logger.info "Executing request: $request"
         sql.execute(request)
     }
@@ -449,9 +453,10 @@ END"""
      */
     def dropUniqueKey(String tableName, String ukName) {
         if (hasUniqueKeyOnTable(tableName, ukName)) {
+            logger.info("Dropping unique key '$ukName' on table '$tableName'")
             doDropExistingUniqueKey(tableName, ukName)
         } else {
-            logger.warn("Unique key ${ukName} not found on table ${tableName}")
+            logger.warn("Unique key '$ukName' not found on table '$tableName'")
         }
     }
 
@@ -746,8 +751,19 @@ HAVING COUNT(DISTINCT ic.column_name) = ? AND MAX(column_position) = ?"""
      * @param columns columns of the unique key
      * @return true if exists, false otherwise
      */
-    boolean hasUniqueKeyOnTableByColumns(String tableName, String... columns) {
+    boolean hasUniqueKeyOnTableWithColumns(String tableName, String... columns) {
         return getUniqueKeyByColumns(tableName, columns) != null
+    }
+
+    /**
+     * Checks if a unique key exists on a table with the given name and columns
+     * @param tableName table name where the unique key should be defined
+     * @param ukName unique key name
+     * @param columns columns of the unique key
+     * @return true if exists, false otherwise
+     */
+    boolean hasUniqueKeyOnTableWithNameAndColumns(String tableName, String ukName, String... columns) {
+        return hasUniqueKeyOnTable(tableName, ukName) && hasUniqueKeyOnTableWithColumns(tableName, columns)
     }
 
     /**

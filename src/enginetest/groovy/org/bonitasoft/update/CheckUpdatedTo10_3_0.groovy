@@ -20,6 +20,10 @@ import org.bonitasoft.engine.business.application.ApplicationMenuSearchDescripto
 import org.bonitasoft.engine.business.application.ApplicationPage
 import org.bonitasoft.engine.business.application.ApplicationPageSearchDescriptor
 import org.bonitasoft.engine.business.application.ApplicationSearchDescriptor
+import org.bonitasoft.engine.identity.GroupCriterion
+import org.bonitasoft.engine.identity.RoleCriterion
+import org.bonitasoft.engine.identity.UserCriterion
+import org.bonitasoft.engine.identity.UserMembershipCriterion
 import org.bonitasoft.engine.profile.Profile
 import org.bonitasoft.engine.search.Order
 import org.bonitasoft.engine.search.SearchOptions
@@ -58,5 +62,36 @@ class CheckUpdatedTo10_3_0 extends Specification {
         application.displayName == "HR dashboard"
         firstPage.result[0].token == "home_page_token"
         firstMenu.result[0].displayName == "Home Menu"
+    }
+
+    def 'should be able to retrieve identity elements'() {
+        given:
+        def client = new APIClient()
+        client.login("walter.bates", "bpm")
+
+        when:
+        def users = client.identityAPI.getUsers(0, 10, UserCriterion.USER_NAME_ASC)
+        def groups = client.identityAPI.getGroups(0, 10, GroupCriterion.NAME_ASC)
+        def roles = client.identityAPI.getRoles(0, 10, RoleCriterion.NAME_ASC)
+        def walterBates = client.identityAPI.getUserByUserName("walter.bates")
+        def userMemberships = client.identityAPI.getUserMemberships(
+                walterBates.id, 0, 10, UserMembershipCriterion.GROUP_NAME_ASC)
+        def customUserInfoDefs = client.identityAPI.getCustomUserInfoDefinitions(0, 10)
+        def customUserInfo = client.identityAPI.getCustomUserInfo(walterBates.id, 0, 10)
+
+        then:
+        !users.isEmpty()
+        users.collect { it.userName }.containsAll(["helen.kelly", "walter.bates"])
+        !groups.isEmpty()
+        groups.collect { it.name }.contains("acme")
+        !roles.isEmpty()
+        roles.collect { it.name }.contains("member")
+        !userMemberships.isEmpty()
+        userMemberships.collect { it.groupName }.contains("acme")
+        userMemberships.collect { it.roleName }.contains("member")
+        !customUserInfoDefs.isEmpty()
+        customUserInfoDefs.collect { it.name }.contains("Skype ID")
+        !customUserInfo.isEmpty()
+        customUserInfo.collect { it.value }.contains("live:walter.bates")
     }
 }

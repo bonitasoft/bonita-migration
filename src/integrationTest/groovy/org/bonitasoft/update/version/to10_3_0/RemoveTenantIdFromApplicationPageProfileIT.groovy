@@ -25,18 +25,15 @@ class RemoveTenantIdFromApplicationPageProfileIT extends AbstractTestTo10_3_0 {
         with(updateContext.databaseHelper) {
             !hasColumnOnTable("page", "tenantId")
             hasPrimaryKeyOnTable("page", "pk_page")
-            hasUniqueKeyOnTable("page", "uk_page_name_processdefinitionid")
-            hasUniqueKeyOnTableByColumns("page", "name", "processDefinitionId")
+            hasUniqueKeyOnTableWithNameAndColumns("page", "uk_page_name_processdefinitionid", "name", "processDefinitionId")
 
             !hasColumnOnTable("profile", "tenantId")
             hasPrimaryKeyOnTable("profile", "pk_profile")
-            hasUniqueKeyOnTable("profile", "uk_profile_name")
-            hasUniqueKeyOnTableByColumns("profile", "name")
+            hasUniqueKeyOnTableWithNameAndColumns("profile", "uk_profile_name", "name")
 
             !hasColumnOnTable("business_app", "tenantId")
             hasPrimaryKeyOnTable("business_app", "pk_business_app")
-            hasUniqueKeyOnTable("business_app", "uk_business_app_token_version")
-            hasUniqueKeyOnTableByColumns("business_app", "token", "version")
+            hasUniqueKeyOnTableWithNameAndColumns("business_app", "uk_business_app_token_version", "token", "version")
             hasForeignKeyOnTable("business_app", "fk_business_app_profileid")
             hasForeignKeyOnTable("business_app", "fk_business_app_layoutid")
             hasForeignKeyOnTable("business_app", "fk_business_app_themeid")
@@ -47,8 +44,7 @@ class RemoveTenantIdFromApplicationPageProfileIT extends AbstractTestTo10_3_0 {
 
             !hasColumnOnTable("business_app_page", "tenantId")
             hasPrimaryKeyOnTable("business_app_page", "pk_business_app_page")
-            hasUniqueKeyOnTable("business_app_page", "uk_business_app_page_applicationid_token")
-            hasUniqueKeyOnTableByColumns("business_app_page", "applicationId", "token")
+            hasUniqueKeyOnTableWithNameAndColumns("business_app_page", "uk_business_app_page_applicationid_token", "applicationId", "token")
             hasForeignKeyOnTable("business_app_page", "fk_business_app_page_applicationid")
             hasForeignKeyOnTable("business_app_page", "fk_business_app_page_pageid")
             // renamed:
