@@ -39,7 +39,7 @@ class InitPlatformInformation extends UpdateStep {
                     AND startDate >= $sinceDateInMillis
                     ORDER BY startDate ASC""").collect { it.startDate as Long }
             def encryptedList = SimpleEncryptor.encrypt(new ObjectMapper().writeValueAsBytes(startDates))
-            executeUpdate("UPDATE platform SET information = '${encryptedList}'")
+            executeUpdateQuery("UPDATE platform SET information = '${encryptedList}'", false)
         }
     }
 

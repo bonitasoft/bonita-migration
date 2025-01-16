@@ -21,8 +21,8 @@ class RemoveUnusedSequences extends UpdateStep {
     @Override
     def execute(UpdateContext context) {
         context.databaseHelper.with {
-            execute("DELETE FROM sequence WHERE tenantId = -1 AND id = 30")
-            execute("DELETE FROM sequence WHERE tenantId = -1 AND id = 31")
+            executeQuery("DELETE FROM sequence WHERE tenantId = -1 AND id = 30")
+            executeQuery("DELETE FROM sequence WHERE tenantId = -1 AND id = 31")
         }
     }
 

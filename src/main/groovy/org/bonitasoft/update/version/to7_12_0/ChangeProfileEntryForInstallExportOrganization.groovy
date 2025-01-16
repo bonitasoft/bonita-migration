@@ -26,7 +26,7 @@ class ChangeProfileEntryForInstallExportOrganization extends UpdateStep {
     private static renameInstallExportOrganizationPage(UpdateContext context) {
         def newName = 'custompage_adminInstallExportOrganizationBonita'
         context.logger.info("Updating custompage_installExportOrganizationBonita => $newName for profileentry")
-        context.databaseHelper.executeUpdate("UPDATE profileentry SET PAGE = '$newName' WHERE PAGE = 'custompage_installExportOrganizationBonita'")
+        context.databaseHelper.executeUpdateQuery("UPDATE profileentry SET PAGE = '$newName' WHERE PAGE = 'custompage_installExportOrganizationBonita'")
     }
 
     @Override

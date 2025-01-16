@@ -67,8 +67,6 @@ class RemoveTenantIdFromApplicationPageProfile extends UpdateStep {
             createForeignKey("profilemember", "fk_profilemember_profileid", "profile", ["profileId"], ["id"], false)
             createForeignKey("business_app", "fk_business_app_profileid", "profile", ["profileId"], ["id"], false)
             createForeignKey("business_app", "fk_business_app_layoutid", "page", ["layoutId"], ["id"], false)
-            def references = getForeignKeyReferences("business_app")
-            references.each { logger.info("Found FK $it") }
             createForeignKey("business_app", "fk_business_app_themeid", "page", ["themeId"], ["id"], false)
             createForeignKey("business_app_page", "fk_business_app_page_applicationid", "business_app", ["applicationId"], ["id"], true) // on delete cascade
             createForeignKey("business_app_page", "fk_business_app_page_pageid", "page", ["pageId"], ["id"], false)
