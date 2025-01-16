@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2024 Bonitasoft S.A.
+ * Copyright (C) 2025 Bonitasoft S.A.
  * Bonitasoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
@@ -17,7 +17,7 @@ import org.bonitasoft.update.core.UpdateContext
 import org.bonitasoft.update.core.UpdateStep
 
 /**
- * Remove unused tables queriablelog_p and blob_
+ * Remove unused tables external_identity_mapping, queriablelog_p and blob_
  *
  * @author Emmanuel Duchastenier
  */
@@ -26,13 +26,19 @@ class RemoveUnusedTables extends UpdateStep {
     @Override
     def execute(UpdateContext context) {
         context.databaseHelper.with {
+            dropTableIfExists("external_identity_mapping")
+            context.sql.executeUpdate("DELETE FROM sequence WHERE id = ${10070} ")
+
             dropTableIfExists("queriablelog_p")
+            context.sql.executeUpdate("DELETE FROM sequence WHERE id = ${31} ")
+
             dropTableIfExists("blob_")
+            // blob_ table did not have any sequence!
         }
     }
 
     @Override
     String getDescription() {
-        return "Remove unused tables 'queriablelog_p' and 'blob_'"
+        return "Remove unused tables 'external_identity_mapping', 'queriablelog_p' and 'blob_'"
     }
 }

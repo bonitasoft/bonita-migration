@@ -1,3 +1,12 @@
+CREATE TABLE sequence (
+  tenantid BIGINT NOT NULL,
+  id BIGINT NOT NULL,
+  nextid BIGINT NOT NULL,
+  PRIMARY KEY (tenantid, id)
+) ENGINE = INNODB;
+INSERT INTO sequence VALUES(1, 31, 1);
+INSERT INTO sequence VALUES(1, 10070, 1);
+
 CREATE TABLE queriable_log (
   tenantid BIGINT NOT NULL,
   id BIGINT NOT NULL,
@@ -44,4 +53,16 @@ CREATE TABLE blob_ (
 	id BIGINT NOT NULL,
 	blobValue MEDIUMBLOB,
 	PRIMARY KEY (tenantid, id)
+) ENGINE = INNODB;
+
+CREATE TABLE external_identity_mapping (
+  tenantid BIGINT NOT NULL,
+  id BIGINT NOT NULL,
+  kind VARCHAR(25) NOT NULL,
+  externalId VARCHAR(50) NOT NULL,
+  userId BIGINT NOT NULL,
+  groupId BIGINT NOT NULL,
+  roleId BIGINT NOT NULL,
+  UNIQUE (tenantid, kind, externalId, userId, groupId, roleId),
+  PRIMARY KEY (tenantid, id)
 ) ENGINE = INNODB;

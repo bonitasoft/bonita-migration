@@ -1,3 +1,12 @@
+CREATE TABLE sequence (
+  tenantid NUMERIC(19, 0) NOT NULL,
+  id NUMERIC(19, 0) NOT NULL,
+  nextid NUMERIC(19, 0) NOT NULL,
+  PRIMARY KEY (tenantid, id)
+);
+INSERT INTO sequence VALUES(1, 31, 1);
+INSERT INTO sequence VALUES(1, 10070, 1);
+
 CREATE TABLE queriable_log (
   tenantid NUMERIC(19, 0) NOT NULL,
   id NUMERIC(19, 0) NOT NULL,
@@ -43,4 +52,16 @@ CREATE TABLE blob_ (
 	id NUMERIC(19, 0) NOT NULL,
 	blobValue VARBINARY(MAX),
 	PRIMARY KEY (tenantid, id)
+);
+
+CREATE TABLE external_identity_mapping (
+  tenantid NUMERIC(19, 0) NOT NULL,
+  id NUMERIC(19, 0) NOT NULL,
+  kind NVARCHAR(25) NOT NULL,
+  externalId NVARCHAR(50) NOT NULL,
+  userId NUMERIC(19, 0) NOT NULL,
+  groupId NUMERIC(19, 0) NOT NULL,
+  roleId NUMERIC(19, 0) NOT NULL,
+  UNIQUE (tenantid, kind, externalId, userId, groupId, roleId),
+  PRIMARY KEY (tenantid, id)
 );

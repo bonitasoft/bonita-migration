@@ -45,7 +45,6 @@ class HazelcastConfigurationHelperTest extends Specification {
             |</hazelcast>'''.stripMargin().normalize())
     }
 
-
     def "should update XSD schema"() {
         given:
         def hazelcastConfigurationHelper = new HazelcastConfigurationHelper()
@@ -67,7 +66,24 @@ class HazelcastConfigurationHelperTest extends Specification {
         assert !configuration.content.contains('http://www.hazelcast.com/schema/config/hazelcast-config-5.3.xsd')
     }
 
-    byte[] readExistingConfigurationFile(){
+    byte[] readExistingConfigurationFile() {
         return HazelcastConfigurationHelperTest.class.getResourceAsStream('/hazelcast.xml').bytes
+    }
+
+    def "should remove entity cache configuration"() {
+        given:
+        def hazelcastConfigurationHelper = new HazelcastConfigurationHelper()
+        def sql = Mock(Sql)
+        sql.firstRow(_ as String) >> new GroovyRowResult([resource_content: readExistingConfigurationFile()])
+
+        hazelcastConfigurationHelper.logger = Mock(Logger)
+        hazelcastConfigurationHelper.sql = sql
+        hazelcastConfigurationHelper.databaseHelper = new DatabaseHelper()
+
+        when:
+        def configuration = hazelcastConfigurationHelper.removeCacheConfiguration('org.bonitasoft.engine.queriablelogger.model.SQueriableLogParameter')
+
+        then:
+        assert !configuration.content.contains('org.bonitasoft.engine.queriablelogger.model.SQueriableLogParameter')
     }
 }

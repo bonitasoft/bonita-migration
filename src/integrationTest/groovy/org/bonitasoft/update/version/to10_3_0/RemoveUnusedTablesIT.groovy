@@ -24,19 +24,25 @@ class RemoveUnusedTablesIT extends AbstractTestTo10_3_0 {
 
     @Override
     def dropTestTables() {
-        dbUnitHelper.dropTables(["queriablelog_p", "queriablelog", "blob_"] as String[])
+        dbUnitHelper.dropTables(["external_identity_mapping", "queriablelog_p", "queriablelog", "blob_", "sequence"] as String[])
     }
 
     def "should drop tables 'queriablelog_p' and 'blob_'"() {
         given:
+        assert updateContext.databaseHelper.hasTable("external_identity_mapping")
+        assert updateContext.databaseHelper.getSequenceValue(1, 10070) != null
         assert updateContext.databaseHelper.hasTable("queriablelog_p")
+        assert updateContext.databaseHelper.getSequenceValue(1, 31) != null
         assert updateContext.databaseHelper.hasTable("blob_")
 
         when:
         updateStep.execute(updateContext)
 
         then:
+        !updateContext.databaseHelper.hasTable("external_identity_mapping")
+        updateContext.databaseHelper.getSequenceValue(1, 10070) == null
         !updateContext.databaseHelper.hasTable("queriablelog_p")
+        updateContext.databaseHelper.getSequenceValue(1, 31) == null
         !updateContext.databaseHelper.hasTable("blob_")
     }
 }

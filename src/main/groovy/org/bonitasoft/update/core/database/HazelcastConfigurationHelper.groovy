@@ -80,4 +80,15 @@ class HazelcastConfigurationHelper {
         sql.execute("UPDATE configuration SET resource_content = ${hazelcastConfiguration.content.bytes} WHERE content_type = ${hazelcastConfiguration.contentType} AND resource_name = 'hazelcast.xml'")
         return hazelcastConfiguration
     }
+
+    /**
+     * @param entityName the fully qualified name of the entity to remove from the cache configuration
+     */
+    HazelcastConfiguration removeCacheConfiguration(String entityName) {
+        logger.debug(String.format("Remove cache configuration for entity: %s", entityName))
+        def hazelcastConfiguration = readHazelcastConfiguration()
+        hazelcastConfiguration.content = hazelcastConfiguration.content.replaceAll("(?s)<cache name=\"${entityName}\">.*?</cache>", "")
+        sql.execute("UPDATE configuration SET resource_content = ${hazelcastConfiguration.content.bytes} WHERE content_type = ${hazelcastConfiguration.contentType} AND resource_name = 'hazelcast.xml'")
+        return hazelcastConfiguration
+    }
 }
