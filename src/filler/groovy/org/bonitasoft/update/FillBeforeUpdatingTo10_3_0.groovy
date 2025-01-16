@@ -19,6 +19,7 @@ import org.bonitasoft.engine.bpm.bar.BarResource
 import org.bonitasoft.engine.bpm.bar.BusinessArchive
 import org.bonitasoft.engine.bpm.bar.BusinessArchiveBuilder
 import org.bonitasoft.engine.bpm.bar.InvalidBusinessArchiveFormatException
+import org.bonitasoft.engine.bpm.category.Category
 import org.bonitasoft.engine.bpm.connector.ConnectorEvent
 import org.bonitasoft.engine.bpm.flownode.HumanTaskInstanceSearchDescriptor
 import org.bonitasoft.engine.bpm.process.InvalidProcessDefinitionException
@@ -104,6 +105,13 @@ class FillBeforeUpdatingTo10_3_0 {
         ProcessAPI processAPI = client.getProcessAPI()
         final ProcessDefinition processDefinition = deployAndEnableProcessWithActorAndConnectorAndParameter(processDefinitionBuilder, ACTOR_NAME, user,
                 "TestConnectorWithOutput.impl", TestConnectorWithOutput.class, "TestConnectorWithOutput.jar", processAPI)
+
+        // Test category and mapping:
+        final Category category = processAPI.createCategory("my_process_category", "To better organize my processes")
+        processAPI.addProcessDefinitionToCategory(category.id, processDefinition.getId())
+
+        // Test supervisor:
+        processAPI.createProcessSupervisorForUser(processDefinition.getId(), user.id)
 
         final ProcessInstance startProcess = processAPI.startProcess(processDefinition.getId())
         assertEquals(defaultValue, processAPI.getProcessDataInstance(dataName, startProcess.getId()).getValue())

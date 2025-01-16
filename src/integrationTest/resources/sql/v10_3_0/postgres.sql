@@ -438,3 +438,70 @@ CREATE TABLE process_comment (
 );
 CREATE INDEX idx1_process_comment on process_comment (processInstanceId);
 ALTER TABLE process_comment ADD CONSTRAINT fk_process_comment_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
+
+CREATE TABLE process_content (
+  tenantid INT8 NOT NULL,
+  id INT8 NOT NULL,
+  content TEXT NOT NULL,
+  PRIMARY KEY (tenantid, id)
+);
+
+CREATE TABLE process_definition (
+  tenantid INT8 NOT NULL,
+  id INT8 NOT NULL,
+  processId INT8 NOT NULL,
+  name VARCHAR(150) NOT NULL,
+  version VARCHAR(50) NOT NULL,
+  description VARCHAR(255),
+  deploymentDate INT8 NOT NULL,
+  deployedBy INT8 NOT NULL,
+  activationState VARCHAR(30) NOT NULL,
+  configurationState VARCHAR(30) NOT NULL,
+  displayName VARCHAR(75),
+  displayDescription VARCHAR(255),
+  lastUpdateDate INT8,
+  categoryId INT8,
+  iconPath VARCHAR(255),
+  content_tenantid INT8 NOT NULL,
+  content_id INT8 NOT NULL,
+  PRIMARY KEY (tenantid, id),
+  UNIQUE (tenantid, name, version)
+);
+ALTER TABLE process_definition ADD CONSTRAINT fk_process_definition_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
+ALTER TABLE process_definition ADD CONSTRAINT fk_process_definition_content FOREIGN KEY (content_tenantid, content_id) REFERENCES process_content(tenantid, id);
+
+CREATE TABLE category (
+  tenantid INT8 NOT NULL,
+  id INT8 NOT NULL,
+  name VARCHAR(50) NOT NULL,
+  creator INT8,
+  description TEXT,
+  creationDate INT8 NOT NULL,
+  lastUpdateDate INT8 NOT NULL,
+  UNIQUE (tenantid, name),
+  PRIMARY KEY (tenantid, id)
+);
+ALTER TABLE category ADD CONSTRAINT fk_category_tenantId FOREIGN KEY (tenantid) REFERENCES tenant (id);
+
+CREATE TABLE processcategorymapping (
+  tenantid INT8 NOT NULL,
+  id INT8 NOT NULL,
+  categoryid INT8 NOT NULL,
+  processid INT8 NOT NULL,
+  UNIQUE (tenantid, categoryid, processid),
+  PRIMARY KEY (tenantid, id)
+);
+ALTER TABLE processcategorymapping ADD CONSTRAINT fk_catmapping_catid FOREIGN KEY (tenantid, categoryid) REFERENCES category(tenantid, id) ON DELETE CASCADE;
+ALTER TABLE processcategorymapping ADD CONSTRAINT fk_processcategorymapping_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
+
+CREATE TABLE processsupervisor (
+  tenantid INT8 NOT NULL,
+  id INT8 NOT NULL,
+  processDefId INT8 NOT NULL,
+  userId INT8 NOT NULL,
+  groupId INT8 NOT NULL,
+  roleId INT8 NOT NULL,
+  UNIQUE (tenantid, processDefId, userId, groupId, roleId),
+  PRIMARY KEY (tenantid, id)
+);
+ALTER TABLE processsupervisor ADD CONSTRAINT fk_processsupervisor_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);

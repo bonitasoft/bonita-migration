@@ -14,12 +14,8 @@
 package org.bonitasoft.update
 
 import org.bonitasoft.engine.api.APIClient
-import org.bonitasoft.engine.business.application.Application
-import org.bonitasoft.engine.business.application.ApplicationMenu
-import org.bonitasoft.engine.business.application.ApplicationMenuSearchDescriptor
-import org.bonitasoft.engine.business.application.ApplicationPage
-import org.bonitasoft.engine.business.application.ApplicationPageSearchDescriptor
-import org.bonitasoft.engine.business.application.ApplicationSearchDescriptor
+import org.bonitasoft.engine.bpm.category.CategoryCriterion
+import org.bonitasoft.engine.business.application.*
 import org.bonitasoft.engine.identity.GroupCriterion
 import org.bonitasoft.engine.identity.RoleCriterion
 import org.bonitasoft.engine.identity.UserCriterion
@@ -34,15 +30,18 @@ import spock.lang.Specification
 
 class CheckUpdatedTo10_3_0 extends Specification {
 
+    private static final USERNAME = "walter.bates"
+
     @Rule
     public After7_2_0Initializer initializer = new After7_2_0Initializer()
 
     def 'should be able to start a complex process after removing tenantId column from all tables'() {
         given:
         def client = new APIClient()
-        client.login("walter.bates", "bpm")
+        client.login(USERNAME, "bpm")
         def processAPI = client.processAPI
         def processDefinitionId = processAPI.getProcessDefinitionId("executeConnectorOnFinishOfAnAutomaticActivityWithDataAsOutput", "1.0")
+        def user = client.identityAPI.getUserByUserName(USERNAME)
 
         when:
         processAPI.startProcess(processDefinitionId)
@@ -57,11 +56,16 @@ class CheckUpdatedTo10_3_0 extends Specification {
                 .searchApplicationPages(new SearchOptionsBuilder(0, 1).filter(ApplicationPageSearchDescriptor.APPLICATION_ID, application.id).done())
         final SearchResult<ApplicationMenu> firstMenu = client.applicationAPI
                 .searchApplicationMenus(new SearchOptionsBuilder(0, 1).filter(ApplicationMenuSearchDescriptor.APPLICATION_ID, application.id).done())
-
+        def categories = processAPI.getCategories(0, 10, CategoryCriterion.NAME_ASC)
         then:
         application.displayName == "HR dashboard"
         firstPage.result[0].token == "home_page_token"
         firstMenu.result[0].displayName == "Home Menu"
+
+        categories.size() == 1
+        processAPI.getNumberOfProcessDefinitionsOfCategory(categories[0].id) == 1
+
+        processAPI.isUserProcessSupervisor(processDefinitionId, user.id)
     }
 
     def 'should be able to add a process comment'() {
@@ -83,13 +87,13 @@ class CheckUpdatedTo10_3_0 extends Specification {
     def 'should be able to retrieve identity elements'() {
         given:
         def client = new APIClient()
-        client.login("walter.bates", "bpm")
+        client.login(USERNAME, "bpm")
 
         when:
         def users = client.identityAPI.getUsers(0, 10, UserCriterion.USER_NAME_ASC)
         def groups = client.identityAPI.getGroups(0, 10, GroupCriterion.NAME_ASC)
         def roles = client.identityAPI.getRoles(0, 10, RoleCriterion.NAME_ASC)
-        def walterBates = client.identityAPI.getUserByUserName("walter.bates")
+        def walterBates = client.identityAPI.getUserByUserName(USERNAME)
         def userMemberships = client.identityAPI.getUserMemberships(
                 walterBates.id, 0, 10, UserMembershipCriterion.GROUP_NAME_ASC)
         def customUserInfoDefs = client.identityAPI.getCustomUserInfoDefinitions(0, 10)
@@ -97,7 +101,7 @@ class CheckUpdatedTo10_3_0 extends Specification {
 
         then:
         !users.isEmpty()
-        users.collect { it.userName }.containsAll(["helen.kelly", "walter.bates"])
+        users.collect { it.userName }.containsAll(["helen.kelly", USERNAME])
         !groups.isEmpty()
         groups.collect { it.name }.contains("acme")
         !roles.isEmpty()

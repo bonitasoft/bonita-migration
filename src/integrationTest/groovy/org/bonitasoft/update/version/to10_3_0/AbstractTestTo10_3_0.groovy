@@ -41,6 +41,11 @@ abstract class AbstractTestTo10_3_0 extends Specification {
 
     def dropTestTables() {
         dbUnitHelper.dropTables([
+            "processsupervisor",
+            "process_definition",
+            "process_content",
+            "processcategorymapping",
+            "category",
             "arch_process_comment",
             "process_comment",
             "icon",

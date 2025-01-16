@@ -437,3 +437,70 @@ CREATE TABLE process_comment (
 ) ENGINE = INNODB;
 CREATE INDEX idx1_process_comment on process_comment (processInstanceId);
 ALTER TABLE process_comment ADD CONSTRAINT fk_process_comment_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
+
+CREATE TABLE process_content (
+  tenantid BIGINT NOT NULL,
+  id BIGINT NOT NULL,
+  content MEDIUMTEXT NOT NULL,
+  PRIMARY KEY (tenantid, id)
+) ENGINE = INNODB;
+
+CREATE TABLE process_definition (
+  tenantid BIGINT NOT NULL,
+  id BIGINT NOT NULL,
+  processId BIGINT NOT NULL,
+  name VARCHAR(150) NOT NULL,
+  version VARCHAR(50) NOT NULL,
+  description VARCHAR(255),
+  deploymentDate BIGINT NOT NULL,
+  deployedBy BIGINT NOT NULL,
+  activationState VARCHAR(30) NOT NULL,
+  configurationState VARCHAR(30) NOT NULL,
+  displayName VARCHAR(75),
+  displayDescription VARCHAR(255),
+  lastUpdateDate BIGINT,
+  categoryId BIGINT,
+  iconPath VARCHAR(255),
+  content_tenantid BIGINT NOT NULL,
+  content_id BIGINT NOT NULL,
+  PRIMARY KEY (tenantid, id),
+  UNIQUE (tenantid, name, version)
+) ENGINE = INNODB;
+ALTER TABLE process_definition ADD CONSTRAINT fk_process_definition_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
+ALTER TABLE process_definition ADD CONSTRAINT fk_process_definition_content FOREIGN KEY (content_tenantid, content_id) REFERENCES process_content(tenantid, id);
+
+CREATE TABLE category (
+  tenantid BIGINT NOT NULL,
+  id BIGINT NOT NULL,
+  name VARCHAR(50) NOT NULL,
+  creator BIGINT,
+  description TEXT,
+  creationDate BIGINT NOT NULL,
+  lastUpdateDate BIGINT NOT NULL,
+  UNIQUE (tenantid, name),
+  PRIMARY KEY (tenantid, id)
+) ENGINE = INNODB;
+ALTER TABLE category ADD CONSTRAINT fk_category_tenantId FOREIGN KEY (tenantid) REFERENCES tenant (id);
+
+CREATE TABLE processcategorymapping (
+  tenantid BIGINT NOT NULL,
+  id BIGINT NOT NULL,
+  categoryid BIGINT NOT NULL,
+  processid BIGINT NOT NULL,
+  UNIQUE (tenantid, categoryid, processid),
+  PRIMARY KEY (tenantid, id)
+) ENGINE = INNODB;
+ALTER TABLE processcategorymapping ADD CONSTRAINT fk_catmapping_catid FOREIGN KEY (tenantid, categoryid) REFERENCES category(tenantid, id) ON DELETE CASCADE;
+ALTER TABLE processcategorymapping ADD CONSTRAINT fk_processcategorymapping_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
+
+CREATE TABLE processsupervisor (
+  tenantid BIGINT NOT NULL,
+  id BIGINT NOT NULL,
+  processDefId BIGINT NOT NULL,
+  userId BIGINT NOT NULL,
+  groupId BIGINT NOT NULL,
+  roleId BIGINT NOT NULL,
+  UNIQUE (tenantid, processDefId, userId, groupId, roleId),
+  PRIMARY KEY (tenantid, id)
+) ENGINE = INNODB;
+ALTER TABLE processsupervisor ADD CONSTRAINT fk_processsupervisor_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
