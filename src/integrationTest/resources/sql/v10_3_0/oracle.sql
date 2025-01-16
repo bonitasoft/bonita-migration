@@ -408,3 +408,30 @@ CREATE TABLE icon (
   content BLOB NOT NULL,
   CONSTRAINT pk_icon PRIMARY KEY (tenantId, id)
 );
+
+CREATE TABLE arch_process_comment(
+  tenantid NUMBER(19, 0) NOT NULL,
+  id NUMBER(19, 0) NOT NULL,
+  userId NUMBER(19, 0),
+  processInstanceId NUMBER(19, 0) NOT NULL,
+  postDate NUMBER(19, 0) NOT NULL,
+  content VARCHAR2(512 CHAR) NOT NULL,
+  archiveDate NUMBER(19, 0) NOT NULL,
+  sourceObjectId NUMBER(19, 0) NOT NULL,
+  PRIMARY KEY (tenantid, id)
+);
+CREATE INDEX idx1_arch_process_comment on arch_process_comment (sourceobjectid);
+CREATE INDEX idx2_arch_process_comment on arch_process_comment (processInstanceId, archivedate);
+ALTER TABLE arch_process_comment ADD CONSTRAINT fk_AProcCom_tenId FOREIGN KEY (tenantid) REFERENCES tenant(id);
+
+CREATE TABLE process_comment (
+  tenantid NUMBER(19, 0) NOT NULL,
+  id NUMBER(19, 0) NOT NULL,
+  kind VARCHAR2(25 CHAR) NOT NULL,
+  userId NUMBER(19, 0),
+  processInstanceId NUMBER(19, 0) NOT NULL,
+  postDate NUMBER(19, 0) NOT NULL,
+  content VARCHAR2(512 CHAR) NOT NULL,
+  PRIMARY KEY (tenantid, id)
+);
+CREATE INDEX idx1_process_comment on process_comment (processInstanceId);

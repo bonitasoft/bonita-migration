@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2024 Bonitasoft S.A.
+ * Copyright (C) 2025 Bonitasoft S.A.
  * Bonitasoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
@@ -13,24 +13,24 @@
  **/
 package org.bonitasoft.update.version.to10_3_0
 
-class RemoveTenantIdFromFlowNodeInstanceIT extends AbstractTestTo10_3_0 {
+class RemoveTenantIdFromProcessCommentIT extends AbstractTestTo10_3_0 {
 
-    private RemoveTenantIdFromFlowNodeInstance updateStep = new RemoveTenantIdFromFlowNodeInstance()
+    private RemoveTenantIdFromProcessComment updateStep = new RemoveTenantIdFromProcessComment()
 
-    def "should remove tenantId from flownode_instance"() {
+    def "should remove tenantId from process_comment and arch_process_comment tables"() {
         when:
         updateStep.execute(updateContext)
 
         then:
         with(updateContext.databaseHelper) {
-            !hasColumnOnTable("flownode_instance", "tenantId")
-            hasPrimaryKeyOnTable("flownode_instance", "pk_flownode_instance")
-            !hasForeignKeyOnTable("flownode_instance", "fk_flownode_instance_tenantId")
+            !hasColumnOnTable("process_comment", "tenantId")
+            hasPrimaryKeyOnTable("process_comment", "pk_process_comment")
+            !hasForeignKeyOnTable("process_comment", "fk_process_comment_tenantId")
 
-            hasForeignKeyOnTable("ref_biz_data_inst", "fk_ref_biz_data_fn")
-
-            hasForeignKeyOnTable("pending_mapping", "fk_pending_mapping_flownode_instanceId")
-            !hasForeignKeyOnTable("pending_mapping", "fk_pMap_flnId") // ORACLE
+            !hasColumnOnTable("arch_process_comment", "tenantId")
+            hasPrimaryKeyOnTable("arch_process_comment", "pk_arch_process_comment")
+            !hasForeignKeyOnTable("arch_process_comment", "fk_arch_process_comment_tenantId")
+            !hasForeignKeyOnTable("process_comment", "fk_AProcCom_tenId") // ORACLE
         }
     }
 }

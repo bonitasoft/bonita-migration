@@ -25,14 +25,18 @@ class RemoveTenantIdFromApplicationPageProfileIT extends AbstractTestTo10_3_0 {
         with(updateContext.databaseHelper) {
             !hasColumnOnTable("page", "tenantId")
             hasPrimaryKeyOnTable("page", "pk_page")
+            !hasUniqueKeyOnTable("page", "uk_page")
             hasUniqueKeyOnTableWithNameAndColumns("page", "uk_page_name_processdefinitionid", "name", "processDefinitionId")
 
             !hasColumnOnTable("profile", "tenantId")
             hasPrimaryKeyOnTable("profile", "pk_profile")
+            !hasUniqueKeyOnTableWithColumns("profile", "tenantId", "name")
             hasUniqueKeyOnTableWithNameAndColumns("profile", "uk_profile_name", "name")
 
             !hasColumnOnTable("business_app", "tenantId")
             hasPrimaryKeyOnTable("business_app", "pk_business_app")
+            !hasUniqueKeyOnTable("business_app", "uk_app_token_version")
+            !hasUniqueKeyOnTable("business_app", "UK_Business_app") // ORACLE
             hasUniqueKeyOnTableWithNameAndColumns("business_app", "uk_business_app_token_version", "token", "version")
             hasForeignKeyOnTable("business_app", "fk_business_app_profileid")
             hasForeignKeyOnTable("business_app", "fk_business_app_layoutid")
@@ -44,6 +48,8 @@ class RemoveTenantIdFromApplicationPageProfileIT extends AbstractTestTo10_3_0 {
 
             !hasColumnOnTable("business_app_page", "tenantId")
             hasPrimaryKeyOnTable("business_app_page", "pk_business_app_page")
+            !hasUniqueKeyOnTable("business_app_page", "uk_app_page_appId_token")
+            !hasUniqueKeyOnTable("business_app_page", "UK_Business_app_page") // ORACLE
             hasUniqueKeyOnTableWithNameAndColumns("business_app_page", "uk_business_app_page_applicationid_token", "applicationId", "token")
             hasForeignKeyOnTable("business_app_page", "fk_business_app_page_applicationid")
             hasForeignKeyOnTable("business_app_page", "fk_business_app_page_pageid")

@@ -64,6 +64,22 @@ class CheckUpdatedTo10_3_0 extends Specification {
         firstMenu.result[0].displayName == "Home Menu"
     }
 
+    def 'should be able to add a process comment'() {
+        given:
+        def client = new APIClient()
+        client.login("walter.bates", "bpm")
+        def processDefinitionId = client.processAPI.getProcessDefinitionId("executeConnectorOnFinishOfAnAutomaticActivityWithDataAsOutput", "1.0")
+        def processInstance = client.processAPI.startProcess(processDefinitionId)
+
+        when:
+        def comment = client.processAPI.addProcessComment(processInstance.id, "This is a comment")
+
+        then:
+        comment != null
+        comment.processInstanceId == processInstance.id
+        comment.content == "This is a comment"
+    }
+
     def 'should be able to retrieve identity elements'() {
         given:
         def client = new APIClient()

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2024 Bonitasoft S.A.
+ * Copyright (C) 2025 Bonitasoft S.A.
  * Bonitasoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
@@ -19,36 +19,30 @@ import org.bonitasoft.update.core.UpdateStep
 import static org.bonitasoft.update.core.UpdateStep.DBVendor.ORACLE
 
 /**
- * Remove tenantId from flownode_instance table
- *
- * @author Emmanuel Duchastenier
+ * Remove tenantId from 'process_comment' and 'arch_process_comment' tables
  */
-class RemoveTenantIdFromFlowNodeInstance extends UpdateStep {
-
+class RemoveTenantIdFromProcessComment extends UpdateStep {
     @Override
     def execute(UpdateContext context) {
         context.databaseHelper.with {
-            dropForeignKey("flownode_instance", "fk_flownode_instance_tenantId")
-
-            dropForeignKey("ref_biz_data_inst", "fk_ref_biz_data_fn")
-
-            // on Oracle the FK is named differently:
-            dropForeignKey("pending_mapping", dbVendor == ORACLE ? "fk_pMap_flnId" : "fk_pending_mapping_flownode_instanceId")
+            // drop FK first:
+            dropForeignKey("process_comment", "fk_process_comment_tenantId") // does not exist on Oracle
+            dropForeignKey("arch_process_comment", dbVendor == ORACLE ? "fk_AProcCom_tenId" : "fk_arch_process_comment_tenantId")
 
             // recreate PK:
-            dropPrimaryKey("flownode_instance")
-            createPrimaryKey("flownode_instance", "id")
+            dropPrimaryKey("process_comment")
+            createPrimaryKey("process_comment", "id")
+            dropPrimaryKey("arch_process_comment")
+            createPrimaryKey("arch_process_comment", "id")
 
-            createForeignKey("ref_biz_data_inst", "fk_ref_biz_data_fn", "flownode_instance", ["fn_inst_id"], ["id"], true)
-            createForeignKey("pending_mapping", "fk_pending_mapping_flownode_instanceId", "flownode_instance", ["activityId"], ["id"], true)
-
-            // Finally drop the column:
-            dropColumnIfExists("flownode_instance", "tenantId")
+            // drop the columns:
+            dropColumnIfExists("process_comment", "tenantId")
+            dropColumnIfExists("arch_process_comment", "tenantId")
         }
     }
 
     @Override
     String getDescription() {
-        return "Remove tenantId from 'flownode_instance' table"
+        return "Remove tenantId from 'process_comment' and 'arch_process_comment' tables"
     }
 }

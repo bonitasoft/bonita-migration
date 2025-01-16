@@ -29,6 +29,7 @@ class UpdateTo10_3_0Test extends Specification {
             "RemoveTenantIdFromApplicationPageProfile",
             "RemoveTenantIdFromJobTables",
             "RemoveTenantIdFromIdentityTables",
+            "RemoveTenantIdFromProcessComment",
         ]
 
         expect:

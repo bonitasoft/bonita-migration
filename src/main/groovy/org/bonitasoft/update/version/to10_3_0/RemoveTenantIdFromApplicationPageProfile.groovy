@@ -15,6 +15,9 @@ package org.bonitasoft.update.version.to10_3_0
 
 import org.bonitasoft.update.core.UpdateContext
 import org.bonitasoft.update.core.UpdateStep
+
+import static org.bonitasoft.update.core.UpdateStep.DBVendor.ORACLE
+
 /**
  * Remove tenantId from tables: page, profile, application, business_app, business_app_page, business_app_menu
  *
@@ -42,10 +45,11 @@ class RemoveTenantIdFromApplicationPageProfile extends UpdateStep {
             dropForeignKey("business_app_menu", "fk_app_menu_parentId")
 
             dropForeignKey("profilemember", "fk_profilemember_profileId") // does not exist on Oracle
+
             dropPrimaryKey("business_app_menu")
-            dropUniqueKeyWithNameInList("business_app_page", "uk_app_page_appId_token", "UK_Business_app_page") // existing name is different on Oracle
+            dropUniqueKey("business_app_page", dbVendor == ORACLE ? "UK_Business_app_page" : "uk_app_page_appId_token") // existing name is different on Oracle
             dropPrimaryKey("business_app_page")
-            dropUniqueKeyWithNameInList("business_app", "uk_app_token_version", "UK_Business_app") // existing name is different on Oracle
+            dropUniqueKey("business_app", dbVendor == ORACLE ? "UK_Business_app" : "uk_app_token_version") // existing name is different on Oracle
             dropPrimaryKey("business_app")
             dropUniqueKeyFromColumns("profile", "tenantId", "name") // we don't know its name
             dropPrimaryKey("profile")

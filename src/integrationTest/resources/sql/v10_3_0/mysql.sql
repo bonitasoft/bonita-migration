@@ -409,3 +409,31 @@ CREATE TABLE icon (
   content LONGBLOB NOT NULL,
   CONSTRAINT pk_icon PRIMARY KEY (tenantId, id)
 ) ENGINE = INNODB;
+
+CREATE TABLE arch_process_comment(
+  tenantid BIGINT NOT NULL,
+  id BIGINT NOT NULL,
+  userId BIGINT,
+  processInstanceId BIGINT NOT NULL,
+  postDate BIGINT NOT NULL,
+  content VARCHAR(512) NOT NULL,
+  archiveDate BIGINT NOT NULL,
+  sourceObjectId BIGINT NOT NULL,
+  PRIMARY KEY (tenantid, id)
+) ENGINE = INNODB;
+CREATE INDEX idx1_arch_process_comment on arch_process_comment (sourceobjectid);
+CREATE INDEX idx2_arch_process_comment on arch_process_comment (processInstanceId, archivedate);
+ALTER TABLE arch_process_comment ADD CONSTRAINT fk_arch_process_comment_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
+
+CREATE TABLE process_comment (
+  tenantid BIGINT NOT NULL,
+  id BIGINT NOT NULL,
+  kind VARCHAR(25) NOT NULL,
+  userId BIGINT,
+  processInstanceId BIGINT NOT NULL,
+  postDate BIGINT NOT NULL,
+  content VARCHAR(512) NOT NULL,
+  PRIMARY KEY (tenantid, id)
+) ENGINE = INNODB;
+CREATE INDEX idx1_process_comment on process_comment (processInstanceId);
+ALTER TABLE process_comment ADD CONSTRAINT fk_process_comment_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);

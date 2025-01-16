@@ -31,6 +31,7 @@ class UpdateTo10_3_0 extends VersionUpdate {
             new RemoveTenantIdFromApplicationPageProfile(),
             new RemoveTenantIdFromJobTables(),
             new RemoveTenantIdFromIdentityTables(),
+            new RemoveTenantIdFromProcessComment(),
         ]
     }
 }

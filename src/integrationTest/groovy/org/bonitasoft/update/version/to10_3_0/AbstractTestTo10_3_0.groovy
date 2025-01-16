@@ -41,6 +41,8 @@ abstract class AbstractTestTo10_3_0 extends Specification {
 
     def dropTestTables() {
         dbUnitHelper.dropTables([
+            "arch_process_comment",
+            "process_comment",
             "icon",
             "user_membership",
             "custom_usr_inf_val",
