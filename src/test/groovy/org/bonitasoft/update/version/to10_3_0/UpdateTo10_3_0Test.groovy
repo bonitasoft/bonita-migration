@@ -30,6 +30,7 @@ class UpdateTo10_3_0Test extends Specification {
             "RemoveTenantIdFromJobTables",
             "RemoveTenantIdFromIdentityTables",
             "RemoveTenantIdFromProcessComment",
+            "RemoveTenantIdFromContractDataTables",
         ]
 
         expect:

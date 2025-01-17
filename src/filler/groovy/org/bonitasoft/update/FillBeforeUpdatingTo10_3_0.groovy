@@ -21,6 +21,7 @@ import org.bonitasoft.engine.bpm.bar.BusinessArchiveBuilder
 import org.bonitasoft.engine.bpm.bar.InvalidBusinessArchiveFormatException
 import org.bonitasoft.engine.bpm.category.Category
 import org.bonitasoft.engine.bpm.connector.ConnectorEvent
+import org.bonitasoft.engine.bpm.contract.Type
 import org.bonitasoft.engine.bpm.flownode.HumanTaskInstanceSearchDescriptor
 import org.bonitasoft.engine.bpm.process.InvalidProcessDefinitionException
 import org.bonitasoft.engine.bpm.process.ProcessDefinition
@@ -46,6 +47,7 @@ import org.bonitasoft.update.filler.FillAction
 import org.bonitasoft.update.test.TestUtil
 import org.junit.Rule
 
+import static java.util.Collections.singletonMap
 import static org.awaitility.Awaitility.await
 import static org.bonitasoft.update.test.TestUtil.createTestPageContent
 import static org.junit.Assert.assertEquals
@@ -87,7 +89,8 @@ class FillBeforeUpdatingTo10_3_0 {
         processDefinitionBuilder.addShortTextData(dataName, dataDefaultValue)
         String ACTOR_NAME = "actor"
         processDefinitionBuilder.addActor(ACTOR_NAME)
-        processDefinitionBuilder.addUserTask("step0", ACTOR_NAME)
+        def userTask = processDefinitionBuilder.addUserTask("step0", ACTOR_NAME)
+        userTask.addContract().addInput("integerTaskContractData", Type.INTEGER, null)
         String CONNECTOR_WITH_OUTPUT_ID = "org.bonitasoft.connector.testConnectorWithOutput"
         String CONNECTOR_OUTPUT_NAME = "output1"
         String CONNECTOR_INPUT_NAME = "input1"
@@ -102,6 +105,8 @@ class FillBeforeUpdatingTo10_3_0 {
         processDefinitionBuilder.addTransition("step0", "step1")
         processDefinitionBuilder.addTransition("step1", "step2")
 
+        processDefinitionBuilder.addContract().addInput("integerContractData", Type.INTEGER, null)
+
         ProcessAPI processAPI = client.getProcessAPI()
         final ProcessDefinition processDefinition = deployAndEnableProcessWithActorAndConnectorAndParameter(processDefinitionBuilder, ACTOR_NAME, user,
                 "TestConnectorWithOutput.impl", TestConnectorWithOutput.class, "TestConnectorWithOutput.jar", processAPI)
@@ -113,19 +118,18 @@ class FillBeforeUpdatingTo10_3_0 {
         // Test supervisor:
         processAPI.createProcessSupervisorForUser(processDefinition.getId(), user.id)
 
-        final ProcessInstance startProcess = processAPI.startProcess(processDefinition.getId())
+        final ProcessInstance startProcess = processAPI.startProcessWithInputs(processDefinition.getId(), singletonMap("integerContractData", (Integer) 1))
         assertEquals(defaultValue, processAPI.getProcessDataInstance(dataName, startProcess.getId()).getValue())
 
         def step0ReadySearchOptions = getSearchOptionsForTask("step0")
 
         await().until({ processAPI.searchHumanTaskInstances(step0ReadySearchOptions).result.size() == 1 })
-        // waitForUserTaskAndExecuteIt(startProcess, "step0", user)
         def result = processAPI.searchHumanTaskInstances(step0ReadySearchOptions).result
         if (result.empty) {
             throw new IllegalAccessException("Task 'step0' is not ready")
         }
         def taskInstance = result.get(0)
-        processAPI.assignAndExecuteUserTask(user.id, taskInstance.id, null)
+        processAPI.assignAndExecuteUserTask(user.id, taskInstance.id, singletonMap("integerTaskContractData", 22))
 
         await().until({ processAPI.searchHumanTaskInstances(getSearchOptionsForTask("step2")).result.size() == 1 })
         assertEquals(valueOfInput1, processAPI.getProcessDataInstance(dataName, startProcess.getId()).getValue())

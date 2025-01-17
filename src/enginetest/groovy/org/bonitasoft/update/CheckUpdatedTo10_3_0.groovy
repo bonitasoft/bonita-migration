@@ -27,6 +27,7 @@ import org.bonitasoft.engine.search.SearchOptionsBuilder
 import org.bonitasoft.engine.search.SearchResult
 import org.junit.Rule
 import spock.lang.Specification
+import static java.util.Collections.singletonMap
 
 class CheckUpdatedTo10_3_0 extends Specification {
 
@@ -44,7 +45,7 @@ class CheckUpdatedTo10_3_0 extends Specification {
         def user = client.identityAPI.getUserByUserName(USERNAME)
 
         when:
-        processAPI.startProcess(processDefinitionId)
+        processAPI.startProcessWithInputs(processDefinitionId, singletonMap("integerContractData", (Integer) 1))
         final List<Profile> profiles = client.profileAPI.searchProfiles(new SearchOptionsBuilder(0, 1).done())
                 .getResult()
         final SearchOptions searchOptionsBuilder = new SearchOptionsBuilder(0, 1)
@@ -73,7 +74,7 @@ class CheckUpdatedTo10_3_0 extends Specification {
         def client = new APIClient()
         client.login("walter.bates", "bpm")
         def processDefinitionId = client.processAPI.getProcessDefinitionId("executeConnectorOnFinishOfAnAutomaticActivityWithDataAsOutput", "1.0")
-        def processInstance = client.processAPI.startProcess(processDefinitionId)
+        def processInstance = client.processAPI.startProcessWithInputs(processDefinitionId, singletonMap("integerContractData", 7))
 
         when:
         def comment = client.processAPI.addProcessComment(processInstance.id, "This is a comment")

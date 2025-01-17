@@ -505,3 +505,29 @@ CREATE TABLE processsupervisor (
   PRIMARY KEY (tenantid, id)
 );
 ALTER TABLE processsupervisor ADD CONSTRAINT fk_processsupervisor_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
+
+CREATE TABLE contract_data (
+  tenantid INT8 NOT NULL,
+  id INT8 NOT NULL,
+  kind VARCHAR(20) NOT NULL,
+  scopeId INT8 NOT NULL,
+  name VARCHAR(50) NOT NULL,
+  val TEXT
+);
+ALTER TABLE contract_data ADD CONSTRAINT pk_contract_data PRIMARY KEY (tenantid, id, scopeId);
+ALTER TABLE contract_data ADD CONSTRAINT uc_cd_scope_name UNIQUE (kind, scopeId, name, tenantid);
+CREATE INDEX idx_cd_kind_scope_name ON contract_data (kind, scopeId, name);
+
+CREATE TABLE arch_contract_data (
+  tenantid INT8 NOT NULL,
+  id INT8 NOT NULL,
+  kind VARCHAR(20) NOT NULL,
+  scopeId INT8 NOT NULL,
+  name VARCHAR(50) NOT NULL,
+  val TEXT,
+  archiveDate INT8 NOT NULL,
+  sourceObjectId INT8 NOT NULL
+);
+ALTER TABLE arch_contract_data ADD CONSTRAINT pk_arch_contract_data PRIMARY KEY (tenantid, id, scopeId);
+ALTER TABLE arch_contract_data ADD CONSTRAINT uc_acd_scope_name UNIQUE (kind, scopeId, name, tenantid);
+CREATE INDEX idx_acd_kind_scope_name ON arch_contract_data (kind, scopeId, name);
