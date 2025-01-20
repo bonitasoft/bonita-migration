@@ -531,3 +531,67 @@ CREATE TABLE arch_contract_data (
 ALTER TABLE arch_contract_data ADD CONSTRAINT pk_arch_contract_data PRIMARY KEY (tenantid, id, scopeId);
 ALTER TABLE arch_contract_data ADD CONSTRAINT uc_acd_scope_name UNIQUE (kind, scopeId, name, tenantid);
 CREATE INDEX idx_acd_kind_scope_name ON arch_contract_data (kind, scopeId, name);
+
+CREATE TABLE event_trigger_instance (
+	tenantid INT8 NOT NULL,
+  	id INT8 NOT NULL,
+  	eventInstanceId INT8 NOT NULL,
+  	eventInstanceName VARCHAR(50),
+  	executionDate INT8,
+  	jobTriggerName VARCHAR(255),
+  	PRIMARY KEY (tenantid, id)
+);
+ALTER TABLE event_trigger_instance ADD CONSTRAINT fk_event_trigger_instance_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
+
+CREATE TABLE waiting_event (
+	tenantid INT8 NOT NULL,
+  	id INT8 NOT NULL,
+  	kind VARCHAR(15) NOT NULL,
+  	eventType VARCHAR(50),
+  	messageName VARCHAR(255),
+  	signalName VARCHAR(255),
+  	errorCode VARCHAR(255),
+  	processName VARCHAR(150),
+  	flowNodeName VARCHAR(50),
+  	flowNodeDefinitionId INT8,
+  	subProcessId INT8,
+  	processDefinitionId INT8,
+  	rootProcessInstanceId INT8,
+  	parentProcessInstanceId INT8,
+  	flowNodeInstanceId INT8,
+  	relatedActivityInstanceId INT8,
+  	locked BOOLEAN,
+  	active BOOLEAN,
+  	progress SMALLINT,
+  	correlation1 VARCHAR(128),
+  	correlation2 VARCHAR(128),
+  	correlation3 VARCHAR(128),
+  	correlation4 VARCHAR(128),
+  	correlation5 VARCHAR(128),
+  	PRIMARY KEY (tenantid, id)
+);
+CREATE INDEX idx_waiting_event ON waiting_event (progress, kind, locked, active);
+CREATE INDEX idx_waiting_event_correl ON waiting_event (correlation1, correlation2, correlation3, correlation4, correlation5);
+ALTER TABLE waiting_event ADD CONSTRAINT fk_waiting_event_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
+
+CREATE TABLE message_instance (
+	tenantid INT8 NOT NULL,
+  	id INT8 NOT NULL,
+  	messageName VARCHAR(255) NOT NULL,
+  	targetProcess VARCHAR(255) NOT NULL,
+  	targetFlowNode VARCHAR(255) NULL,
+  	locked BOOLEAN NOT NULL,
+  	handled BOOLEAN NOT NULL,
+  	processDefinitionId INT8 NOT NULL,
+  	flowNodeName VARCHAR(255),
+  	correlation1 VARCHAR(128),
+  	correlation2 VARCHAR(128),
+  	correlation3 VARCHAR(128),
+  	correlation4 VARCHAR(128),
+  	correlation5 VARCHAR(128),
+  	creationDate INT8 NOT NULL,
+  	PRIMARY KEY (tenantid, id)
+);
+CREATE INDEX idx_message_instance ON message_instance (messageName, targetProcess, correlation1, correlation2, correlation3);
+CREATE INDEX idx_message_instance_correl ON message_instance (correlation1, correlation2, correlation3, correlation4, correlation5);
+ALTER TABLE message_instance ADD CONSTRAINT fk_message_instance_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);

@@ -115,4 +115,20 @@ class CheckUpdatedTo10_3_0 extends Specification {
         !customUserInfo.isEmpty()
         customUserInfo.collect { it.value }.contains("live:walter.bates")
     }
+
+    def 'should timers and message events work after update'() {
+        given:
+        def client = new APIClient()
+        client.login("walter.bates", "bpm")
+        def processName = "process with start timer and start message"
+        def processDefinitionId = client.processAPI.getProcessDefinitionId(processName, "1.0")
+
+        client.processAPI.disableProcess(processDefinitionId)
+        client.processAPI.enableProcess(processDefinitionId) // to re-trigger the timer
+        TestUtil.sendMessage("message", processName, "startEventWithMessage", client.processAPI)
+
+        expect:
+        TestUtil.waitForUserTask("step1WithMessage", client.processAPI, 2L)
+        TestUtil.waitForUserTask("step1WithTimer", client.processAPI, 2L)
+    }
 }

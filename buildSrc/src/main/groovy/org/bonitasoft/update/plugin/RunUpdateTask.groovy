@@ -35,7 +35,7 @@ class RunUpdateTask extends JavaExec {
     RunUpdateTask(boolean isSP) {
         this.isSP = isSP
         mainClass = "${isSP ? 'com' : 'org'}.bonitasoft.update.core.Update"
-        setDebug System.getProperty("update.debug") != null
+        setDebug System.getProperty("update.debug") != null // To allow remote JVM debug (port 5005)
     }
 
     @Override
@@ -46,6 +46,8 @@ class RunUpdateTask extends JavaExec {
         systemProps.put("ignore.invalid.target.version", "true") // value is not important
 
         systemProps.put("target.version", String.valueOf(bonitaVersion))
+        // Pass logger level if set
+        systemProps.put("logger.level", System.getProperty("logger.level", "INFO"))
         systemProperties systemProps
         logger.info "execute update with properties $systemProperties"
         logger.info "using classpath:"

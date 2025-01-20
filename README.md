@@ -44,6 +44,15 @@ For each supported version, the following is performed
 ./gradlew testUpdate_X_Y_Z
 ```
 
+### Specify log level
+
+When performing the Update task in end-to-end test, by default, the log level is set to `INFO`.
+You can change it by passing the `logger.level` System Property to the Gradle command.
+For instance, to set the log level to `DEBUG`, run the following command:
+
+```
+./gradlew allUpdateTests -Dlogger.level=DEBUG
+```
 
 Customize database to use for integration and update tests when running with Gradle
 --------------------------------------------------------------------------------------
@@ -141,8 +150,8 @@ Debug
 -----
 When activating one of the following settings, the process is started suspended and listening on port 5005. Attach a remote
 debugging system to resume and debug the process
-* use `-Dfiller.debug` to debug the filler phase of database filler
-* use `-Dupdate.debug` to debug the update
+* use `-Dfiller.debug` to debug the filler phase of database filler (JVM remote debug; connect on port 5005)
+* use `-Dupdate.debug` to debug the update phase (JVM remote debug; connect on port 5005)
 * use `--debug-jvm` to debug the tests
 * use `export GRADLE_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"` before launching the build in order to debug the build script itself
 

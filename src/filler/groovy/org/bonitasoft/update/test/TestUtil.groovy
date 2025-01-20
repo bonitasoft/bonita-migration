@@ -13,14 +13,20 @@
  **/
 package org.bonitasoft.update.test
 
+import org.bonitasoft.engine.api.ProcessAPI
+import org.bonitasoft.engine.bpm.flownode.HumanTaskInstanceSearchDescriptor
+import org.bonitasoft.engine.expression.ExpressionBuilder
 import org.bonitasoft.engine.identity.ContactDataCreator
 import org.bonitasoft.engine.identity.GroupCreator
 import org.bonitasoft.engine.identity.RoleCreator
-import org.bonitasoft.engine.identity.User
 import org.bonitasoft.engine.identity.UserCreator
+import org.bonitasoft.engine.search.SearchOptions
+import org.bonitasoft.engine.search.SearchOptionsBuilder
 
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
+
+import static org.awaitility.Awaitility.await
 
 /**
  * @author Baptiste Mesta
@@ -107,5 +113,25 @@ class TestUtil {
                 .setDisplayName("Member")
                 .setDescription("This role is for members of the acme group")
                 .setIcon("icon.png", "icon".getBytes())
+    }
+
+    static void sendMessage(final String messageName, final String targetProcessName,
+            final String targetFlowNodeName, ProcessAPI processAPI) throws Exception {
+        processAPI.sendMessage(messageName, new ExpressionBuilder().createConstantStringExpression(targetProcessName),
+                new ExpressionBuilder().createConstantStringExpression(targetFlowNodeName), null)
+    }
+
+    static void waitForUserTask(String taskName, ProcessAPI processAPI) {
+        waitForUserTask(taskName, processAPI, 1L)
+    }
+
+    static void waitForUserTask(String taskName, ProcessAPI processAPI, long numberOfTaskInstances) {
+        await().until({ processAPI.searchHumanTaskInstances(getSearchOptionsForTask(taskName)).count == numberOfTaskInstances })
+    }
+
+    static SearchOptions getSearchOptionsForTask(String taskName) {
+        new SearchOptionsBuilder(0, 1)
+                .filter(HumanTaskInstanceSearchDescriptor.STATE_NAME, "ready")
+                .filter(HumanTaskInstanceSearchDescriptor.NAME, taskName).done()
     }
 }

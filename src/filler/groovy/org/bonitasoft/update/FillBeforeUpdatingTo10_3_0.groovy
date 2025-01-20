@@ -22,7 +22,7 @@ import org.bonitasoft.engine.bpm.bar.InvalidBusinessArchiveFormatException
 import org.bonitasoft.engine.bpm.category.Category
 import org.bonitasoft.engine.bpm.connector.ConnectorEvent
 import org.bonitasoft.engine.bpm.contract.Type
-import org.bonitasoft.engine.bpm.flownode.HumanTaskInstanceSearchDescriptor
+import org.bonitasoft.engine.bpm.flownode.TimerType
 import org.bonitasoft.engine.bpm.process.InvalidProcessDefinitionException
 import org.bonitasoft.engine.bpm.process.ProcessDefinition
 import org.bonitasoft.engine.bpm.process.ProcessInstance
@@ -40,16 +40,14 @@ import org.bonitasoft.engine.identity.User
 import org.bonitasoft.engine.operation.LeftOperandBuilder
 import org.bonitasoft.engine.operation.OperatorType
 import org.bonitasoft.engine.profile.Profile
-import org.bonitasoft.engine.search.SearchOptions
 import org.bonitasoft.engine.search.SearchOptionsBuilder
 import org.bonitasoft.engine.test.junit.BonitaEngineRule
 import org.bonitasoft.update.filler.FillAction
-import org.bonitasoft.update.test.TestUtil
 import org.junit.Rule
 
 import static java.util.Collections.singletonMap
-import static org.awaitility.Awaitility.await
-import static org.bonitasoft.update.test.TestUtil.createTestPageContent
+import static org.bonitasoft.update.BuildTestUtil.*
+import static org.bonitasoft.update.test.TestUtil.*
 import static org.junit.Assert.assertEquals
 
 class FillBeforeUpdatingTo10_3_0 {
@@ -63,12 +61,12 @@ class FillBeforeUpdatingTo10_3_0 {
         client.login("install", "install")
 
         // Create a group
-        def group = client.getIdentityAPI().createGroup(TestUtil.buildGroupAcme())
+        def group = client.getIdentityAPI().createGroup(buildGroupAcme())
         // Create a role
-        def role = client.getIdentityAPI().createRole(TestUtil.buildRoleMember())
+        def role = client.getIdentityAPI().createRole(buildRoleMember())
         // Create a user with a manager
-        def manager = client.getIdentityAPI().createUser(TestUtil.buildUserHelenKelly())
-        def user = client.getIdentityAPI().createUser(TestUtil.buildUserWalterBates(manager.id))
+        def manager = client.getIdentityAPI().createUser(buildUserHelenKelly())
+        def user = client.getIdentityAPI().createUser(buildUserWalterBates(manager.id))
         // Create a membership
         client.getIdentityAPI().addUserMembership(user.id, group.id, role.id)
         // Create a custom user info definition and value
@@ -123,7 +121,7 @@ class FillBeforeUpdatingTo10_3_0 {
 
         def step0ReadySearchOptions = getSearchOptionsForTask("step0")
 
-        await().until({ processAPI.searchHumanTaskInstances(step0ReadySearchOptions).result.size() == 1 })
+        waitForUserTask("step0", processAPI)
         def result = processAPI.searchHumanTaskInstances(step0ReadySearchOptions).result
         if (result.empty) {
             throw new IllegalAccessException("Task 'step0' is not ready")
@@ -131,7 +129,7 @@ class FillBeforeUpdatingTo10_3_0 {
         def taskInstance = result.get(0)
         processAPI.assignAndExecuteUserTask(user.id, taskInstance.id, singletonMap("integerTaskContractData", 22))
 
-        await().until({ processAPI.searchHumanTaskInstances(getSearchOptionsForTask("step2")).result.size() == 1 })
+        waitForUserTask("step2", processAPI)
         assertEquals(valueOfInput1, processAPI.getProcessDataInstance(dataName, startProcess.getId()).getValue())
 
         // Test applications:
@@ -151,10 +149,37 @@ class FillBeforeUpdatingTo10_3_0 {
         client.applicationAPI.createApplicationMenu(new ApplicationMenuCreator(hr.id, "Home Menu", applicationPage.id))
     }
 
-    static SearchOptions getSearchOptionsForTask(String taskName) {
-        new SearchOptionsBuilder(0, 1)
-                .filter(HumanTaskInstanceSearchDescriptor.STATE_NAME, "ready")
-                .filter(HumanTaskInstanceSearchDescriptor.NAME, taskName).done()
+    @FillAction
+    def 'start process with timer or message'() throws Exception {
+        def client = new APIClient()
+        client.login("install", "install")
+        def username = "walter.bates"
+        def user = client.getIdentityAPI().getUserByUserName(username)
+        client.logout()
+        client.login(username, "bpm")
+
+        final String ACTOR_NAME = "actor"
+        final Expression timerExpression = new ExpressionBuilder().createConstantLongExpression(100)
+        def processName = "process with start timer and start message"
+        final ProcessDefinitionBuilder processDefinitionBuilder = new ProcessDefinitionBuilder()
+                .createNewInstance(processName, "1.0")
+        processDefinitionBuilder.addActor(ACTOR_NAME)
+        processDefinitionBuilder.addStartEvent("startEventWithTimer")
+                .addTimerEventTriggerDefinition(TimerType.DURATION, timerExpression)
+                .addUserTask("step1WithTimer", ACTOR_NAME).addTransition("startEventWithTimer", "step1WithTimer")
+        def startMessage = "message"
+        def startEventWithMessage = "startEventWithMessage"
+        processDefinitionBuilder.addStartEvent(startEventWithMessage).addMessageEventTrigger(startMessage)
+                .addUserTask("step1WithMessage", ACTOR_NAME)
+                .addTransition(startEventWithMessage, "step1WithMessage")
+        final BusinessArchiveBuilder businessArchiveBuilder = new BusinessArchiveBuilder().createNewBusinessArchive()
+                .setProcessDefinition(processDefinitionBuilder.done())
+
+        deployAndEnableProcessWithActor(businessArchiveBuilder.done(), ACTOR_NAME, user, client.processAPI)
+        sendMessage(startMessage, processName, startEventWithMessage, client.processAPI)
+
+        waitForUserTask("step1WithMessage", client.processAPI)
+        waitForUserTask("step1WithTimer", client.processAPI)
     }
 
     ProcessDefinition deployAndEnableProcessWithActorAndConnectorAndParameter(
@@ -163,8 +188,8 @@ class FillBeforeUpdatingTo10_3_0 {
             final Class<? extends AbstractConnector> clazz,
             final String jarName, ProcessAPI processAPI) throws BonitaException, IOException {
         return deployAndEnableProcessWithActorAndConnectorAndParameter(processDefinitionBuilder, actorName, user,
-                Collections.singletonList(BuildTestUtil.getContentAndBuildBarResource(name, clazz)),
-                Collections.singletonList(BuildTestUtil.generateJarAndBuildBarResource(clazz, jarName)), null, processAPI)
+                Collections.singletonList(getContentAndBuildBarResource(name, clazz)),
+                Collections.singletonList(generateJarAndBuildBarResource(clazz, jarName)), null, processAPI)
     }
 
     ProcessDefinition deployAndEnableProcessWithActorAndConnectorAndParameter(
@@ -173,8 +198,7 @@ class FillBeforeUpdatingTo10_3_0 {
             final List<BarResource> generateConnectorDependencies,
             final Map<String, String> parameters, ProcessAPI processAPI) throws BonitaException {
         try {
-            final BusinessArchiveBuilder businessArchiveBuilder = BuildTestUtil
-                    .buildBusinessArchiveWithConnectorAndUserFilter(processDefinitionBuilder,
+            final BusinessArchiveBuilder businessArchiveBuilder = buildBusinessArchiveWithConnectorAndUserFilter(processDefinitionBuilder,
                     connectorImplementations, generateConnectorDependencies, Collections.emptyList())
             if (parameters != null) {
                 businessArchiveBuilder.setParameters(parameters)

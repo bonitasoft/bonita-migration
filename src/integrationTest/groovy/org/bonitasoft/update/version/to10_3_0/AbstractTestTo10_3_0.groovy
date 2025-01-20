@@ -41,6 +41,9 @@ abstract class AbstractTestTo10_3_0 extends Specification {
 
     def dropTestTables() {
         dbUnitHelper.dropTables([
+            "message_instance",
+            "waiting_event",
+            "event_trigger_instance",
             "contract_data",
             "arch_contract_data",
             "processsupervisor",
