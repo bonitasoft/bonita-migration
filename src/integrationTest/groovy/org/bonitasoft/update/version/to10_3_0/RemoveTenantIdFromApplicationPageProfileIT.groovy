@@ -32,6 +32,17 @@ class RemoveTenantIdFromApplicationPageProfileIT extends AbstractTestTo10_3_0 {
             hasPrimaryKeyOnTable("profile", "pk_profile")
             !hasUniqueKeyOnTableWithColumns("profile", "tenantId", "name")
             hasUniqueKeyOnTableWithNameAndColumns("profile", "uk_profile_name", "name")
+            !hasForeignKeyOnTable("profile", "fk_profile_tenantId")
+
+            !hasColumnOnTable("profilemember", "tenantId")
+            hasPrimaryKeyOnTable("profilemember", "pk_profilemember")
+            !hasUniqueKeyOnTableWithColumns("profilemember",
+                    "tenantId", "profileId", "userId", "groupId", "roleId")
+            hasUniqueKeyOnTableWithNameAndColumns("profilemember",
+                    "uk_profilemember_profileid_userid_groupid_roleid",
+                    "profileId", "userId", "groupId", "roleId")
+            !hasForeignKeyOnTable("profilemember", "fk_profilemember_tenantId")
+            hasForeignKeyOnTable("profilemember", "fk_profilemember_profileid")
 
             !hasColumnOnTable("business_app", "tenantId")
             hasPrimaryKeyOnTable("business_app", "pk_business_app")

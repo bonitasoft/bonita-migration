@@ -178,6 +178,7 @@ CREATE TABLE profilemember (
   UNIQUE (tenantId, profileId, userId, groupId, roleId),
   PRIMARY KEY (tenantId, id)
 ) ENGINE = INNODB;
+ALTER TABLE profilemember ADD CONSTRAINT fk_profilemember_tenantId FOREIGN KEY (tenantId) REFERENCES tenant(id);
 ALTER TABLE profilemember ADD CONSTRAINT fk_profilemember_profileId FOREIGN KEY (tenantId, profileId) REFERENCES profile(tenantId, id);
 
 CREATE TABLE business_app (

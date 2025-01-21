@@ -29,7 +29,6 @@ class RemoveTenantIdFromApplicationPageProfile extends UpdateStep {
     def execute(UpdateContext context) {
         context.databaseHelper.with {
             // FK on tenant table:
-            dropForeignKey("profile", "fk_profile_tenantId") // does not exist on Oracle
             dropForeignKey("business_app", "fk_app_tenantId")
             dropForeignKey("business_app_page", "fk_app_page_tenantId")
             dropForeignKey("business_app_menu", "fk_app_menu_tenantId")
@@ -44,7 +43,12 @@ class RemoveTenantIdFromApplicationPageProfile extends UpdateStep {
             dropForeignKey("business_app_menu", "fk_app_menu_pageId")
             dropForeignKey("business_app_menu", "fk_app_menu_parentId")
 
-            dropForeignKey("profilemember", "fk_profilemember_profileId") // does not exist on Oracle
+            // FK that do not exist on Oracle
+            if (dbVendor != ORACLE) {
+                dropForeignKey("profile", "fk_profile_tenantId")
+                dropForeignKey("profilemember", "fk_profilemember_tenantId")
+                dropForeignKey("profilemember", "fk_profilemember_profileId")
+            }
 
             dropPrimaryKey("business_app_menu")
             dropUniqueKey("business_app_page", dbVendor == ORACLE ? "UK_Business_app_page" : "uk_app_page_appId_token") // existing name is different on Oracle
@@ -53,18 +57,22 @@ class RemoveTenantIdFromApplicationPageProfile extends UpdateStep {
             dropPrimaryKey("business_app")
             dropUniqueKeyFromColumns("profile", "tenantId", "name") // we don't know its name
             dropPrimaryKey("profile")
+            dropUniqueKeyFromColumns("profilemember", "tenantId", "profileId", "userId", "groupId", "roleId") // we don't know its name
+            dropPrimaryKey("profilemember")
             dropUniqueKey("page", "uk_page")
             dropPrimaryKey("page")
 
             // recreate PK (name pattern pk_<tableName>):
             createPrimaryKey("page", "id")
             createPrimaryKey("profile", "id")
+            createPrimaryKey("profilemember", "id")
             createPrimaryKey("business_app", "id")
             createPrimaryKey("business_app_page", "id")
             createPrimaryKey("business_app_menu", "id")
 
             createUniqueConstraint("page", "uk_page_name_processdefinitionid", "name", "processDefinitionId")
             createUniqueConstraint("profile", "uk_profile_name", "name")
+            createUniqueConstraint("profilemember", "uk_profilemember_profileid_userid_groupid_roleid", "profileId", "userId", "groupId", "roleId")
             createUniqueConstraint("business_app", "uk_business_app_token_version", "token", "version")
             createUniqueConstraint("business_app_page", "uk_business_app_page_applicationid_token", "applicationId", "token")
 
@@ -81,6 +89,7 @@ class RemoveTenantIdFromApplicationPageProfile extends UpdateStep {
             // Finally drop the tenantid column:
             dropColumnIfExists("page", "tenantId")
             dropColumnIfExists("profile", "tenantId")
+            dropColumnIfExists("profilemember", "tenantId")
             dropColumnIfExists("business_app_page", "tenantId")
             dropColumnIfExists("business_app_menu", "tenantId")
             dropColumnIfExists("business_app", "tenantId")
