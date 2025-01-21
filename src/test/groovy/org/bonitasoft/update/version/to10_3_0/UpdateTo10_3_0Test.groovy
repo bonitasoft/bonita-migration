@@ -33,6 +33,7 @@ class UpdateTo10_3_0Test extends Specification {
             "RemoveTenantIdFromContractDataTables",
             "RemoveTenantIdFromTriggersEventsMessages",
             "RemoveTenantIdFromCommandsBARAndTenantResources",
+            "RemoveTenantIdFromDependencyTables",
         ]
 
         expect:

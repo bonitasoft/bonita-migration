@@ -14,6 +14,7 @@
 package org.bonitasoft.update
 
 import org.bonitasoft.engine.api.APIClient
+import org.bonitasoft.engine.api.PlatformAPIAccessor
 import org.bonitasoft.engine.bpm.category.CategoryCriterion
 import org.bonitasoft.engine.business.application.*
 import org.bonitasoft.engine.identity.GroupCriterion
@@ -27,6 +28,7 @@ import org.bonitasoft.engine.search.SearchOptionsBuilder
 import org.bonitasoft.engine.search.SearchResult
 import org.junit.Rule
 import spock.lang.Specification
+
 import static java.util.Collections.singletonMap
 
 class CheckUpdatedTo10_3_0 extends Specification {
@@ -130,5 +132,32 @@ class CheckUpdatedTo10_3_0 extends Specification {
         expect:
         TestUtil.waitForUserTask("step1WithMessage", client.processAPI, 2L)
         TestUtil.waitForUserTask("step1WithTimer", client.processAPI, 2L)
+    }
+
+    def 'should add and remove dependency'() {
+        given:
+        def client = new APIClient()
+        client.login(USERNAME, "bpm")
+        def commandAPI = client.commandAPI
+
+        when:
+        commandAPI.addDependency("org.acme.my-dependency", "my-dependency".getBytes())
+        commandAPI.removeDependency("org.acme.my-dependency")
+
+        then:
+        noExceptionThrown()
+    }
+
+    def 'should add and remove platform dependency'() {
+        given:
+        def session = PlatformAPIAccessor.getPlatformLoginAPI().login("platformAdmin", "platform")
+        def platformCommandAPI = PlatformAPIAccessor.getPlatformCommandAPI(session)
+
+        when:
+        platformCommandAPI.addDependency("org.acme.my-platform-dependency", "my-platform-dependency".getBytes())
+        platformCommandAPI.removeDependency("org.acme.my-platform-dependency")
+
+        then:
+        noExceptionThrown()
     }
 }
