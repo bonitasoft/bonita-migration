@@ -595,3 +595,41 @@ CREATE TABLE message_instance (
 CREATE INDEX idx_message_instance ON message_instance (messageName, targetProcess, correlation1, correlation2, correlation3);
 CREATE INDEX idx_message_instance_correl ON message_instance (correlation1, correlation2, correlation3, correlation4, correlation5);
 ALTER TABLE message_instance ADD CONSTRAINT fk_message_instance_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
+
+CREATE TABLE command (
+  tenantid INT8 NOT NULL,
+  id INT8 NOT NULL,
+  name VARCHAR(50) NOT NULL,
+  description TEXT,
+  IMPLEMENTATION VARCHAR(100) NOT NULL,
+  isSystem BOOLEAN,
+  UNIQUE (tenantid, name),
+  PRIMARY KEY (tenantid, id)
+);
+ALTER TABLE command ADD CONSTRAINT fk_command_tenantId FOREIGN KEY (tenantid) REFERENCES tenant (id);
+
+CREATE TABLE bar_resource (
+  tenantId INT8 NOT NULL,
+  id INT8 NOT NULL,
+  process_id INT8 NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  type VARCHAR(16) NOT NULL,
+  content BYTEA NOT NULL,
+  UNIQUE (tenantId, process_id, name, type),
+  PRIMARY KEY (tenantId, id)
+);
+CREATE INDEX idx_bar_resource ON bar_resource (process_id, type, name);
+
+CREATE TABLE tenant_resource (
+  tenantId INT8 NOT NULL,
+  id INT8 NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  type VARCHAR(16) NOT NULL,
+  content BYTEA NOT NULL,
+  lastUpdatedBy INT8 NOT NULL,
+  lastUpdateDate INT8,
+  state VARCHAR(50) NOT NULL,
+  CONSTRAINT UK_tenant_resource UNIQUE (tenantId, name, type),
+  PRIMARY KEY (tenantId, id)
+);
+CREATE INDEX idx_tenant_resource ON tenant_resource (type, name);

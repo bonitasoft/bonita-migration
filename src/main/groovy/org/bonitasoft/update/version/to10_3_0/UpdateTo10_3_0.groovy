@@ -34,6 +34,7 @@ class UpdateTo10_3_0 extends VersionUpdate {
             new RemoveTenantIdFromProcessComment(),
             new RemoveTenantIdFromContractDataTables(),
             new RemoveTenantIdFromTriggersEventsMessages(),
+            new RemoveTenantIdFromCommandsBARAndTenantResources(),
         ]
     }
 }

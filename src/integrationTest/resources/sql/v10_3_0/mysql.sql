@@ -593,3 +593,41 @@ CREATE TABLE message_instance (
 ) ENGINE = INNODB;
 CREATE INDEX idx_message_instance ON message_instance (messageName, targetProcess, correlation1, correlation2);
 CREATE INDEX idx_message_instance_correl ON message_instance (correlation1, correlation2, correlation3, correlation4, correlation5);
+
+CREATE TABLE command (
+  tenantid BIGINT NOT NULL,
+  id BIGINT NOT NULL,
+  name VARCHAR(50) NOT NULL,
+  description TEXT,
+  IMPLEMENTATION VARCHAR(100) NOT NULL,
+  isSystem BOOLEAN,
+  UNIQUE (tenantid, name),
+  PRIMARY KEY (tenantid, id)
+) ENGINE = INNODB;
+ALTER TABLE command ADD CONSTRAINT fk_command_tenantId FOREIGN KEY (tenantid) REFERENCES tenant (id);
+
+CREATE TABLE bar_resource (
+  tenantId BIGINT NOT NULL,
+  id BIGINT NOT NULL,
+  process_id BIGINT NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  type VARCHAR(16) NOT NULL,
+  content LONGBLOB NOT NULL,
+  UNIQUE (tenantId, process_id, name, type),
+  PRIMARY KEY (tenantId, id)
+) ENGINE = INNODB;
+CREATE INDEX idx_bar_resource ON bar_resource (process_id, type, name);
+
+CREATE TABLE tenant_resource (
+  tenantId BIGINT NOT NULL,
+  id BIGINT NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  type VARCHAR(16) NOT NULL,
+  content LONGBLOB NOT NULL,
+  lastUpdatedBy BIGINT NOT NULL,
+  lastUpdateDate BIGINT,
+  state VARCHAR(50) NOT NULL,
+  CONSTRAINT UK_tenant_resource UNIQUE (tenantId, name, type),
+  PRIMARY KEY (tenantId, id)
+) ENGINE = INNODB;
+CREATE INDEX idx_tenant_resource ON tenant_resource (type, name);

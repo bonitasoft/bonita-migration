@@ -587,3 +587,40 @@ CREATE TABLE message_instance (
 );
 CREATE INDEX idx_message_instance ON message_instance (messageName, targetProcess, correlation1, correlation2, correlation3);
 CREATE INDEX idx_message_instance_correl ON message_instance (correlation1, correlation2, correlation3, correlation4, correlation5);
+
+CREATE TABLE command (
+  tenantid NUMBER(19, 0) NOT NULL,
+  id NUMBER(19, 0) NOT NULL,
+  name VARCHAR2(50 CHAR) NOT NULL,
+  description VARCHAR2(1024 CHAR),
+  IMPLEMENTATION VARCHAR2(100 CHAR) NOT NULL,
+  isSystem NUMBER(1),
+  CONSTRAINT UK_Command UNIQUE (tenantid, name),
+  PRIMARY KEY (tenantid, id)
+);
+
+CREATE TABLE bar_resource (
+  tenantId NUMBER(19, 0) NOT NULL,
+  id NUMBER(19, 0) NOT NULL,
+  process_id NUMBER(19, 0) NOT NULL,
+  name VARCHAR2(255) NOT NULL,
+  type VARCHAR2(16) NOT NULL,
+  content BLOB NOT NULL,
+  UNIQUE (tenantId, process_id, name, type),
+  PRIMARY KEY (tenantId, id)
+);
+CREATE INDEX idx_bar_resource ON bar_resource (process_id, type, name);
+
+CREATE TABLE tenant_resource (
+  tenantId NUMBER(19, 0) NOT NULL,
+  id NUMBER(19, 0) NOT NULL,
+  name VARCHAR2(255) NOT NULL,
+  type VARCHAR2(16) NOT NULL,
+  content BLOB NOT NULL,
+  lastUpdatedBy NUMBER(19,0) NOT NULL,
+  lastUpdateDate NUMBER(19,0),
+  state VARCHAR2(50) NOT NULL,
+  CONSTRAINT UK_tenant_resource UNIQUE (tenantId, name, type),
+  PRIMARY KEY (tenantId, id)
+);
+CREATE INDEX idx_tenant_resource ON tenant_resource (type, name);

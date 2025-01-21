@@ -596,3 +596,41 @@ CREATE TABLE message_instance (
 CREATE INDEX idx_message_instance ON message_instance (messageName, targetProcess, correlation1, correlation2, correlation3);
 CREATE INDEX idx_message_instance_correl ON message_instance (correlation1, correlation2, correlation3, correlation4, correlation5);
 ALTER TABLE message_instance ADD CONSTRAINT fk_message_instance_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
+
+CREATE TABLE command (
+  tenantid NUMERIC(19, 0) NOT NULL,
+  id NUMERIC(19, 0) NOT NULL,
+  name NVARCHAR(50) NOT NULL,
+  description NVARCHAR(MAX),
+  IMPLEMENTATION NVARCHAR(100) NOT NULL,
+  isSystem BIT,
+  UNIQUE (tenantid, name),
+  PRIMARY KEY (tenantid, id)
+);
+ALTER TABLE command ADD CONSTRAINT fk_command_tenantId FOREIGN KEY (tenantid) REFERENCES tenant (id);
+
+CREATE TABLE bar_resource (
+  tenantId NUMERIC(19, 0) NOT NULL,
+  id NUMERIC(19, 0) NOT NULL,
+  process_id NUMERIC(19, 0) NOT NULL,
+  name NVARCHAR(255) NOT NULL,
+  type NVARCHAR(16) NOT NULL,
+  content VARBINARY(MAX) NOT NULL,
+  UNIQUE (tenantId, process_id, name, type),
+  PRIMARY KEY (tenantId, id)
+);
+CREATE INDEX idx_bar_resource ON bar_resource (process_id, type, name);
+
+CREATE TABLE tenant_resource (
+  tenantId NUMERIC(19, 0) NOT NULL,
+  id NUMERIC(19, 0) NOT NULL,
+  name NVARCHAR(255) NOT NULL,
+  type NVARCHAR(16) NOT NULL,
+  content VARBINARY(MAX) NOT NULL,
+  lastUpdatedBy NUMERIC(19, 0) NOT NULL,
+  lastUpdateDate NUMERIC(19, 0),
+  state NVARCHAR(50) NOT NULL,
+  CONSTRAINT UK_tenant_resource UNIQUE (tenantId, name, type),
+  PRIMARY KEY (tenantId, id)
+);
+CREATE INDEX idx_tenant_resource ON tenant_resource (type, name);
