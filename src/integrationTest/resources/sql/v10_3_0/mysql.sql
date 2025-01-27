@@ -18,6 +18,32 @@ CREATE TABLE tenant (
   PRIMARY KEY (id)
 ) ENGINE = INNODB;
 
+CREATE TABLE process_instance (
+  id BIGINT NOT NULL,
+  name VARCHAR(75) NOT NULL,
+  processDefinitionId BIGINT NOT NULL,
+  description VARCHAR(255),
+  startDate BIGINT NOT NULL,
+  startedBy BIGINT NOT NULL,
+  startedBySubstitute BIGINT NOT NULL,
+  endDate BIGINT NOT NULL,
+  stateId INT NOT NULL,
+  stateCategory VARCHAR(50) NOT NULL,
+  lastUpdate BIGINT NOT NULL,
+  containerId BIGINT,
+  rootProcessInstanceId BIGINT,
+  callerId BIGINT,
+  callerType VARCHAR(50),
+  interruptingEventId BIGINT,
+  stringIndex1 VARCHAR(255),
+  stringIndex2 VARCHAR(255),
+  stringIndex3 VARCHAR(255),
+  stringIndex4 VARCHAR(255),
+  stringIndex5 VARCHAR(255),
+  PRIMARY KEY (id)
+) ENGINE = INNODB;
+CREATE INDEX idx1_proc_inst_pdef_state ON process_instance (processdefinitionid, stateid);
+
 CREATE TABLE flownode_instance (
   tenantid BIGINT NOT NULL,
   id BIGINT NOT NULL,
@@ -100,7 +126,95 @@ CREATE TABLE ref_biz_data_inst (
 CREATE INDEX idx_biz_data_inst2 ON ref_biz_data_inst (fn_inst_id);
 CREATE INDEX idx_biz_data_inst3 ON ref_biz_data_inst (proc_inst_id);
 ALTER TABLE ref_biz_data_inst ADD CONSTRAINT pk_ref_biz_data_inst PRIMARY KEY (tenantid, id);
+ALTER TABLE ref_biz_data_inst ADD CONSTRAINT fk_ref_biz_data_proc FOREIGN KEY (proc_inst_id) REFERENCES process_instance(id) ON DELETE CASCADE;
 ALTER TABLE ref_biz_data_inst ADD CONSTRAINT fk_ref_biz_data_fn FOREIGN KEY (tenantid, fn_inst_id) REFERENCES flownode_instance(tenantid, id) ON DELETE CASCADE;
+ALTER TABLE ref_biz_data_inst ADD CONSTRAINT fk_ref_biz_data_inst_tenantId FOREIGN KEY (tenantId) REFERENCES tenant(id);
+
+CREATE TABLE multi_biz_data (
+  tenantid BIGINT NOT NULL,
+  id BIGINT NOT NULL,
+  idx BIGINT NOT NULL,
+  data_id BIGINT NOT NULL,
+  PRIMARY KEY (tenantid, id, data_id)
+) ENGINE = INNODB;
+ALTER TABLE multi_biz_data ADD CONSTRAINT fk_rbdi_mbd FOREIGN KEY (tenantid, id) REFERENCES ref_biz_data_inst(tenantid, id) ON DELETE CASCADE;
+ALTER TABLE multi_biz_data ADD CONSTRAINT fk_multi_biz_data_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
+
+CREATE TABLE arch_ref_biz_data_inst (
+  tenantid BIGINT NOT NULL,
+  id BIGINT NOT NULL,
+  kind VARCHAR(15) NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  orig_proc_inst_id BIGINT,
+  orig_fn_inst_id BIGINT,
+  data_id BIGINT,
+  data_classname VARCHAR(255) NOT NULL
+);
+CREATE INDEX idx_arch_biz_data_inst1 ON arch_ref_biz_data_inst (orig_proc_inst_id);
+CREATE INDEX idx_arch_biz_data_inst2 ON arch_ref_biz_data_inst (orig_fn_inst_id);
+ALTER TABLE arch_ref_biz_data_inst ADD CONSTRAINT pk_arch_ref_biz_data_inst PRIMARY KEY (tenantid, id);
+
+CREATE TABLE arch_multi_biz_data (
+  tenantid BIGINT NOT NULL,
+  id BIGINT NOT NULL,
+  idx BIGINT NOT NULL,
+  data_id BIGINT NOT NULL
+);
+ALTER TABLE arch_multi_biz_data ADD CONSTRAINT pk_arch_rbdi_mbd PRIMARY KEY (tenantid, id, data_id);
+ALTER TABLE arch_multi_biz_data ADD CONSTRAINT fk_arch_rbdi_mbd FOREIGN KEY (tenantid, id) REFERENCES arch_ref_biz_data_inst(tenantid, id) ON DELETE CASCADE;
+
+CREATE TABLE arch_data_instance (
+  tenantId BIGINT NOT NULL,
+  id BIGINT NOT NULL,
+  name VARCHAR(50),
+  description VARCHAR(50),
+  transientData BOOLEAN,
+  className VARCHAR(100),
+  containerId BIGINT,
+  containerType VARCHAR(60),
+  namespace VARCHAR(100),
+  element VARCHAR(60),
+  intValue INT,
+  longValue BIGINT,
+  shortTextValue VARCHAR(255),
+  booleanValue BOOLEAN,
+  doubleValue NUMERIC(19,5),
+  floatValue FLOAT,
+  blobValue MEDIUMBLOB,
+  clobValue MEDIUMTEXT,
+  discriminant VARCHAR(50) NOT NULL,
+  archiveDate BIGINT NOT NULL,
+  sourceObjectId BIGINT NOT NULL,
+  PRIMARY KEY (tenantid, id)
+) ENGINE = INNODB;
+CREATE INDEX idx1_arch_data_instance ON arch_data_instance (containerId, containerType, archiveDate, name, sourceObjectId);
+CREATE INDEX idx2_arch_data_instance ON arch_data_instance (sourceObjectId, containerId, archiveDate, id);
+ALTER TABLE arch_data_instance ADD CONSTRAINT fk_arch_data_instance_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
+
+CREATE TABLE data_instance (
+  tenantId BIGINT NOT NULL,
+  id BIGINT NOT NULL,
+  name VARCHAR(50),
+  description VARCHAR(50),
+  transientData BOOLEAN,
+  className VARCHAR(100),
+  containerId BIGINT,
+  containerType VARCHAR(60),
+  namespace VARCHAR(100),
+  element VARCHAR(60),
+  intValue INT,
+  longValue BIGINT,
+  shortTextValue VARCHAR(255),
+  booleanValue BOOLEAN,
+  doubleValue NUMERIC(19,5),
+  floatValue FLOAT,
+  blobValue MEDIUMBLOB,
+  clobValue MEDIUMTEXT,
+  discriminant VARCHAR(50) NOT NULL,
+  PRIMARY KEY (tenantid, id)
+) ENGINE = INNODB;
+CREATE INDEX idx_datai_container ON data_instance (containerId, containerType, name);
+ALTER TABLE data_instance ADD CONSTRAINT fk_data_instance_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
 
 CREATE TABLE page_mapping (
   tenantId BIGINT NOT NULL,

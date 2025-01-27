@@ -16,7 +16,12 @@ package org.bonitasoft.update.version.to10_3_0
 import org.bonitasoft.update.core.UpdateContext
 import org.bonitasoft.update.core.UpdateStep
 
+/**
+ * Remove tenantId from dependency tables: dependency and dependencymapping.
+ * And update constraints from platform dependency tables for consistent naming.
+ */
 class RemoveTenantIdFromDependencyTables extends UpdateStep {
+
     @Override
     def execute(UpdateContext context) {
         context.databaseHelper.with {
@@ -68,6 +73,7 @@ class RemoveTenantIdFromDependencyTables extends UpdateStep {
 
     @Override
     String getDescription() {
-        return "Remove tenantId from dependency tables: dependency, dependency_mapping"
+        return "Remove tenantId from dependency tables: dependency and dependencymapping." +
+                " And update constraints from platform dependency tables for consistent naming."
     }
 }

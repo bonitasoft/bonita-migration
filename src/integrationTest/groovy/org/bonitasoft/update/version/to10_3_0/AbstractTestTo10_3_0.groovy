@@ -82,9 +82,15 @@ abstract class AbstractTestTo10_3_0 extends Specification {
             "page",
             "form_mapping",
             "page_mapping",
+            "arch_data_instance",
+            "data_instance",
+            "arch_multi_biz_data",
+            "arch_ref_biz_data_inst",
+            "multi_biz_data",
             "ref_biz_data_inst",
             "pending_mapping",
             "flownode_instance",
+            "process_instance",
             "tenant",
             "sequence"
         ] as String[])

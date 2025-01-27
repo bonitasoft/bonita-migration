@@ -18,6 +18,32 @@ CREATE TABLE tenant (
   PRIMARY KEY (id)
 );
 
+CREATE TABLE process_instance (
+  id NUMBER(19, 0) NOT NULL,
+  name VARCHAR2(75 CHAR) NOT NULL,
+  processDefinitionId NUMBER(19, 0) NOT NULL,
+  description VARCHAR2(255 CHAR),
+  startDate NUMBER(19, 0) NOT NULL,
+  startedBy NUMBER(19, 0) NOT NULL,
+  startedBySubstitute NUMBER(19, 0) NOT NULL,
+  endDate NUMBER(19, 0) NOT NULL,
+  stateId INT NOT NULL,
+  stateCategory VARCHAR2(50 CHAR) NOT NULL,
+  lastUpdate NUMBER(19, 0) NOT NULL,
+  containerId NUMBER(19, 0),
+  rootProcessInstanceId NUMBER(19, 0),
+  callerId NUMBER(19, 0),
+  callerType VARCHAR2(50 CHAR),
+  interruptingEventId NUMBER(19, 0),
+  stringIndex1 VARCHAR2(255 CHAR),
+  stringIndex2 VARCHAR2(255 CHAR),
+  stringIndex3 VARCHAR2(255 CHAR),
+  stringIndex4 VARCHAR2(255 CHAR),
+  stringIndex5 VARCHAR2(255 CHAR),
+  PRIMARY KEY (id)
+);
+CREATE INDEX idx1_proc_inst_pdef_state ON process_instance (processdefinitionid, stateid);
+
 CREATE TABLE flownode_instance (
   tenantid NUMBER(19, 0) NOT NULL,
   id NUMBER(19, 0) NOT NULL,
@@ -97,11 +123,96 @@ CREATE TABLE ref_biz_data_inst (
   data_id NUMBER(19, 0),
   data_classname VARCHAR2(255 CHAR) NOT NULL
 );
-
 CREATE INDEX idx_biz_data_inst2 ON ref_biz_data_inst (fn_inst_id);
 CREATE INDEX idx_biz_data_inst3 ON ref_biz_data_inst (proc_inst_id);
 ALTER TABLE ref_biz_data_inst ADD CONSTRAINT pk_ref_biz_data_inst PRIMARY KEY (tenantid, id);
+ALTER TABLE ref_biz_data_inst ADD CONSTRAINT fk_ref_biz_data_proc FOREIGN KEY (proc_inst_id) REFERENCES process_instance(id) ON DELETE CASCADE;
 ALTER TABLE ref_biz_data_inst ADD CONSTRAINT fk_ref_biz_data_fn FOREIGN KEY (tenantid, fn_inst_id) REFERENCES flownode_instance(tenantid, id) ON DELETE CASCADE;
+ALTER TABLE ref_biz_data_inst ADD CONSTRAINT fk_ref_biz_data_inst_tenantId FOREIGN KEY (tenantId) REFERENCES tenant(id);
+
+CREATE TABLE multi_biz_data (
+  tenantid NUMBER(19, 0) NOT NULL,
+  id NUMBER(19, 0) NOT NULL,
+  idx NUMBER(19, 0) NOT NULL,
+  data_id NUMBER(19, 0) NOT NULL,
+  PRIMARY KEY (tenantid, id, data_id)
+);
+ALTER TABLE multi_biz_data ADD CONSTRAINT fk_rbdi_mbd FOREIGN KEY (tenantid, id) REFERENCES ref_biz_data_inst(tenantid, id) ON DELETE CASCADE;
+ALTER TABLE multi_biz_data ADD CONSTRAINT fk_multi_biz_data_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
+
+CREATE TABLE arch_ref_biz_data_inst (
+  tenantid NUMBER(19, 0) NOT NULL,
+  id NUMBER(19, 0) NOT NULL,
+  kind VARCHAR2(15 CHAR) NOT NULL,
+  name VARCHAR2(255 CHAR) NOT NULL,
+  orig_proc_inst_id NUMBER(19, 0),
+  orig_fn_inst_id NUMBER(19, 0),
+  data_id NUMBER(19, 0),
+  data_classname VARCHAR2(255 CHAR) NOT NULL
+);
+CREATE INDEX idx_arch_biz_data_inst1 ON arch_ref_biz_data_inst (orig_proc_inst_id);
+CREATE INDEX idx_arch_biz_data_inst2 ON arch_ref_biz_data_inst (orig_fn_inst_id);
+ALTER TABLE arch_ref_biz_data_inst ADD CONSTRAINT pk_arch_ref_biz_data_inst PRIMARY KEY (tenantid, id);
+
+CREATE TABLE arch_multi_biz_data (
+  tenantid NUMBER(19, 0) NOT NULL,
+  id NUMBER(19, 0) NOT NULL,
+  idx NUMBER(19, 0) NOT NULL,
+  data_id NUMBER(19, 0) NOT NULL
+);
+ALTER TABLE arch_multi_biz_data ADD CONSTRAINT pk_arch_rbdi_mbd PRIMARY KEY (tenantid, id, data_id);
+ALTER TABLE arch_multi_biz_data ADD CONSTRAINT fk_arch_rbdi_mbd FOREIGN KEY (tenantid, id) REFERENCES arch_ref_biz_data_inst(tenantid, id) ON DELETE CASCADE;
+
+CREATE TABLE arch_data_instance (
+  tenantId NUMBER(19, 0) NOT NULL,
+  id NUMBER(19, 0) NOT NULL,
+  name VARCHAR2(50 CHAR),
+  description VARCHAR2(50 CHAR),
+  transientData NUMBER(1),
+  className VARCHAR2(100 CHAR),
+  containerId NUMBER(19, 0),
+  containerType VARCHAR2(60 CHAR),
+  namespace VARCHAR2(100 CHAR),
+  element VARCHAR2(60 CHAR),
+  intValue INT,
+  longValue NUMBER(19, 0),
+  shortTextValue VARCHAR2(255 CHAR),
+  booleanValue NUMBER(1),
+  doubleValue NUMERIC(19,5),
+  floatValue REAL,
+  blobValue BLOB,
+  clobValue CLOB,
+  discriminant VARCHAR2(50 CHAR) NOT NULL,
+  archiveDate NUMBER(19, 0) NOT NULL,
+  sourceObjectId NUMBER(19, 0) NOT NULL,
+  PRIMARY KEY (tenantid, id)
+);
+CREATE INDEX idx1_arch_data_instance ON arch_data_instance (containerId, containerType, archiveDate, name, sourceObjectId);
+CREATE INDEX idx2_arch_data_instance ON arch_data_instance (sourceObjectId, containerId, archiveDate, id);
+
+CREATE TABLE data_instance (
+  tenantId NUMBER(19, 0) NOT NULL,
+  id NUMBER(19, 0) NOT NULL,
+  name VARCHAR2(50 CHAR),
+  description VARCHAR2(50 CHAR),
+  transientData NUMBER(1),
+  className VARCHAR2(100 CHAR),
+  containerId NUMBER(19, 0),
+  containerType VARCHAR2(60 CHAR),
+  namespace VARCHAR2(100 CHAR),
+  element VARCHAR2(60 CHAR),
+  intValue INT,
+  longValue NUMBER(19, 0),
+  shortTextValue VARCHAR2(255 CHAR),
+  booleanValue NUMBER(1),
+  doubleValue NUMERIC(19,5),
+  floatValue REAL,
+  blobValue BLOB,
+  clobValue CLOB,
+  discriminant VARCHAR2(50 CHAR) NOT NULL,
+  PRIMARY KEY (tenantid, id)
+);
+CREATE INDEX idx_datai_container ON data_instance (containerId, containerType, name);
 
 CREATE TABLE page_mapping (
   tenantId NUMBER(19, 0) NOT NULL,
