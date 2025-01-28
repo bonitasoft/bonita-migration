@@ -86,6 +86,7 @@ class FillBeforeUpdatingTo10_3_0 {
         final Expression input1Expression = new ExpressionBuilder().createConstantStringExpression(valueOfInput1)
         final ProcessDefinitionBuilder processDefinitionBuilder = new ProcessDefinitionBuilder().createNewInstance(
                 "executeConnectorOnFinishOfAnAutomaticActivityWithDataAsOutput", "1.0")
+        processDefinitionBuilder.addParameter("myParam", String.class.name)
         processDefinitionBuilder.addShortTextData(dataName, dataDefaultValue)
         String ACTOR_NAME = "actor"
         processDefinitionBuilder.addActor(ACTOR_NAME)
@@ -109,7 +110,7 @@ class FillBeforeUpdatingTo10_3_0 {
 
         ProcessAPI processAPI = client.getProcessAPI()
         final ProcessDefinition processDefinition = deployAndEnableProcessWithActorAndConnectorAndParameter(processDefinitionBuilder, ACTOR_NAME, user,
-                "TestConnectorWithOutput.impl", TestConnectorWithOutput.class, "TestConnectorWithOutput.jar", processAPI)
+                "TestConnectorWithOutput.impl", TestConnectorWithOutput.class, "TestConnectorWithOutput.jar", Map.of("myParam", "TOTO"), processAPI)
 
         // Test category and mapping:
         final Category category = processAPI.createCategory("my_process_category", "To better organize my processes")
@@ -221,10 +222,10 @@ class FillBeforeUpdatingTo10_3_0 {
             final ProcessDefinitionBuilder processDefinitionBuilder,
             final String actorName, final User user, final String name,
             final Class<? extends AbstractConnector> clazz,
-            final String jarName, ProcessAPI processAPI) throws BonitaException, IOException {
+            final String jarName, final Map<String, String> parameters, ProcessAPI processAPI) throws BonitaException, IOException {
         return deployAndEnableProcessWithActorAndConnectorAndParameter(processDefinitionBuilder, actorName, user,
                 Collections.singletonList(getContentAndBuildBarResource(name, clazz)),
-                Collections.singletonList(generateJarAndBuildBarResource(clazz, jarName)), null, processAPI)
+                Collections.singletonList(generateJarAndBuildBarResource(clazz, jarName)), parameters, processAPI)
     }
 
     ProcessDefinition deployAndEnableProcessWithActorAndConnectorAndParameter(

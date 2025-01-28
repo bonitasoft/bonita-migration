@@ -958,3 +958,39 @@ CREATE INDEX idx_afi_sourceid_kind ON arch_flownode_instance (sourceObjectId, ki
 CREATE INDEX idx1_afi_root_parent ON arch_flownode_instance (rootContainerId, parentContainerId);
 CREATE INDEX idx_lg4_lg2 on arch_flownode_instance(logicalGroup4, logicalGroup2);
 ALTER TABLE arch_flownode_instance ADD CONSTRAINT fk_arch_flownode_instance_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
+
+CREATE TABLE proc_parameter (
+  tenantId NUMERIC(19, 0) NOT NULL,
+  id NUMERIC(19, 0) NOT NULL,
+  process_id NUMERIC(19, 0) NOT NULL,
+  name NVARCHAR(255) NOT NULL,
+  value NVARCHAR(MAX) NULL,
+  PRIMARY KEY (tenantId, id)
+);
+
+CREATE TABLE queriable_log (
+  tenantid NUMERIC(19, 0) NOT NULL,
+  id NUMERIC(19, 0) NOT NULL,
+  log_timestamp NUMERIC(19, 0) NOT NULL,
+  whatYear SMALLINT NOT NULL,
+  whatMonth TINYINT NOT NULL,
+  dayOfYear SMALLINT NOT NULL,
+  weekOfYear TINYINT NOT NULL,
+  userId NVARCHAR(255) NOT NULL,
+  threadNumber NUMERIC(19, 0) NOT NULL,
+  clusterNode NVARCHAR(50),
+  productVersion NVARCHAR(50) NOT NULL,
+  severity NVARCHAR(50) NOT NULL,
+  actionType NVARCHAR(50) NOT NULL,
+  actionScope NVARCHAR(100),
+  actionStatus TINYINT NOT NULL,
+  rawMessage NVARCHAR(255) NOT NULL,
+  callerClassName NVARCHAR(200),
+  callerMethodName NVARCHAR(80),
+  numericIndex1 NUMERIC(19, 0),
+  numericIndex2 NUMERIC(19, 0),
+  numericIndex3 NUMERIC(19, 0),
+  numericIndex4 NUMERIC(19, 0),
+  numericIndex5 NUMERIC(19, 0),
+  PRIMARY KEY (tenantid, id)
+);

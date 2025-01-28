@@ -17,7 +17,7 @@ class RemoveTenantIdFromTriggersEventsMessagesIT extends AbstractTestTo10_3_0 {
 
     private RemoveTenantIdFromTriggersEventsMessages updateStep = new RemoveTenantIdFromTriggersEventsMessages()
 
-    def "should remove tenantId from tables 'event_trigger_instance', 'waiting_event', 'message_instance'"() {
+    def "should remove tenantId from tables 'event_trigger_instance', 'waiting_event', 'message_instance', 'queriable_log'"() {
         when:
         updateStep.execute(updateContext)
 
@@ -35,6 +35,9 @@ class RemoveTenantIdFromTriggersEventsMessagesIT extends AbstractTestTo10_3_0 {
             !hasColumnOnTable("message_instance", "tenantId")
             hasPrimaryKeyOnTable("message_instance", "pk_message_instance")
             !hasForeignKeyOnTable("message_instance", "fk_message_instance_tenantId")
+
+            !hasColumnOnTable("queriable_log", "tenantId")
+            hasPrimaryKeyOnTable("queriable_log", "pk_queriable_log")
         }
     }
 }

@@ -20,10 +20,10 @@ import org.bonitasoft.update.core.UpdateStep
  * Remove tenantId from tables:
  * process_definition
  * process_content
- * process_comment
  * category
  * processcategorymapping
  * processsupervisor
+ * proc_parameter
  *
  * @author Emmanuel Duchastenier
  */
@@ -45,16 +45,12 @@ class RemoveTenantIdFromProcessDefinition extends UpdateStep {
             // None for those objects.
 
             // recreate PK:
-            dropPrimaryKey("category")
-            createPrimaryKey("category", "id")
-            dropPrimaryKey("processcategorymapping")
-            createPrimaryKey("processcategorymapping", "id")
-            dropPrimaryKey("process_content")
-            createPrimaryKey("process_content", "id")
-            dropPrimaryKey("process_definition")
-            createPrimaryKey("process_definition", "id")
-            dropPrimaryKey("processsupervisor")
-            createPrimaryKey("processsupervisor", "id")
+            recreatePrimaryKey("category")
+            recreatePrimaryKey("processcategorymapping")
+            recreatePrimaryKey("process_content")
+            recreatePrimaryKey("process_definition")
+            recreatePrimaryKey("processsupervisor")
+            recreatePrimaryKey("proc_parameter")
 
             // recreate UK:
             dropUniqueKeyFromColumns("category", "tenantId", "name")
@@ -77,11 +73,12 @@ class RemoveTenantIdFromProcessDefinition extends UpdateStep {
             dropColumnIfExists("process_definition", "tenantId")
             dropColumnIfExists("process_definition", "content_tenantid") // JOIN column
             dropColumnIfExists("processsupervisor", "tenantId")
+            dropColumnIfExists("proc_parameter", "tenantId")
         }
     }
 
     @Override
     String getDescription() {
-        return "Remove tenantId from process-related tables"
+        return "Remove tenantId from process-related tables: process_definition, process_content, category, processcategorymapping, processsupervisor, proc_parameter"
     }
 }

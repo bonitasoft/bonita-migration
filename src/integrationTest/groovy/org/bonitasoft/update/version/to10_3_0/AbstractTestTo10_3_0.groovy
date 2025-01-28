@@ -41,6 +41,8 @@ abstract class AbstractTestTo10_3_0 extends Specification {
 
     def dropTestTables() {
         dbUnitHelper.dropTables([
+            "queriable_log",
+            "proc_parameter",
             "arch_flownode_instance",
             "arch_process_instance",
             "connector_instance",

@@ -53,6 +53,9 @@ class RemoveTenantIdFromProcessDefinitionIT extends AbstractTestTo10_3_0 {
             !hasUniqueKeyOnTableWithColumns("processsupervisor", "tenantId", "name")
             hasUniqueKeyOnTableWithNameAndColumns("processsupervisor", "uk_processsupervisor_processdefid_userid_groupid_roleid", "processDefId", "userId", "groupId", "roleId")
             !hasForeignKeyOnTable("processsupervisor", "fk_processsupervisor_tenantId")
+
+            !hasColumnOnTable("proc_parameter", "tenantId")
+            hasPrimaryKeyOnTable("proc_parameter", "pk_proc_parameter")
         }
     }
 }

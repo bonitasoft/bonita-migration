@@ -958,3 +958,39 @@ CREATE INDEX idx_afi_sourceid_kind ON arch_flownode_instance (sourceObjectId, ki
 CREATE INDEX idx1_afi_root_parent ON arch_flownode_instance (rootContainerId, parentContainerId);
 CREATE INDEX idx_lg4_lg2 on arch_flownode_instance(logicalGroup4, logicalGroup2);
 ALTER TABLE arch_flownode_instance ADD CONSTRAINT fk_arch_flownode_instance_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
+
+CREATE TABLE proc_parameter (
+  tenantId BIGINT NOT NULL,
+  id BIGINT NOT NULL,
+  process_id BIGINT NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  value MEDIUMTEXT NULL,
+  PRIMARY KEY (tenantId, id)
+) ENGINE = INNODB;
+
+CREATE TABLE queriable_log (
+  tenantid BIGINT NOT NULL,
+  id BIGINT NOT NULL,
+  log_timestamp BIGINT NOT NULL,
+  whatYear SMALLINT NOT NULL,
+  whatMonth TINYINT NOT NULL,
+  dayOfYear SMALLINT NOT NULL,
+  weekOfYear TINYINT NOT NULL,
+  userId VARCHAR(255) NOT NULL,
+  threadNumber BIGINT NOT NULL,
+  clusterNode VARCHAR(50),
+  productVersion VARCHAR(50) NOT NULL,
+  severity VARCHAR(50) NOT NULL,
+  actionType VARCHAR(50) NOT NULL,
+  actionScope VARCHAR(100),
+  actionStatus TINYINT NOT NULL,
+  rawMessage VARCHAR(255) NOT NULL,
+  callerClassName VARCHAR(200),
+  callerMethodName VARCHAR(80),
+  numericIndex1 BIGINT,
+  numericIndex2 BIGINT,
+  numericIndex3 BIGINT,
+  numericIndex4 BIGINT,
+  numericIndex5 BIGINT,
+  PRIMARY KEY (tenantid, id)
+) ENGINE = INNODB;

@@ -81,6 +81,8 @@ class CheckUpdatedTo10_3_0 extends Specification {
 
         // check that retrieval of archived flownode instance still works:
         processAPI.searchArchivedHumanTasks(new SearchOptionsBuilder(0, 10).done()).count == 1
+
+        processAPI.getParameterInstance(processDefinitionId, "myParam").value == "TOTO"
     }
 
     def 'should be able to add a process comment'() {

@@ -19,7 +19,7 @@ import org.bonitasoft.update.core.UpdateStep
 import static org.bonitasoft.update.core.UpdateStep.DBVendor.ORACLE
 
 /**
- * Remove tenantId from tables 'event_trigger_instance', 'waiting_event', 'message_instance'
+ * Remove tenantId from tables 'event_trigger_instance', 'waiting_event', 'message_instance', 'queriable_log'
  */
 class RemoveTenantIdFromTriggersEventsMessages extends UpdateStep {
 
@@ -35,12 +35,10 @@ class RemoveTenantIdFromTriggersEventsMessages extends UpdateStep {
             // no index on those tables to drop
 
             // recreate PK:
-            dropPrimaryKey("event_trigger_instance")
-            createPrimaryKey("event_trigger_instance", "id")
-            dropPrimaryKey("waiting_event")
-            createPrimaryKey("waiting_event", "id")
-            dropPrimaryKey("message_instance")
-            createPrimaryKey("message_instance", "id")
+            recreatePrimaryKey("event_trigger_instance")
+            recreatePrimaryKey("waiting_event")
+            recreatePrimaryKey("message_instance")
+            recreatePrimaryKey("queriable_log")
 
             // recreate UK:
             // No UK for those tables
@@ -52,11 +50,12 @@ class RemoveTenantIdFromTriggersEventsMessages extends UpdateStep {
             dropColumnIfExists("event_trigger_instance", "tenantId")
             dropColumnIfExists("waiting_event", "tenantId")
             dropColumnIfExists("message_instance", "tenantId")
+            dropColumnIfExists("queriable_log", "tenantId")
         }
     }
 
     @Override
     String getDescription() {
-        return "Remove tenantId from 'event_trigger_instance', 'waiting_event', 'message_instance' tables"
+        return "Remove tenantId from 'event_trigger_instance', 'waiting_event', 'message_instance', 'queriable_log' tables"
     }
 }
