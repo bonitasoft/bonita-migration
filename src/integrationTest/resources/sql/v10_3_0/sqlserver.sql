@@ -793,3 +793,48 @@ CREATE TABLE pdependencymapping (
 );
 CREATE INDEX idx_pdependencymapping_depid ON pdependencymapping (dependencyid, id);
 ALTER TABLE pdependencymapping ADD CONSTRAINT fk_pdepmapping_depid FOREIGN KEY (dependencyid) REFERENCES pdependency(id) ON DELETE CASCADE;
+
+CREATE TABLE document (
+  tenantid NUMERIC(19, 0) NOT NULL,
+  id NUMERIC(19, 0) NOT NULL,
+  author NUMERIC(19, 0),
+  creationdate NUMERIC(19, 0) NOT NULL,
+  hascontent BIT NOT NULL,
+  filename NVARCHAR(255),
+  mimetype NVARCHAR(255),
+  url NVARCHAR(1024),
+  content VARBINARY(MAX),
+  PRIMARY KEY (tenantid, id)
+);
+ALTER TABLE document ADD CONSTRAINT fk_document_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
+
+CREATE TABLE document_mapping (
+  tenantid NUMERIC(19, 0) NOT NULL,
+  id NUMERIC(19, 0) NOT NULL,
+  processinstanceid NUMERIC(19, 0) NOT NULL,
+  documentid NUMERIC(19, 0) NOT NULL,
+  name NVARCHAR(50) NOT NULL,
+  description NVARCHAR(MAX),
+  version NVARCHAR(50) NOT NULL,
+  index_ INT NOT NULL,
+  PRIMARY KEY (tenantid, ID)
+);
+ALTER TABLE document_mapping ADD CONSTRAINT fk_document_mapping_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
+ALTER TABLE document_mapping ADD CONSTRAINT fk_docmap_docid FOREIGN KEY (tenantid, documentid) REFERENCES document(tenantid, id) ON DELETE CASCADE;
+
+CREATE TABLE arch_document_mapping (
+  tenantid NUMERIC(19, 0) NOT NULL,
+  id NUMERIC(19, 0) NOT NULL,
+  sourceObjectId NUMERIC(19, 0),
+  processinstanceid NUMERIC(19, 0) NOT NULL,
+  documentid NUMERIC(19, 0) NOT NULL,
+  name NVARCHAR(50) NOT NULL,
+  description NVARCHAR(MAX),
+  version NVARCHAR(50) NOT NULL,
+  index_ INT NOT NULL,
+  archiveDate NUMERIC(19, 0) NOT NULL,
+  PRIMARY KEY (tenantid, ID)
+);
+CREATE INDEX idx_a_doc_mp_pr_id ON arch_document_mapping (processinstanceid);
+ALTER TABLE arch_document_mapping ADD CONSTRAINT fk_arch_document_mapping_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
+ALTER TABLE arch_document_mapping ADD CONSTRAINT fk_archdocmap_docid FOREIGN KEY (tenantid, documentid) REFERENCES document(tenantid, id) ON DELETE CASCADE;

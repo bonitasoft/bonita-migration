@@ -316,6 +316,9 @@ class UpdatePlugin implements Plugin<Project> {
             }
             //use junit 5 (provided by spock 2+)
             useJUnitPlatform()
+
+            // Pass logger level if set:
+            systemProperties.put("logger.level", System.getProperty("logger.level", "DEBUG"))
         }
     }
 

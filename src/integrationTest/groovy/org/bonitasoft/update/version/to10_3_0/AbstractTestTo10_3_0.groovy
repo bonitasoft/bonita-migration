@@ -41,6 +41,9 @@ abstract class AbstractTestTo10_3_0 extends Specification {
 
     def dropTestTables() {
         dbUnitHelper.dropTables([
+            "arch_document_mapping",
+            "document_mapping",
+            "document",
             "pdependencymapping",
             "pdependency",
             "dependencymapping",

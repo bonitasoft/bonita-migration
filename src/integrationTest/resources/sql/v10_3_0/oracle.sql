@@ -777,3 +777,47 @@ CREATE TABLE pdependencymapping (
   PRIMARY KEY (id)
 );
 ALTER TABLE pdependencymapping ADD CONSTRAINT fk_pdepmapping_depid FOREIGN KEY (dependencyid) REFERENCES pdependency(id) ON DELETE CASCADE;
+
+CREATE TABLE document (
+  tenantid NUMBER(19, 0) NOT NULL,
+  id NUMBER(19, 0) NOT NULL,
+  author NUMBER(19, 0),
+  creationdate NUMBER(19, 0) NOT NULL,
+  hascontent NUMBER(1) NOT NULL,
+  filename VARCHAR2(255 CHAR),
+  mimetype VARCHAR2(255 CHAR),
+  url VARCHAR2(1024 CHAR),
+  content BLOB,
+  PRIMARY KEY (tenantid, id)
+);
+ALTER TABLE document ADD CONSTRAINT fk_document_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
+
+CREATE TABLE document_mapping (
+  tenantid NUMBER(19, 0) NOT NULL,
+  id NUMBER(19, 0) NOT NULL,
+  processinstanceid NUMBER(19, 0) NOT NULL,
+  documentid NUMBER(19, 0) NOT NULL,
+  name VARCHAR2(50 CHAR) NOT NULL,
+  description VARCHAR2(1024 CHAR),
+  version VARCHAR2(50 CHAR) NOT NULL,
+  index_ INT NOT NULL,
+  PRIMARY KEY (tenantid, id)
+);
+ALTER TABLE document_mapping ADD CONSTRAINT fk_docmap_docid FOREIGN KEY (tenantid, documentid) REFERENCES document(tenantid, id) ON DELETE CASCADE;
+
+CREATE TABLE arch_document_mapping (
+  tenantid NUMBER(19, 0) NOT NULL,
+  id NUMBER(19, 0) NOT NULL,
+  sourceObjectId NUMBER(19, 0),
+  processinstanceid NUMBER(19, 0) NOT NULL,
+  documentid NUMBER(19, 0) NOT NULL,
+  name VARCHAR2(50 CHAR) NOT NULL,
+  description VARCHAR2(1024 CHAR),
+  version VARCHAR2(50 CHAR) NOT NULL,
+  index_ INT NOT NULL,
+  archiveDate NUMBER(19, 0) NOT NULL,
+  PRIMARY KEY (tenantid, id)
+);
+CREATE INDEX idx_a_doc_mp_pr_id ON arch_document_mapping (processinstanceid);
+ALTER TABLE arch_document_mapping ADD CONSTRAINT fk_ADocMap_tenId FOREIGN KEY (tenantid) REFERENCES tenant(id);
+ALTER TABLE arch_document_mapping ADD CONSTRAINT fk_archdocmap_docid FOREIGN KEY (tenantid, documentid) REFERENCES document(tenantid, id) ON DELETE CASCADE;

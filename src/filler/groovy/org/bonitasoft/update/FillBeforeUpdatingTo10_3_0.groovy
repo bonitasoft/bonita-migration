@@ -22,6 +22,7 @@ import org.bonitasoft.engine.bpm.bar.InvalidBusinessArchiveFormatException
 import org.bonitasoft.engine.bpm.category.Category
 import org.bonitasoft.engine.bpm.connector.ConnectorEvent
 import org.bonitasoft.engine.bpm.contract.Type
+import org.bonitasoft.engine.bpm.document.DocumentCriterion
 import org.bonitasoft.engine.bpm.flownode.TimerType
 import org.bonitasoft.engine.bpm.process.InvalidProcessDefinitionException
 import org.bonitasoft.engine.bpm.process.ProcessDefinition
@@ -49,6 +50,7 @@ import static java.util.Collections.singletonMap
 import static org.bonitasoft.update.BuildTestUtil.*
 import static org.bonitasoft.update.test.TestUtil.*
 import static org.junit.Assert.assertEquals
+import static org.junit.Assert.assertTrue
 
 class FillBeforeUpdatingTo10_3_0 {
 
@@ -180,6 +182,39 @@ class FillBeforeUpdatingTo10_3_0 {
 
         waitForUserTask("step1WithMessage", client.processAPI)
         waitForUserTask("step1WithTimer", client.processAPI)
+    }
+
+    @FillAction
+    def 'have process with document defined in process definition'() throws Exception {
+        def client = new APIClient()
+        client.login("install", "install")
+        def username = "walter.bates"
+        def user = client.getIdentityAPI().getUserByUserName(username)
+        client.logout()
+        client.login(username, "bpm")
+
+        final ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder()
+                .createNewInstance("MyProcessWithDocumentsInBar", "1.0")
+        final String ACTOR_NAME = "actor"
+        builder.addUserTask("step1", ACTOR_NAME)
+        builder.addActor(ACTOR_NAME)
+        builder.addDocumentDefinition("myDoc").addContentFileName("myPdfModifiedName.pdf")
+                .addDescription("a cool pdf document").addMimeType("application/pdf")
+                .addFile("myDoc.pdf").addDescription("my description")
+        final byte[] pdfContent = "some content".getBytes()
+        final BusinessArchive businessArchive = new BusinessArchiveBuilder().createNewBusinessArchive()
+                .setProcessDefinition(builder.getProcess())
+                .addDocumentResource(new BarResource("myDoc.pdf", pdfContent)).done()
+
+        def processAPI = client.processAPI
+        final ProcessDefinition processDefinition = deployAndEnableProcessWithActor(businessArchive, ACTOR_NAME, user, processAPI)
+        def processInstance = processAPI.startProcess(processDefinition.getId())
+        def documents = processAPI.getLastVersionOfDocuments(processInstance.getId(), 0, 1, DocumentCriterion.DEFAULT)
+        assertTrue(documents.size() == 1)
+        final byte[] docContent = processAPI.getDocumentContent(documents.get(0).getContentStorageId())
+        assertTrue(Arrays.equals(pdfContent, docContent))
+
+        waitForUserTask("step1", processAPI)
     }
 
     ProcessDefinition deployAndEnableProcessWithActorAndConnectorAndParameter(

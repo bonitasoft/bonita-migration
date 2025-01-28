@@ -16,6 +16,8 @@ package org.bonitasoft.update
 import org.bonitasoft.engine.api.APIClient
 import org.bonitasoft.engine.api.PlatformAPIAccessor
 import org.bonitasoft.engine.bpm.category.CategoryCriterion
+import org.bonitasoft.engine.bpm.document.DocumentCriterion
+import org.bonitasoft.engine.bpm.process.ArchivedProcessInstancesSearchDescriptor
 import org.bonitasoft.engine.business.application.*
 import org.bonitasoft.engine.identity.GroupCriterion
 import org.bonitasoft.engine.identity.RoleCriterion
@@ -26,10 +28,14 @@ import org.bonitasoft.engine.search.Order
 import org.bonitasoft.engine.search.SearchOptions
 import org.bonitasoft.engine.search.SearchOptionsBuilder
 import org.bonitasoft.engine.search.SearchResult
+import org.bonitasoft.engine.session.impl.SessionImpl
 import org.junit.Rule
 import spock.lang.Specification
 
+import static java.util.Collections.emptyMap
 import static java.util.Collections.singletonMap
+import static org.awaitility.Awaitility.await
+import static org.bonitasoft.update.TestUtil.waitForUserTask
 
 class CheckUpdatedTo10_3_0 extends Specification {
 
@@ -85,6 +91,33 @@ class CheckUpdatedTo10_3_0 extends Specification {
         comment != null
         comment.processInstanceId == processInstance.id
         comment.content == "This is a comment"
+    }
+
+    def 'should be able to retrieve documents and archived documents'() {
+        given:
+        def client = new APIClient()
+        client.login("walter.bates", "bpm")
+        def session = client.session as SessionImpl
+        def processAPI = client.processAPI
+        def processDefinitionId = processAPI.getProcessDefinitionId("MyProcessWithDocumentsInBar", "1.0")
+        def processInstance = processAPI.startProcess(processDefinitionId)
+        waitForUserTask("step1", processAPI, 2L)
+
+        when:
+        def documents = processAPI.getLastVersionOfDocuments(processInstance.id, 0, 1, DocumentCriterion.DEFAULT)
+        def taskInstances = processAPI.getHumanTaskInstances(processInstance.id, "step1", 0, 10)
+        final byte[] docContent = processAPI.getDocumentContent(documents.get(0).getContentStorageId())
+        processAPI.assignAndExecuteUserTask(session.userId, taskInstances.get(0).getId(), emptyMap())
+        await().until({ processAPI.searchArchivedProcessInstances(new SearchOptionsBuilder(0, 10).filter(ArchivedProcessInstancesSearchDescriptor.SOURCE_OBJECT_ID, processInstance.id).done()).count == 1 })
+        def archivedDocument = processAPI.getArchivedVersionOfProcessDocument(documents.get(0).id)
+
+        then:
+        documents != null
+        documents.size() == 1
+        docContent == "some content".getBytes()
+        archivedDocument.hasContent()
+        archivedDocument.contentMimeType == "application/pdf"
+        archivedDocument.contentFileName == "myPdfModifiedName.pdf"
     }
 
     def 'should be able to retrieve identity elements'() {

@@ -421,6 +421,11 @@ class DatabaseHelper {
         executeQuery("ALTER TABLE $tableName ADD CONSTRAINT $pkName PRIMARY KEY ($concatenatedColumns)")
     }
 
+    def recreatePrimaryKey(String tableName, String... columns = ["id"]) {
+        dropPrimaryKey(tableName)
+        createPrimaryKey(tableName, columns)
+    }
+
     /**
      * remove unique constraint on table.
      * specific to oracle:
