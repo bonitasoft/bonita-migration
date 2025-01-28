@@ -486,7 +486,7 @@ class DatabaseHelper {
     }
 
     def createUniqueKey(String tableName, String constraintName, String... columns) {
-        logger.info("Creating unique contraint '$constraintName' on table '$tableName'")
+        logger.info("Creating unique constraint '$constraintName' on table '$tableName'")
         def concatenatedColumns = columns.collect { it }.join(", ")
         executeQuery("ALTER TABLE $tableName ADD CONSTRAINT $constraintName UNIQUE ($concatenatedColumns)")
     }
@@ -534,12 +534,6 @@ class DatabaseHelper {
         logger.info("Creating ${unique ? "unique " : ""}index '$indexName' on table '$tableName'")
         def concatenatedColumns = columns.collect { it }.join(", ")
         executeQuery("CREATE ${unique ? "UNIQUE " : ""}INDEX $indexName ON $tableName($concatenatedColumns)")
-    }
-
-    def createUniqueConstraint(String tableName, String constraintName, String... columns) {
-        logger.info("Creating unique constraint '$constraintName' on table '$tableName'")
-        def concatenatedColumns = columns.collect { it }.join(", ")
-        executeQuery("ALTER TABLE $tableName ADD CONSTRAINT $constraintName UNIQUE ($concatenatedColumns)")
     }
 
     void renameIndex(String tableName, String oldName, String newName) {

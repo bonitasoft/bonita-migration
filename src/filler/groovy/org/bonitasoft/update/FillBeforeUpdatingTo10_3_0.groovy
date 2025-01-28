@@ -124,7 +124,7 @@ class FillBeforeUpdatingTo10_3_0 {
         def step0ReadySearchOptions = getSearchOptionsForTask("step0")
 
         waitForUserTask("step0", processAPI)
-        def result = processAPI.searchHumanTaskInstances(step0ReadySearchOptions).result
+        def result = processAPI.searchPendingTasksForUser(user.id, step0ReadySearchOptions).result
         if (result.empty) {
             throw new IllegalAccessException("Task 'step0' is not ready")
         }

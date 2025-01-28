@@ -66,6 +66,7 @@ class CheckUpdatedTo10_3_0 extends Specification {
         final SearchResult<ApplicationMenu> firstMenu = client.applicationAPI
                 .searchApplicationMenus(new SearchOptionsBuilder(0, 1).filter(ApplicationMenuSearchDescriptor.APPLICATION_ID, application.id).done())
         def categories = processAPI.getCategories(0, 10, CategoryCriterion.NAME_ASC)
+
         then:
         application.displayName == "HR dashboard"
         firstPage.result[0].token == "home_page_token"
@@ -75,6 +76,8 @@ class CheckUpdatedTo10_3_0 extends Specification {
         processAPI.getNumberOfProcessDefinitionsOfCategory(categories[0].id) == 1
 
         processAPI.isUserProcessSupervisor(processDefinitionId, user.id)
+
+        processAPI.searchArchivedConnectorInstances(new SearchOptionsBuilder(0, 10).done()).count == 1
     }
 
     def 'should be able to add a process comment'() {

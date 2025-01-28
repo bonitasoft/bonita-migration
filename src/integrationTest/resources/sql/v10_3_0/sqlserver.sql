@@ -111,6 +111,7 @@ CREATE TABLE pending_mapping (
   PRIMARY KEY (tenantid, id)
 );
 CREATE UNIQUE INDEX idx_UQ_pending_mapping ON pending_mapping (activityId, userId, actorId);
+ALTER TABLE pending_mapping ADD CONSTRAINT fk_pending_mapping_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
 ALTER TABLE pending_mapping ADD CONSTRAINT fk_pending_mapping_flownode_instanceId FOREIGN KEY (tenantid, activityId) REFERENCES flownode_instance(tenantid, id);
 
 CREATE TABLE ref_biz_data_inst (
@@ -838,3 +839,37 @@ CREATE TABLE arch_document_mapping (
 CREATE INDEX idx_a_doc_mp_pr_id ON arch_document_mapping (processinstanceid);
 ALTER TABLE arch_document_mapping ADD CONSTRAINT fk_arch_document_mapping_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
 ALTER TABLE arch_document_mapping ADD CONSTRAINT fk_archdocmap_docid FOREIGN KEY (tenantid, documentid) REFERENCES document(tenantid, id) ON DELETE CASCADE;
+
+CREATE TABLE connector_instance (
+  tenantid NUMERIC(19, 0) NOT NULL,
+  id NUMERIC(19, 0) NOT NULL,
+  containerId NUMERIC(19, 0) NOT NULL,
+  containerType NVARCHAR(10) NOT NULL,
+  connectorId NVARCHAR(255) NOT NULL,
+  version NVARCHAR(50) NOT NULL,
+  name NVARCHAR(255) NOT NULL,
+  activationEvent NVARCHAR(30),
+  state NVARCHAR(50),
+  executionOrder INT,
+  exceptionMessage NVARCHAR(255),
+  stackTrace NVARCHAR(MAX),
+  PRIMARY KEY (tenantid, id)
+);
+CREATE INDEX idx_ci_container_activation ON connector_instance (containerId, containerType, activationEvent);
+ALTER TABLE connector_instance ADD CONSTRAINT fk_connector_instance_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
+
+CREATE TABLE arch_connector_instance (
+  tenantid NUMERIC(19, 0) NOT NULL,
+  id NUMERIC(19, 0) NOT NULL,
+  containerId NUMERIC(19, 0) NOT NULL,
+  containerType NVARCHAR(10) NOT NULL,
+  connectorId NVARCHAR(255) NOT NULL,
+  version NVARCHAR(50) NOT NULL,
+  name NVARCHAR(255) NOT NULL,
+  activationEvent NVARCHAR(30),
+  state NVARCHAR(50),
+  sourceObjectId NUMERIC(19, 0),
+  archiveDate NUMERIC(19, 0) NOT NULL,
+  PRIMARY KEY (tenantid, id)
+);
+CREATE INDEX idx1_arch_connector_instance ON arch_connector_instance (containerId, containerType);

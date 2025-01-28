@@ -70,11 +70,11 @@ class RemoveTenantIdFromApplicationPageProfile extends UpdateStep {
             createPrimaryKey("business_app_page", "id")
             createPrimaryKey("business_app_menu", "id")
 
-            createUniqueConstraint("page", "uk_page_name_processdefinitionid", "name", "processDefinitionId")
-            createUniqueConstraint("profile", "uk_profile_name", "name")
-            createUniqueConstraint("profilemember", "uk_profilemember_profileid_userid_groupid_roleid", "profileId", "userId", "groupId", "roleId")
-            createUniqueConstraint("business_app", "uk_business_app_token_version", "token", "version")
-            createUniqueConstraint("business_app_page", "uk_business_app_page_applicationid_token", "applicationId", "token")
+            createUniqueKey("page", "uk_page_name_processdefinitionid", "name", "processDefinitionId")
+            createUniqueKey("profile", "uk_profile_name", "name")
+            createUniqueKey("profilemember", "uk_profilemember_profileid_userid_groupid_roleid", "profileId", "userId", "groupId", "roleId")
+            createUniqueKey("business_app", "uk_business_app_token_version", "token", "version")
+            createUniqueKey("business_app_page", "uk_business_app_page_applicationid_token", "applicationId", "token")
 
             createForeignKey("profilemember", "fk_profilemember_profileid", "profile", ["profileId"], ["id"], false)
             createForeignKey("business_app", "fk_business_app_profileid", "profile", ["profileId"], ["id"], false)

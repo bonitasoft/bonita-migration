@@ -821,3 +821,36 @@ CREATE TABLE arch_document_mapping (
 CREATE INDEX idx_a_doc_mp_pr_id ON arch_document_mapping (processinstanceid);
 ALTER TABLE arch_document_mapping ADD CONSTRAINT fk_ADocMap_tenId FOREIGN KEY (tenantid) REFERENCES tenant(id);
 ALTER TABLE arch_document_mapping ADD CONSTRAINT fk_archdocmap_docid FOREIGN KEY (tenantid, documentid) REFERENCES document(tenantid, id) ON DELETE CASCADE;
+
+CREATE TABLE connector_instance (
+  tenantid NUMBER(19, 0) NOT NULL,
+  id NUMBER(19, 0) NOT NULL,
+  containerId NUMBER(19, 0) NOT NULL,
+  containerType VARCHAR2(10 CHAR) NOT NULL,
+  connectorId VARCHAR2(255 CHAR) NOT NULL,
+  version VARCHAR2(50 CHAR) NOT NULL,
+  name VARCHAR2(255 CHAR) NOT NULL,
+  activationEvent VARCHAR2(30 CHAR),
+  state VARCHAR2(50 CHAR),
+  executionOrder INT,
+  exceptionMessage VARCHAR2(255 CHAR),
+  stackTrace CLOB,
+  PRIMARY KEY (tenantid, id)
+);
+CREATE INDEX idx_ci_container_activation ON connector_instance (containerId, containerType, activationEvent);
+
+CREATE TABLE arch_connector_instance (
+  tenantid NUMBER(19, 0) NOT NULL,
+  id NUMBER(19, 0) NOT NULL,
+  containerId NUMBER(19, 0) NOT NULL,
+  containerType VARCHAR2(10 CHAR) NOT NULL,
+  connectorId VARCHAR2(255 CHAR) NOT NULL,
+  version VARCHAR2(50 CHAR) NOT NULL,
+  name VARCHAR2(255 CHAR) NOT NULL,
+  activationEvent VARCHAR2(30 CHAR),
+  state VARCHAR2(50 CHAR),
+  sourceObjectId NUMBER(19, 0),
+  archiveDate NUMBER(19, 0) NOT NULL,
+  PRIMARY KEY (tenantid, id)
+);
+CREATE INDEX idx1_arch_connector_instance ON arch_connector_instance (containerId, containerType);

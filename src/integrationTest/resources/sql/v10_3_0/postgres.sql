@@ -112,6 +112,7 @@ CREATE TABLE pending_mapping (
   PRIMARY KEY (tenantid, id)
 );
 CREATE UNIQUE INDEX idx_UQ_pending_mapping ON pending_mapping (activityId, userId, actorId);
+ALTER TABLE pending_mapping ADD CONSTRAINT fk_pending_mapping_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
 ALTER TABLE pending_mapping ADD CONSTRAINT fk_pending_mapping_flownode_instanceId FOREIGN KEY (tenantid, activityId) REFERENCES flownode_instance(tenantid, id);
 
 CREATE TABLE ref_biz_data_inst (
@@ -839,3 +840,37 @@ CREATE TABLE arch_document_mapping (
 CREATE INDEX idx_a_doc_mp_pr_id ON arch_document_mapping (processinstanceid);
 ALTER TABLE arch_document_mapping ADD CONSTRAINT fk_arch_document_mapping_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
 ALTER TABLE arch_document_mapping ADD CONSTRAINT fk_archdocmap_docid FOREIGN KEY (tenantid, documentid) REFERENCES document(tenantid, id) ON DELETE CASCADE;
+
+CREATE TABLE connector_instance (
+  tenantid INT8 NOT NULL,
+  id INT8 NOT NULL,
+  containerId INT8 NOT NULL,
+  containerType VARCHAR(10) NOT NULL,
+  connectorId VARCHAR(255) NOT NULL,
+  version VARCHAR(50) NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  activationEvent VARCHAR(30),
+  state VARCHAR(50),
+  executionOrder INT,
+  exceptionMessage VARCHAR(255),
+  stackTrace TEXT,
+  PRIMARY KEY (tenantid, id)
+);
+CREATE INDEX idx_ci_container_activation ON connector_instance (containerId, containerType, activationEvent);
+ALTER TABLE connector_instance ADD CONSTRAINT fk_connector_instance_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
+
+CREATE TABLE arch_connector_instance (
+  tenantid INT8 NOT NULL,
+  id INT8 NOT NULL,
+  containerId INT8 NOT NULL,
+  containerType VARCHAR(10) NOT NULL,
+  connectorId VARCHAR(255) NOT NULL,
+  version VARCHAR(50) NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  activationEvent VARCHAR(30),
+  state VARCHAR(50),
+  sourceObjectId INT8,
+  archiveDate INT8 NOT NULL,
+  PRIMARY KEY (tenantid, id)
+);
+CREATE INDEX idx1_arch_connector_instance ON arch_connector_instance (containerId, containerType);

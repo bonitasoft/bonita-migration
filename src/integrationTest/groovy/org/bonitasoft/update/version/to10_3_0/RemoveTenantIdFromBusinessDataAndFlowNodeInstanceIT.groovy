@@ -27,8 +27,13 @@ class RemoveTenantIdFromBusinessDataAndFlowNodeInstanceIT extends AbstractTestTo
             hasPrimaryKeyOnTable("flownode_instance", "pk_flownode_instance")
             !hasForeignKeyOnTable("flownode_instance", "fk_flownode_instance_tenantId")
 
-            hasForeignKeyOnTable("pending_mapping", "fk_pending_mapping_flownode_instanceId")
+            !hasColumnOnTable("pending_mapping", "tenantid")
+            !hasForeignKeyOnTable("pending_mapping", "fk_pending_mapping_tenantId")
+            hasForeignKeyOnTable("pending_mapping", "fk_pending_mapping_activityid")
+            !hasForeignKeyOnTable("pending_mapping", "fk_pending_mapping_flownode_instanceId")
             !hasForeignKeyOnTable("pending_mapping", "fk_pMap_flnId") // ORACLE
+            !hasUniqueKeyOnTable("pending_mapping", "idx_UQ_pending_mapping")
+            hasUniqueKeyOnTableWithNameAndColumns("pending_mapping", "uk_pending_mapping_activityid_userid_actorid", "activityid", "userid", "actorid")
 
             !hasColumnOnTable("ref_biz_data_inst", "tenantid")
             hasPrimaryKeyOnTable("ref_biz_data_inst", "pk_ref_biz_data_inst")
@@ -63,6 +68,13 @@ class RemoveTenantIdFromBusinessDataAndFlowNodeInstanceIT extends AbstractTestTo
             !hasColumnOnTable("arch_data_instance", "tenantid")
             hasPrimaryKeyOnTable("arch_data_instance", "pk_arch_data_instance")
             !hasForeignKeyOnTable("arch_data_instance", "fk_arch_data_instance_tenantId")
+
+            !hasColumnOnTable("connector_instance", "tenantid")
+            !hasForeignKeyOnTable("connector_instance", "fk_connector_instance_tenantId")
+            hasPrimaryKeyOnTable("connector_instance", "pk_connector_instance")
+
+            !hasColumnOnTable("arch_connector_instance", "tenantid")
+            hasPrimaryKeyOnTable("arch_connector_instance", "pk_arch_connector_instance")
         }
     }
 }

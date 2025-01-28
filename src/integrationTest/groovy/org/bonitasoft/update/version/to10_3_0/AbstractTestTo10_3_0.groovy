@@ -41,6 +41,8 @@ abstract class AbstractTestTo10_3_0 extends Specification {
 
     def dropTestTables() {
         dbUnitHelper.dropTables([
+            "connector_instance",
+            "arch_connector_instance",
             "arch_document_mapping",
             "document_mapping",
             "document",
