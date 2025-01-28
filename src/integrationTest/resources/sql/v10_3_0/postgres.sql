@@ -95,7 +95,6 @@ CREATE TABLE flownode_instance (
   tokenCount INT NOT NULL,
   PRIMARY KEY (tenantid, id)
 );
-
 CREATE INDEX idx_fni_rootcontid ON flownode_instance (rootContainerId);
 CREATE INDEX idx_fni_loggroup4 ON flownode_instance (logicalGroup4);
 CREATE INDEX idx_fni_loggroup3_terminal ON flownode_instance(logicalgroup3, terminal);
@@ -874,3 +873,88 @@ CREATE TABLE arch_connector_instance (
   PRIMARY KEY (tenantid, id)
 );
 CREATE INDEX idx1_arch_connector_instance ON arch_connector_instance (containerId, containerType);
+
+CREATE TABLE arch_process_instance (
+  tenantid INT8 NOT NULL,
+  id INT8 NOT NULL,
+  name VARCHAR(75) NOT NULL,
+  processDefinitionId INT8 NOT NULL,
+  description VARCHAR(255),
+  startDate INT8 NOT NULL,
+  startedBy INT8 NOT NULL,
+  startedBySubstitute INT8 NOT NULL,
+  endDate INT8 NOT NULL,
+  archiveDate INT8 NOT NULL,
+  stateId INT NOT NULL,
+  lastUpdate INT8 NOT NULL,
+  rootProcessInstanceId INT8,
+  callerId INT8,
+  sourceObjectId INT8 NOT NULL,
+  stringIndex1 VARCHAR(255),
+  stringIndex2 VARCHAR(255),
+  stringIndex3 VARCHAR(255),
+  stringIndex4 VARCHAR(255),
+  stringIndex5 VARCHAR(255),
+  PRIMARY KEY (tenantid, id)
+);
+CREATE INDEX idx1_arch_process_instance ON arch_process_instance (sourceObjectId, rootProcessInstanceId, callerId);
+CREATE INDEX idx2_arch_process_instance ON arch_process_instance (processDefinitionId, archiveDate);
+CREATE INDEX idx3_arch_process_instance ON arch_process_instance (sourceObjectId, callerId, stateId);
+ALTER TABLE arch_process_instance ADD CONSTRAINT fk_arch_process_instance_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
+
+CREATE TABLE arch_flownode_instance (
+  tenantid INT8 NOT NULL,
+  id INT8 NOT NULL,
+  flownodeDefinitionId INT8 NOT NULL,
+  kind VARCHAR(25) NOT NULL,
+  sourceObjectId INT8,
+  archiveDate INT8 NOT NULL,
+  rootContainerId INT8 NOT NULL,
+  parentContainerId INT8 NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  displayName VARCHAR(255),
+  displayDescription VARCHAR(255),
+  stateId INT NOT NULL,
+  stateName VARCHAR(50),
+  terminal BOOLEAN NOT NULL,
+  stable BOOLEAN ,
+  actorId INT8 NULL,
+  assigneeId INT8 DEFAULT 0 NOT NULL,
+  reachedStateDate INT8,
+  lastUpdateDate INT8,
+  expectedEndDate INT8,
+  claimedDate INT8,
+  priority SMALLINT,
+  gatewayType VARCHAR(50),
+  hitBys VARCHAR(255),
+  logicalGroup1 INT8 NOT NULL,
+  logicalGroup2 INT8 NOT NULL,
+  logicalGroup3 INT8,
+  logicalGroup4 INT8 NOT NULL,
+  loop_counter INT,
+  loop_max INT,
+  loopCardinality INT,
+  loopDataInputRef VARCHAR(255),
+  loopDataOutputRef VARCHAR(255),
+  description VARCHAR(255),
+  sequential BOOLEAN,
+  dataInputItemRef VARCHAR(255),
+  dataOutputItemRef VARCHAR(255),
+  nbActiveInst INT,
+  nbCompletedInst INT,
+  nbTerminatedInst INT,
+  executedBy INT8,
+  executedBySubstitute INT8,
+  activityInstanceId INT8,
+  aborting BOOLEAN NOT NULL,
+  triggeredByEvent BOOLEAN,
+  interrupting BOOLEAN,
+  PRIMARY KEY (tenantid, id)
+);
+CREATE INDEX idx_afi_kind_lg2_executedBy ON arch_flownode_instance(logicalGroup2, kind, executedBy);
+CREATE INDEX idx_afi_kind_lg3 ON arch_flownode_instance(kind, logicalGroup3);
+CREATE INDEX idx_afi_lg4 ON arch_flownode_instance(logicalGroup4);
+CREATE INDEX idx_afi_sourceid_kind ON arch_flownode_instance (sourceObjectId, kind);
+CREATE INDEX idx1_afi_root_parent ON arch_flownode_instance (rootContainerId, parentContainerId);
+CREATE INDEX idx_lg4_lg2 on arch_flownode_instance(logicalGroup4, logicalGroup2);
+ALTER TABLE arch_flownode_instance ADD CONSTRAINT fk_arch_flownode_instance_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);

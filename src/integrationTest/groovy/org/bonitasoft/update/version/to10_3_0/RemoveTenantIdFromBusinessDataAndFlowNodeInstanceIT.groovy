@@ -27,6 +27,16 @@ class RemoveTenantIdFromBusinessDataAndFlowNodeInstanceIT extends AbstractTestTo
             hasPrimaryKeyOnTable("flownode_instance", "pk_flownode_instance")
             !hasForeignKeyOnTable("flownode_instance", "fk_flownode_instance_tenantId")
 
+            !hasColumnOnTable("arch_flownode_instance", "tenantid")
+            hasPrimaryKeyOnTable("arch_flownode_instance", "pk_arch_flownode_instance")
+            !hasForeignKeyOnTable("arch_flownode_instance", "fk_arch_flownode_instance_tenantId")
+            !hasForeignKeyOnTable("arch_flownode_instance", "fk_AFln_tenId") // Oracle
+
+            !hasColumnOnTable("arch_process_instance", "tenantid")
+            hasPrimaryKeyOnTable("arch_process_instance", "pk_arch_process_instance")
+            !hasForeignKeyOnTable("arch_process_instance", "fk_arch_process_instance_tenantId")
+            !hasForeignKeyOnTable("arch_process_instance", "fk_AProc_tenId") // Oracle
+
             !hasColumnOnTable("pending_mapping", "tenantid")
             !hasForeignKeyOnTable("pending_mapping", "fk_pending_mapping_tenantId")
             hasForeignKeyOnTable("pending_mapping", "fk_pending_mapping_activityid")

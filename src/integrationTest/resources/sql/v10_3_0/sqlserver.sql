@@ -873,3 +873,88 @@ CREATE TABLE arch_connector_instance (
   PRIMARY KEY (tenantid, id)
 );
 CREATE INDEX idx1_arch_connector_instance ON arch_connector_instance (containerId, containerType);
+
+CREATE TABLE arch_process_instance (
+  tenantid NUMERIC(19, 0) NOT NULL,
+  id NUMERIC(19, 0) NOT NULL,
+  name NVARCHAR(75) NOT NULL,
+  processDefinitionId NUMERIC(19, 0) NOT NULL,
+  description NVARCHAR(255),
+  startDate NUMERIC(19, 0) NOT NULL,
+  startedBy NUMERIC(19, 0) NULL,
+  startedBySubstitute NUMERIC(19, 0) NOT NULL,
+  endDate NUMERIC(19, 0) NOT NULL,
+  archiveDate NUMERIC(19, 0) NOT NULL,
+  stateId INT NOT NULL,
+  lastUpdate NUMERIC(19, 0) NOT NULL,
+  rootProcessInstanceId NUMERIC(19, 0),
+  callerId NUMERIC(19, 0),
+  sourceObjectId NUMERIC(19, 0) NOT NULL,
+  stringIndex1 NVARCHAR(255),
+  stringIndex2 NVARCHAR(255),
+  stringIndex3 NVARCHAR(255),
+  stringIndex4 NVARCHAR(255),
+  stringIndex5 NVARCHAR(255),
+  PRIMARY KEY (tenantid, id)
+);
+CREATE INDEX idx1_arch_process_instance ON arch_process_instance (sourceObjectId, rootProcessInstanceId, callerId);
+CREATE INDEX idx2_arch_process_instance ON arch_process_instance (processDefinitionId, archiveDate);
+CREATE INDEX idx3_arch_process_instance ON arch_process_instance (sourceObjectId, callerId, stateId);
+ALTER TABLE arch_process_instance ADD CONSTRAINT fk_arch_process_instance_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
+
+CREATE TABLE arch_flownode_instance (
+  tenantid NUMERIC(19, 0) NOT NULL,
+  id NUMERIC(19, 0) NOT NULL,
+  flownodeDefinitionId NUMERIC(19, 0) NOT NULL,
+  kind NVARCHAR(25) NOT NULL,
+  sourceObjectId NUMERIC(19, 0),
+  archiveDate NUMERIC(19, 0) NOT NULL,
+  rootContainerId NUMERIC(19, 0) NOT NULL,
+  parentContainerId NUMERIC(19, 0) NOT NULL,
+  name NVARCHAR(255) NOT NULL,
+  displayName NVARCHAR(255),
+  displayDescription NVARCHAR(255),
+  stateId INT NOT NULL,
+  stateName NVARCHAR(50),
+  terminal BIT NOT NULL,
+  stable BIT ,
+  actorId NUMERIC(19, 0) NULL,
+  assigneeId NUMERIC(19, 0) DEFAULT 0 NOT NULL,
+  reachedStateDate NUMERIC(19, 0),
+  lastUpdateDate NUMERIC(19, 0),
+  expectedEndDate NUMERIC(19, 0),
+  claimedDate NUMERIC(19, 0),
+  priority TINYINT,
+  gatewayType NVARCHAR(50),
+  hitBys NVARCHAR(255),
+  logicalGroup1 NUMERIC(19, 0) NOT NULL,
+  logicalGroup2 NUMERIC(19, 0) NOT NULL,
+  logicalGroup3 NUMERIC(19, 0),
+  logicalGroup4 NUMERIC(19, 0) NOT NULL,
+  loop_counter INT,
+  loop_max INT,
+  loopCardinality INT,
+  loopDataInputRef NVARCHAR(255),
+  loopDataOutputRef NVARCHAR(255),
+  description NVARCHAR(255),
+  sequential BIT,
+  dataInputItemRef NVARCHAR(255),
+  dataOutputItemRef NVARCHAR(255),
+  nbActiveInst INT,
+  nbCompletedInst INT,
+  nbTerminatedInst INT,
+  executedBy NUMERIC(19, 0),
+  executedBySubstitute NUMERIC(19, 0),
+  activityInstanceId NUMERIC(19, 0),
+  aborting BIT NOT NULL,
+  triggeredByEvent BIT,
+  interrupting BIT,
+  PRIMARY KEY (tenantid, id)
+);
+CREATE INDEX idx_afi_kind_lg2_executedBy ON arch_flownode_instance(logicalGroup2, kind, executedBy);
+CREATE INDEX idx_afi_kind_lg3 ON arch_flownode_instance(kind, logicalGroup3);
+CREATE INDEX idx_afi_lg4 ON arch_flownode_instance(logicalGroup4);
+CREATE INDEX idx_afi_sourceid_kind ON arch_flownode_instance (sourceObjectId, kind);
+CREATE INDEX idx1_afi_root_parent ON arch_flownode_instance (rootContainerId, parentContainerId);
+CREATE INDEX idx_lg4_lg2 on arch_flownode_instance(logicalGroup4, logicalGroup2);
+ALTER TABLE arch_flownode_instance ADD CONSTRAINT fk_arch_flownode_instance_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);

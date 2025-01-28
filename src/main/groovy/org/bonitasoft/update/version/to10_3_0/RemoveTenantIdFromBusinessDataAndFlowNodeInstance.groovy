@@ -19,8 +19,9 @@ import org.bonitasoft.update.core.UpdateStep
 import static org.bonitasoft.update.core.UpdateStep.DBVendor.ORACLE
 
 /**
- * Remove tenantId from business data and flownode instance tables: flownode_instance, data_instance,
- * arch_data_instance, ref_biz_data_inst, arch_ref_biz_data_inst, multi_biz_data, arch_multi_biz_data
+ * Remove tenantId from business data and flownode instance tables: flownode_instance, arch_flownode_instance, data_instance,
+ " arch_data_instance, ref_biz_data_inst, arch_ref_biz_data_inst, multi_biz_data, arch_multi_biz_data, arch_process_instance,
+ " pending_mapping, connector_instance, arch_connector_instance
  */
 class RemoveTenantIdFromBusinessDataAndFlowNodeInstance extends UpdateStep {
 
@@ -43,6 +44,8 @@ class RemoveTenantIdFromBusinessDataAndFlowNodeInstance extends UpdateStep {
             dropForeignKey("arch_multi_biz_data", "fk_arch_rbdi_mbd")
             // on Oracle the FK is named differently:
             dropForeignKey("pending_mapping", dbVendor == ORACLE ? "fk_pMap_flnId" : "fk_pending_mapping_flownode_instanceId")
+            dropForeignKey("arch_flownode_instance", dbVendor == ORACLE ? "fk_AFln_tenId" : "fk_arch_flownode_instance_tenantId")
+            dropForeignKey("arch_process_instance", dbVendor == ORACLE ? "fk_AProc_tenId" : "fk_arch_process_instance_tenantId")
 
             // recreate PK:
             recreatePrimaryKey("flownode_instance")
@@ -55,6 +58,8 @@ class RemoveTenantIdFromBusinessDataAndFlowNodeInstance extends UpdateStep {
             recreatePrimaryKey("pending_mapping")
             recreatePrimaryKey("connector_instance")
             recreatePrimaryKey("arch_connector_instance")
+            recreatePrimaryKey("arch_flownode_instance")
+            recreatePrimaryKey("arch_process_instance")
 
             // recreate UK:
             dropUniqueKey("pending_mapping", "idx_UQ_pending_mapping")
@@ -85,12 +90,15 @@ class RemoveTenantIdFromBusinessDataAndFlowNodeInstance extends UpdateStep {
             dropColumnIfExists("pending_mapping", "tenantid")
             dropColumnIfExists("connector_instance", "tenantid")
             dropColumnIfExists("arch_connector_instance", "tenantid")
+            dropColumnIfExists("arch_flownode_instance", "tenantid")
+            dropColumnIfExists("arch_process_instance", "tenantid")
         }
     }
 
     @Override
     String getDescription() {
-        return "Remove tenantId from business data and flownode instance tables: flownode_instance, data_instance," +
-                " arch_data_instance, ref_biz_data_inst, arch_ref_biz_data_inst, multi_biz_data, arch_multi_biz_data"
+        return "Remove tenantId from business data and flownode instance tables: flownode_instance, arch_flownode_instance, data_instance," +
+                " arch_data_instance, ref_biz_data_inst, arch_ref_biz_data_inst, multi_biz_data, arch_multi_biz_data, arch_process_instance," +
+                " pending_mapping, connector_instance, arch_connector_instance"
     }
 }

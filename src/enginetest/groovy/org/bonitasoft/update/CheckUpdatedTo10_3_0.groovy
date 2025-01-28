@@ -78,6 +78,9 @@ class CheckUpdatedTo10_3_0 extends Specification {
         processAPI.isUserProcessSupervisor(processDefinitionId, user.id)
 
         processAPI.searchArchivedConnectorInstances(new SearchOptionsBuilder(0, 10).done()).count == 1
+
+        // check that retrieval of archived flownode instance still works:
+        processAPI.searchArchivedHumanTasks(new SearchOptionsBuilder(0, 10).done()).count == 1
     }
 
     def 'should be able to add a process comment'() {
@@ -166,8 +169,8 @@ class CheckUpdatedTo10_3_0 extends Specification {
         TestUtil.sendMessage("message", processName, "startEventWithMessage", client.processAPI)
 
         expect:
-        TestUtil.waitForUserTask("step1WithMessage", client.processAPI, 2L)
-        TestUtil.waitForUserTask("step1WithTimer", client.processAPI, 2L)
+        waitForUserTask("step1WithMessage", client.processAPI, 2L)
+        waitForUserTask("step1WithTimer", client.processAPI, 2L)
     }
 
     def 'should add and remove dependency'() {
