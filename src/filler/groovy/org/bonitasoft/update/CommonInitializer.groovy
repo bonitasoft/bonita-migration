@@ -44,7 +44,7 @@ class CommonInitializer {
             modelVersion = "1.0"
             productVersion = "7.11.3"
             addBusinessObject(new BusinessObject().with {
-                qualifiedName = "com.compagny.BO"
+                qualifiedName = "com.company.BO"
                 addField(new SimpleField().with {
                     name = "name"
                     type = FieldType.TEXT

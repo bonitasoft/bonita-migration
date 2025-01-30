@@ -23,6 +23,7 @@ import org.bonitasoft.engine.search.SearchOptionsBuilder
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
+import static java.util.Collections.emptyMap
 import static org.awaitility.Awaitility.await
 
 /**
@@ -128,5 +129,18 @@ class TestUtil {
         new SearchOptionsBuilder(0, 1)
                 .filter(HumanTaskInstanceSearchDescriptor.STATE_NAME, "ready")
                 .filter(HumanTaskInstanceSearchDescriptor.NAME, taskName).done()
+    }
+
+    static void assignAndExecuteUserTask(long processInstanceId, String taskName, long userId, ProcessAPI processAPI) {
+        def taskInstance = processAPI
+                .getHumanTaskInstances(processInstanceId, taskName, 0, 1)
+                .get(0)
+        processAPI.assignAndExecuteUserTask(userId, taskInstance.id, emptyMap())
+    }
+
+    static void waitForProcessToFinish(long processInstanceId, ProcessAPI processAPI) {
+        await().until({
+            processAPI.getArchivedProcessInstances(processInstanceId, 0, 1).size() == 1
+        })
     }
 }

@@ -47,8 +47,8 @@ class InitializerAfter8_0_0 extends CommonInitializer {
 
         def processBuilder = new ProcessDefinitionBuilder().createNewInstance("ProcessWithBusinessData", "11.0")
         processBuilder.setActorInitiator("myActorInitiator")
-        processBuilder.addBusinessData("myBO", "com.compagny.BO", new ExpressionBuilder().createGroovyScriptExpression("createBusinessData",
-                "new com.compagny.BO()", "com.compagny.BO"))
+        processBuilder.addBusinessData("myBO", "com.company.BO", new ExpressionBuilder().createGroovyScriptExpression("createBusinessData",
+                "new com.company.BO()", "com.company.BO"))
         def businessArchiveBuilder = new BusinessArchiveBuilder().createNewBusinessArchive()
         def actorInit = new Actor("myActorInitiator")
         actorInit.addUser(user.getUserName())

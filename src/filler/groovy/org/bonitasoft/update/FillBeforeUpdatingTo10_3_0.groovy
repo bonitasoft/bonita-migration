@@ -50,6 +50,7 @@ import static java.util.Collections.singletonMap
 import static org.bonitasoft.update.BuildTestUtil.*
 import static org.bonitasoft.update.test.TestUtil.*
 import static org.junit.Assert.assertEquals
+import static org.junit.Assert.assertNotNull
 import static org.junit.Assert.assertTrue
 
 class FillBeforeUpdatingTo10_3_0 {
@@ -197,7 +198,7 @@ class FillBeforeUpdatingTo10_3_0 {
         final ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder()
                 .createNewInstance("MyProcessWithDocumentsInBar", "1.0")
         final String ACTOR_NAME = "actor"
-        builder.addUserTask("step1", ACTOR_NAME)
+        builder.addUserTask("step1WithDocumentsInBar", ACTOR_NAME)
         builder.addActor(ACTOR_NAME)
         builder.addDocumentDefinition("myDoc").addContentFileName("myPdfModifiedName.pdf")
                 .addDescription("a cool pdf document").addMimeType("application/pdf")
@@ -215,7 +216,47 @@ class FillBeforeUpdatingTo10_3_0 {
         final byte[] docContent = processAPI.getDocumentContent(documents.get(0).getContentStorageId())
         assertTrue(Arrays.equals(pdfContent, docContent))
 
-        waitForUserTask("step1", processAPI)
+        waitForUserTask("step1WithDocumentsInBar", processAPI)
+    }
+
+    @FillAction
+    def 'deploy and enable process with business data'() {
+        def client = new APIClient()
+        client.login("install", "install")
+        def username = "walter.bates"
+        def user = client.getIdentityAPI().getUserByUserName(username)
+        client.logout()
+        client.login(username, "bpm")
+
+        def processDefinitionBuilder = new ProcessDefinitionBuilder()
+                .createNewInstance("MyProcessWithBusinessData", "1.0")
+
+        // Add actor and user task
+        def actorName = "actor"
+        processDefinitionBuilder.addActor(actorName)
+        processDefinitionBuilder.addUserTask("step1WithBusinessData", actorName)
+
+        // Add 1 single and 1 multiple business objects
+        processDefinitionBuilder.addBusinessData("myBO", "com.company.BO",
+                new ExpressionBuilder().createGroovyScriptExpression("createBusinessData",
+                "new com.company.BO()", "com.company.BO"))
+        processDefinitionBuilder.addBusinessData("myMultiBO", "com.company.BO",
+                new ExpressionBuilder().createGroovyScriptExpression("createBusinessData",
+                "[new com.company.BO(), new com.company.BO()]", "java.util.List"))
+                .setMultiple(true)
+
+        // Add context entries mapped to previous business objects
+        processDefinitionBuilder.addContextEntry("myBOContext",
+                new ExpressionBuilder().createBusinessDataExpression("myBO", "com.company.BO"))
+        processDefinitionBuilder.addContextEntry("myMultiBOContext",
+                new ExpressionBuilder().createBusinessDataExpression("myMultiBO", "java.util.List"))
+
+        def businessArchiveBuilder = new BusinessArchiveBuilder().createNewBusinessArchive()
+                .setProcessDefinition(processDefinitionBuilder.getProcess())
+
+        def processDefinition =
+                deployAndEnableProcessWithActor(businessArchiveBuilder.done(), actorName, user, client.processAPI)
+        assertNotNull(processDefinition)
     }
 
     ProcessDefinition deployAndEnableProcessWithActorAndConnectorAndParameter(

@@ -17,7 +17,6 @@ import org.bonitasoft.engine.api.APIClient
 import org.bonitasoft.engine.api.PlatformAPIAccessor
 import org.bonitasoft.engine.bpm.category.CategoryCriterion
 import org.bonitasoft.engine.bpm.document.DocumentCriterion
-import org.bonitasoft.engine.bpm.process.ArchivedProcessInstancesSearchDescriptor
 import org.bonitasoft.engine.business.application.*
 import org.bonitasoft.engine.identity.GroupCriterion
 import org.bonitasoft.engine.identity.RoleCriterion
@@ -28,14 +27,11 @@ import org.bonitasoft.engine.search.Order
 import org.bonitasoft.engine.search.SearchOptions
 import org.bonitasoft.engine.search.SearchOptionsBuilder
 import org.bonitasoft.engine.search.SearchResult
-import org.bonitasoft.engine.session.impl.SessionImpl
 import org.junit.Rule
 import spock.lang.Specification
 
-import static java.util.Collections.emptyMap
 import static java.util.Collections.singletonMap
-import static org.awaitility.Awaitility.await
-import static org.bonitasoft.update.TestUtil.waitForUserTask
+import static org.bonitasoft.update.TestUtil.*
 
 class CheckUpdatedTo10_3_0 extends Specification {
 
@@ -88,7 +84,7 @@ class CheckUpdatedTo10_3_0 extends Specification {
     def 'should be able to add a process comment'() {
         given:
         def client = new APIClient()
-        client.login("walter.bates", "bpm")
+        client.login(USERNAME, "bpm")
         def processDefinitionId = client.processAPI.getProcessDefinitionId("executeConnectorOnFinishOfAnAutomaticActivityWithDataAsOutput", "1.0")
         def processInstance = client.processAPI.startProcessWithInputs(processDefinitionId, singletonMap("integerContractData", 7))
 
@@ -104,19 +100,17 @@ class CheckUpdatedTo10_3_0 extends Specification {
     def 'should be able to retrieve documents and archived documents'() {
         given:
         def client = new APIClient()
-        client.login("walter.bates", "bpm")
-        def session = client.session as SessionImpl
+        client.login(USERNAME, "bpm")
         def processAPI = client.processAPI
         def processDefinitionId = processAPI.getProcessDefinitionId("MyProcessWithDocumentsInBar", "1.0")
         def processInstance = processAPI.startProcess(processDefinitionId)
-        waitForUserTask("step1", processAPI, 2L)
+        waitForUserTask("step1WithDocumentsInBar", processAPI, 2L)
 
         when:
         def documents = processAPI.getLastVersionOfDocuments(processInstance.id, 0, 1, DocumentCriterion.DEFAULT)
-        def taskInstances = processAPI.getHumanTaskInstances(processInstance.id, "step1", 0, 10)
         final byte[] docContent = processAPI.getDocumentContent(documents.get(0).getContentStorageId())
-        processAPI.assignAndExecuteUserTask(session.userId, taskInstances.get(0).getId(), emptyMap())
-        await().until({ processAPI.searchArchivedProcessInstances(new SearchOptionsBuilder(0, 10).filter(ArchivedProcessInstancesSearchDescriptor.SOURCE_OBJECT_ID, processInstance.id).done()).count == 1 })
+        assignAndExecuteUserTask(processInstance.id, "step1WithDocumentsInBar", client.session.userId, processAPI)
+        waitForProcessToFinish(processInstance.id, processAPI)
         def archivedDocument = processAPI.getArchivedVersionOfProcessDocument(documents.get(0).id)
 
         then:
@@ -126,6 +120,32 @@ class CheckUpdatedTo10_3_0 extends Specification {
         archivedDocument.hasContent()
         archivedDocument.contentMimeType == "application/pdf"
         archivedDocument.contentFileName == "myPdfModifiedName.pdf"
+    }
+
+    def 'should be able to retrieve business data and archive business data'() {
+        given:
+        def client = new APIClient()
+        client.login(USERNAME, "bpm")
+        def processAPI = client.processAPI
+        def processDefinitionId = processAPI.getProcessDefinitionId("MyProcessWithBusinessData", "1.0")
+        def processInstance = processAPI.startProcess(processDefinitionId)
+        waitForUserTask("step1WithBusinessData", processAPI)
+
+        when:
+        def processInstanceContext = processAPI.getProcessInstanceExecutionContext(processInstance.id)
+        assignAndExecuteUserTask(processInstance.id, "step1WithBusinessData", client.session.userId, processAPI)
+        waitForProcessToFinish(processInstance.id, processAPI)
+        def archivedProcessInstance = processAPI.getArchivedProcessInstances(processInstance.id, 0, 1).get(0)
+        def archiveProcessInstanceContext = processAPI.getArchivedProcessInstanceExecutionContext(archivedProcessInstance.id)
+
+        then:
+        [processInstanceContext, archiveProcessInstanceContext].each {
+            it.size() == 2
+            it.containsKey("myBOContext")
+            it.get("myBOContext").class.name.startsWith("com.company.BO")
+            it.containsKey("myMultiBOContext")
+            it.get("myMultiBOContext") instanceof List
+        }
     }
 
     def 'should be able to retrieve identity elements'() {
@@ -162,13 +182,13 @@ class CheckUpdatedTo10_3_0 extends Specification {
     def 'should timers and message events work after update'() {
         given:
         def client = new APIClient()
-        client.login("walter.bates", "bpm")
+        client.login(USERNAME, "bpm")
         def processName = "process with start timer and start message"
         def processDefinitionId = client.processAPI.getProcessDefinitionId(processName, "1.0")
 
         client.processAPI.disableProcess(processDefinitionId)
         client.processAPI.enableProcess(processDefinitionId) // to re-trigger the timer
-        TestUtil.sendMessage("message", processName, "startEventWithMessage", client.processAPI)
+        sendMessage("message", processName, "startEventWithMessage", client.processAPI)
 
         expect:
         waitForUserTask("step1WithMessage", client.processAPI, 2L)
