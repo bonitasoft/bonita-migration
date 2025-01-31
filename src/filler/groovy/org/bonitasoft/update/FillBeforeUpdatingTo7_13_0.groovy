@@ -22,6 +22,7 @@ import org.junit.Rule
 import static org.bonitasoft.update.test.TestUtil.createTestPageContent
 
 class FillBeforeUpdatingTo7_13_0 {
+
     @Rule
     public BonitaEngineRule bonitaEngineRule = BonitaEngineRule.create().keepPlatformOnShutdown()
 

@@ -157,7 +157,7 @@ class FillBeforeUpdatingTo10_3_0 {
     def 'start process with timer or message'() throws Exception {
         def client = new APIClient()
         client.login("install", "install")
-        def username = "walter.bates"
+        def username = "john"
         def user = client.getIdentityAPI().getUserByUserName(username)
         client.logout()
         client.login(username, "bpm")

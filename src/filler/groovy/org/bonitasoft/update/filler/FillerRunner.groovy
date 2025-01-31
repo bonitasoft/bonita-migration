@@ -27,7 +27,6 @@ class FillerRunner {
 
         println "FillerRunner: fill with class names: " + classNames
 
-
         def instances = []
 
         classNames.each {

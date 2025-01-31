@@ -22,7 +22,6 @@ import org.gradle.api.tasks.testing.Test
 
 import static UpdatePlugin.getDatabaseDriverConfiguration
 import static org.bonitasoft.update.plugin.VersionUtils.underscored
-
 /**
  * @author Baptiste Mesta.
  */
@@ -70,11 +69,15 @@ class TestUpdateTask extends Test {
         this.isSP = isSP
         this.bonitaVersion = bonitaVersion
         testClassesDirs = project.sourceSets.enginetest.output.classesDirs
+        if (isSP) {
+            testClassesDirs += project.project(':bonita-update-tool').sourceSets.enginetest.output.classesDirs
+        }
         classpath = project.files(
                 project.sourceSets.enginetest.runtimeClasspath,
                 project.getConfigurations().named(underscored(bonitaVersion)),
                 getDatabaseDriverConfiguration(project, bonitaVersion)
         )
+
         // add as input the database configuration, tests must be relaunched when database configuration change
         dbvendor = project.extensions.database.dbVendor
 
@@ -84,7 +87,9 @@ class TestUpdateTask extends Test {
         } else {
             include "**/*After7_2_0DefaultTest*"
         }
-        include "**/*To" + underscored(bonitaVersion) + (isSP ? "SP" : "") + "*"
+        // When in SP, we also run the community version of the tests, so that Community version of the tests are
+        // run on all DBMS (since Mysql, SqlServer and Oracle are not supported anymore in community):
+        include "**/CheckUpdatedTo" + underscored(bonitaVersion) + "*"
         useJUnitPlatform()
         // To allow to use the real implementation of the ProcessStarterVerifier, and not the one that comes with
         // TestEngine, as we use bonita-test-api:

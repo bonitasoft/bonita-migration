@@ -23,6 +23,7 @@ import static UpdatePlugin.getDatabaseDriverConfiguration
 import static groovy.io.FileType.DIRECTORIES
 import static groovy.io.FileType.FILES
 import static org.bonitasoft.update.plugin.VersionUtils.semver
+
 /**
  * @author Baptiste Mesta.
  */
@@ -108,7 +109,7 @@ class PrepareUpdateTestTask extends JavaExec {
                     fillers.add("com.bonitasoft.update.InitializerAfter8_0_0SP")
                 }
             } else {
-               if (version < Version.valueOf("7.11.0")) {
+                if (version < Version.valueOf("7.11.0")) {
                     fillers.add("org.bonitasoft.update.InitializerBefore7_11_0")
                 } else if (version < Version.valueOf("9.0.0")) {
                     fillers.add("org.bonitasoft.update.InitializerAfter7_11_0")
@@ -117,8 +118,10 @@ class PrepareUpdateTestTask extends JavaExec {
                 }
             }
         }
-        fillers.add("${isSP ? 'com' : 'org'}.bonitasoft.update.FillBeforeUpdatingTo${isSP ? 'SP' : ''}" +
-                targetVersion)
+        fillers.add('org.bonitasoft.update.FillBeforeUpdatingTo' + targetVersion)
+        if (isSP) {
+            fillers.add('com.bonitasoft.update.FillBeforeUpdatingToSP' + targetVersion)
+        }
         fillers
     }
 
