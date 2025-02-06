@@ -15,9 +15,28 @@ package org.bonitasoft.update.version.to10_3_0
 
 class CleanupTenantReferencingTablesIT extends AbstractTestTo10_3_0 {
 
+    @Override
+    def createTestTables() {
+        // Need to have only those 3 tables, as other tables have FK on tenant table, so we cannot drop it:
+        dbUnitHelper.createTables("10_3_0/tenant_sequence")
+    }
+
+    @Override
+    def dropTestTables() {
+        dbUnitHelper.dropTables(["tenant", "sequence", "platform"] as String[])
+    }
+
     private CleanupTenantReferencingTables updateStep = new CleanupTenantReferencingTables()
 
-    def "should remove tenantId from sequence table"() {
+    def "should remove tenantId from sequence table and delete tenant table"() {
+        given:
+        updateContext.sql.executeInsert("INSERT INTO tenant(id, created, createdby, description, defaulttenant, iconname, iconpath, name, status) VALUES (?,?,?,?,?,?,?,?,?)"
+                , 101L, 1452271739683, 'system', 'Default tenant', dbUnitHelper.falseValue(), null, null,
+                'default', 'ACTIVATED')
+        updateContext.sql.executeInsert("""INSERT INTO platform(id, version, initial_bonita_version, application_version,
+maintenance_message_active, created, created_by, information) values (?,?,?,?,?,?,?,?)""",
+                1L, "10.2", "10.2.0", "0.0.0", false, 112133L, "platformAdmin", null)
+
         when:
         updateStep.execute(updateContext)
 
@@ -25,6 +44,11 @@ class CleanupTenantReferencingTablesIT extends AbstractTestTo10_3_0 {
         with(updateContext.databaseHelper) {
             !hasColumnOnTable("sequence", "tenantid")
             hasPrimaryKeyOnTable("sequence", "pk_sequence")
+
+            hasPrimaryKeyOnTable("platform", "pk_platform")
+            hasColumnOnTable("platform", "status")
+            updateContext.sql.firstRow("select status from platform")['status'] == 'ACTIVATED'
+            !hasTable("tenant")
         }
     }
 }

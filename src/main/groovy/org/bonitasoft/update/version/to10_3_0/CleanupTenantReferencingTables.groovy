@@ -15,8 +15,9 @@ package org.bonitasoft.update.version.to10_3_0
 
 import org.bonitasoft.update.core.UpdateContext
 import org.bonitasoft.update.core.UpdateStep
+
 /**
- * Remove tenantId from 'sequence' tables
+ * Remove tenantId from 'sequence' table and delete 'tenant' table
  */
 class CleanupTenantReferencingTables extends UpdateStep {
 
@@ -25,11 +26,18 @@ class CleanupTenantReferencingTables extends UpdateStep {
         context.databaseHelper.with {
             recreatePrimaryKey("sequence")
             dropColumnIfExists("sequence", "tenantid")
+
+            recreatePrimaryKey("platform")
+
+            String status = context.sql.firstRow("select status from tenant")['status'] as String
+            addColumnIfNotExist("platform", "status", VARCHAR(15), "'${status}'", "NOT NULL")
+
+            dropTableIfExists("tenant")
         }
     }
 
     @Override
     String getDescription() {
-        return "Remove tenantId from 'sequence' table"
+        return "Remove tenantId from 'sequence' table & delete 'tenant' table"
     }
 }
