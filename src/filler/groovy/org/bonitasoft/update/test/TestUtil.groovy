@@ -33,6 +33,8 @@ import static org.awaitility.Awaitility.await
  */
 class TestUtil {
 
+    public static final String WALTER_BATES = "walter.bates"
+
     public
     static byte[] createTestPageContent(String pageName, String displayName, String description) throws Exception {
         ByteArrayOutputStream e = new ByteArrayOutputStream()
@@ -79,7 +81,7 @@ class TestUtil {
     }
 
     static UserCreator buildUserWalterBates(long managerId = 0) {
-        def user = new UserCreator("walter.bates", "bpm")
+        def user = new UserCreator(WALTER_BATES, "bpm")
                 .setFirstName("Walter")
                 .setLastName("Bates")
                 .setTitle("Mr")

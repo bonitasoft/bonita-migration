@@ -37,6 +37,7 @@ class UpdateTo10_3_0 extends VersionUpdate {
             new RemoveTenantIdFromCommandsBARAndTenantResources(),
             new RemoveTenantIdFromDependencyTables(),
             new RemoveTenantIdFromDocuments(),
+            new RemoveTenantIdFromQuartzGroups(),
             new CleanupTenantReferencingTables(),
         ]
     }

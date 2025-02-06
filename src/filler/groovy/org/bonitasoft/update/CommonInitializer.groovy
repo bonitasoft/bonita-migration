@@ -13,11 +13,12 @@
  **/
 package org.bonitasoft.update
 
-import org.bonitasoft.engine.api.TenantAPIAccessor
+import org.bonitasoft.engine.api.APIClient
 import org.bonitasoft.engine.bdm.model.BusinessObject
 import org.bonitasoft.engine.bdm.model.BusinessObjectModel
 import org.bonitasoft.engine.bdm.model.field.FieldType
 import org.bonitasoft.engine.bdm.model.field.SimpleField
+import org.bonitasoft.engine.identity.User
 import org.bonitasoft.update.filler.FillAction
 import org.bonitasoft.update.filler.FillerInitializer
 import org.bonitasoft.update.filler.FillerUtils
@@ -26,6 +27,8 @@ import org.bonitasoft.update.filler.FillerUtils
  */
 class CommonInitializer {
 
+    public static User user
+
     @FillerInitializer
     void init() {
         FillerUtils.initializeEngineSystemProperties()
@@ -33,10 +36,10 @@ class CommonInitializer {
 
     @FillAction
     public void fillOneUserWithTechnicalUser() {
-        def session = TenantAPIAccessor.getLoginAPI().login("install", "install")
-        def identityAPI = TenantAPIAccessor.getIdentityAPI(session)
-        identityAPI.createUser("john", "bpm")
-        TenantAPIAccessor.getLoginAPI().logout(session)
+        def client = new APIClient()
+        client.login("install", "install")
+        client.identityAPI.createUser("john", "bpm")
+        client.logout()
     }
 
     static BusinessObjectModel buildCustomBOM() {

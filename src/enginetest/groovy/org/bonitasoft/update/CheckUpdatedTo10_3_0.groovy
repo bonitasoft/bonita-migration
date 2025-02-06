@@ -95,6 +95,10 @@ class CheckUpdatedTo10_3_0 extends Specification {
         comment != null
         comment.processInstanceId == processInstance.id
         comment.content == "This is a comment"
+
+        cleanup:
+        client.processAPI.deleteArchivedProcessInstancesInAllStates(processInstance.id)
+        client.processAPI.deleteProcessInstance(processInstance.id)
     }
 
     def 'should be able to retrieve documents and archived documents'() {

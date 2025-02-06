@@ -38,6 +38,7 @@ import org.bonitasoft.engine.expression.Expression
 import org.bonitasoft.engine.expression.ExpressionBuilder
 import org.bonitasoft.engine.identity.CustomUserInfoDefinitionCreator
 import org.bonitasoft.engine.identity.User
+import org.bonitasoft.engine.identity.UserNotFoundException
 import org.bonitasoft.engine.operation.LeftOperandBuilder
 import org.bonitasoft.engine.operation.OperatorType
 import org.bonitasoft.engine.profile.Profile
@@ -49,14 +50,30 @@ import org.junit.Rule
 import static java.util.Collections.singletonMap
 import static org.bonitasoft.update.BuildTestUtil.*
 import static org.bonitasoft.update.test.TestUtil.*
-import static org.junit.Assert.assertEquals
-import static org.junit.Assert.assertNotNull
-import static org.junit.Assert.assertTrue
+import static org.junit.Assert.*
 
 class FillBeforeUpdatingTo10_3_0 {
 
     @Rule
     public BonitaEngineRule bonitaEngineRule = BonitaEngineRule.create()
+
+    User user
+
+    User getUser() {
+        if (user == null) {
+            def client = new APIClient()
+            client.login("install", "install")
+            try {
+                user = client.identityAPI.getUserByUserName(WALTER_BATES)
+            } catch (UserNotFoundException ignored) {
+                // Create a user with a manager
+                def manager = client.getIdentityAPI().createUser(buildUserHelenKelly())
+                user = client.identityAPI.createUser(buildUserWalterBates(manager.id))
+            }
+            client.logout()
+        }
+        return user
+    }
 
     @FillAction
     void 'execute complex process with connectors, data, multi-instance activity, etc'() {
@@ -67,18 +84,16 @@ class FillBeforeUpdatingTo10_3_0 {
         def group = client.getIdentityAPI().createGroup(buildGroupAcme())
         // Create a role
         def role = client.getIdentityAPI().createRole(buildRoleMember())
-        // Create a user with a manager
-        def manager = client.getIdentityAPI().createUser(buildUserHelenKelly())
-        def user = client.getIdentityAPI().createUser(buildUserWalterBates(manager.id))
+
         // Create a membership
-        client.getIdentityAPI().addUserMembership(user.id, group.id, role.id)
+        client.getIdentityAPI().addUserMembership(getUser().id, group.id, role.id)
         // Create a custom user info definition and value
         def definition = client.getIdentityAPI().createCustomUserInfoDefinition(
                 new CustomUserInfoDefinitionCreator("Skype ID", "Skype ID of the user"))
-        client.getIdentityAPI().setCustomUserInfoValue(definition.id, user.id, "live:walter.bates")
+        client.getIdentityAPI().setCustomUserInfoValue(definition.id, getUser().id, "live:${WALTER_BATES}")
 
         client.logout()
-        client.login("walter.bates", "bpm")
+        client.login(WALTER_BATES, "bpm")
 
         final String valueOfInput1 = "valueOfInput1"
         final String defaultValue = "default"
@@ -118,7 +133,7 @@ class FillBeforeUpdatingTo10_3_0 {
         processAPI.addProcessDefinitionToCategory(category.id, processDefinition.getId())
 
         // Test supervisor:
-        processAPI.createProcessSupervisorForUser(processDefinition.getId(), user.id)
+        processAPI.createProcessSupervisorForUser(processDefinition.getId(), getUser().id)
 
         final ProcessInstance startProcess = processAPI.startProcessWithInputs(processDefinition.getId(), singletonMap("integerContractData", (Integer) 1))
         assertEquals(defaultValue, processAPI.getProcessDataInstance(dataName, startProcess.getId()).getValue())
@@ -126,12 +141,12 @@ class FillBeforeUpdatingTo10_3_0 {
         def step0ReadySearchOptions = getSearchOptionsForTask("step0")
 
         waitForUserTask("step0", processAPI)
-        def result = processAPI.searchPendingTasksForUser(user.id, step0ReadySearchOptions).result
+        def result = processAPI.searchPendingTasksForUser(getUser().id, step0ReadySearchOptions).result
         if (result.empty) {
             throw new IllegalAccessException("Task 'step0' is not ready")
         }
         def taskInstance = result.get(0)
-        processAPI.assignAndExecuteUserTask(user.id, taskInstance.id, singletonMap("integerTaskContractData", 22))
+        processAPI.assignAndExecuteUserTask(getUser().id, taskInstance.id, singletonMap("integerTaskContractData", 22))
 
         waitForUserTask("step2", processAPI)
         assertEquals(valueOfInput1, processAPI.getProcessDataInstance(dataName, startProcess.getId()).getValue())
@@ -189,11 +204,7 @@ class FillBeforeUpdatingTo10_3_0 {
     @FillAction
     def 'have process with document defined in process definition'() throws Exception {
         def client = new APIClient()
-        client.login("install", "install")
-        def username = "walter.bates"
-        def user = client.getIdentityAPI().getUserByUserName(username)
-        client.logout()
-        client.login(username, "bpm")
+        client.login(WALTER_BATES, "bpm")
 
         final ProcessDefinitionBuilder builder = new ProcessDefinitionBuilder()
                 .createNewInstance("MyProcessWithDocumentsInBar", "1.0")
@@ -209,7 +220,7 @@ class FillBeforeUpdatingTo10_3_0 {
                 .addDocumentResource(new BarResource("myDoc.pdf", pdfContent)).done()
 
         def processAPI = client.processAPI
-        final ProcessDefinition processDefinition = deployAndEnableProcessWithActor(businessArchive, ACTOR_NAME, user, processAPI)
+        final ProcessDefinition processDefinition = deployAndEnableProcessWithActor(businessArchive, ACTOR_NAME, getUser(), processAPI)
         def processInstance = processAPI.startProcess(processDefinition.getId())
         def documents = processAPI.getLastVersionOfDocuments(processInstance.getId(), 0, 1, DocumentCriterion.DEFAULT)
         assertTrue(documents.size() == 1)
@@ -222,11 +233,7 @@ class FillBeforeUpdatingTo10_3_0 {
     @FillAction
     def 'deploy and enable process with business data'() {
         def client = new APIClient()
-        client.login("install", "install")
-        def username = "walter.bates"
-        def user = client.getIdentityAPI().getUserByUserName(username)
-        client.logout()
-        client.login(username, "bpm")
+        client.login(WALTER_BATES, "bpm")
 
         def processDefinitionBuilder = new ProcessDefinitionBuilder()
                 .createNewInstance("MyProcessWithBusinessData", "1.0")
@@ -255,7 +262,7 @@ class FillBeforeUpdatingTo10_3_0 {
                 .setProcessDefinition(processDefinitionBuilder.getProcess())
 
         def processDefinition =
-                deployAndEnableProcessWithActor(businessArchiveBuilder.done(), actorName, user, client.processAPI)
+                deployAndEnableProcessWithActor(businessArchiveBuilder.done(), actorName, getUser(), client.processAPI)
         assertNotNull(processDefinition)
     }
 
