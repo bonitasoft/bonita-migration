@@ -28,6 +28,7 @@ class UpdateTo10_3_0Test extends Specification {
             "RemoveTenantIdFromBusinessDataAndFlowNodeInstance",
             "RemoveTenantIdFromPageAndFormMapping",
             "RemoveTenantIdFromApplicationPageProfile",
+            "RemoveTenantIdFromActorAndActorMember",
             "RemoveTenantIdFromJobTables",
             "RemoveTenantIdFromIdentityTables",
             "RemoveTenantIdFromProcessComment",

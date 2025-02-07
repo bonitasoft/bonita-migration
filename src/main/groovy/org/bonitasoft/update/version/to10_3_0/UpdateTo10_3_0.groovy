@@ -30,6 +30,7 @@ class UpdateTo10_3_0 extends VersionUpdate {
             new RemoveTenantIdFromBusinessDataAndFlowNodeInstance(),
             new RemoveTenantIdFromPageAndFormMapping(),
             new RemoveTenantIdFromApplicationPageProfile(),
+            new RemoveTenantIdFromActorAndActorMember(),
             new RemoveTenantIdFromJobTables(),
             new RemoveTenantIdFromIdentityTables(),
             new RemoveTenantIdFromProcessComment(),
