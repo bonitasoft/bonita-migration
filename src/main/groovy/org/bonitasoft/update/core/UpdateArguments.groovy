@@ -35,9 +35,13 @@ class UpdateArguments {
         return updateArguments
     }
 
-    static void printHelp() {
+    static void printHelp(boolean isSp) {
         HelpFormatter formatter = new HelpFormatter()
-        formatter.printHelp("bonita-update", OPTIONS)
+        formatter.printHelp("bonita-update (${getEdition(isSp)})", OPTIONS)
+    }
+
+    protected static String getEdition(boolean isSp) {
+        "${isSp ? "Subscription" : "Community"} edition"
     }
 
     boolean printHelp

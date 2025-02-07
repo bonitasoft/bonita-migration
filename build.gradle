@@ -82,6 +82,8 @@ dependencies {
 }
 
 startScripts {
+    applicationName = 'bonita-update' // to change the name of the script
+
     // Fail on windows OS
     // classpath = files('$APP_HOME/lib/*')
     // Workaround inspired of https://gist.github.com/jlmelville/2bfe9277e9e2c0ff79b6

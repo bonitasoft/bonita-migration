@@ -23,9 +23,9 @@ Edit file **Config.properties** and changed the provided default values.
 
 ## Configuration using command line parameters
 
-export a System variable named `BONITA_UPDATE_TOOL_OPTS` and give it the value `"-Dkey1=value1 -Dkey2=value2"`  
+export a System variable named `BONITA_UPDATE_OPTS` and give it the value `"-Dkey1=value1 -Dkey2=value2"`  
 Eg.  
-`export BONITA_UPDATE_TOOL_OPTS="-Dtarget.version=7.14.0 -Dauto.accept=true -Ddb.vendor=postgres"`
+`export BONITA_UPDATE_OPTS="-Dtarget.version=7.14.0 -Dauto.accept=true -Ddb.vendor=postgres"`
 
 
 ## Accepted parameters
@@ -51,13 +51,13 @@ By default, the update tool will propose you to update to the last Bonita versio
 # Run the update
 
 Once the configuration done, you can run the update:  
-just run the **bonita-update-tool** or **bonita-update-tool.bat** script.
+just run the **bonita-update** or **bonita-update.bat** script.
 
 example (Unix):
->    ./bonita-update-tool
+>    ./bonita-update
 
 example (Windows):
->    bonita-update-tool.bat
+>    bonita-update.bat
 
 # Verify the update can be executed
 

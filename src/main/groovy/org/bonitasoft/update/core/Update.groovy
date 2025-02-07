@@ -34,7 +34,7 @@ class Update {
     }
 
     static void startApplication(String[] args, boolean isSp) {
-        def arguments = parseArguments(args)
+        def arguments = parseArguments(args, isSp)
         try {
             def updateContext = new UpdateContext(logger: logger)
             updateContext.verifyOnly = arguments.verify
@@ -49,17 +49,17 @@ class Update {
         }
     }
 
-    private static UpdateArguments parseArguments(String[] args) {
+    private static UpdateArguments parseArguments(String[] args, boolean isSp) {
         try {
             UpdateArguments arguments = UpdateArguments.parse(args)
             if (arguments.printHelp) {
-                UpdateArguments.printHelp()
+                UpdateArguments.printHelp(isSp)
                 System.exit(-1)
             }
             return arguments
         } catch (Exception e) {
             logger.error("Invalid command line: " + e.getMessage())
-            UpdateArguments.printHelp()
+            UpdateArguments.printHelp(isSp)
             System.exit(-1)
         }
     }
