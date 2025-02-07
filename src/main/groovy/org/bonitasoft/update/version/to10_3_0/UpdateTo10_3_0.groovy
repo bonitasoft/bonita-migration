@@ -26,6 +26,7 @@ class UpdateTo10_3_0 extends VersionUpdate {
             new CreateBpmFailureTables(),
             new RemoveUnusedTables(),
             new RemoveTenantIdFromIndexes(),
+            new RemoveTenantIdFromProcessDefinition(),
             new RemoveTenantIdFromBusinessDataAndFlowNodeInstance(),
             new RemoveTenantIdFromPageAndFormMapping(),
             new RemoveTenantIdFromApplicationPageProfile(),

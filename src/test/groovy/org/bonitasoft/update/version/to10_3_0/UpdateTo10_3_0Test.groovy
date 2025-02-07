@@ -24,6 +24,7 @@ class UpdateTo10_3_0Test extends Specification {
             "CreateBpmFailureTables",
             "RemoveUnusedTables",
             "RemoveTenantIdFromIndexes",
+            "RemoveTenantIdFromProcessDefinition",
             "RemoveTenantIdFromBusinessDataAndFlowNodeInstance",
             "RemoveTenantIdFromPageAndFormMapping",
             "RemoveTenantIdFromApplicationPageProfile",
