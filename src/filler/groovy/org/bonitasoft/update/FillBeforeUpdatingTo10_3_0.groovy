@@ -203,6 +203,7 @@ class FillBeforeUpdatingTo10_3_0 {
 
     @FillAction
     def 'have process with document defined in process definition'() throws Exception {
+        getUser() // to make sure Walter Bates is created
         def client = new APIClient()
         client.login(WALTER_BATES, "bpm")
 
@@ -232,6 +233,7 @@ class FillBeforeUpdatingTo10_3_0 {
 
     @FillAction
     def 'deploy and enable process with business data'() {
+        getUser() // to make sure Walter Bates is created
         def client = new APIClient()
         client.login(WALTER_BATES, "bpm")
 
