@@ -103,7 +103,8 @@ abstract class AbstractTestTo10_3_0 extends Specification {
             "flownode_instance",
             "process_instance",
             "tenant",
-            "sequence"
+            "sequence",
+            "configuration"
         ] as String[])
     }
 }

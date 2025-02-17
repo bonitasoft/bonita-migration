@@ -38,6 +38,7 @@ class UpdateTo10_3_0Test extends Specification {
             "RemoveTenantIdFromDependencyTables",
             "RemoveTenantIdFromDocuments",
             "RemoveTenantIdFromQuartzGroups",
+            "RemoveTenantIdFromConfiguration",
             "CleanupTenantReferencingTables",
         ]
 

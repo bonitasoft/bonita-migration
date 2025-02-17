@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2024 Bonitasoft S.A.
+ * Copyright (C) 2024-2025 Bonitasoft S.A.
  * Bonitasoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation
@@ -40,6 +40,7 @@ class UpdateTo10_3_0 extends VersionUpdate {
             new RemoveTenantIdFromDependencyTables(),
             new RemoveTenantIdFromDocuments(),
             new RemoveTenantIdFromQuartzGroups(),
+            new RemoveTenantIdFromConfiguration(),
             new CleanupTenantReferencingTables(),
         ]
     }
