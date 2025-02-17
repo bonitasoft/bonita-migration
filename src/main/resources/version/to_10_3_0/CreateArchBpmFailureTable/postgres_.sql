@@ -11,7 +11,7 @@ CREATE TABLE arch_bpm_failure (
   failureDate INT8 NOT NULL,
   archiveDate INT8 NOT NULL,
   sourceObjectId INT8 NOT NULL,
-  PRIMARY KEY (id)
+  CONSTRAINT pk_arch_bpm_failure PRIMARY KEY (id)
 )
 @@
 CREATE INDEX idx_arch_flownode_instance_id ON arch_bpm_failure (flowNodeInstanceId)

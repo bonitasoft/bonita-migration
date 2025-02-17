@@ -24,34 +24,38 @@ class CreateBpmFailureTablesIT extends AbstractTestTo10_3_0 {
         updateStep.execute(updateContext)
 
         then:
-        updateContext.databaseHelper.hasTable("bpm_failure")
-        updateContext.databaseHelper.hasColumnOnTable("bpm_failure", "id")
-        updateContext.databaseHelper.hasColumnOnTable("bpm_failure", "failureDate")
-        updateContext.databaseHelper.hasColumnOnTable("bpm_failure", "processDefinitionId")
-        updateContext.databaseHelper.hasColumnOnTable("bpm_failure", "processInstanceId")
-        updateContext.databaseHelper.hasColumnOnTable("bpm_failure", "rootProcessInstanceId")
-        updateContext.databaseHelper.hasColumnOnTable("bpm_failure", "flowNodeInstanceId")
-        updateContext.databaseHelper.hasColumnOnTable("bpm_failure", "scope")
-        updateContext.databaseHelper.hasColumnOnTable("bpm_failure", "context")
-        updateContext.databaseHelper.hasColumnOnTable("bpm_failure", "errorMessage")
-        updateContext.databaseHelper.hasColumnOnTable("bpm_failure", "stackTrace")
+        updateContext.databaseHelper.with {
+            hasTable("bpm_failure")
+            hasColumnOnTable("bpm_failure", "id")
+            hasColumnOnTable("bpm_failure", "failureDate")
+            hasColumnOnTable("bpm_failure", "processDefinitionId")
+            hasColumnOnTable("bpm_failure", "processInstanceId")
+            hasColumnOnTable("bpm_failure", "rootProcessInstanceId")
+            hasColumnOnTable("bpm_failure", "flowNodeInstanceId")
+            hasColumnOnTable("bpm_failure", "scope")
+            hasColumnOnTable("bpm_failure", "context")
+            hasColumnOnTable("bpm_failure", "errorMessage")
+            hasColumnOnTable("bpm_failure", "stackTrace")
+            hasPrimaryKeyOnTable("bpm_failure", "pk_bpm_failure")
 
-        updateContext.databaseHelper.hasTable("arch_bpm_failure")
-        updateContext.databaseHelper.hasColumnOnTable("arch_bpm_failure", "id")
-        updateContext.databaseHelper.hasColumnOnTable("arch_bpm_failure", "failureDate")
-        updateContext.databaseHelper.hasColumnOnTable("arch_bpm_failure", "processDefinitionId")
-        updateContext.databaseHelper.hasColumnOnTable("arch_bpm_failure", "processInstanceId")
-        updateContext.databaseHelper.hasColumnOnTable("arch_bpm_failure", "rootProcessInstanceId")
-        updateContext.databaseHelper.hasColumnOnTable("arch_bpm_failure", "flowNodeInstanceId")
-        updateContext.databaseHelper.hasColumnOnTable("arch_bpm_failure", "scope")
-        updateContext.databaseHelper.hasColumnOnTable("arch_bpm_failure", "context")
-        updateContext.databaseHelper.hasColumnOnTable("arch_bpm_failure", "errorMessage")
-        updateContext.databaseHelper.hasColumnOnTable("arch_bpm_failure", "stackTrace")
-        updateContext.databaseHelper.hasColumnOnTable("arch_bpm_failure", "sourceObjectId")
-        updateContext.databaseHelper.hasColumnOnTable("arch_bpm_failure", "archiveDate")
+            hasTable("arch_bpm_failure")
+            hasColumnOnTable("arch_bpm_failure", "id")
+            hasColumnOnTable("arch_bpm_failure", "failureDate")
+            hasColumnOnTable("arch_bpm_failure", "processDefinitionId")
+            hasColumnOnTable("arch_bpm_failure", "processInstanceId")
+            hasColumnOnTable("arch_bpm_failure", "rootProcessInstanceId")
+            hasColumnOnTable("arch_bpm_failure", "flowNodeInstanceId")
+            hasColumnOnTable("arch_bpm_failure", "scope")
+            hasColumnOnTable("arch_bpm_failure", "context")
+            hasColumnOnTable("arch_bpm_failure", "errorMessage")
+            hasColumnOnTable("arch_bpm_failure", "stackTrace")
+            hasColumnOnTable("arch_bpm_failure", "sourceObjectId")
+            hasColumnOnTable("arch_bpm_failure", "archiveDate")
+            hasPrimaryKeyOnTable("arch_bpm_failure", "pk_arch_bpm_failure")
 
-        // validate new sequence presence
-        updateContext.databaseHelper.getSequenceValue(-1, 6) != null
-        updateContext.databaseHelper.getSequenceValue(-1, 7) != null
+            // validate new sequence presence
+            getSequenceValue(-1, 6) != null
+            getSequenceValue(-1, 7) != null
+        }
     }
 }

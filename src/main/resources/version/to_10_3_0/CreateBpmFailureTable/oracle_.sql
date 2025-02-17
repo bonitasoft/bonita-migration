@@ -9,7 +9,7 @@ CREATE TABLE bpm_failure (
   errorMessage VARCHAR2(1024 CHAR),
   stackTrace CLOB,
   failureDate NUMBER(19, 0) NOT NULL,
-  PRIMARY KEY (id)
+  CONSTRAINT pk_bpm_failure PRIMARY KEY (id)
 )
 @@
 CREATE INDEX idx_flownode_instance_id ON bpm_failure (flowNodeInstanceId)
