@@ -12,10 +12,10 @@ CREATE TABLE bpm_failure (
   CONSTRAINT pk_bpm_failure PRIMARY KEY (id)
 ) ENGINE = INNODB
 @@
-CREATE INDEX idx_flownode_instance_id ON bpm_failure (flowNodeInstanceId)
+CREATE INDEX idx_bpm_failure_flownodeinstanceid ON bpm_failure (flowNodeInstanceId)
 @@
-CREATE INDEX idx_process_instance_id ON bpm_failure (processInstanceId)
+CREATE INDEX idx_bpm_failure_processinstanceid ON bpm_failure (processInstanceId)
 @@
-CREATE INDEX idx_root_process_instance_id ON bpm_failure (rootProcessInstanceId)
+CREATE INDEX idx_bpm_failure_rootprocessinstanceid ON bpm_failure (rootProcessInstanceId)
 @@
-CREATE INDEX idx_process_definition_id ON bpm_failure (processDefinitionId)
+CREATE INDEX idx_bpm_failure_processdefinitionid ON bpm_failure (processDefinitionId)
