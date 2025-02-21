@@ -32,6 +32,9 @@ class DatabaseHelper {
     String version
     Logger logger
 
+    // New utility class to access specific methods that are not aware of old tenant notion:
+    NoMoreTenant noMoreTenant = new NoMoreTenant()
+
     private void logQuery(boolean logging, String query, List<Object> params) {
         if (logging) {
             logger.debug("Executing query: ${query.stripIndent()}")
@@ -393,6 +396,10 @@ class DatabaseHelper {
 
     def createForeignKey(String referencingTableName, String foreignKeyName, String referencedTableName,
             List<String> referencingColumns, List<String> referencedColumns, boolean onDeleteCascade) {
+        if (hasForeignKeyOnTable(referencingTableName, foreignKeyName)) {
+            logger.info("Foreign key '$foreignKeyName' already exists on table '$referencingTableName'. Skipping creation.")
+            return
+        }
         logger.info("Creating foreign key '$foreignKeyName' from table '$referencingTableName' to table '$referencedTableName'")
         def referencingCols = referencingColumns.collect { it }.join(", ")
         def referencedCols = referencedColumns.collect { it }.join(", ")
@@ -492,6 +499,10 @@ class DatabaseHelper {
     }
 
     def createUniqueKey(String tableName, String constraintName, String... columns) {
+        if (hasUniqueKeyOnTableWithNameAndColumns(tableName, constraintName, columns)) {
+            logger.info("Unique key '$constraintName' already exists on table '$tableName'. Skipping creation.")
+            return
+        }
         logger.info("Creating unique constraint '$constraintName' on table '$tableName'")
         def concatenatedColumns = columns.collect { it }.join(", ")
         executeQuery("ALTER TABLE $tableName ADD CONSTRAINT $constraintName UNIQUE ($concatenatedColumns)")
@@ -537,8 +548,12 @@ class DatabaseHelper {
     }
 
     def createIndex(String tableName, String indexName, boolean unique = false, String... columns) {
-        logger.info("Creating ${unique ? "unique " : ""}index '$indexName' on table '$tableName'")
+        if (hasIndexOnTable(tableName, indexName)) {
+            logger.info "Index '$indexName' already exists on table '$tableName'. Skipping creation."
+            return
+        }
         def concatenatedColumns = columns.collect { it }.join(", ")
+        logger.info("Creating ${unique ? "unique " : ""}index '$indexName' on table '$tableName' on columns: $concatenatedColumns")
         executeQuery("CREATE ${unique ? "UNIQUE " : ""}INDEX $indexName ON $tableName($concatenatedColumns)")
     }
 
@@ -866,7 +881,7 @@ class DatabaseHelper {
      *
      * the script should be located in the src/main/resources/version/to_<version>/<dbvendor>_<scriptName>.sql
      */
-    def executeScript(String folderName, String scriptName) {
+    def executeScript(String folderName, String scriptName = "") {
         executeScript(version, folderName, scriptName)
     }
 
@@ -947,7 +962,21 @@ class DatabaseHelper {
             throw new IllegalStateException("There is no tenant on which to insert the sequences")
         }
         resourcesCount.each { it ->
-            executeInsertQuery("INSERT INTO sequence VALUES(${it.getKey()}, ${sequenceId}, ${it.getValue()})")
+            if (selectFirstRow("select 1 from sequence where id = $sequenceId") == null) {
+                executeInsertQuery("INSERT INTO sequence VALUES(${it.getKey()}, ${sequenceId}, ${it.getValue()})")
+            }
+        }
+    }
+
+    /**
+     * This class serves as a subset of utility methods that are valid since tenant notion has been removed.
+     */
+    class NoMoreTenant {
+
+        def addSequenceIfNotExists(long sequenceId, long initialValue) {
+            if (selectFirstRow("select 1 from sequence where id = $sequenceId") == null) {
+                executeInsertQuery("INSERT INTO sequence (id, nextid) VALUES($sequenceId, $initialValue)")
+            }
         }
     }
 

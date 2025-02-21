@@ -36,9 +36,11 @@ class RemoveTenantIdFromProcessDefinition extends UpdateStep {
             // drop FK first:
             dropForeignKey("category", "fk_category_tenantId")
             dropForeignKey("processcategorymapping", "fk_catmapping_catid")
+            dropForeignKey("processcategorymapping", "fk_processcategorymapping_categoryid") // to make step reentrant
             dropForeignKey("processcategorymapping", dbVendor == DBVendor.ORACLE ? "fk_procCatMap_tenId" : "fk_processcategorymapping_tenantId")
             dropForeignKey("process_definition", "fk_process_definition_tenantId")
             dropForeignKey("process_definition", "fk_process_definition_content")
+            dropForeignKey("process_definition", "fk_process_definition_content_id") // to make step reentrant
             dropForeignKey("processsupervisor", "fk_processsupervisor_tenantId")
 
             // drop indexes that are no longer needed (because they match the same columns as a unique or primary key):

@@ -28,19 +28,18 @@ class RemoveTenantIdFromJobTables extends UpdateStep {
             dropForeignKey("job_desc", "fk_job_desc_tenantId")
             dropForeignKey("job_param", "fk_job_param_tenantId")
             dropForeignKey("job_param", "fk_job_param_jobid")
+            dropForeignKey("job_param", "fk_job_param_jobdescriptorid") // to make step reentrant
             dropForeignKey("job_log", "fk_job_log_jobid")
+            dropForeignKey("job_log", "fk_job_log_jobdescriptorid") // to make step reentrant
 
             // drop indexes that are no longer needed (because they match the same columns as a unique or primary key):
             dropIndexIfExists("job_desc", "idx_job_desc_id")
             dropIndexIfExists("job_log", "idx_job_log_jobdescid")
 
             // recreate PK:
-            dropPrimaryKey("job_desc")
-            createPrimaryKey("job_desc", "id")
-            dropPrimaryKey("job_param")
-            createPrimaryKey("job_param", "id")
-            dropPrimaryKey("job_log")
-            createPrimaryKey("job_log", "id")
+            recreatePrimaryKey("job_desc")
+            recreatePrimaryKey("job_param")
+            recreatePrimaryKey("job_log")
 
             // recreate UK:
             dropUniqueKeyFromColumns("job_log", "tenantId", "jobDescriptorId")

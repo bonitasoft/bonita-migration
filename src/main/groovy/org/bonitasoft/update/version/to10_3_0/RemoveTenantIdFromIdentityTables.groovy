@@ -32,8 +32,11 @@ class RemoveTenantIdFromIdentityTables extends UpdateStep {
             dropForeignKey("custom_usr_inf_def", "fk_custom_usr_inf_def_tenantId")
             dropForeignKey("custom_usr_inf_val", "fk_custom_usr_inf_val_tenantId")
             dropForeignKey("custom_usr_inf_val", "fk_user_id")
+            dropForeignKey("custom_usr_inf_val", "fk_custom_usr_inf_val_userid") // to make step reentrant
             dropForeignKey("custom_usr_inf_val", "fk_definition_id")
+            dropForeignKey("custom_usr_inf_val", "fk_custom_usr_inf_val_definitionid") // to make step reentrant
             dropForeignKey("user_contactinfo", "fk_contact_user")
+            dropForeignKey("user_contactinfo", "fk_user_contactinfo_userid") // to make step reentrant
 
             // drop indexes that are no longer needed (because they match the same columns as a unique or primary key):
             dropIndexIfExists("role", "idx_role_name")
@@ -44,22 +47,15 @@ class RemoveTenantIdFromIdentityTables extends UpdateStep {
             // recreate PK:
             dropPrimaryKey("group_")
             createPrimaryKeyWithName("group_", "pk_group", "id")
-            dropPrimaryKey("role")
-            createPrimaryKey("role", "id")
+            recreatePrimaryKey("role")
             dropPrimaryKey("user_")
             createPrimaryKeyWithName("user_", "pk_user", "id")
-            dropPrimaryKey("user_login")
-            createPrimaryKey("user_login", "id")
-            dropPrimaryKey("user_contactinfo")
-            createPrimaryKey("user_contactinfo", "id")
-            dropPrimaryKey("custom_usr_inf_def")
-            createPrimaryKey("custom_usr_inf_def", "id")
-            dropPrimaryKey("custom_usr_inf_val")
-            createPrimaryKey("custom_usr_inf_val", "id")
-            dropPrimaryKey("user_membership")
-            createPrimaryKey("user_membership", "id")
-            dropPrimaryKey("icon")
-            createPrimaryKey("icon", "id")
+            recreatePrimaryKey("user_login")
+            recreatePrimaryKey("user_contactinfo")
+            recreatePrimaryKey("custom_usr_inf_def")
+            recreatePrimaryKey("custom_usr_inf_val")
+            recreatePrimaryKey("user_membership")
+            recreatePrimaryKey("icon")
 
 
             // recreate UK:

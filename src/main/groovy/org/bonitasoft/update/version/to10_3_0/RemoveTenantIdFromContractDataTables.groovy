@@ -32,10 +32,8 @@ class RemoveTenantIdFromContractDataTables extends UpdateStep {
             dropIndexIfExists("arch_contract_data", "idx_acd_kind_scope_name")
 
             // recreate PK:
-            dropPrimaryKey("contract_data")
-            createPrimaryKey("contract_data", "id", "scopeId")
-            dropPrimaryKey("arch_contract_data")
-            createPrimaryKey("arch_contract_data", "id", "scopeId")
+            recreatePrimaryKey("contract_data", "id", "scopeId")
+            recreatePrimaryKey("arch_contract_data", "id", "scopeId")
 
             // recreate UK:
             dropUniqueKey("contract_data", "uc_cd_scope_name")

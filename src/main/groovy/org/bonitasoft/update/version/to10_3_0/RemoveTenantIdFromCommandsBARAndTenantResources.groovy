@@ -37,12 +37,9 @@ class RemoveTenantIdFromCommandsBARAndTenantResources extends UpdateStep {
             dropIndexIfExists("tenant_resource", "idx_tenant_resource")
 
             // recreate PK:
-            dropPrimaryKey("command")
-            createPrimaryKey("command", "id")
-            dropPrimaryKey("bar_resource")
-            createPrimaryKey("bar_resource", "id")
-            dropPrimaryKey("tenant_resource")
-            createPrimaryKey("tenant_resource", "id")
+            recreatePrimaryKey("command")
+            recreatePrimaryKey("bar_resource")
+            recreatePrimaryKey("tenant_resource")
 
             // recreate UK:
             dropUniqueKeyFromColumns("command", "tenantid", "name")

@@ -28,10 +28,8 @@ class RemoveTenantIdFromPageAndFormMapping extends UpdateStep {
             dropForeignKey("form_mapping", "fk_form_mapping_key")
 
             // recreate PK:
-            dropPrimaryKey("page_mapping")
-            createPrimaryKey("page_mapping", "id")
-            dropPrimaryKey("form_mapping")
-            createPrimaryKey("form_mapping", "id")
+            recreatePrimaryKey("page_mapping")
+            recreatePrimaryKey("form_mapping")
 
             // recreate UK:
             dropUniqueKeyFromColumns("page_mapping", "tenantId", "key_")

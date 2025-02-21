@@ -35,40 +35,43 @@ class RemoveTenantIdFromApplicationPageProfile extends UpdateStep {
 
             // FK on other tables:
             dropForeignKey("business_app", "fk_app_profileId")
+            dropForeignKey("business_app", "fk_business_app_profileid") // to make step reentrant
             dropForeignKey("business_app", "fk_app_layoutId")
+            dropForeignKey("business_app", "fk_business_app_layoutid") // to make step reentrant
             dropForeignKey("business_app", "fk_app_themeId")
+            dropForeignKey("business_app", "fk_business_app_themeid") // to make step reentrant
+            dropForeignKey("business_app", "fk_business_app_profileid") // to make step reentrant
             dropForeignKey("business_app_page", "fk_bus_app_id")
+            dropForeignKey("business_app_page", "fk_business_app_page_applicationid") // to make step reentrant
             dropForeignKey("business_app_page", "fk_page_id")
+            dropForeignKey("business_app_page", "fk_business_app_page_pageid") // to make step reentrant
             dropForeignKey("business_app_menu", "fk_app_menu_appId")
+            dropForeignKey("business_app_menu", "fk_business_app_menu_applicationid") // to make step reentrant
             dropForeignKey("business_app_menu", "fk_app_menu_pageId")
+            dropForeignKey("business_app_menu", "fk_business_app_menu_applicationpageid") // to make step reentrant
             dropForeignKey("business_app_menu", "fk_app_menu_parentId")
+            dropForeignKey("business_app_menu", "fk_business_app_menu_parentid") // to make step reentrant
+            dropForeignKey("profilemember", "fk_profilemember_profileId") // to make step reentrant on Oracle
 
             // FK that do not exist on Oracle
             if (dbVendor != ORACLE) {
                 dropForeignKey("profile", "fk_profile_tenantId")
                 dropForeignKey("profilemember", "fk_profilemember_tenantId")
-                dropForeignKey("profilemember", "fk_profilemember_profileId")
             }
 
-            dropPrimaryKey("business_app_menu")
             dropUniqueKey("business_app_page", dbVendor == ORACLE ? "UK_Business_app_page" : "uk_app_page_appId_token") // existing name is different on Oracle
-            dropPrimaryKey("business_app_page")
             dropUniqueKey("business_app", dbVendor == ORACLE ? "UK_Business_app" : "uk_app_token_version") // existing name is different on Oracle
-            dropPrimaryKey("business_app")
             dropUniqueKeyFromColumns("profile", "tenantId", "name") // we don't know its name
-            dropPrimaryKey("profile")
             dropUniqueKeyFromColumns("profilemember", "tenantId", "profileId", "userId", "groupId", "roleId") // we don't know its name
-            dropPrimaryKey("profilemember")
             dropUniqueKey("page", "uk_page")
-            dropPrimaryKey("page")
 
             // recreate PK (name pattern pk_<tableName>):
-            createPrimaryKey("page", "id")
-            createPrimaryKey("profile", "id")
-            createPrimaryKey("profilemember", "id")
-            createPrimaryKey("business_app", "id")
-            createPrimaryKey("business_app_page", "id")
-            createPrimaryKey("business_app_menu", "id")
+            recreatePrimaryKey("page")
+            recreatePrimaryKey("profile")
+            recreatePrimaryKey("profilemember")
+            recreatePrimaryKey("business_app")
+            recreatePrimaryKey("business_app_page")
+            recreatePrimaryKey("business_app_menu")
 
             createUniqueKey("page", "uk_page_name_processdefinitionid", "name", "processDefinitionId")
             createUniqueKey("profile", "uk_profile_name", "name")

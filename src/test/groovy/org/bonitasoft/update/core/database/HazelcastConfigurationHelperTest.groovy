@@ -20,21 +20,38 @@ import spock.lang.Specification
 
 class HazelcastConfigurationHelperTest extends Specification {
 
-    def "should add entity to cache configuration"() {
+    def "should add entity to cache configuration, and ensure 'addEntityToCache' method is reentrant"() {
         given:
         def hazelcastConfigurationHelper = new HazelcastConfigurationHelper()
         def sql = Mock(Sql)
-        sql.firstRow(_ as String) >> new GroovyRowResult([resource_content: readExistingConfigurationFile()])
+
+        // mock the first call to return an empty configuration:
+        sql.firstRow(_ as String) >>> [
+            new GroovyRowResult([resource_content: """<hazelcast>
+</hazelcast>""".bytes]),
+            // mock the second call to return the configuration with the entity already added:
+            new GroovyRowResult([resource_content: """<hazelcast>
+    <cache name="org.bonitasoft.engine.core.process.instance.model.SBPMFailure">
+        <eviction eviction-policy="LRU" size="10000" max-size-policy="ENTRY_COUNT"/>
+        <expiry-policy-factory>
+            <timed-expiry-policy-factory expiry-policy-type="TOUCHED" duration-amount="12" time-unit="HOURS"/>
+        </expiry-policy-factory>
+    </cache>
+
+</hazelcast>""".bytes])
+        ]
 
         hazelcastConfigurationHelper.logger = Mock(Logger)
         hazelcastConfigurationHelper.sql = sql
         hazelcastConfigurationHelper.databaseHelper = new DatabaseHelper()
 
         when:
+        hazelcastConfigurationHelper.addEntityToCache('org.bonitasoft.engine.core.process.instance.model.SBPMFailure')
+        // make sure the configuration is not added twice, aka the method is reentrant:
         def configuration = hazelcastConfigurationHelper.addEntityToCache('org.bonitasoft.engine.core.process.instance.model.SBPMFailure')
 
         then:
-        assert configuration.content.endsWith('''|
+        configuration.content.endsWith('''|
             |    <cache name="org.bonitasoft.engine.core.process.instance.model.SBPMFailure">
             |        <eviction eviction-policy="LRU" size="10000" max-size-policy="ENTRY_COUNT"/>
             |        <expiry-policy-factory>
@@ -43,6 +60,9 @@ class HazelcastConfigurationHelperTest extends Specification {
             |    </cache>
             |
             |</hazelcast>'''.stripMargin().normalize())
+
+        // check that the entity is not added twice:
+        (configuration.content =~ """<cache name="org.bonitasoft.engine.core.process.instance.model.SBPMFailure">""").findAll().size() == 1
     }
 
     def "should update XSD schema"() {

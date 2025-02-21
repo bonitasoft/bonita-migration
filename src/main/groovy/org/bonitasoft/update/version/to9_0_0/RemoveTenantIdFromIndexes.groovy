@@ -13,12 +13,15 @@
  **/
 package org.bonitasoft.update.version.to9_0_0
 
+import com.github.zafarkhaja.semver.Version
 import org.bonitasoft.update.core.Logger
 import org.bonitasoft.update.core.UpdateContext
 import org.bonitasoft.update.core.UpdateStep
 import org.bonitasoft.update.core.database.DatabaseHelper
 import org.bonitasoft.update.core.database.schema.IndexDefinition
 import org.bonitasoft.update.core.database.schema.IndexTransformation
+
+import java.sql.SQLException
 
 /**
  * @author Emmanuel Duchastenier
@@ -250,17 +253,17 @@ class RemoveTenantIdFromIndexes extends UpdateStep {
                             // if source index is the default one, we drop it:
                             logger.info("Obsolete index '${source.indexName}' detected. Removing it.")
                             dropIndexIfExists(source.tableName, source.indexName)
-                            dealWithTargetIndex(target, helper)
+                            dealWithTargetIndex(target, helper, context.targetVersion)
                         } else if (sourceIndexDefFromDB.isSameWithDifferentIndexName(source)) {
                             // Drop it:
                             logger.warn("Obsolete index detected (with a different name: wanted '${source.indexName}', got '${sourceIndexDefFromDB.indexName}'). Removing it.")
                             dropIndexIfExists(source.tableName, sourceIndexDefFromDB.indexName)
-                            dealWithTargetIndex(target, helper)
+                            dealWithTargetIndex(target, helper, context.targetVersion)
                         }
                     } else {
                         // source index does not exist
                         logger.warn("Obsolete index '${source.indexName}' NOT found. Nothing to remove.")
-                        dealWithTargetIndex(target, helper)
+                        dealWithTargetIndex(target, helper, context.targetVersion)
                     }
                 }
             }
@@ -269,19 +272,22 @@ class RemoveTenantIdFromIndexes extends UpdateStep {
                 // ...restore it at the end
                 createForeignKey("job_param", "fk_job_param_jobid", "job_desc", ["jobdescriptorid"], ["id"], true)
                 createForeignKey("job_log", "fk_job_log_jobid", "job_desc", ["jobdescriptorid"], ["id"], true)
-                createForeignKey("business_app", "fk_app_profileId", "profile", ["tenantid", "profileId"], ["tenantid", "id"], true)
-                createForeignKey("business_app_menu", "fk_app_menu_appId", "business_app", ["tenantid", "applicationId"], ["tenantid", "id"], true)
 
-                createForeignKey("business_app_menu", "fk_app_menu_pageId", "business_app_page", ["tenantid", "applicationPageId"], ["tenantid", "id"], true)
-                createForeignKey("business_app_menu", "fk_app_menu_parentId", "business_app_menu", ["tenantid", "parentId"], ["tenantid", "id"], true)
-                createForeignKey("pending_mapping", "fk_pending_mapping_flownode_instanceId", "flownode_instance", ["tenantid", "activityId"], ["tenantid", "id"], true)
-                createForeignKey("business_app_page", "fk_page_id", "page", ["tenantid", "pageId"], ["tenantid", "id"], true)
-                createForeignKey("ref_biz_data_inst", "fk_ref_biz_data_fn", "flownode_instance", ["tenantid", "fn_inst_id"], ["tenantid", "id"], true)
+                if (context.targetVersion < Version.valueOf("10.3.0")) {
+                    // to make this step reentrant in 10.3.0
+                    createForeignKey("business_app", "fk_app_profileId", "profile", ["tenantid", "profileId"], ["tenantid", "id"], true)
+                    createForeignKey("business_app_menu", "fk_app_menu_appId", "business_app", ["tenantid", "applicationId"], ["tenantid", "id"], true)
+                    createForeignKey("business_app_menu", "fk_app_menu_pageId", "business_app_page", ["tenantid", "applicationPageId"], ["tenantid", "id"], true)
+                    createForeignKey("business_app_menu", "fk_app_menu_parentId", "business_app_menu", ["tenantid", "parentId"], ["tenantid", "id"], true)
+                    createForeignKey("pending_mapping", "fk_pending_mapping_flownode_instanceId", "flownode_instance", ["tenantid", "activityId"], ["tenantid", "id"], true)
+                    createForeignKey("business_app_page", "fk_page_id", "page", ["tenantid", "pageId"], ["tenantid", "id"], true)
+                    createForeignKey("ref_biz_data_inst", "fk_ref_biz_data_fn", "flownode_instance", ["tenantid", "fn_inst_id"], ["tenantid", "id"], true)
+                }
             }
         }
     }
 
-    void dealWithTargetIndex(IndexDefinition target, DatabaseHelper dbHelper) {
+    void dealWithTargetIndex(IndexDefinition target, DatabaseHelper dbHelper, Version targetVersion) {
         def targetIndexDefFromDB = dbHelper.getIndexDefinition(target.tableName, target.unique, target.columnNames as String[])
         if (targetIndexDefFromDB) {
             // target index exists
@@ -295,8 +301,18 @@ class RemoveTenantIdFromIndexes extends UpdateStep {
             }
         } else {
             // target index does not exist already, create it:
-            logger.info("Required index '${target.indexName}' does not exist yet. Creating it.")
-            dbHelper.createIndex(target.tableName, target.indexName, target.unique, target.columnNames as String[])
+            logger.info("Required ${target.unique ? 'unique' : 'non-unique'} index '${target.indexName}' does not exist yet. Creating it.")
+
+            if (dbHelper.dbVendor == DBVendor.ORACLE && targetVersion == Version.valueOf("10.3.0")) {
+                // to make this step reentrant in 10.3.0
+                try {
+                    dbHelper.createIndex(target.tableName, target.indexName, target.unique, target.columnNames as String[])
+                } catch (SQLException sqlE) {
+                    logger.error("Failed to create index '${target.indexName}' on table '${target.tableName}': ${sqlE.message}")
+                }
+            } else {
+                dbHelper.createIndex(target.tableName, target.indexName, target.unique, target.columnNames as String[])
+            }
         }
     }
 

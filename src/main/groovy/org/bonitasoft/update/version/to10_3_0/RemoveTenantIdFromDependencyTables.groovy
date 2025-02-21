@@ -29,22 +29,20 @@ class RemoveTenantIdFromDependencyTables extends UpdateStep {
             dropForeignKey("dependency", "fk_dependency_tenantId")
             dropForeignKey("dependencymapping", "fk_dependencymapping_tenantId")
             dropForeignKey("dependencymapping", "fk_depmapping_depid")
+            dropForeignKey("dependencymapping", "fk_dependencymapping_dependencyid") // to make step reentrant
             dropForeignKey("pdependencymapping", "fk_pdepmapping_depid")
+            dropForeignKey("pdependencymapping", "fk_pdependencymapping_dependencyid") // to make step reentrant
 
             // drop indexes that are no longer needed (because they match the same columns as a unique or primary key):
             dropIndexIfExists("dependency", "idx_dependency_name")
             dropIndexIfExists("pdependency", "idx_pdependency_name")
 
             // recreate PK:
-            dropPrimaryKey("dependency")
-            createPrimaryKey("dependency", "id")
-            dropPrimaryKey("dependencymapping")
-            createPrimaryKey("dependencymapping", "id")
+            recreatePrimaryKey("dependency")
+            recreatePrimaryKey("dependencymapping")
             // renaming PK from platform dependency table to match the new naming convention:
-            dropPrimaryKey("pdependency")
-            createPrimaryKey("pdependency", "id")
-            dropPrimaryKey("pdependencymapping")
-            createPrimaryKey("pdependencymapping", "id")
+            recreatePrimaryKey("pdependency")
+            recreatePrimaryKey("pdependencymapping")
 
             // recreate UK:
             dropUniqueKeyFromColumns("dependency", "tenantId", "name")

@@ -16,14 +16,21 @@ package org.bonitasoft.update.version.to10_3_0
 import org.bonitasoft.update.core.UpdateContext
 import org.bonitasoft.update.core.UpdateStep
 
+
 class CreateBpmFailureTables extends UpdateStep {
 
     @Override
     def execute(UpdateContext context) {
-        context.databaseHelper.executeScript("CreateBpmFailureTable", "")
-        context.databaseHelper.insertSequences(Map.of(-1L, 1L) , 6)
-        context.databaseHelper.executeScript("CreateArchBpmFailureTable", "")
-        context.databaseHelper.insertSequences(Map.of(-1L, 1L) , 7)
+        context.databaseHelper.with {
+            if (!hasTable("bpm_failure")) {
+                executeScript("CreateBpmFailureTable")
+            }
+            insertSequences(Map.of(-1L, 1L) , 6)
+            if (!hasTable("arch_bpm_failure")) {
+                executeScript("CreateArchBpmFailureTable")
+            }
+            insertSequences(Map.of(-1L, 1L) , 7)
+        }
     }
 
     @Override

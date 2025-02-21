@@ -41,10 +41,18 @@ class HazelcastConfigurationHelper {
     Logger logger
     DatabaseHelper databaseHelper
 
+    /**
+     * Add an entity to the cache configuration in the Hazelcast configuration file, if it does not already exist.
+     */
     HazelcastConfiguration addEntityToCache(String entityName, EvictionPolicy evictionPolicy = new EvictionPolicy()) {
         logger.debug(String.format("Update Hazelcast configuration file with new entity: %s", entityName))
         def hazelcastConfiguration = readHazelcastConfiguration()
 
+        // make it reentrant:
+        if (hazelcastConfiguration.content.contains("""<cache name="${entityName}">""")) {
+            logger.warn("Entity ${entityName} already exists in Hazelcast configuration file. Skip adding it again.")
+            return hazelcastConfiguration
+        }
         def entityContent = """|    <cache name="${entityName}">
         |        <eviction eviction-policy="${evictionPolicy.policy}" size="${evictionPolicy.size}" max-size-policy="${evictionPolicy.maxSizePolicy}"/>
         |        <expiry-policy-factory>
@@ -62,7 +70,7 @@ class HazelcastConfigurationHelper {
     }
 
     HazelcastConfiguration readHazelcastConfiguration() {
-        def count = sql.firstRow("SELECT count(*) FROM configuration WHERE resource_name = 'hazelcast.xml'")
+        def count = sql.firstRow("SELECT count(*) FROM configuration WHERE resource_name = 'hazelcast.xml'")[0]
         if (count == 0) {
             throw new IllegalArgumentException('Hazelcast configuration file does not exist in database.')
         }

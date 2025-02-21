@@ -30,10 +30,8 @@ class RemoveTenantIdFromProcessComment extends UpdateStep {
             dropForeignKey("arch_process_comment", dbVendor == ORACLE ? "fk_AProcCom_tenId" : "fk_arch_process_comment_tenantId")
 
             // recreate PK:
-            dropPrimaryKey("process_comment")
-            createPrimaryKey("process_comment", "id")
-            dropPrimaryKey("arch_process_comment")
-            createPrimaryKey("arch_process_comment", "id")
+            recreatePrimaryKey("process_comment")
+            recreatePrimaryKey("arch_process_comment")
 
             // drop the columns:
             dropColumnIfExists("process_comment", "tenantId")

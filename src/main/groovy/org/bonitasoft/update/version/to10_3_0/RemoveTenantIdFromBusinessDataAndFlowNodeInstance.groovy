@@ -40,10 +40,14 @@ class RemoveTenantIdFromBusinessDataAndFlowNodeInstance extends UpdateStep {
             dropForeignKey("pending_mapping", "fk_pending_mapping_tenantId")
             dropForeignKey("connector_instance", "fk_connector_instance_tenantId")
             dropForeignKey("ref_biz_data_inst", "fk_ref_biz_data_fn")
+            dropForeignKey("ref_biz_data_inst", "fk_ref_biz_data_inst_fn_inst_id") // to make step reentrant
             dropForeignKey("multi_biz_data", "fk_rbdi_mbd")
+            dropForeignKey("multi_biz_data", "fk_multi_biz_data_id") // to make step reentrant
             dropForeignKey("arch_multi_biz_data", "fk_arch_rbdi_mbd")
+            dropForeignKey("arch_multi_biz_data", "fk_arch_multi_biz_data_id") // to make step reentrant
             // on Oracle the FK is named differently:
             dropForeignKey("pending_mapping", dbVendor == ORACLE ? "fk_pMap_flnId" : "fk_pending_mapping_flownode_instanceId")
+            dropForeignKey("pending_mapping", "fk_pending_mapping_activityid") // to make step reentrant
             dropForeignKey("arch_flownode_instance", dbVendor == ORACLE ? "fk_AFln_tenId" : "fk_arch_flownode_instance_tenantId")
             dropForeignKey("arch_process_instance", dbVendor == ORACLE ? "fk_AProc_tenId" : "fk_arch_process_instance_tenantId")
 

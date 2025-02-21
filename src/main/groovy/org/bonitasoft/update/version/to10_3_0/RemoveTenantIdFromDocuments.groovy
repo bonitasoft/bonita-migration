@@ -31,8 +31,10 @@ class RemoveTenantIdFromDocuments extends UpdateStep {
                 dropForeignKey("document_mapping", "fk_document_mapping_tenantId")
             }
             dropForeignKey("document_mapping", "fk_docmap_docid")
+            dropForeignKey("document_mapping", "fk_document_mapping_documentid") // to make step reentrant
             dropForeignKey("arch_document_mapping", dbVendor == ORACLE ? "fk_ADocMap_tenId" : "fk_arch_document_mapping_tenantId")
             dropForeignKey("arch_document_mapping", "fk_archdocmap_docid")
+            dropForeignKey("arch_document_mapping", "fk_arch_document_mapping_documentid") // to make step reentrant
 
             // drop indexes that are no longer needed (because they match the same columns as a unique or primary key):
             // no index on those tables to drop
