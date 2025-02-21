@@ -21,6 +21,8 @@ import org.bonitasoft.update.core.UpdateStep.DBVendor
 import org.bonitasoft.update.core.database.schema.ForeignKeyDefinition
 import org.bonitasoft.update.core.database.schema.IndexDefinition
 
+import java.sql.SQLException
+
 import static org.bonitasoft.update.core.UpdateStep.DBVendor.*
 
 class DatabaseHelper {
@@ -270,13 +272,17 @@ class DatabaseHelper {
             return
         }
         logger.info("Dropping column '$column' from table '$table'")
-        switch (dbVendor) {
-            case ORACLE:
-            case SQLSERVER:
-                executeQuery("ALTER TABLE $table DROP COLUMN $column")
-                break
-            default:
-                executeQuery("ALTER TABLE $table DROP $column")
+        try {
+            switch (dbVendor) {
+                case ORACLE:
+                case SQLSERVER:
+                    executeQuery("ALTER TABLE $table DROP COLUMN $column")
+                    break
+                default:
+                    executeQuery("ALTER TABLE $table DROP $column")
+            }
+        } catch (Exception e) {
+            throw new SQLException("Unable to drop column '$column' from table '$table'. $e.message", e)
         }
     }
 
