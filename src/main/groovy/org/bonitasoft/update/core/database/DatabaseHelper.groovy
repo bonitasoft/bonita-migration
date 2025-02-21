@@ -914,6 +914,10 @@ class DatabaseHelper {
         return dbVendor == ORACLE || dbVendor == SQLSERVER ? (value ? "1" : "0") : (value ? "true" : "false")
     }
 
+    boolean readBoolean(Object valueFromDb){
+        return dbVendor == ORACLE || dbVendor == SQLSERVER ? (valueFromDb == "1") : valueFromDb as boolean
+    }
+
     def addSequenceOnAllTenants(int sequenceKey) {
         getAllTenants().each { tenant ->
             executeInsertQuery("INSERT INTO sequence (tenantid, id, nextid) VALUES(${tenant.id}, $sequenceKey, 1)")

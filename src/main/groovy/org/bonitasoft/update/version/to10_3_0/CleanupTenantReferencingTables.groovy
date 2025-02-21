@@ -30,7 +30,7 @@ class CleanupTenantReferencingTables extends UpdateStep {
             recreatePrimaryKey("platform")
 
             String status = context.sql.firstRow("select status from tenant")['status'] as String
-            addColumnIfNotExist("platform", "status", VARCHAR(15), "'${status}'", "NOT NULL")
+            addColumnIfNotExist("platform", "maintenance_enabled", BOOLEAN(), booleanValue("ACTIVATED" != status), "NOT NULL")
 
             dropTableIfExists("tenant")
         }

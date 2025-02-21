@@ -46,8 +46,8 @@ maintenance_message_active, created, created_by, information) values (?,?,?,?,?,
             hasPrimaryKeyOnTable("sequence", "pk_sequence")
 
             hasPrimaryKeyOnTable("platform", "pk_platform")
-            hasColumnOnTable("platform", "status")
-            updateContext.sql.firstRow("select status from platform")['status'] == 'ACTIVATED'
+            hasColumnOnTable("platform", "maintenance_enabled")
+            !readBoolean(updateContext.sql.firstRow("select maintenance_enabled from platform")[0])
             !hasTable("tenant")
         }
     }
