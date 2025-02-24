@@ -18,6 +18,16 @@ class RemoveTenantIdFromConfigurationIT extends AbstractTestTo10_3_0 {
     private RemoveTenantIdFromConfiguration updateStep = new RemoveTenantIdFromConfiguration()
 
     def "should remove tenantId from configuration table"() {
+        given:
+        updateContext.sql.executeInsert("insert into configuration(tenant_id, content_type, resource_name, resource_content) values (?,?,?,?)",
+                0L, "TENANT_TEMPLATE_PORTAL", 'forms-config.properties', 'some bytes'.bytes)
+        updateContext.sql.executeInsert("insert into configuration(tenant_id, content_type, resource_name, resource_content) values (?,?,?,?)",
+                0L, "TENANT_TEMPLATE_ENGINE", "bonita-tenant-community-custom.properties" , "some content".bytes)
+        updateContext.sql.executeInsert("insert into configuration(tenant_id, content_type, resource_name, resource_content) values (?,?,?,?)",
+                0L, "TENANT_TEMPLATE_SECURITY_SCRIPTS", "SamplePermissionRule.groovy.sample", "groovy content".bytes)
+        updateContext.sql.executeInsert("insert into configuration(tenant_id, content_type, resource_name, resource_content) values (?,?,?,?)",
+                1L, "TENANT_PORTAL", 'forms-config.properties', 'some form content'.bytes)
+
         when:
         updateStep.execute(updateContext)
 
@@ -27,5 +37,10 @@ class RemoveTenantIdFromConfigurationIT extends AbstractTestTo10_3_0 {
             hasPrimaryKeyOnTable("configuration", "pk_configuration")
             hasIndexOnTable("configuration", "idx_configuration")
         }
+        updateContext.sql.rows("SELECT 1 FROM configuration WHERE content_type LIKE 'TENANT_TEMPLATE_%'").isEmpty()
+
+        def rows = updateContext.sql.rows("SELECT resource_name FROM configuration")
+        rows.size() == 1
+        rows[0].resource_name == 'forms-config.properties'
     }
 }

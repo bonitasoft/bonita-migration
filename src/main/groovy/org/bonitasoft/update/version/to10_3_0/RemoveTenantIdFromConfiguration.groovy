@@ -33,11 +33,14 @@ class RemoveTenantIdFromConfiguration extends UpdateStep {
 
             // drop the columns:
             dropColumnIfExists("configuration", "tenant_id")
+
+            // remove all TENANT_TEMPLATE_* rows from configuration table:
+            sql.execute("DELETE FROM configuration WHERE content_type LIKE 'TENANT_TEMPLATE_%'")
         }
     }
 
     @Override
     String getDescription() {
-        return "Remove tenantId from 'configuration' table"
+        return "Remove tenantId from 'configuration' table. Also remove tenant template configurations."
     }
 }
