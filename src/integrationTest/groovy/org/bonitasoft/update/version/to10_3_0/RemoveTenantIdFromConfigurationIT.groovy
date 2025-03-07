@@ -27,6 +27,8 @@ class RemoveTenantIdFromConfigurationIT extends AbstractTestTo10_3_0 {
                 0L, "TENANT_TEMPLATE_SECURITY_SCRIPTS", "SamplePermissionRule.groovy.sample", "groovy content".bytes)
         updateContext.sql.executeInsert("insert into configuration(tenant_id, content_type, resource_name, resource_content) values (?,?,?,?)",
                 1L, "TENANT_PORTAL", 'forms-config.properties', 'some form content'.bytes)
+        updateContext.sql.executeInsert("insert into configuration(tenant_id, content_type, resource_name, resource_content) values (?,?,?,?)",
+                1L, "PLATFORM_PORTAL", 'platform-tenant-config.properties', 'unused properties'.bytes)
 
         when:
         updateStep.execute(updateContext)
