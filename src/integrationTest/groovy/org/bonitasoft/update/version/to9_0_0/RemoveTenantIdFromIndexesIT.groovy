@@ -127,6 +127,7 @@ class RemoveTenantIdFromIndexesIT extends Specification {
         checkIndexOnTable("waiting_event", "idx_waiting_event", "progress", "kind", "locked", "active")
 
         checkIndexOnTable("pending_mapping", "idx_uq_pending_mapping", true, "activityid", "userid", "actorid")
+        checkIndexOnTable("pending_mapping", "idx_pending_mapping_deadlock", "tenantid", "activityid")
 
         checkIndexOnTable("flownode_instance", "idx_fni_loggroup3_terminal", "logicalgroup3", "terminal")
         checkIndexOnTable("flownode_instance", "idx_fn_lg2_state", "logicalgroup2", "statename")
@@ -159,8 +160,9 @@ class RemoveTenantIdFromIndexesIT extends Specification {
         checkIndexOnTable("arch_process_comment", "idx2_arch_process_comment", "processinstanceid", "archivedate")
         checkIndexOnTable("process_comment", "idx1_process_comment", "processinstanceid")
 
-        // In the end, we check that there is no more index with tenantId as column:
+        // In the end, we check that there is no more index with tenantId as column (except for the one that prevents deadlocks):
         def indexes = dbUnitHelper.getIndexesWithTenantIdAsColumn()
+                .findAll {it.indexName.toLowerCase() != "idx_pending_mapping_deadlock"}
         if (!indexes.isEmpty()) {
             updateContext.logger.error("Some indexes still have 'tenantId' in their columns (size:${indexes.size()}):")
             indexes.each {

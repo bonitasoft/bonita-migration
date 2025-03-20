@@ -284,6 +284,10 @@ class RemoveTenantIdFromIndexes extends UpdateStep {
                     createForeignKey("ref_biz_data_inst", "fk_ref_biz_data_fn", "flownode_instance", ["tenantid", "fn_inst_id"], ["tenantid", "id"], true)
                 }
             }
+
+            // Special case for this unique index that MUST keep the column tenantId until 10.3, to avoid deadlocks issue (Oracle & SQLServer),
+            // Version 10.3 will remove this useless index:
+            addOrReplaceIndex("pending_mapping", "idx_pending_mapping_deadlock", "tenantid", "activityId")
         }
     }
 
