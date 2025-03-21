@@ -122,6 +122,7 @@ CREATE TABLE pending_mapping (
 CREATE UNIQUE INDEX idx_UQ_pending_mapping ON pending_mapping (activityId, userId, actorId);
 ALTER TABLE pending_mapping ADD CONSTRAINT fk_pending_mapping_tenantId FOREIGN KEY (tenantid) REFERENCES tenant(id);
 ALTER TABLE pending_mapping ADD CONSTRAINT fk_pending_mapping_flownode_instanceId FOREIGN KEY (tenantid, activityId) REFERENCES flownode_instance(tenantid, id);
+CREATE INDEX idx_pending_mapping_deadlock ON pending_mapping(tenantid, activityId); -- index created in 9.0.8 to avoid deadlocks
 
 CREATE TABLE ref_biz_data_inst (
   tenantid BIGINT NOT NULL,

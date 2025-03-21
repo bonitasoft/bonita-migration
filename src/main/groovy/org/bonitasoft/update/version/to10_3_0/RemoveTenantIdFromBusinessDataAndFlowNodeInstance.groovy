@@ -51,6 +51,9 @@ class RemoveTenantIdFromBusinessDataAndFlowNodeInstance extends UpdateStep {
             dropForeignKey("arch_flownode_instance", dbVendor == ORACLE ? "fk_AFln_tenId" : "fk_arch_flownode_instance_tenantId")
             dropForeignKey("arch_process_instance", dbVendor == ORACLE ? "fk_AProc_tenId" : "fk_arch_process_instance_tenantId")
 
+            // drop specific index created in 9.0.8+ to prevent deadlocks:
+            dropIndexIfExists("pending_mapping", "idx_pending_mapping_deadlock") // MySQL automatically links this index to the FK "fk_pending_mapping_flownode_instanceId" so we must drop the index AFTER the FK
+
             // recreate PK:
             recreatePrimaryKey("flownode_instance")
             recreatePrimaryKey("data_instance")

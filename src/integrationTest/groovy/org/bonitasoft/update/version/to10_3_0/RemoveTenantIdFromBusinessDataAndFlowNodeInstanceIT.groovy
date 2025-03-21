@@ -44,6 +44,7 @@ class RemoveTenantIdFromBusinessDataAndFlowNodeInstanceIT extends AbstractTestTo
             !hasForeignKeyOnTable("pending_mapping", "fk_pMap_flnId") // ORACLE
             !hasUniqueKeyOnTable("pending_mapping", "idx_UQ_pending_mapping")
             hasUniqueKeyOnTableWithNameAndColumns("pending_mapping", "uk_pending_mapping_activityid_userid_actorid", "activityid", "userid", "actorid")
+            !hasIndexOnTable("pending_mapping", "idx_pending_mapping_deadlock")
 
             !hasColumnOnTable("ref_biz_data_inst", "tenantid")
             hasPrimaryKeyOnTable("ref_biz_data_inst", "pk_ref_biz_data_inst")
