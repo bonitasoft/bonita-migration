@@ -59,19 +59,19 @@ dependencies {
 
     testRuntimeOnly "cglib:cglib-nodep:2.2"
     testRuntimeOnly 'org.objenesis:objenesis:1.2'
-    testImplementation 'org.assertj:assertj-core:3.24.2'
+    testImplementation 'org.assertj:assertj-core:3.27.4'
     testImplementation "org.spockframework:spock-core:2.3-groovy-3.0"
-    testImplementation 'xmlunit:xmlunit:1.5'
+    testImplementation 'xmlunit:xmlunit:1.6'
 
     // TODO should be fillerRuntime (require changed in tasks)
     fillerImplementation "ch.qos.logback:logback-classic:$logbackVersion"
-    fillerImplementation 'junit:junit:4.13.1'
+    fillerImplementation 'junit:junit:4.13.2'
     fillerImplementation "org.codehaus.groovy:groovy-all:3.0.19"
-    fillerImplementation 'org.awaitility:awaitility:4.2.2'
-    fillerImplementation 'org.assertj:assertj-core:3.24.2'
+    fillerImplementation 'org.awaitility:awaitility:4.3.0'
+    fillerImplementation 'org.assertj:assertj-core:3.27.4'
 
-    enginetestImplementation 'org.awaitility:awaitility:4.2.0'
-    enginetestImplementation 'org.assertj:assertj-core:3.24.2'
+    enginetestImplementation 'org.awaitility:awaitility:4.3.0'
+    enginetestImplementation 'org.assertj:assertj-core:3.27.4'
     enginetestImplementation("org.spockframework:spock-junit4:2.3-groovy-3.0")
     enginetestImplementation("org.spockframework:spock-core:2.3-groovy-3.0")
     enginetestImplementation "org.codehaus.groovy:groovy-all:3.0.19"
