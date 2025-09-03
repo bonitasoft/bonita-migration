@@ -7,12 +7,12 @@ buildscript {
     }
 }
 plugins {
-    id 'pl.allegro.tech.build.axion-release' version '1.7.1'
+    id 'pl.allegro.tech.build.axion-release' version '1.20.1'
 
     // to be able to build Gradle task graph:
     // Run 'taskTree' to activate it.
     // Eg. './gradlew :bonita-update-tool:testUpdate_7_8_1 :bonita-update-tool:taskTree -Ddb.vendor=oracle'
-    id 'com.dorongold.task-tree' version '4.0.0'
+    id 'com.dorongold.task-tree' version '4.0.1'
 }
 repositories {
     mavenLocal()
@@ -47,17 +47,17 @@ project.tasks.withType(JavaCompile).configureEach {
 }
 
 dependencies {
-    implementation "org.codehaus.groovy:groovy-all:3.0.19"
-    implementation "com.github.zafarkhaja:java-semver:0.9.0"
-    implementation group: 'org.apache.commons', name: 'commons-dbcp2', version: '2.9.0'
+    implementation "org.codehaus.groovy:groovy-all:3.0.25"
+    implementation "com.github.zafarkhaja:java-semver:0.10.2"
+    implementation group: 'org.apache.commons', name: 'commons-dbcp2', version: '2.13.0'
     implementation "ch.qos.logback:logback-classic:$logbackVersion"
-    implementation "commons-cli:commons-cli:1.4"
+    implementation "commons-cli:commons-cli:1.10.0"
     implementation "com.sun.activation:jakarta.activation:1.2.2"
 
-    implementation "com.fasterxml.jackson.core:jackson-databind:2.17.1"
-    runtimeOnly 'javax.activation:activation:1.1'
+    implementation "com.fasterxml.jackson.core:jackson-databind:2.20.0"
+    runtimeOnly 'javax.activation:activation:1.1.1'
 
-    testRuntimeOnly 'org.objenesis:objenesis:1.2'
+    testRuntimeOnly 'org.objenesis:objenesis:3.4'
     testImplementation 'org.assertj:assertj-core:3.27.4'
     testImplementation "org.spockframework:spock-core:2.3-groovy-3.0"
     testImplementation 'xmlunit:xmlunit:1.6'
@@ -65,7 +65,7 @@ dependencies {
     // TODO should be fillerRuntime (require changed in tasks)
     fillerImplementation "ch.qos.logback:logback-classic:$logbackVersion"
     fillerImplementation 'junit:junit:4.13.2'
-    fillerImplementation "org.codehaus.groovy:groovy-all:3.0.19"
+    fillerImplementation "org.codehaus.groovy:groovy-all:3.0.25"
     fillerImplementation 'org.awaitility:awaitility:4.3.0'
     fillerImplementation 'org.assertj:assertj-core:3.27.4'
 
@@ -73,9 +73,9 @@ dependencies {
     enginetestImplementation 'org.assertj:assertj-core:3.27.4'
     enginetestImplementation("org.spockframework:spock-junit4:2.3-groovy-3.0")
     enginetestImplementation("org.spockframework:spock-core:2.3-groovy-3.0")
-    enginetestImplementation "org.codehaus.groovy:groovy-all:3.0.19"
+    enginetestImplementation "org.codehaus.groovy:groovy-all:3.0.25"
     enginetestImplementation 'javax.xml.bind:jaxb-api:2.3.1'
-    enginetestImplementation 'org.glassfish.jaxb:jaxb-runtime:2.3.1'
+    enginetestImplementation 'org.glassfish.jaxb:jaxb-runtime:4.0.5'
     // TODO should be enginetestRuntime (require changed in tasks)
     enginetestImplementation "ch.qos.logback:logback-classic:$logbackVersion"
 }
