@@ -7,8 +7,6 @@ buildscript {
     }
 }
 plugins {
-    id 'pl.allegro.tech.build.axion-release' version '1.20.1'
-
     // to be able to build Gradle task graph:
     // Run 'taskTree' to activate it.
     // Eg. './gradlew :bonita-update-tool:testUpdate_7_8_1 :bonita-update-tool:taskTree -Ddb.vendor=oracle'
