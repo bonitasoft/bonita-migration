@@ -49,10 +49,10 @@ dependencies {
     implementation "com.github.zafarkhaja:java-semver:0.10.2"
     implementation group: 'org.apache.commons', name: 'commons-dbcp2', version: '2.13.0'
     implementation "ch.qos.logback:logback-classic:$logbackVersion"
-    implementation "commons-cli:commons-cli:1.10.0"
+    implementation "commons-cli:commons-cli:1.11.0"
     implementation "com.sun.activation:jakarta.activation:1.2.2"
 
-    implementation "com.fasterxml.jackson.core:jackson-databind:2.20.0"
+    implementation "com.fasterxml.jackson.core:jackson-databind:2.20.1"
     runtimeOnly 'javax.activation:activation:1.1.1'
 
     testRuntimeOnly 'org.objenesis:objenesis:3.4'
