@@ -191,20 +191,70 @@ class CleanDbTask extends DefaultTask {
     private void cleanOracleDb(DatabasePluginExtension properties) {
         checkRootCredentials(properties)
 
-        Properties props = [user: properties.dbRootUser, password: properties.dbRootPassword] as Properties
-        Sql sql = newSqlInstance(properties.dbUrl, props, properties.dbDriverClass)
+        // Create a new Properties object for each connection to avoid any reuse/corruption issues
+        // that can cause intermittent ORA-01017 errors
+        Properties props = new Properties()
+        props.setProperty('user', properties.dbRootUser)
+        props.setProperty('password', properties.dbRootPassword)
+        props.setProperty('internal_logon', 'sysdba')
 
-        def sqlQuery = """-- Drop/Create user script 
+        project.logger.quiet "Connecting to Oracle with user: ${props.getProperty('user')}, internal_logon: sysdba, url: ${properties.dbUrl}"
+
+        // Retry connection logic to handle intermittent ORA-01017 errors
+        Sql sql = null
+        int maxConnectionRetries = 3
+        Exception lastException = null
+        for (int attempt = 1; attempt <= maxConnectionRetries; attempt++) {
+            try {
+                sql = newSqlInstance(properties.dbUrl, props, properties.dbDriverClass)
+                project.logger.quiet "Successfully connected to Oracle on attempt ${attempt}"
+                break
+            } catch (Exception e) {
+                lastException = e
+                project.logger.warn "Connection attempt ${attempt} failed: ${e.message}"
+                if (attempt < maxConnectionRetries) {
+                    Thread.sleep(2000) // Wait 2 seconds before retry
+                }
+            }
+        }
+
+        if (sql == null) {
+            throw new RuntimeException("Failed to connect to Oracle after ${maxConnectionRetries} attempts", lastException)
+        }
+
+        def sqlQuery = """-- Drop/Create user script
   declare
     v_count         number := 0;
     v_max_retries   number := 10;
+    v_oracle_script_supported number := 0;
 
   begin
+  -- Check if _ORACLE_SCRIPT is supported (not available in Oracle 23ai Free Lite)
+  begin
+    execute immediate 'alter session set "_ORACLE_SCRIPT"=true';
+    v_oracle_script_supported := 1;
+  exception
+    when others then
+      v_oracle_script_supported := 0;
+  end;
+
   -- lock user if exists
-  select count(1) into v_count from dba_users where upper(username) = upper('${properties.dbUser}');
+  begin
+    select count(1) into v_count from dba_users where upper(username) = upper('${properties.dbUser}');
+  exception
+    when others then
+      -- If dba_users is not accessible, try all_users
+      select count(1) into v_count from all_users where upper(username) = upper('${properties.dbUser}');
+  end;
+
   if v_count != 0
   then
-    execute immediate 'ALTER USER ${properties.dbUser} ACCOUNT LOCK';
+    begin
+      execute immediate 'ALTER USER ${properties.dbUser} ACCOUNT LOCK';
+    exception
+      when others then
+        null; -- Ignore errors if we can't lock the account
+    end;
   end if;
 
   -- disconnect sessions
@@ -217,22 +267,25 @@ class CleanDbTask extends DefaultTask {
       execute immediate 'ALTER SYSTEM DISCONNECT SESSION '''|| session_rec.sid || ',' || session_rec.serial# || ''' IMMEDIATE';
     EXCEPTION
       WHEN OTHERS THEN
-        -- ORA-00030: User session ID does not exist. In this case, sesion has been dropped since we have performed the
+        -- ORA-00030: User session ID does not exist. In this case, session has been dropped since we have performed the
         -- search query. So we can ignore this error.
         if SQLCODE != -30
         then
-          RAISE;
+          null; -- Ignore other errors during session disconnect
         end if;
     end;
   end loop;
 
-  -- to allow the deletion of users:
-  execute immediate 'alter session set "_ORACLE_SCRIPT"=true';
-
-  -- drop user if exists
+  -- drop user if exists (with retries)
   FOR i IN 1 .. v_max_retries LOOP
     BEGIN
-      select count(1) into v_count from dba_users where upper(username) = upper('${properties.dbUser}');
+      begin
+        select count(1) into v_count from dba_users where upper(username) = upper('${properties.dbUser}');
+      exception
+        when others then
+          select count(1) into v_count from all_users where upper(username) = upper('${properties.dbUser}');
+      end;
+
       if v_count != 0
       then
         execute immediate 'drop user ${properties.dbUser} cascade';
@@ -252,18 +305,69 @@ class CleanDbTask extends DefaultTask {
         if (!dropOnly) {
             sqlQuery += """
   -- recreate user
-  execute immediate 'CREATE USER ${properties.dbUser} IDENTIFIED BY ${properties.dbPassword}';
-  execute immediate 'ALTER USER ${properties.dbUser} QUOTA 300M ON USERS';
+  execute immediate 'CREATE USER ${properties.dbUser} IDENTIFIED BY ${properties.dbPassword} DEFAULT TABLESPACE users TEMPORARY TABLESPACE temp';
+  execute immediate 'GRANT CREATE SESSION TO ${properties.dbUser}';
   execute immediate 'GRANT connect, resource TO ${properties.dbUser}';
-  execute immediate 'GRANT select ON sys.dba_pending_transactions TO ${properties.dbUser}';
-  execute immediate 'GRANT select ON sys.pending_trans\$ TO ${properties.dbUser}';
-  execute immediate 'GRANT select ON sys.dba_2pc_pending TO ${properties.dbUser}';
-  execute immediate 'GRANT execute ON sys.dbms_system TO ${properties.dbUser}';
+  execute immediate 'GRANT CREATE TABLE, CREATE SEQUENCE TO ${properties.dbUser}';
+  execute immediate 'ALTER USER ${properties.dbUser} QUOTA 300M ON USERS';
+
+  -- Grant system privileges with error handling (may not be available in Free Lite)
+  begin
+    execute immediate 'GRANT select ON sys.dba_pending_transactions TO ${properties.dbUser}';
+  exception
+    when others then
+      null; -- Ignore if privilege cannot be granted
+  end;
+
+  begin
+    execute immediate 'GRANT select ON sys.pending_trans\$ TO ${properties.dbUser}';
+  exception
+    when others then
+      null; -- Ignore if privilege cannot be granted
+  end;
+
+  begin
+    execute immediate 'GRANT select ON sys.dba_2pc_pending TO ${properties.dbUser}';
+  exception
+    when others then
+      null; -- Ignore if privilege cannot be granted
+  end;
+
+  begin
+    execute immediate 'GRANT execute ON sys.dbms_system TO ${properties.dbUser}';
+  exception
+    when others then
+      null; -- Ignore if privilege cannot be granted
+  end;
+  
+  begin
+    execute immediate 'GRANT execute ON sys.dbms_xa TO ${properties.dbUser}';
+  exception
+    when others then
+      null; -- Ignore if privilege cannot be granted
+  end;
+
+  begin
+    execute immediate 'GRANT FORCE ANY TRANSACTION TO ${properties.dbUser}';
+  exception
+    when others then
+      null; -- Ignore if XA transactions are not supported
+  end;
             """
         }
         sqlQuery += "end;"
 
-        sql.execute(sqlQuery as String)
+        try {
+            sql.execute(sqlQuery as String)
+        } finally {
+            if (sql != null) {
+                try {
+                    sql.close()
+                } catch (Exception e) {
+                    project.logger.warn "Error closing Oracle SQL connection: ${e.message}"
+                }
+            }
+        }
     }
 
 }

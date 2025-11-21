@@ -105,7 +105,7 @@ Example: run all tests on Oracle:
 ```
 ./gradlew clean integrationTest allUpdateTests --info --stacktrace \
 -Ddb.vendor=oracle \
--Ddb.url=jdbc:oracle:thin:@//localhost:1521/ORCLPDB1.localdomain \
+-Ddb.url=jdbc:oracle:thin:@//localhost:1521/FREEPDB1.localdomain \
 -Ddb.root.user="sys as sysdba" \
 -Ddb.root.password=oracle \
 -Ddb.user=bonita \
