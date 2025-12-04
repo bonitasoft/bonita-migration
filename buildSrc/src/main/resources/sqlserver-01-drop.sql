@@ -8,11 +8,11 @@ USE master;
 GO
 
 
--- Drop login if exists
--- This will prevent any new connections using it
+-- Disable login first to prevent any new connections
+-- This closes the race condition window
 IF EXISTS (SELECT name FROM sys.server_principals WHERE name = '@sqlserver.connection.username@')
 BEGIN
-  DROP LOGIN @sqlserver.connection.username@
+  ALTER LOGIN [@sqlserver.connection.username@] DISABLE
 END
 GO
 
@@ -22,6 +22,32 @@ SELECT @kill_all = @kill_all + 'BEGIN TRY KILL ' + CONVERT(varchar(5), session_i
 WHERE login_name = '@sqlserver.connection.username@'
 
 EXEC(@kill_all);
+GO
+
+-- Drop login with retry logic
+-- Even with disabled login, sessions may take time to terminate
+DECLARE @retries INT = 5
+DECLARE @dropped BIT = 0
+
+WHILE @retries > 0 AND @dropped = 0
+BEGIN
+  BEGIN TRY
+    IF EXISTS (SELECT name FROM sys.server_principals WHERE name = '@sqlserver.connection.username@')
+    BEGIN
+      DROP LOGIN [@sqlserver.connection.username@]
+      SET @dropped = 1
+    END
+  END TRY
+  BEGIN CATCH
+    WAITFOR DELAY '00:00:01'  -- Wait 1 second before retry
+    SET @retries = @retries - 1
+    IF @retries = 0
+    BEGIN
+      -- Re-throw the error on final attempt
+      THROW
+    END
+  END CATCH
+END
 GO
 
 revoke execute on sp_sqljdbc_xa_install to [SqlJDBCXAUser]
