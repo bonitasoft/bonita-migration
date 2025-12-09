@@ -143,4 +143,32 @@ class TestUtil {
             processAPI.getArchivedProcessInstances(processInstanceId, 0, 1).size() == 1
         })
     }
+
+    /**
+     * Waits for a document to be visible in archived state after process completion.
+     * <p>
+     * Both documents and process instances are archived within the same transaction using before-commit callables.
+     * However, on Oracle, read consistency issues can cause archived documents to not be immediately visible
+     * even after the archived process instance is queryable. This can be due to:
+     * <ul>
+     *   <li>Read replica replication lag (e.g., Oracle Data Guard)</li>
+     *   <li>Transaction isolation level differences between queries</li>
+     *   <li>Cursor consistency - different queries may see different data versions</li>
+     * </ul>
+     * This method explicitly waits until the archived document is readable, preventing
+     * ArchivedDocumentNotFoundException in tests.
+     *
+     * @param documentId the ID of the document to wait for archiving
+     * @param processAPI the process API to use for checking
+     */
+    static void waitForArchivedDocument(long documentId, ProcessAPI processAPI) {
+        await().until({
+            try {
+                processAPI.getArchivedVersionOfProcessDocument(documentId)
+                return true
+            } catch (Exception ignored) {
+                return false
+            }
+        })
+    }
 }

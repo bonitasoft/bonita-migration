@@ -115,6 +115,7 @@ class CheckUpdatedTo10_3_0 extends Specification {
         final byte[] docContent = processAPI.getDocumentContent(documents.get(0).getContentStorageId())
         assignAndExecuteUserTask(processInstance.id, "step1WithDocumentsInBar", client.session.userId, processAPI)
         waitForProcessToFinish(processInstance.id, processAPI)
+        waitForArchivedDocument(documents.get(0).id, processAPI)
         def archivedDocument = processAPI.getArchivedVersionOfProcessDocument(documents.get(0).id)
 
         then:
