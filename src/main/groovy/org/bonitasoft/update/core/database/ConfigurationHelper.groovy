@@ -38,6 +38,11 @@ class ConfigurationHelper {
         sql.execute("UPDATE configuration SET resource_content = ${ensureContentNeverEmpty(content)} WHERE tenant_id = ${tenantId} AND content_type = ${type} AND resource_name = ${fileName}")
     }
 
+    def updateConfigurationFileContentPost10_3(String fileName, String type, byte[] content) {
+        logger.debug(String.format("update configuration file | type: %-25s | file name: %s", type, fileName))
+        sql.execute("UPDATE configuration SET resource_content = ${ensureContentNeverEmpty(content)} WHERE content_type = ${type} AND resource_name = ${fileName}")
+    }
+
     def static ensureContentNeverEmpty(byte[] content) {
         return content.length == 0 ? System.lineSeparator().bytes : content
     }
