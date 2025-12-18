@@ -167,7 +167,7 @@ class CleanDbTask extends DefaultTask {
         checkRootCredentials(properties)
         def (databaseName, genericUrl) = extractDataBaseNameAndGenericUrl(properties)
 
-        Sql sql = newSqlInstance(genericUrl, properties.dbRootUser, properties.dbRootPassword, properties.dbDriverClass)
+        Sql sql = newSqlInstance(genericUrl + ";encrypt=false", properties.dbRootUser, properties.dbRootPassword, properties.dbDriverClass)
 
         executeSqlServerScript(sql, "/sqlserver-01-drop.sql", properties, databaseName)
         if (!dropOnly) {
