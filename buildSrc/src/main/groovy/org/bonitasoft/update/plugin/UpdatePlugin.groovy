@@ -48,7 +48,6 @@ class UpdatePlugin implements Plugin<Project> {
 
         project.configurations {
             drivers
-            xarecovery
         }
         project.dependencies {
             // make integration tests depends on the project main classes
@@ -69,13 +68,6 @@ class UpdatePlugin implements Plugin<Project> {
             createIntegrationTestTasks(project)
 
             DatabaseResourcesConfigurator.finalizeTasksDependenciesOnDatabaseResources(project)
-        }
-    }
-
-    def defineXaRecoveryConfiguration(Project project) {
-        project.dependencies {
-            xarecovery 'com.bonitasoft.tools.sqlserver:sqlserver-xa-recovery:1.0.1@jar'
-            xarecovery JdbcDriverDependencies.sqlserver
         }
     }
 
@@ -201,23 +193,7 @@ class UpdatePlugin implements Plugin<Project> {
             configureBonita(project, underscored(previousVersion), underscored(targetVersion), isSP)
         }
         AlternateJVMRunner.setupJavaToolChain(targetVersion, project, prepareTestTask)
-
-        DatabasePluginExtension properties = project.extensions.getByType(DatabasePluginExtension.class)
-        if (properties.dbVendor == 'sqlserver') {
-            defineXaRecoveryConfiguration(project)
-            TaskProvider<RunMsSqlserverXARecoveryTask> xaRecoveryTask
-            try {
-                xaRecoveryTask = project.tasks.named('xarecovery', RunMsSqlserverXARecoveryTask) // create it only once
-            } catch (UnknownTaskException ignored) {
-                xaRecoveryTask = project.tasks.register("xarecovery", RunMsSqlserverXARecoveryTask) {
-                    dependsOn cleanDb
-                }
-            }
-            xaRecoveryTask.configure { setMainClass("com.bonitasoft.tools.sqlserver.XARecovery") }
-            prepareTestTask.configure { dependsOn xaRecoveryTask }
-        } else {
-            prepareTestTask.configure { dependsOn cleanDb }
-        }
+        prepareTestTask.configure { dependsOn cleanDb }
         prepareTestTask
     }
 
