@@ -33,10 +33,10 @@ class UpdateTo10_5_0Test extends Specification {
         }.contains(stepName)
 
         where:
-        stepName << ["RemoveEhcache2Configuration"]
+        stepName << ["RemoveEhcache2Configuration", "AddBdmQueryResponseFormatConfig"]
     }
 
-    def "should have pre-update warnings about Ehcache migration"() {
+    def "should 10.5.0 preUpdateWarnings warn about Ehcache migration"() {
         given:
         def updateTo = new UpdateTo10_5_0()
 
@@ -47,5 +47,19 @@ class UpdateTo10_5_0Test extends Specification {
         warnings != null
         warnings.length > 0
         warnings.any { it.contains("Ehcache") }
+    }
+
+    def "should 10.5.0 preUpdateWarnings warn about BDM query response format"() {
+        given:
+        def version = new UpdateTo10_5_0()
+
+        when:
+        def warnings = version.getPreUpdateWarnings(null)
+
+        then:
+        warnings.size() > 0
+        warnings.any { it.contains("BDM custom query response formats") }
+        warnings.any { it.contains("bonita.runtime.business-data.serialization.standard-shape.enabled") }
+        warnings.any { it.contains("documentation.bonitasoft.com") }
     }
 }

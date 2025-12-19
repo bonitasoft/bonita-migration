@@ -38,6 +38,9 @@ class ConfigurationHelper {
         sql.execute("UPDATE configuration SET resource_content = ${ensureContentNeverEmpty(content)} WHERE tenant_id = ${tenantId} AND content_type = ${type} AND resource_name = ${fileName}")
     }
 
+    /**
+     * Update configuration file content without tenant_id (for versions >= 10.3.0)
+     */
     def updateConfigurationFileContentPost10_3(String fileName, String type, byte[] content) {
         logger.debug(String.format("update configuration file | type: %-25s | file name: %s", type, fileName))
         sql.execute("UPDATE configuration SET resource_content = ${ensureContentNeverEmpty(content)} WHERE content_type = ${type} AND resource_name = ${fileName}")
@@ -204,6 +207,19 @@ class ConfigurationHelper {
         }
     }
 
+    def appendToSpecificConfigurationFileIfPropertyIsMissingNoTenant(String contentType, String fileName, String propertyKey, String propertyValue, String keyValueSeparator, String comment) {
+        def results = sql.rows("""
+                SELECT content_type, resource_content
+                FROM configuration
+                WHERE resource_name=${fileName}
+                AND content_type=${contentType}
+                """)
+        def foundFiles = appendToConfigurationFilesWithCommentIfPropertyIsMissingNoTenant(results, propertyKey, keyValueSeparator, propertyValue, fileName, comment)
+        if (foundFiles == 0) {
+            throw new IllegalArgumentException("configuration file ${fileName} not found in database.")
+        }
+    }
+
     def appendToAllConfigurationFilesIfPropertyIsMissing(String fileName, String propertyKey, String propertyValue, String keyValueSeparator) {
         def results = sql.rows("""
                 SELECT tenant_id, content_type, resource_content
@@ -233,6 +249,26 @@ class ConfigurationHelper {
                 logger.info(String.format("update configuration file | tenant id: %3d | type: %-25s | file name: %s | new property: %s", tenantId, it.content_type, fileName, newEntry))
             } else {
                 logger.info(String.format("configuration file already up to date | tenant id: %3d | type: %-25s | file name: %s", tenantId, it.content_type, fileName))
+            }
+        }
+        foundFiles
+    }
+
+    private int appendToConfigurationFilesWithCommentIfPropertyIsMissingNoTenant(List<GroovyRowResult> results, String propertyKey, String keyValueSeparator, String newPropertyValue, String fileName, String comment) {
+        def foundFiles = 0
+        results.each {
+            foundFiles++
+            String content = databaseHelper.getBlobContentAsString(it.resource_content)
+            def properties = new Properties()
+            def stringReader = new StringReader(content)
+            properties.load(stringReader)
+            if (!properties.containsKey(propertyKey)) {
+                def newEntry = newPropertyEntry(propertyKey, newPropertyValue, keyValueSeparator, comment)
+                content += "\n$newEntry"
+                updateConfigurationFileContentPost10_3(fileName, it.content_type, content.bytes)
+                logger.info(String.format("update configuration file | type: %-25s | file name: %s | new property: %s", it.content_type, fileName, newEntry))
+            } else {
+                logger.info(String.format("configuration file already up to date | type: %-25s | file name: %s", it.content_type, fileName))
             }
         }
         foundFiles

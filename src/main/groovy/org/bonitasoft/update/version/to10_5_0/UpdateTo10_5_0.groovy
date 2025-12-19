@@ -25,27 +25,37 @@ import org.bonitasoft.update.core.VersionUpdate
  *   - Removes XML-based cache configuration
  *   - Removes obsolete Ehcache 2 properties
  *   - Cache configuration now fully programmatic in Java
+ * - new BDM query response format property that allows to choose between modern / legacy format
  *
- * @author Bonita Migration Tool
+ * @author Emmanuel Duchastenier
+ * @author Christophe Vidaillac
  */
 class UpdateTo10_5_0 extends VersionUpdate {
 
+    public static final String[] WARN_MESSAGE_EHCACHE_AND_BDM_QUERY_FORMAT =
+    [
+        "Bonita 10.5 / 2026.1 migrates from Ehcache 2.x to Ehcache 3.11",
+        "The migration will:",
+        "  - Remove the cache-config.xml file (no longer needed)",
+        "  - Remove obsolete Ehcache 2 configuration properties",
+        "  - All cache configuration is now handled programmatically in Java code",
+        "",
+        "If you have custom cache configurations, they will be automatically migrated to use Ehcache 3 syntax.",
+        "Please refer to the Bonita documentation for details on cache customization in 10.5+.",
+        "",
+        "NOTE: A new behavior is available for BDM custom query response formats.",
+        "The property bonita.runtime.business-data.serialization.standard-shape.enabled will be set to false to preserve the existing behavior.",
+        "Set this property to true to enable the new standardized response format for BDM custom queries.",
+        "More information is available in the documentation: https://documentation.bonitasoft.com/bonita/latest/data/bdm-query-response-formats"
+    ]
+
     @Override
     List<UpdateStep> getUpdateSteps() {
-        return [new RemoveEhcache2Configuration()]
+        return [new RemoveEhcache2Configuration(), new AddBdmQueryResponseFormatConfig()]
     }
 
     @Override
     String[] getPreUpdateWarnings(UpdateContext context) {
-        return [
-            "Bonita 10.5 / 2026.1 migrates from Ehcache 2.x to Ehcache 3.11",
-            "The migration will:",
-            "  - Remove the cache-config.xml file (no longer needed)",
-            "  - Remove obsolete Ehcache 2 configuration properties",
-            "  - All cache configuration is now handled programmatically in Java code",
-            "",
-            "If you have custom cache configurations, they will be automatically migrated to use Ehcache 3 syntax.",
-            "Please refer to the Bonita documentation for details on cache customization in 10.5+."
-        ]
+        return WARN_MESSAGE_EHCACHE_AND_BDM_QUERY_FORMAT
     }
 }
