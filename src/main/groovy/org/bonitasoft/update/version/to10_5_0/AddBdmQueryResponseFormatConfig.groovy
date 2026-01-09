@@ -35,7 +35,7 @@ class AddBdmQueryResponseFormatConfig extends UpdateStep {
 
     @Override
     execute(UpdateContext context) {
-        context.configurationHelper.appendToSpecificConfigurationFileIfPropertyIsMissingNoTenant('PLATFORM_ENGINE', COMMUNITY_CONF_FILE,
+        context.configurationHelper.noTenant.appendToSpecificConfigurationFileIfPropertyIsMissing('PLATFORM_ENGINE', COMMUNITY_CONF_FILE,
                 DEFAULT_BDM_SERIALIZATION_KEY, DEFAULT_BDM_SERIALIZATION_VALUE, "=", BDM_SERIALIZATION_COMMENT)
     }
 

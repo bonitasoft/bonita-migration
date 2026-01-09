@@ -121,7 +121,7 @@ abstract class AbstractRemoveEhcache2Properties extends UpdateStep {
                 }
 
                 if (updated) {
-                    context.configurationHelper.updateConfigurationFileContentPost10_3(configFileName, contentType, newContent.bytes)
+                    context.configurationHelper.noTenant.updateConfigurationFileContent(configFileName, contentType, newContent.bytes)
                     context.logger.info("Migrated ${fileTypeDesc} file ${configFileName}: removed ${removedCount} obsolete properties, added ${addedCount} new Ehcache 3 properties")
                 }
             }

@@ -83,7 +83,7 @@ class RemoveEhcache2Configuration extends AbstractRemoveEhcache2Properties {
 
                 if (platformMatcher.find()) {
                     String newContent = platformMatcher.replaceAll("")
-                    context.configurationHelper.updateConfigurationFileContentPost10_3(configFileName, contentType, newContent.bytes)
+                    context.configurationHelper.noTenant.updateConfigurationFileContent(configFileName, contentType, newContent.bytes)
                     context.logger.info("Removed all `bonita.platform.cache.platform` properties from ${fileTypeDesc} file ${configFileName}")
                 }
             }
