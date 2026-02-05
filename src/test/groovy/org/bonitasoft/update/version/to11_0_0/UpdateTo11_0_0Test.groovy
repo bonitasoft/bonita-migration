@@ -11,20 +11,20 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
-package org.bonitasoft.update.version.to10_5_0
+package org.bonitasoft.update.version.to11_0_0
 
 import spock.lang.Specification
 import spock.lang.Unroll
 
 /**
- * Unit test for UpdateTo10_5_0 migration orchestrator
+ * Unit test for UpdateTo11_0_0 migration orchestrator
  */
-class UpdateTo10_5_0Test extends Specification {
+class UpdateTo11_0_0Test extends Specification {
 
     @Unroll
-    def "should update to 10.5.0 include step '#stepName'"(def stepName) {
+    def "should update to 11.0.0 include step '#stepName'"(def stepName) {
         given:
-        def updateTo = new UpdateTo10_5_0()
+        def updateTo = new UpdateTo11_0_0()
 
         expect:
         def steps = updateTo.updateSteps
@@ -36,9 +36,9 @@ class UpdateTo10_5_0Test extends Specification {
         stepName << ["RemoveEhcache2Configuration", "AddBdmQueryResponseFormatConfig"]
     }
 
-    def "should 10.5.0 preUpdateWarnings warn about Ehcache migration"() {
+    def "should 11.0.0 preUpdateWarnings warn about Ehcache migration"() {
         given:
-        def updateTo = new UpdateTo10_5_0()
+        def updateTo = new UpdateTo11_0_0()
 
         when:
         def warnings = updateTo.getPreUpdateWarnings(null)
@@ -49,9 +49,9 @@ class UpdateTo10_5_0Test extends Specification {
         warnings.any { it.contains("Ehcache") }
     }
 
-    def "should 10.5.0 preUpdateWarnings warn about BDM query response format"() {
+    def "should 11.0.0 preUpdateWarnings warn about BDM query response format"() {
         given:
-        def version = new UpdateTo10_5_0()
+        def version = new UpdateTo11_0_0()
 
         when:
         def warnings = version.getPreUpdateWarnings(null)

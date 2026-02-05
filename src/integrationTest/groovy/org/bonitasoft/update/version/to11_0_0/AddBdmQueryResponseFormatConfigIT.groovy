@@ -11,7 +11,7 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
-package org.bonitasoft.update.version.to10_5_0
+package org.bonitasoft.update.version.to11_0_0
 
 import groovy.sql.GroovyRowResult
 import org.bonitasoft.update.DBUnitHelper
@@ -30,7 +30,7 @@ class AddBdmQueryResponseFormatConfigIT extends Specification {
 
     def setup() {
         dropTestTables()
-        dbUnitHelper.createTables("10_5_0")
+        dbUnitHelper.createTables("11_0_0")
     }
 
     def cleanup() {

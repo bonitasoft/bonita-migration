@@ -11,14 +11,14 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
-package org.bonitasoft.update.version.to10_5_0
+package org.bonitasoft.update.version.to11_0_0
 
 import org.bonitasoft.update.core.UpdateContext
 import org.bonitasoft.update.core.UpdateStep
 import org.bonitasoft.update.core.VersionUpdate
 
 /**
- * Migration orchestrator for Bonita 10.5.0 / 2026.1
+ * Migration orchestrator for Bonita 11.0.0 / 2026.1
  *
  * Main changes in this version:
  * - Ehcache 2.x to Ehcache 3.11 migration
@@ -30,18 +30,18 @@ import org.bonitasoft.update.core.VersionUpdate
  * @author Emmanuel Duchastenier
  * @author Christophe Vidaillac
  */
-class UpdateTo10_5_0 extends VersionUpdate {
+class UpdateTo11_0_0 extends VersionUpdate {
 
     public static final String[] WARN_MESSAGE_EHCACHE_AND_BDM_QUERY_FORMAT =
     [
-        "Bonita 10.5 / 2026.1 migrates from Ehcache 2.x to Ehcache 3.11",
+        "Bonita 11.0 / 2026.1 migrates from Ehcache 2.x to Ehcache 3.11",
         "The migration will:",
         "  - Remove the cache-config.xml file (no longer needed)",
         "  - Remove obsolete Ehcache 2 configuration properties",
         "  - All cache configuration is now handled programmatically in Java code",
         "",
         "If you have custom cache configurations, they will be automatically migrated to use Ehcache 3 syntax.",
-        "Please refer to the Bonita documentation for details on cache customization in 10.5+.",
+        "Please refer to the Bonita documentation for details on cache customization in 11.0+.",
         "",
         "NOTE: A new behavior is available for BDM custom query response formats.",
         "The property bonita.runtime.business-data.serialization.standard-shape.enabled will be set to false to preserve the existing behavior.",
