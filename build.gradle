@@ -56,7 +56,7 @@ dependencies {
     runtimeOnly 'javax.activation:activation:1.1.1'
 
     testRuntimeOnly 'org.objenesis:objenesis:3.4'
-    testImplementation 'org.assertj:assertj-core:3.27.6'
+    testImplementation 'org.assertj:assertj-core:3.27.7'
     testImplementation "org.spockframework:spock-core:2.3-groovy-3.0"
     testImplementation 'xmlunit:xmlunit:1.6'
 
@@ -65,10 +65,10 @@ dependencies {
     fillerImplementation 'junit:junit:4.13.2'
     fillerImplementation "org.codehaus.groovy:groovy-all:3.0.25"
     fillerImplementation 'org.awaitility:awaitility:4.3.0'
-    fillerImplementation 'org.assertj:assertj-core:3.27.6'
+    fillerImplementation 'org.assertj:assertj-core:3.27.7'
 
     enginetestImplementation 'org.awaitility:awaitility:4.3.0'
-    enginetestImplementation 'org.assertj:assertj-core:3.27.6'
+    enginetestImplementation 'org.assertj:assertj-core:3.27.7'
     enginetestImplementation("org.spockframework:spock-junit4:2.3-groovy-3.0")
     enginetestImplementation("org.spockframework:spock-core:2.3-groovy-3.0")
     enginetestImplementation "org.codehaus.groovy:groovy-all:3.0.25"
