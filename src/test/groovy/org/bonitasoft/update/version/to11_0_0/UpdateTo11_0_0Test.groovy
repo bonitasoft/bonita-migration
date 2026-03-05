@@ -13,6 +13,8 @@
  **/
 package org.bonitasoft.update.version.to11_0_0
 
+import org.bonitasoft.update.core.UpdateContext
+import org.bonitasoft.update.core.UpdateStep
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -33,7 +35,11 @@ class UpdateTo11_0_0Test extends Specification {
         }.contains(stepName)
 
         where:
-        stepName << ["RemoveEhcache2Configuration", "AddBdmQueryResponseFormatConfig"]
+        stepName << [
+            "RemoveEhcache2Configuration",
+            "AddBdmQueryResponseFormatConfig",
+            "AddTemporaryContentLargeObjectCleanupTriggerPostgres"
+        ]
     }
 
     def "should 11.0.0 preUpdateWarnings warn about Ehcache migration"() {
@@ -61,5 +67,33 @@ class UpdateTo11_0_0Test extends Specification {
         warnings.any { it.contains("BDM custom query response formats") }
         warnings.any { it.contains("bonita.runtime.business-data.serialization.standard-shape.enabled") }
         warnings.any { it.contains("documentation.bonitasoft.com") }
+    }
+
+    def "should 11.0.0 preUpdateWarnings include PostgreSQL LO cleanup warning only for PostgreSQL"() {
+        given:
+        def version = new UpdateTo11_0_0()
+        def postgresContext = Mock(UpdateContext)
+        postgresContext.dbVendor >> UpdateStep.DBVendor.POSTGRES
+        def oracleContext = Mock(UpdateContext)
+        oracleContext.dbVendor >> UpdateStep.DBVendor.ORACLE
+
+        when:
+        def pgWarnings = version.getPreUpdateWarnings(postgresContext)
+        def oracleWarnings = version.getPreUpdateWarnings(oracleContext)
+
+        then:
+        pgWarnings.any { it.contains("PostgreSQL Large Objects cleanup") }
+        !oracleWarnings.any { it.contains("PostgreSQL Large Objects cleanup") }
+    }
+
+    def "should 11.0.0 preUpdateWarnings not include PostgreSQL warning when context is null"() {
+        given:
+        def version = new UpdateTo11_0_0()
+
+        when:
+        def warnings = version.getPreUpdateWarnings(null)
+
+        then:
+        !warnings.any { it.contains("PostgreSQL Large Objects cleanup") }
     }
 }

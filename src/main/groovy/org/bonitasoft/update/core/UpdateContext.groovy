@@ -57,6 +57,7 @@ class UpdateContext {
     private ExecutorService executorService
     boolean verifyOnly
     boolean updateIndexes
+    boolean createTemporaryContentLoTrigger
 
     UpdateContext() {
     }

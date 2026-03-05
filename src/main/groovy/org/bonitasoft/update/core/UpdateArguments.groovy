@@ -22,7 +22,10 @@ class UpdateArguments {
     .addOption(null, "verify", false, "Only verify that the platform can be updated to the required version." +
     " It will not update the platform")
     .addOption("i", "update-indexes", false, "Only update indexes to remove tenant id from the list of indexed columns (Bonita 9.0+ only)")
+    .addOption("t", "create-lo-trigger", false,
+    "Only create the PostgreSQL trigger/function that deletes large objects on delete from temporary_content")
     .addOption("h", "help", false, "Print this help")
+
 
     static UpdateArguments parse(String[] args) throws ParseException {
         DefaultParser parser = new DefaultParser()
@@ -30,7 +33,8 @@ class UpdateArguments {
         UpdateArguments updateArguments = new UpdateArguments(
                 commandLine.hasOption("help"),
                 commandLine.hasOption("verify"),
-                commandLine.hasOption("update-indexes")
+                commandLine.hasOption("update-indexes"),
+                commandLine.hasOption("create-lo-trigger")
                 )
         return updateArguments
     }
@@ -47,4 +51,5 @@ class UpdateArguments {
     boolean printHelp
     boolean verify
     boolean updateIndexes
+    boolean createTemporaryContentLoTrigger
 }

@@ -39,6 +39,7 @@ class Update {
             def updateContext = new UpdateContext(logger: logger)
             updateContext.verifyOnly = arguments.verify
             updateContext.updateIndexes = arguments.updateIndexes
+            updateContext.createTemporaryContentLoTrigger = arguments.createTemporaryContentLoTrigger
             new Update(
                     updateContext,
                     new DisplayUtil(logger: logger)
@@ -92,6 +93,8 @@ class Update {
             return new UpdateVerifier(context: context, logger: logger, displayUtil: displayUtil)
         } else if (context.updateIndexes) {
             return new UpdateIndexesOnly(context: context, logger: logger, displayUtil: displayUtil)
+        } else if (context.createTemporaryContentLoTrigger) {
+            return new UpdateTemporaryContentLoTriggerOnly(context: context, logger: logger, displayUtil: displayUtil)
         } else {
             return new UpdateRunner(context: context, logger: logger, displayUtil: displayUtil)
         }

@@ -46,16 +46,31 @@ class UpdateTo11_0_0 extends VersionUpdate {
         "NOTE: A new behavior is available for BDM custom query response formats.",
         "The property bonita.runtime.business-data.serialization.standard-shape.enabled will be set to false to preserve the existing behavior.",
         "Set this property to true to enable the new standardized response format for BDM custom queries.",
-        "More information is available in the documentation: https://documentation.bonitasoft.com/bonita/latest/data/bdm-query-response-formats"
+        "More information is available in the documentation: https://documentation.bonitasoft.com/bonita/latest/data/bdm-query-response-formats",
+    ]
+
+    public static final String[] WARN_MESSAGE_POSTGRES_LO_CLEANUP =
+    [
+        "NOTE: PostgreSQL Large Objects cleanup",
+        "Bonita will create a PostgreSQL trigger on table 'temporary_content' to cleanup large objects (lo_unlink) when rows are deleted.",
+        "This prevents orphan large objects in the database."
     ]
 
     @Override
     List<UpdateStep> getUpdateSteps() {
-        return [new RemoveEhcache2Configuration(), new AddBdmQueryResponseFormatConfig()]
+        return [
+            new RemoveEhcache2Configuration(),
+            new AddBdmQueryResponseFormatConfig(),
+            new AddTemporaryContentLargeObjectCleanupTriggerPostgres(),
+        ]
     }
 
     @Override
     String[] getPreUpdateWarnings(UpdateContext context) {
-        return WARN_MESSAGE_EHCACHE_AND_BDM_QUERY_FORMAT
+        def warnings = WARN_MESSAGE_EHCACHE_AND_BDM_QUERY_FORMAT as List
+        if (context?.dbVendor == UpdateStep.DBVendor.POSTGRES) {
+            warnings.addAll(WARN_MESSAGE_POSTGRES_LO_CLEANUP)
+        }
+        return warnings as String[]
     }
 }
