@@ -38,7 +38,9 @@ class UpdateTo11_0_0Test extends Specification {
         stepName << [
             "RemoveEhcache2Configuration",
             "AddBdmQueryResponseFormatConfig",
-            "AddTemporaryContentLargeObjectCleanupTriggerPostgres"
+            "AddTemporaryContentLargeObjectCleanupTriggerPostgres",
+            "CreateDataRetentionConfigTable",
+            "CreateDataRetentionBdmTrackingTable"
         ]
     }
 

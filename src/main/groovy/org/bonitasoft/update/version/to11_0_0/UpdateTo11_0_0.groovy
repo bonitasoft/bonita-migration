@@ -62,6 +62,8 @@ class UpdateTo11_0_0 extends VersionUpdate {
             new RemoveEhcache2Configuration(),
             new AddBdmQueryResponseFormatConfig(),
             new AddTemporaryContentLargeObjectCleanupTriggerPostgres(),
+            new CreateDataRetentionConfigTable(),
+            new CreateDataRetentionBdmTrackingTable(),
         ]
     }
 

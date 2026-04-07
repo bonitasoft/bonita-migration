@@ -1,0 +1,5 @@
+CREATE TABLE sequence (
+  id BIGINT NOT NULL,
+  nextid BIGINT NOT NULL,
+  CONSTRAINT pk_sequence PRIMARY KEY (id)
+) ENGINE = INNODB;
