@@ -978,6 +978,10 @@ class DatabaseHelper {
                 executeInsertQuery("INSERT INTO sequence (id, nextid) VALUES($sequenceId, $initialValue)")
             }
         }
+
+        GroovyRowResult getSequenceValue(long sequenceId) {
+            selectFirstRow("SELECT s.id, s.nextid FROM sequence s WHERE s.id = ?", [sequenceId])
+        }
     }
 
     /**

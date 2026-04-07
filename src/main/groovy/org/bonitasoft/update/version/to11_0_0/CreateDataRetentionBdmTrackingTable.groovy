@@ -19,13 +19,15 @@ import org.bonitasoft.update.core.UpdateStep
 
 class CreateDataRetentionBdmTrackingTable extends UpdateStep {
 
+    static final long DATA_RETENTION_BDM_TRACKING_SEQUENCE_ID = 9L
+
     @Override
     def execute(UpdateContext context) {
         context.databaseHelper.with {
             if (!hasTable("data_retention_bdm_tracking")) {
                 executeScript("CreateDataRetentionBdmTrackingTable")
             }
-            noMoreTenant.addSequenceIfNotExists(9, 1)
+            noMoreTenant.addSequenceIfNotExists(DATA_RETENTION_BDM_TRACKING_SEQUENCE_ID, 1)
         }
     }
 

@@ -13,6 +13,8 @@
  **/
 package org.bonitasoft.update.version.to11_0_0
 
+import static CreateDataRetentionConfigTable.DATA_RETENTION_CONFIG_SEQUENCE_ID
+
 import org.bonitasoft.update.DBUnitHelper
 import org.bonitasoft.update.core.UpdateContext
 import spock.lang.Shared
@@ -55,9 +57,12 @@ class CreateDataRetentionConfigTableIT extends Specification {
             hasColumnOnTable("data_retention_config", "created_at")
             hasColumnOnTable("data_retention_config", "updated_at")
             hasPrimaryKeyOnTable("data_retention_config", "pk_data_retention_config")
+            hasUniqueKeyOnTableWithNameAndColumns("data_retention_config",
+                    "uk_data_retention_config_data_classname",
+                    "data_classname")
+            // validate new sequence presence
+            noMoreTenant.getSequenceValue(DATA_RETENTION_CONFIG_SEQUENCE_ID) != null
         }
-        // validate new sequence presence
-        updateContext.sql.firstRow("SELECT nextid FROM sequence WHERE id = 8") != null
     }
 
     def "should be idempotent"() {

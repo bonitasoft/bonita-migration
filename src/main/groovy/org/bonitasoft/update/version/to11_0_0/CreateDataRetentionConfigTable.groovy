@@ -19,13 +19,15 @@ import org.bonitasoft.update.core.UpdateStep
 
 class CreateDataRetentionConfigTable extends UpdateStep {
 
+    static final long DATA_RETENTION_CONFIG_SEQUENCE_ID = 8L
+
     @Override
     def execute(UpdateContext context) {
         context.databaseHelper.with {
             if (!hasTable("data_retention_config")) {
                 executeScript("CreateDataRetentionConfigTable")
             }
-            noMoreTenant.addSequenceIfNotExists(8, 1)
+            noMoreTenant.addSequenceIfNotExists(DATA_RETENTION_CONFIG_SEQUENCE_ID, 1)
         }
     }
 

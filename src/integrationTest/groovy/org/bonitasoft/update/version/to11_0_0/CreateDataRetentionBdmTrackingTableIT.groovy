@@ -13,6 +13,8 @@
  **/
 package org.bonitasoft.update.version.to11_0_0
 
+import static CreateDataRetentionBdmTrackingTable.DATA_RETENTION_BDM_TRACKING_SEQUENCE_ID
+
 import org.bonitasoft.update.DBUnitHelper
 import org.bonitasoft.update.core.UpdateContext
 import spock.lang.Shared
@@ -54,11 +56,14 @@ class CreateDataRetentionBdmTrackingTableIT extends Specification {
             hasColumnOnTable("data_retention_bdm_tracking", "created_at")
             hasColumnOnTable("data_retention_bdm_tracking", "last_modified_at")
             hasPrimaryKeyOnTable("data_retention_bdm_tracking", "pk_data_retention_bdm_tracking")
+            hasUniqueKeyOnTableWithNameAndColumns("data_retention_bdm_tracking",
+                    "uk_data_retention_bdm_tracking_data_id_data_classname",
+                    "data_id", "data_classname")
+            // validate new sequence presence
+            noMoreTenant.getSequenceValue(DATA_RETENTION_BDM_TRACKING_SEQUENCE_ID) != null
         }
         // validate index
         dbUnitHelper.hasIndexOnTable("data_retention_bdm_tracking", "idx_data_retention_bdm_tracking_data_classname")
-        // validate new sequence presence
-        updateContext.sql.firstRow("SELECT nextid FROM sequence WHERE id = 9") != null
     }
 
     def "should be idempotent"() {
