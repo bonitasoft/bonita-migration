@@ -273,7 +273,7 @@ class RemoveTenantIdFromIndexes extends UpdateStep {
                 createForeignKey("job_param", "fk_job_param_jobid", "job_desc", ["jobdescriptorid"], ["id"], true)
                 createForeignKey("job_log", "fk_job_log_jobid", "job_desc", ["jobdescriptorid"], ["id"], true)
 
-                if (context.targetVersion < Version.valueOf("10.3.0")) {
+                if (context.targetVersion < Version.parse("10.3.0")) {
                     // to make this step reentrant in 10.3.0
                     createForeignKey("business_app", "fk_app_profileId", "profile", ["tenantid", "profileId"], ["tenantid", "id"], true)
                     createForeignKey("business_app_menu", "fk_app_menu_appId", "business_app", ["tenantid", "applicationId"], ["tenantid", "id"], true)
@@ -287,7 +287,7 @@ class RemoveTenantIdFromIndexes extends UpdateStep {
 
             // Special case for this unique index that MUST keep the column tenantId until 10.3, to avoid deadlocks issue (Oracle & SQLServer),
             // Version 10.3 will remove this useless index:
-            if (context.targetVersion < Version.valueOf("10.3.0")) {
+            if (context.targetVersion < Version.parse("10.3.0")) {
                 addOrReplaceIndex("pending_mapping", "idx_pending_mapping_deadlock", "tenantid", "activityId")
             }
         }
@@ -301,6 +301,12 @@ class RemoveTenantIdFromIndexes extends UpdateStep {
                 // target index exists and is the default one, nothing to do
                 logger.warn("Required index '${target.indexName}' already exists. Skipping creation.")
             } else if (targetIndexDefFromDB.isSameWithDifferentIndexName(target)) {
+                if (dbHelper.hasIndexOnTable(target.tableName, target.indexName)) {
+                    // The target name already exists (likely from a prior successful run), so its
+                    // definition is correct. Just drop the stale duplicate found by column-matching.
+                    logger.warn("Index '${target.indexName}' already exists. Dropping it before renaming.")
+                    dbHelper.dropIndexIfExists(target.tableName, target.indexName)
+                }
                 // target index exists but with a different name, we simply rename it:
                 logger.warn("Required index already exists but with a different name (wanted '${target.indexName}', got '${targetIndexDefFromDB.indexName}'). Renaming it.")
                 dbHelper.renameIndex(target.tableName, targetIndexDefFromDB.indexName, target.indexName)
@@ -309,7 +315,7 @@ class RemoveTenantIdFromIndexes extends UpdateStep {
             // target index does not exist already, create it:
             logger.info("Required ${target.unique ? 'unique' : 'non-unique'} index '${target.indexName}' does not exist yet. Creating it.")
 
-            if (dbHelper.dbVendor == DBVendor.ORACLE && targetVersion == Version.valueOf("10.3.0")) {
+            if (dbHelper.dbVendor == DBVendor.ORACLE && targetVersion == Version.parse("10.3.0")) {
                 // to make this step reentrant in 10.3.0
                 try {
                     dbHelper.createIndex(target.tableName, target.indexName, target.unique, target.columnNames as String[])
