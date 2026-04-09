@@ -634,17 +634,23 @@ class DatabaseHelper {
 
             case MYSQL:
                 String query = """
-                    SELECT LOWER(INDEX_NAME)
-                    FROM INFORMATION_SCHEMA.STATISTICS
-                    WHERE NON_UNIQUE = ${unique ? "0" : "1"}
-                      AND TABLE_SCHEMA = DATABASE()
-                      AND TABLE_NAME = ?
-                      AND LOWER(COLUMN_NAME) IN (${columnNames.collect { "?" }.join(",")})
-                    GROUP BY INDEX_NAME
-                    HAVING MAX(SEQ_IN_INDEX) = ? AND COUNT(DISTINCT COLUMN_NAME) = ?
+                    SELECT LOWER(s1.INDEX_NAME)
+                    FROM INFORMATION_SCHEMA.STATISTICS s1
+                    WHERE s1.NON_UNIQUE = ${unique ? "0" : "1"}
+                      AND s1.TABLE_SCHEMA = DATABASE()
+                      AND s1.TABLE_NAME = ?
+                      AND LOWER(s1.COLUMN_NAME) IN (${columnNames.collect { "?" }.join(",")})
+                    GROUP BY s1.INDEX_NAME, s1.TABLE_NAME
+                    HAVING MAX(s1.SEQ_IN_INDEX) = ? AND COUNT(DISTINCT s1.COLUMN_NAME) = ?
+                      AND ? = (
+                        SELECT COUNT(DISTINCT s2.COLUMN_NAME)
+                        FROM INFORMATION_SCHEMA.STATISTICS s2
+                        WHERE s2.TABLE_SCHEMA = DATABASE() AND s2.TABLE_NAME = s1.TABLE_NAME
+                          AND s2.INDEX_NAME = s1.INDEX_NAME)
                     """
                 List<Object> params = [tableName]
                 params.addAll(columnNames)
+                params.add(columnNames.size())
                 params.add(columnNames.size())
                 params.add(columnNames.size())
                 result = selectFirstRow(query, params)
@@ -659,11 +665,16 @@ class DatabaseHelper {
                     WHERE LOWER(i.object_id) = OBJECT_ID(?)
                       AND LOWER(c.name) IN (${columnNames.collect { "?" }.join(",")})
                       AND i.is_unique = ${unique ? "1" : "0"}
-                    GROUP BY i.name
+                    GROUP BY i.name, i.object_id, i.index_id
                     HAVING COUNT(DISTINCT c.name) = ? and MAX(index_column_id) = ?
+                      AND ? = (
+                        SELECT COUNT(*)
+                        FROM sys.index_columns ic2
+                        WHERE ic2.object_id = i.object_id AND ic2.index_id = i.index_id)
                     """
                 List<Object> params = [tableName]
                 params.addAll(columnNames)
+                params.add(columnNames.size())
                 params.add(columnNames.size())
                 params.add(columnNames.size())
                 result = selectFirstRow(query, params)
@@ -672,16 +683,21 @@ class DatabaseHelper {
             case ORACLE:
                 String query = """
                     SELECT LOWER(i.index_name)
-                    FROM all_indexes i
-                    JOIN all_ind_columns ic ON i.index_name = ic.index_name AND i.table_name = ic.table_name
+                    FROM user_indexes i
+                    JOIN user_ind_columns ic ON i.index_name = ic.index_name AND i.table_name = ic.table_name
                     WHERE LOWER(i.table_name) = ?
                       AND LOWER(ic.column_name) IN (${columnNames.collect { "?" }.join(",")})
                       AND i.uniqueness = '${unique ? "UNIQUE" : "NONUNIQUE"}'
-                    GROUP BY i.index_name
+                    GROUP BY i.index_name, i.table_name
                     HAVING COUNT(DISTINCT ic.column_name) = ? AND MAX(column_position) = ?
+                      AND ? = (
+                        SELECT COUNT(*)
+                        FROM user_ind_columns aic
+                        WHERE aic.index_name = i.index_name AND aic.table_name = i.table_name)
                     """
                 List<Object> params = [tableName]
                 params.addAll(columnNames)
+                params.add(columnNames.size())
                 params.add(columnNames.size())
                 params.add(columnNames.size())
                 result = selectFirstRow(query, params)
