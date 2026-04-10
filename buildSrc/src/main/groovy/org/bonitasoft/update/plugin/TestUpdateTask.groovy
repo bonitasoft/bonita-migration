@@ -22,10 +22,14 @@ import org.gradle.api.tasks.testing.Test
 
 import static UpdatePlugin.getDatabaseDriverConfiguration
 import static org.bonitasoft.update.plugin.VersionUtils.underscored
+
 /**
+ * Must be abstract so that Gradle decorates it at runtime and provides implementations
+ * for abstract Property methods like getDryRun() introduced in Gradle 8.
+ *
  * @author Baptiste Mesta.
  */
-class TestUpdateTask extends Test {
+abstract class TestUpdateTask extends Test {
     @Internal
     private String bonitaVersion
     @Internal

@@ -269,12 +269,14 @@ class UpdatePlugin implements Plugin<Project> {
     }
 
     private defineIntegrationTestDependencies(Project project) {
+        // Gradle 8+ forbids adding Configuration objects as dependencies; use extendsFrom instead
+        project.configurations.integrationTestCompileOnly.extendsFrom(project.configurations.testImplementation)
+        project.configurations.integrationTestCompileOnly.extendsFrom(project.configurations.drivers)
+        project.configurations.integrationTestRuntimeOnly.extendsFrom(project.configurations.testRuntimeOnly)
         project.dependencies {
+            // SourceSetOutput (FileCollection) is still valid dependency notation in Gradle 8+
             integrationTestCompileOnly project.sourceSets.main.output
-            integrationTestCompileOnly project.configurations.testImplementation
             integrationTestCompileOnly project.sourceSets.test.output
-            integrationTestCompileOnly project.configurations.drivers
-            integrationTestRuntimeOnly project.configurations.testRuntimeOnly
         }
     }
 
