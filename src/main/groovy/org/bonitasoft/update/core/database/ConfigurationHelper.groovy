@@ -24,6 +24,8 @@ import java.util.regex.Pattern
  */
 class ConfigurationHelper {
 
+    public static final String CONTENT_TYPE_PLATFORM_ENGINE = "PLATFORM_ENGINE"
+
     Sql sql
     Logger logger
     DatabaseHelper databaseHelper
@@ -49,6 +51,32 @@ class ConfigurationHelper {
             def foundFiles = appendToConfigurationFilesWithCommentIfPropertyIsMissing(results, propertyKey, keyValueSeparator, propertyValue, fileName, comment)
             if (foundFiles == 0) {
                 throw new IllegalArgumentException("configuration file ${fileName} not found in database.")
+            }
+        }
+
+        /**
+         * Append a commented-out default property to a configuration file, so the engine default keeps applying
+         * until an operator opts in by uncommenting the line. Idempotent: the property is treated as already
+         * declared whether the existing line is active ({@code key=value}) or commented ({@code #key=value}).
+         */
+        def appendCommentedPropertyIfMissing(String contentType, String fileName, String propertyKey, String propertyValue, String comment) {
+            def results = sql.rows("""
+                SELECT content_type, resource_content FROM configuration
+                WHERE resource_name=${fileName} AND content_type=${contentType}""")
+            if (results.isEmpty()) {
+                throw new IllegalArgumentException("configuration file ${fileName} not found in database.")
+            }
+            def keyDeclaration = Pattern.compile("(?m)^\\s*#?\\s*" + Pattern.quote(propertyKey) + "\\s*=")
+            results.each {
+                String content = databaseHelper.getBlobContentAsString(it.resource_content)
+                if (keyDeclaration.matcher(content).find()) {
+                    logger.info(String.format("configuration file already up to date | type: %-25s | file name: %s", it.content_type, fileName))
+                    return
+                }
+                def newEntry = "# ${comment}\n#${propertyKey}=${propertyValue}"
+                content += "\n${newEntry}"
+                updateConfigurationFileContent(fileName, it.content_type as String, content.bytes)
+                logger.info(String.format("update configuration file | type: %-25s | file name: %s | new property: %s", it.content_type, fileName, newEntry))
             }
         }
 
