@@ -73,7 +73,7 @@ dependencies {
     enginetestImplementation("org.spockframework:spock-core:2.3-groovy-3.0")
     enginetestImplementation "org.codehaus.groovy:groovy-all:3.0.25"
     enginetestImplementation 'javax.xml.bind:jaxb-api:2.3.1'
-    enginetestImplementation 'org.glassfish.jaxb:jaxb-runtime:4.0.8'
+    enginetestImplementation 'org.glassfish.jaxb:jaxb-runtime:4.0.9'
     // TODO should be enginetestRuntime (require changed in tasks)
     enginetestImplementation "ch.qos.logback:logback-classic:$logbackVersion"
 }
