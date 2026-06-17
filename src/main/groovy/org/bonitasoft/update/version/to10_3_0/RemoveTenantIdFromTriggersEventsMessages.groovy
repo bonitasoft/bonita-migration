@@ -16,6 +16,7 @@ package org.bonitasoft.update.version.to10_3_0
 import org.bonitasoft.update.core.UpdateContext
 import org.bonitasoft.update.core.UpdateStep
 
+import static org.bonitasoft.update.core.UpdateStep.DBVendor.MYSQL
 import static org.bonitasoft.update.core.UpdateStep.DBVendor.ORACLE
 
 /**
@@ -33,6 +34,25 @@ class RemoveTenantIdFromTriggersEventsMessages extends UpdateStep {
 
             // drop indexes that are no longer needed (because they match the same columns as a unique or primary key):
             // no index on those tables to drop
+
+            // Remove queriable_log rows with a conflicting id before recreating PK as (id) only.
+            // queriable_log rows are written both at platform level (tenantid = -1) and at
+            // tenant level (tenantid = 1). Under the old PK (tenantid, id) these two scopes had
+            // independent id sequences and could produce the same id value, so rebuilding the PK
+            // on (id) alone would fail on that collision.
+            // Guard with column-existence check for idempotency (column may already be dropped on re-run).
+            if (hasColumnOnTable("queriable_log", "tenantId")) {
+                logger.info("Removing platform-level 'queriable_log' rows whose id conflicts with a tenant-level row (if any), so id can become the sole primary key")
+                def deletedRows
+                if (dbVendor == MYSQL) {
+                    // MySQL forbids referencing the delete target table in a subquery of the same DELETE
+                    // Use the multi-table DELETE ... JOIN syntax instead of EXISTS form
+                    deletedRows = sql.executeUpdate("DELETE q1 FROM queriable_log q1 INNER JOIN queriable_log q2 ON q1.id = q2.id AND q1.tenantid < q2.tenantid")
+                } else {
+                    deletedRows = sql.executeUpdate("DELETE FROM queriable_log WHERE EXISTS (SELECT 1 FROM queriable_log q2 WHERE q2.id = queriable_log.id AND q2.tenantid > queriable_log.tenantid)")
+                }
+                logger.info("Removed $deletedRows platform-level 'queriable_log' row(s) with an id conflicting with a tenant-level row")
+            }
 
             // recreate PK:
             recreatePrimaryKey("event_trigger_instance")

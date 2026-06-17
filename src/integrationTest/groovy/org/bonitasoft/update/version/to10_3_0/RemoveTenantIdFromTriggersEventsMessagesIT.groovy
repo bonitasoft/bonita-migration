@@ -40,4 +40,51 @@ class RemoveTenantIdFromTriggersEventsMessagesIT extends AbstractTestTo10_3_0 {
             hasPrimaryKeyOnTable("queriable_log", "pk_queriable_log")
         }
     }
+
+    def "should remove platform-level queriable_log rows whose id conflicts with a tenant-level row before recreating PK"() {
+        given:
+        // Insert queriable_log rows with conflicting ids between platform level (tenantid=-1) and tenant (tenantid=1):
+        updateContext.sql.executeInsert("""INSERT INTO queriable_log(tenantid, id, log_timestamp, whatYear, whatMonth, dayOfYear, weekOfYear,
+            userId, threadNumber, clusterNode, productVersion, severity, actionType, actionScope, actionStatus, rawMessage,
+            callerClassName, callerMethodName, numericIndex1, numericIndex2, numericIndex3, numericIndex4, numericIndex5)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+                -1L, 1L, 1000L, 2025, 1, 1, 1, 'system', 1L, null, '10.2.0', 'INFO', 'EXECUTE', null, 1, 'platform log 1', null, null, null, null, null, null, null)
+        updateContext.sql.executeInsert("""INSERT INTO queriable_log(tenantid, id, log_timestamp, whatYear, whatMonth, dayOfYear, weekOfYear,
+            userId, threadNumber, clusterNode, productVersion, severity, actionType, actionScope, actionStatus, rawMessage,
+            callerClassName, callerMethodName, numericIndex1, numericIndex2, numericIndex3, numericIndex4, numericIndex5)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+                1L, 1L, 2000L, 2025, 1, 1, 1, 'admin', 2L, null, '10.2.0', 'INFO', 'EXECUTE', null, 1, 'tenant log 1', null, null, null, null, null, null, null)
+        updateContext.sql.executeInsert("""INSERT INTO queriable_log(tenantid, id, log_timestamp, whatYear, whatMonth, dayOfYear, weekOfYear,
+            userId, threadNumber, clusterNode, productVersion, severity, actionType, actionScope, actionStatus, rawMessage,
+            callerClassName, callerMethodName, numericIndex1, numericIndex2, numericIndex3, numericIndex4, numericIndex5)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+                -1L, 2L, 3000L, 2025, 2, 32, 5, 'system', 1L, null, '10.2.0', 'WARNING', 'EXECUTE', null, 0, 'platform log 2', null, null, null, null, null, null, null)
+        updateContext.sql.executeInsert("""INSERT INTO queriable_log(tenantid, id, log_timestamp, whatYear, whatMonth, dayOfYear, weekOfYear,
+            userId, threadNumber, clusterNode, productVersion, severity, actionType, actionScope, actionStatus, rawMessage,
+            callerClassName, callerMethodName, numericIndex1, numericIndex2, numericIndex3, numericIndex4, numericIndex5)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+                1L, 2L, 4000L, 2025, 2, 32, 5, 'admin', 2L, null, '10.2.0', 'WARNING', 'EXECUTE', null, 0, 'tenant log 2', null, null, null, null, null, null, null)
+        // Non-conflicting row (only exists at tenant level):
+        updateContext.sql.executeInsert("""INSERT INTO queriable_log(tenantid, id, log_timestamp, whatYear, whatMonth, dayOfYear, weekOfYear,
+            userId, threadNumber, clusterNode, productVersion, severity, actionType, actionScope, actionStatus, rawMessage,
+            callerClassName, callerMethodName, numericIndex1, numericIndex2, numericIndex3, numericIndex4, numericIndex5)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+                1L, 3L, 5000L, 2025, 3, 60, 9, 'admin', 3L, null, '10.2.0', 'INFO', 'CREATE', null, 1, 'tenant log 3', null, null, null, null, null, null, null)
+
+        when:
+        updateStep.execute(updateContext)
+
+        then: "conflicting rows removed, 3 rows remain (tenant-level rows kept over platform-level)"
+        updateContext.sql.firstRow("SELECT COUNT(*) AS cnt FROM queriable_log").cnt == 3
+
+        and: "for each conflicting id, the tenant-level row survived and the platform-level row was removed"
+        updateContext.sql.firstRow("SELECT rawMessage FROM queriable_log WHERE id = 1").rawMessage == 'tenant log 1'
+        updateContext.sql.firstRow("SELECT rawMessage FROM queriable_log WHERE id = 2").rawMessage == 'tenant log 2'
+
+        and: "PK successfully recreated on (id) only"
+        updateContext.databaseHelper.hasPrimaryKeyOnTable("queriable_log", "pk_queriable_log")
+
+        and: "tenantId column removed"
+        !updateContext.databaseHelper.hasColumnOnTable("queriable_log", "tenantId")
+    }
 }
