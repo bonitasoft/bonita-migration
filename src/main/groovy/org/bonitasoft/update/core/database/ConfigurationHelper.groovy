@@ -80,6 +80,34 @@ class ConfigurationHelper {
             }
         }
 
+        /**
+         * Append a multi-line block (comment header followed by one or more {@code key=value} / {@code #key=value}
+         * lines) to a configuration file, so operators can discover and override engine defaults. Idempotent: the
+         * block is treated as already present when {@code guardKey} is declared, whether the existing line is active
+         * ({@code key=}) or commented ({@code #key=}). The block is appended verbatim, so the caller controls whether
+         * its lines are active or commented.
+         */
+        def appendCommentedPropertyBlockIfMissing(String fileName, String guardKey, String block) {
+            def results = sql.rows("""
+                SELECT content_type, resource_content FROM configuration
+                WHERE resource_name=${fileName}
+                ORDER BY content_type""")
+            if (results.isEmpty()) {
+                throw new IllegalArgumentException("configuration file ${fileName} not found in database.")
+            }
+            def guardDeclaration = Pattern.compile("(?m)^\\s*#?\\s*" + Pattern.quote(guardKey) + "\\s*=")
+            results.each {
+                String content = databaseHelper.getBlobContentAsString(it.resource_content)
+                if (guardDeclaration.matcher(content).find()) {
+                    logger.info(String.format("configuration file already up to date | type: %-25s | file name: %s", it.content_type, fileName))
+                    return
+                }
+                content += "\n${block}"
+                updateConfigurationFileContent(fileName, it.content_type as String, content.bytes)
+                logger.info(String.format("update configuration file | type: %-25s | file name: %s | appended block guarded by: %s", it.content_type, fileName, guardKey))
+            }
+        }
+
         private int appendToConfigurationFilesWithCommentIfPropertyIsMissing(List<GroovyRowResult> results, String propertyKey, String keyValueSeparator, String newPropertyValue, String fileName, String comment) {
             def foundFiles = 0
             results.each {

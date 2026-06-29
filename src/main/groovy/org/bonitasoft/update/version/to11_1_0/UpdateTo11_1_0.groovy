@@ -25,11 +25,12 @@ import org.bonitasoft.update.core.VersionUpdate
  *   - Adds {@code delegation_rule_process} table (process whitelist per rule) with
  *     {@code ON DELETE CASCADE} foreign key to {@code delegation_rule(id)}
  *   - Registers the sequences for {@code SDelegationRule} and {@code SDelegationRuleProcess}
+ *   - Surfaces the delegation rules cache configuration in the tenant custom properties file
  */
 class UpdateTo11_1_0 extends VersionUpdate {
 
     @Override
     List<UpdateStep> getUpdateSteps() {
-        return [new CreateDelegationRuleTables()]
+        return [new CreateDelegationRuleTables(), new AddDelegationCacheConfig()]
     }
 }
