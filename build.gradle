@@ -52,7 +52,7 @@ dependencies {
     implementation "commons-cli:commons-cli:1.11.0"
     implementation "com.sun.activation:jakarta.activation:1.2.2"
 
-    implementation "com.fasterxml.jackson.core:jackson-databind:2.22.0"
+    implementation "com.fasterxml.jackson.core:jackson-databind:2.22.1"
     runtimeOnly 'javax.activation:activation:1.1.1'
 
     testImplementation 'org.assertj:assertj-core:3.27.7'
