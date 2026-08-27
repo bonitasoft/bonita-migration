@@ -57,7 +57,7 @@ dependencies {
 
     testImplementation 'org.assertj:assertj-core:3.27.7'
     testImplementation "org.spockframework:spock-core:2.3-groovy-3.0"
-    testRuntimeOnly 'org.objenesis:objenesis:3.5' // required by spock
+    testRuntimeOnly 'org.objenesis:objenesis:3.6' // required by spock
     testImplementation 'xmlunit:xmlunit:1.6'
 
     // TODO should be fillerRuntime (require changed in tasks)
