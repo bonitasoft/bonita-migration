@@ -17,6 +17,7 @@ import groovy.sql.GroovyRowResult
 import org.bonitasoft.update.DBUnitHelper
 import org.bonitasoft.update.core.Logger
 import org.bonitasoft.update.core.UpdateContext
+import spock.lang.Requires
 import spock.lang.Specification
 
 class DatabaseHelperIT extends Specification {
@@ -83,5 +84,64 @@ class DatabaseHelperIT extends Specification {
         1 * spiedLogger.info({
             it == "Dropping index 'idx_test' on table '$TABLE_NAME'"
         })
+    }
+
+    @Requires({ System.getProperty("db.vendor", "postgres") == "postgres" })
+    def "should find table, column, constraints and index reachable only via a non-first search_path entry"() {
+        given: "a table with constraints and an index that exists only in a custom schema"
+        def schema = "bpa557_test_schema"
+        def table = "bpa557_test_table"
+        def decoy = "bpa557_test_decoy"
+        def sql = updateContext.sql
+        sql.execute("DROP SCHEMA IF EXISTS ${schema} CASCADE" as String)
+        sql.execute("DROP TABLE IF EXISTS public.${decoy}" as String)
+        sql.execute("CREATE SCHEMA ${schema}" as String)
+        sql.execute("""
+            CREATE TABLE ${schema}.${table} (
+                id BIGINT, parent_id BIGINT, name VARCHAR(50), code VARCHAR(50),
+                CONSTRAINT pk_bpa557 PRIMARY KEY (id),
+                CONSTRAINT uk_bpa557 UNIQUE (name, code),
+                CONSTRAINT fk_bpa557 FOREIGN KEY (parent_id) REFERENCES ${schema}.${table} (id))
+            """ as String)
+        sql.execute("CREATE INDEX idx_bpa557 ON ${schema}.${table} (name)" as String)
+
+        and: "a decoy table in public carrying the same constraint names, as left behind by a copy of a Bonita schema"
+        sql.execute("""
+            CREATE TABLE public.${decoy} (
+                id BIGINT, parent_id BIGINT, name VARCHAR(50), code VARCHAR(50),
+                CONSTRAINT pk_bpa557 PRIMARY KEY (id),
+                CONSTRAINT uk_bpa557 UNIQUE (name, code),
+                CONSTRAINT fk_bpa557 FOREIGN KEY (parent_id) REFERENCES public.${decoy} (id))
+            """ as String)
+
+        and: "a context whose every pooled connection resolves search_path = public, <schema>"
+        def customSchemaContext = new UpdateContext(logger: new Logger())
+        customSchemaContext.start()
+        customSchemaContext.loadConfiguration()
+        def url = customSchemaContext.dbConfig.dburl
+        customSchemaContext.dbConfig.dburl = url + (url.contains('?') ? '&' : '?') + "currentSchema=public,${schema}"
+        customSchemaContext.openSqlConnection()
+        def helper = customSchemaContext.databaseHelper
+
+        expect: "table and column lookups resolve through the whole search_path"
+        helper.hasTable(table)
+        helper.hasColumnOnTable(table, "name")
+        !helper.hasColumnOnTable(table, "nonexistent")
+        helper.getColumnType(table, "name") == "character varying"
+
+        and: "constraint lookups are scoped to the same schema on both sides of their joins"
+        helper.hasPrimaryKeyOnTable(table, "pk_bpa557")
+        helper.hasUniqueKeyOnTableWithColumns(table, "name", "code")
+        helper.hasForeignKeyOnTable(table, "fk_bpa557")
+        helper.getForeignKeyReferences(table)*.foreignKeyName == ["fk_bpa557"]
+
+        and: "index lookups are scoped as well"
+        helper.hasIndexOnTable(table, "idx_bpa557")
+        helper.getIndexDefinition(table, false, "name")?.indexName == "idx_bpa557"
+
+        cleanup:
+        customSchemaContext?.closeSqlConnection()
+        sql.execute("DROP SCHEMA IF EXISTS ${schema} CASCADE" as String)
+        sql.execute("DROP TABLE IF EXISTS public.${decoy}" as String)
     }
 }
