@@ -13,6 +13,8 @@
  **/
 package org.bonitasoft.update.core.database
 
+import groovy.sql.Sql
+import org.bonitasoft.update.core.Logger
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -21,7 +23,51 @@ import static org.bonitasoft.update.core.UpdateStep.DBVendor.*
 class DatabaseHelperTest extends Specification {
 
     @Unroll
-    "should build limit select query for vendor #vendor"() {
+    def "should build hasTable query for vendor #vendor"() {
+        given:
+        DatabaseHelper databaseHelper = new DatabaseHelper()
+        databaseHelper.dbVendor = vendor
+        databaseHelper.sql = Mock(Sql)
+        databaseHelper.logger = Mock(Logger)
+
+        when:
+        databaseHelper.hasTable("my_table")
+
+        then:
+        1 * databaseHelper.sql.firstRow({ it.toString().contains(expectedFragment) }) >> null
+
+        where:
+        vendor    || expectedFragment
+        POSTGRES  || "current_schemas(false)"
+        ORACLE    || "user_tables"
+        MYSQL     || "table_schema = DATABASE()"
+        SQLSERVER || "information_schema.tables"
+    }
+
+    @Unroll
+    def "should build hasColumnOnTable query for vendor #vendor"() {
+        given:
+        DatabaseHelper databaseHelper = new DatabaseHelper()
+        databaseHelper.dbVendor = vendor
+        databaseHelper.sql = Mock(Sql)
+        databaseHelper.logger = Mock(Logger)
+
+        when:
+        databaseHelper.hasColumnOnTable("platform", "maintenance_enabled")
+
+        then:
+        1 * databaseHelper.sql.firstRow({ it.toString().contains(expectedFragment) }, _) >> null
+
+        where:
+        vendor    || expectedFragment
+        POSTGRES  || "current_schemas(false)"
+        ORACLE    || "user_tab_cols"
+        MYSQL     || "TABLE_SCHEMA = DATABASE()"
+        SQLSERVER || "INFORMATION_SCHEMA.COLUMNS"
+    }
+
+    @Unroll
+    def "should build limit select query for vendor #vendor"() {
         given:
         DatabaseHelper databaseHelper = new DatabaseHelper()
         databaseHelper.dbVendor = vendor

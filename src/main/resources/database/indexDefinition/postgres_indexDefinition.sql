@@ -7,11 +7,14 @@ FROM
     pg_class t,
     pg_class i,
     pg_index ix,
-    pg_attribute ai
+    pg_attribute ai,
+    pg_namespace ns
 WHERE
     t.oid = ix.indrelid
     AND i.oid = ix.indexrelid
     AND ai.attrelid = i.oid
+    AND ns.oid = t.relnamespace
+    AND ns.nspname = ANY (current_schemas(false))
     AND t.relkind = 'r'
     AND UPPER(t.relname) = UPPER(?)
     AND UPPER(i.relname) = UPPER(?)

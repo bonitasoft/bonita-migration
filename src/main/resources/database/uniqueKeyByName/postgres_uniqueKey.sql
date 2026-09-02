@@ -4,6 +4,7 @@ SELECT
 FROM
     information_schema.TABLE_CONSTRAINTS c
 WHERE
-    LOWER( c.TABLE_NAME ) = LOWER( ? )
+    c.TABLE_SCHEMA = ANY (current_schemas(false))
+    AND LOWER( c.TABLE_NAME ) = LOWER( ? )
     AND LOWER( c.CONSTRAINT_NAME ) = LOWER( ? )
     AND c.CONSTRAINT_TYPE = 'UNIQUE'

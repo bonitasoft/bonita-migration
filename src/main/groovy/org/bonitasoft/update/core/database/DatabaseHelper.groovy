@@ -164,7 +164,7 @@ class DatabaseHelper {
                 query = """
                     SELECT 1
                     FROM information_schema.tables
-                    WHERE table_schema = 'public'
+                    WHERE table_schema = ANY (current_schemas(false))
                       AND table_type = 'BASE TABLE'
                       AND UPPER(table_name) = UPPER($tableName)
                     """
@@ -237,6 +237,15 @@ class DatabaseHelper {
         def query
         switch (dbVendor) {
             case POSTGRES:
+                query = """
+                    SELECT C.TABLE_NAME, C.COLUMN_NAME
+                    FROM INFORMATION_SCHEMA.COLUMNS C
+                    WHERE C.TABLE_SCHEMA = ANY (current_schemas(false))
+                      AND UPPER( C.TABLE_NAME ) = UPPER( ? )
+                      AND UPPER( C.COLUMN_NAME ) = UPPER( ? )
+                    """
+                break
+
             case SQLSERVER:
                 query = """
                     SELECT C.TABLE_NAME, C.COLUMN_NAME
@@ -624,7 +633,8 @@ class DatabaseHelper {
                 String query = """
                     SELECT LOWER(indexname)
                     FROM pg_indexes
-                    WHERE LOWER(tablename) = LOWER(?)
+                    WHERE schemaname = ANY (current_schemas(false))
+                      AND LOWER(tablename) = LOWER(?)
                       AND LOWER(indexdef) LIKE LOWER(?)
                     """
                 def concatenatedColumns = columnNames.collect { it }.join(", ")
@@ -808,9 +818,12 @@ class DatabaseHelper {
                     FROM
                       pg_index,
                       pg_class,
-                      pg_class AS pg2
+                      pg_class AS pg2,
+                      pg_namespace
                     WHERE pg_class.oid = pg_index.indrelid
                       AND pg2.oid = pg_index.indexrelid
+                      AND pg_namespace.oid = pg_class.relnamespace
+                      AND pg_namespace.nspname = ANY (current_schemas(false))
                       AND UPPER(pg_class.relname) = UPPER(?)
                       AND UPPER(pg2.relname) = UPPER(?)
                     """
@@ -853,6 +866,15 @@ class DatabaseHelper {
         String query
         switch (dbVendor) {
             case POSTGRES:
+                query = """
+                    SELECT C.DATA_TYPE
+                    FROM INFORMATION_SCHEMA.COLUMNS C
+                    WHERE C.TABLE_SCHEMA = ANY (current_schemas(false))
+                      AND UPPER( C.TABLE_NAME ) = UPPER( ? )
+                      AND UPPER( C.COLUMN_NAME ) = UPPER( ? )
+                    """
+                break
+
             case SQLSERVER:
                 query = """
                     SELECT C.DATA_TYPE

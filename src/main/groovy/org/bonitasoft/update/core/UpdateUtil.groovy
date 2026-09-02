@@ -183,6 +183,9 @@ class UpdateUtil {
                     sql.eachRow('SELECT version()') { row ->
                         info << row[0]
                     }
+                    sql.eachRow('SELECT current_schemas(false)') { row ->
+                        info << "search_path schemas: ${row[0]}"
+                    }
                     break
                 case SQLSERVER:
                     def columnNames = ['ProductVersion', 'ProductLevel', 'ProductUpdateReference', 'Edition', 'EngineEdition', 'Collation', 'SqlCharSetName']
