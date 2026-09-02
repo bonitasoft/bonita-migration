@@ -1,163 +1,146 @@
-Bonita Update Tool
-=================
+# Bonita Update Tool
 
-What it does?
--------------
-This project updates an installed Bonita community instance from one version to another.
+The Bonita Update Tool updates an installed Bonita Community platform from one version to another by running the
+database migrations of every intermediate version in sequence. Supported source and target versions are listed in
+[`bonita.versions`](bonita.versions).
+
+For end-user instructions (configuration and how to run the tool), see the README shipped in the distribution,
+[`src/main/dist/README.md`](src/main/dist/README.md), and the
+[Bonita documentation](https://documentation.ofelia.com/bonita/latest/version-update/update-with-update-tool).
 
 
-Build Update Tool
----------------
-```
+## Requirements
+
+* A locally installed JDK 17. The build selects it through Gradle toolchain auto-detection; toolchain
+  auto-provisioning is not configured, so Gradle does not download it.
+* Docker, to run the integration and update tests against a database started by the build
+  (see [Database used by the tests](#database-used-by-the-tests)).
+
+
+## Build
+
+```bash
 ./gradlew build
 ```
 
+The build runs the unit tests and produces the distribution zip in `build/distributions/`.
 
-Integration tests
------------------
-These tests need a database to run. They ensure that update database operations are performed correctly.
 
+## Tests
+
+Tests are written with the [Spock framework](https://spockframework.org/) and live in four source sets.
+
+| Source set        | Directory                    | Needs a database | Purpose                                                            |
+|-------------------|------------------------------|------------------|--------------------------------------------------------------------|
+| `test`            | `src/test/groovy`            | no               | Unit tests of the steps orchestration, warnings and helpers.       |
+| `integrationTest` | `src/integrationTest/groovy` | yes              | Database operations of the steps and of `DatabaseHelper`.          |
+| `filler`          | `src/filler/groovy`          | yes              | Populate a Bonita database in version n-1 before an update test.   |
+| `enginetest`      | `src/enginetest/groovy`      | yes              | Check the Bonita Engine behaves in version n after an update test. |
+
+### Unit tests
+
+```bash
+./gradlew test
 ```
+
+### Integration tests
+
+```bash
 ./gradlew integrationTest
 ```
 
+### Update tests
 
-Update tests
----------------
-These tests involve preloaded data, update and ensure that the Bonita Engine works correctly after update.
+Update tests are end-to-end tests. For each version step of [`bonita.versions`](bonita.versions), that is for each
+version except the first one, the build:
 
-For each supported version, the following is performed
-* initialized an empty Bonita database for version n-1
-* run a Bonita Engine in version n-1 and use to it fill data (using filler classes)
-* stop the engine and run the update process to version n
-* run a Bonita Engine in version n and run dedicated tests for this version n (using enginetest classes)
+1. creates an empty Bonita database in version n-1,
+2. starts a Bonita Engine in version n-1 and fills it with data through the `filler` classes,
+3. stops the engine and runs the update tool to version n,
+4. starts a Bonita Engine in version n and runs the `enginetest` classes of that version.
 
-### Run all tests
-
-```
-./gradlew allUpdateTests
-```
-
-### Test a specific version
-
-```
-./gradlew testUpdate_X_Y_Z
+```bash
+./gradlew allUpdateTests          # every version step
+./gradlew lastUpdateTests         # last version step only
+./gradlew testUpdate_10_4_0       # one version step
 ```
 
-### Specify log level
+The task of a version step is named after the target version with dots replaced by underscores, and the major version
+padded to two digits so that the tasks sort in order: `testUpdate_07_14_0`, `testUpdate_10_3_0`, `testUpdate_11_0_0`.
+Run `./gradlew tasks --all | grep testUpdate_` to list them.
 
-When performing the Update task in end-to-end test, by default, the log level is set to `INFO`.
-You can change it by passing the `logger.level` System Property to the Gradle command.
-For instance, to set the log level to `DEBUG`, run the following command:
+The update phase of an update test logs at `INFO` level by default. Pass the `logger.level` system property to change
+it:
 
-```
+```bash
 ./gradlew allUpdateTests -Dlogger.level=DEBUG
 ```
 
-Customize database to use for integration and update tests when running with Gradle
---------------------------------------------------------------------------------------
 
-Tests can be run on all supported databases. To select the database type, pass the `db.vendor` value as System Property
-to the gradle command. By default the database used is `postgres`.
+## Database used by the tests
 
-### Rely on external database
+Integration and update tests need a database. The vendor is selected with the `db.vendor` system property, one of
+`postgres` (default), `mysql`, `oracle` or `sqlserver`.
 
-You have to pass several System Properties to the Gradle command as described in the example below. Default values for the
-properties are set in the [DatabaseResourcesConfigurator](buildSrc/src/main/groovy/org/bonitasoft/update/plugin/db/DatabaseResourcesConfigurator.groovy)
-source file.
-Some other settings are also available in [DockerDatabaseContainerTasksCreator](buildSrc/src/main/groovy/org/bonitasoft/update/plugin/db/DockerDatabaseContainerTasksCreator.groovy)
+The build always starts a Docker container for the selected vendor: it pulls the vendor image, starts the container,
+runs the tests and removes the container. Passing a `db.url` system property to Gradle has no effect, the container
+URL and credentials are used. **The build drops and recreates the test database and its user at the start of each
+update test.**
 
-**Important**:
-* the build will remove the database and user after the tests complete, so all previous data stored in the
-database are lost
-* if the database and the user does not exist prior to the build start, they will be created so you don't have to manage
-this by yourself. Only the root user must exist and should be able to connect to the database server
-* the `db.url` for `sqlserver` must use the `jdbc:sqlserver://<host_or_ip>:<port>;database=<db_name>[optional extra parameters]`
- syntax as it is parsed to be able to create the targeted database
-
-
-Example: run test update 7.6.0 on Sqlserver:
-```
-./gradlew testUpdate_7_6_0 \
--Ddb.vendor=sqlserver \
--Ddb.url=jdbc:sqlserver://myhost:1433;database=update_db \
--Ddb.root.user=sa \
--Ddb.root.password=StrongPassword \
--Ddb.user=DB_USER_NAME \
--Ddb.password=DB_PASSWORD \
--Ddb.driverClass=com.microsoft.sqlserver.jdbc.SQLServerDriver
+```bash
+./gradlew integrationTest allUpdateTests -Ddb.vendor=postgres
 ```
 
-Example: run integration tests on Postgresql:
+Images, default ports and credentials are defined in
+[`DockerDatabaseContainerTasksCreator`](buildSrc/src/main/groovy/org/bonitasoft/update/plugin/db/DockerDatabaseContainerTasksCreator.groovy).
+The Oracle image is hosted on a private registry: export `DOCKER_BONITASOFT_REGISTRY`, `REGISTRY_USERNAME` and
+`REGISTRY_TOKEN` before running the build.
+
+### Run integration tests from the IDE
+
+The IDE does not start a database container. Start a database yourself, with the database and user already created,
+and pass the following system properties to the test run configuration. The tests read them directly and create and
+drop their own tables in that database.
+
+| System property  | Purpose                                                                            |
+|------------------|------------------------------------------------------------------------------------|
+| `db.vendor`      | `postgres`, `mysql`, `oracle` or `sqlserver`                                       |
+| `db.url`         | JDBC URL of the test database                                                      |
+| `db.driverClass` | JDBC driver class                                                                  |
+| `db.user`        | User owning the test database                                                      |
+| `db.password`    | Password of that user                                                              |
+
+For example, with a local PostgreSQL holding a `bonita` database owned by user `bonita`:
+
 ```
-./gradlew integrationTest \
--Ddb.vendor=postgres \
--Ddb.url=jdbc:postgresql://localhost:5432/bonita \
--Ddb.root.user=postgres \
--Ddb.root.password=postgres \
--Ddb.user=bonita \
--Ddb.password=bpm \
+-Ddb.vendor=postgres
+-Ddb.url=jdbc:postgresql://localhost:5432/bonita
 -Ddb.driverClass=org.postgresql.Driver
-```
-
-Example: run all tests on Oracle:
-
-```
-./gradlew clean integrationTest allUpdateTests --info --stacktrace \
--Ddb.vendor=oracle \
--Ddb.url=jdbc:oracle:thin:@//localhost:1521/FREEPDB1.localdomain \
--Ddb.root.user="sys as sysdba" \
--Ddb.root.password=oracle \
--Ddb.user=bonita \
--Ddb.password=bpm \
--Ddb.driverClass=oracle.jdbc.OracleDriver
-```
-
-Example: run all tests on Mysql:
-```
-./gradlew clean integrationTest allUpdateTests --info --stacktrace \
--Ddb.vendor=mysql \
--Ddb.url=jdbc:mysql://localhost:3306/bonita?allowMultiQueries=true \
--Ddb.root.user=root \
--Ddb.root.password=root \
--Ddb.user=bonita \
--Ddb.password=bpm \
--Ddb.driverClass=com.mysql.jdbc.Driver
+-Ddb.user=bonita
+-Ddb.password=bpm
 ```
 
 
-### Let the build run docker database containers
+## Debugging
 
-The build can start the related database container for you. To do so, only pass the `db.vendor` System Property.
-If you provide a `db.url` System Property in addition, the build won't start the database container and will expect you to run an external database.
+The following settings start the corresponding JVM suspended, listening for a remote debugger on port 5005:
 
-Example: run all integration and update tests on Oracle:
+| Setting          | Debugs                             |
+|------------------|------------------------------------|
+| `-Dfiller.debug` | the filler phase of an update test |
+| `-Dupdate.debug` | the update phase of an update test |
+| `--debug-jvm`    | the tests themselves               |
+
+To debug the build scripts, export the debug options before launching Gradle:
+
+```bash
+export GRADLE_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"
 ```
-./gradlew clean integrationTest allUpdateTests -Ddb.vendor=oracle
-```
 
-NB: If the docker image needs to be pulled from some non-dockerhub place (like the example above), you need to specify the registry in your sys-env for the command line to work:
-```export DOCKER_BONITASOFT_REGISTRY=bonitasoft.jfrog.io REGISTRY_USERNAME=bonita-ci REGISTRY_TOKEN=<JFrog API key token>```
-
-Customize database to use for integration tests in IDE
-------------------------------------------------------
-
-In that case, you must have a running external database and pass the corresponding System Properties to the test class as this is required
-when running the Gradle build.
+To inspect the tasks a test triggers, add `taskTree` to the command, for instance
+`./gradlew testUpdate_10_4_0 taskTree -Ddb.vendor=postgres`.
 
 
-Debug
------
-When activating one of the following settings, the process is started suspended and listening on port 5005. Attach a remote
-debugging system to resume and debug the process
-* use `-Dfiller.debug` to debug the filler phase of database filler (JVM remote debug; connect on port 5005)
-* use `-Dupdate.debug` to debug the update phase (JVM remote debug; connect on port 5005)
-* use `--debug-jvm` to debug the tests
-* use `export GRADLE_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"` before launching the build in order to debug the build script itself
+## License
 
-
-Publication
------------
-```
-./gradlew publishToMavenLocal
-```
+The Bonita Update Tool Community edition is released under the [GNU LGPL 2.1](LICENSE).
